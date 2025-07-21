@@ -1,0 +1,46 @@
+<ActorFrame InitCommand="%function(self)
+	function nitg_send_spellcards(cards)
+		if table.getn(cards) == 0 or tonumber(GAMESTATE:GetVersionDate()) < 20170714 then return false end
+		
+		local s = GAMESTATE:GetCurrentSong()
+		s:SetNumSpellCards(table.getn(cards))
+		for i=1,table.getn(cards) do
+			local a = cards[i]
+			s:SetSpellCardTiming(i-1,a[1],a[2])
+			s:SetSpellCardName(i-1,a[3])
+			s:SetSpellCardDifficulty(i-1,a[4])
+			s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+		end
+		
+	end
+	
+	function nitg_send_labels(labels)
+		if table.getn(labels) == 0 or tonumber(GAMESTATE:GetVersionDate()) < 20170714 then return false end
+		
+		local s = GAMESTATE:GetCurrentSong()
+		s:ClearLabels();
+		for i=1,table.getn(labels) do
+			s:AddLabel(labels[i][1],labels[i][2])
+		end
+		
+	end
+	
+	--start,end,name,difficulty,color
+	prefix_spellcards = {
+		--{40,64,'name',6,{.1,.2,.8,1}},
+		{0,27.5,'Booting...',0,{1,1,1,1}},
+		{27.5,32,'Welcome to rsQ7kfZw',2,{.5,.5,.5,1}},
+		{32,96,'WARNING: CPU TEMPERATURE IS ABOVE 80°C',3,{1,1,1,1}},
+		{96,104,'66*40 MB B B B B BBB',4,{1,1,1,1}},
+		{104,110,'%% $$$$$$ %% /O @@@',3,{0.8,0.8,0.8,1}},
+		{110,128,'WARNING: CPU TEMPERATURE IS RISING.',3,{0.6,0.6,0.6,1}},
+		{128,138,'&&& & content transform speed *Loading...',3,{0.4,0.4,0.4,1}},
+		{138.5,139.5,'Error: memoryfactory.lzh is not a bootable disk',1,{0.2,0.2,0.2,1}},
+		{139.5,160,'Reverting to backup mods... Completed',3,{0.1,0.1,0.1,1}},
+		{160,224,'FATAL: GPU is unresponsive',4,{0,0,0,1}},
+		{224,288,'CRITICAL: CPU IS BEING OVERLOADED',4,{0.333,0.333,0.333,1}},
+		{288,352,'FATAL: CPU IS NOT WORKING! FOLLOW THE INSTRUCTIONS ON THE SCREEN',4,{0.666,0.666,0.666,1}},
+		{352,380,'Closing rsQ7kfZw, we hope you enjoyed!',4,{1,1,1,1}}
+	}
+	nitg_send_spellcards(prefix_spellcards)
+end"/>

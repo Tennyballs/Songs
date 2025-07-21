@@ -1,0 +1,1071 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+		P[pn]:SetFarDist(100000)
+	end
+	
+	local SineS, CubicS, QuintS, CircS, ElasticS, QuadS, QuartS, ExpoS, BackS, BounceS,
+	SineO, CubicO, QuintO, CircO, ElasticO, QuadO, QuartO, ExpoO, BackO, BounceO,
+	SineI, CubicI, QuintI, CircI, ElasticI, QuadI, QuartI, ExpoI, BackI, BounceI  
+	= inOutSine, inOutCubic, inOutQuint, inOutCirc, inOutElastic, inOutQuad, inOutQuart, inOutExpo, inOutBack, inOutBounce,
+	outSine, outCubic, outQuint, outCirc, outElastic, outQuad, outQuart, outExpo, outBack, outBounce,
+	inSine, inCubic, inQuint, inCirc, inElastic, inQuad, inQuart, inExpo, inBack, inBounce
+	local Smooth = inOutElastic.params(1, 1)
+	
+	main_kicks = {
+	{36.000,0,1},
+	{37.000,3,1},
+	{38.000,0,1},
+	{39.000,3,1},
+	{40.000,0,1},
+	{41.000,3,1},
+	{42.000,0,1},
+	{43.000,3,1},
+	{44.000,0,1},
+	{45.000,3,1},
+	{46.000,0,1},
+	{47.000,3,1},
+	{48.000,0,1},
+	{49.000,3,1},
+	{50.000,0,1},
+	{51.000,3,1},
+	{52.000,0,1},
+	{53.000,3,1},
+	{54.000,0,1},
+	{55.000,3,1},
+	{56.000,0,1},
+	{57.000,3,1},
+	{58.000,0,1},
+	{59.000,3,1},
+	{60.000,0,1},
+	{61.000,3,1},
+	{62.000,0,1},
+	{63.000,3,1},
+	{64.000,0,1},
+	{65.000,3,1},
+	{66.000,0,1},
+	{68.000,3,1},
+	{69.000,0,1},
+	{70.000,3,1},
+	{71.000,0,1},
+	{72.000,3,1},
+	{73.000,0,1},
+	{74.000,3,1},
+	{75.000,0,1},
+	{76.000,3,1},
+	{77.000,0,1},
+	{78.000,3,1},
+	{79.000,0,1},
+	{80.000,3,1},
+	{81.000,0,1},
+	{82.000,3,1},
+	{83.000,0,1},
+	{84.000,3,1},
+	{85.000,0,1},
+	{86.000,3,1},
+	{87.000,0,1},
+	{88.000,3,1},
+	{89.000,0,1},
+	{90.000,3,1},
+	{91.000,0,1},
+	{92.000,3,1},
+	{93.000,0,1},
+	{94.000,3,1},
+	{95.000,0,1},
+	{96.000,3,1},
+	{97.000,0,1},
+	{132.000,3,1},
+	{133.000,0,1},
+	{134.000,3,1},
+	{135.000,0,1},
+	{136.000,3,1},
+	{137.000,0,1},
+	{138.000,3,1},
+	{139.000,0,1},
+	{140.000,3,1},
+	{141.000,0,1},
+	{142.000,3,1},
+	{143.000,0,1},
+	{144.000,3,1},
+	{145.000,0,1},
+	{148.000,3,1},
+	{149.000,0,1},
+	{150.000,3,1},
+	{151.000,0,1},
+	{152.000,3,1},
+	{153.000,0,1},
+	{154.000,3,1},
+	{155.000,0,1},
+	{156.000,3,1},
+	{157.000,0,1},
+	{158.000,3,1},
+	{159.000,0,1},
+	{160.000,3,1},
+	{164.000,0,1},
+	{165.000,3,1},
+	{166.000,0,1},
+	{167.000,3,1},
+	{168.000,0,1},
+	{169.000,3,1},
+	{170.000,0,1},
+	{171.000,3,1},
+	{172.000,0,1},
+	{173.000,3,1},
+	{174.000,0,1},
+	{175.000,3,1},
+	{176.000,0,1},
+	{177.000,3,1},
+	{180.000,3,1},
+	{181.000,0,1},
+	{182.000,3,1},
+	{183.000,0,1},
+	{184.000,3,1},
+	{185.000,0,1},
+	{186.000,3,1},
+	{187.000,0,1},
+	{188.000,3,1},
+	{189.000,0,1},
+	{190.000,3,1},
+	{191.000,0,1},
+	{192.000,0,1},
+	}
+	
+	got_me = {
+	{37.000,0,1},
+	{41.000,3,1},
+	{46.000,0,1},
+	{50.000,3,1},
+	{53.000,0,1},
+	{57.000,3,1},
+	{62.000,0,1},
+	{66.000,3,1},
+	{69.000,0,1},
+	{73.000,3,1},
+	{78.000,0,1},
+	{82.000,3,1},
+	{85.000,0,1},
+	{89.000,3,1},
+	{94.000,0,1},
+	{142.000,3,1},
+	{158.000,3,1},
+	{162.000,0,1},
+	{174.000,0,1},
+	{190.000,3,1},
+	{194.000,0,1},
+	}
+	
+	synth = {
+	{133.000,0,1},
+	{133.500,1,1},
+	{134.000,2,1},
+	{134.500,3,1},
+	{136.000,0,1},
+	{136.500,1,1},
+	{137.000,2,1},
+	{137.500,3,1},
+	{141.000,0,1},
+	{141.500,1,1},
+	{142.000,2,1},
+	{142.500,3,1},
+	{144.000,0,1},
+	{144.500,1,1},
+	{145.000,2,1},
+	{145.500,3,1},
+	{149.000,0,1},
+	{149.500,1,1},
+	{150.000,2,1},
+	{150.500,3,1},
+	{152.000,0,1},
+	{152.500,1,1},
+	{153.000,2,1},
+	{153.500,3,1},
+	{157.000,0,1},
+	{157.500,1,1},
+	{158.000,2,1},
+	{158.500,3,1},
+	{165.000,0,1},
+	{165.500,1,1},
+	{166.000,2,1},
+	{166.500,3,1},
+	{168.000,0,1},
+	{168.500,1,1},
+	{169.000,2,1},
+	{169.500,3,1},
+	{173.000,0,1},
+	{173.500,1,1},
+	{174.000,2,1},
+	{174.500,3,1},
+	{176.000,0,1},
+	{176.500,1,1},
+	{177.000,2,1},
+	{177.500,3,1},
+	{181.000,0,1},
+	{181.500,1,1},
+	{182.000,2,1},
+	{182.500,3,1},
+	{184.000,0,1},
+	{184.500,1,1},
+	{185.000,2,1},
+	{185.500,3,1},
+	{189.000,0,1},
+	{189.500,1,1},
+	{190.000,2,1},
+	{190.500,3,1},
+	}
+	
+	daft_punk = {
+	{100.000,0,1},
+	{101.000,3,1},
+	{102.000,0,1},
+	{102.500,3,1},
+	{103.000,0,1},
+	{103.500,3,1},
+	{104.000,0,1},
+	{105.000,3,1},
+	{106.000,0,1},
+	{106.500,3,1},
+	{107.000,0,1},
+	{108.000,3,1},
+	{109.000,0,1},
+	{110.000,3,1},
+	{111.000,0,1},
+	{112.000,3,1},
+	{112.500,0,1},
+	{113.000,3,1},
+	{114.000,0,1},
+	{114.500,3,1},
+	{115.000,0,1},
+	{116.000,3,1},
+	{117.000,0,1},
+	{117.500,3,1},
+	{118.000,0,1},
+	{119.000,3,1},
+	{119.500,0,1},
+	{120.000,3,1},
+	{121.000,0,1},
+	{121.500,3,1},
+	{122.000,0,1},
+	{123.000,3,1},
+	{123.500,0,1},
+	{124.000,3,1},
+	{125.000,0,1},
+	{125.500,3,1},
+	{126.000,0,1},
+	{127.000,3,1},
+	}
+	
+	fast_kick = {
+	{20.000,0,1},
+	{20.500,3,1},
+	{21.000,0,1},
+	{21.500,3,1},
+	{22.000,0,1},
+	{22.500,3,1},
+	{23.000,0,1},
+	{23.500,3,1},
+	{24.000,0,1},
+	{24.500,3,1},
+	{25.000,0,1},
+	{25.500,3,1},
+	{26.000,0,1},
+	{26.500,3,1},
+	{27.000,0,1},
+	{27.500,3,1},
+	{28.000,0,1},
+	{28.333,3,1},
+	{28.500,0,1},
+	{28.833,3,1},
+	{29.000,0,1},
+	{29.333,3,1},
+	{29.500,0,1},
+	{29.833,3,1},
+	{30.000,0,1},
+	{30.333,3,1},
+	{30.500,0,1},
+	{30.833,3,1},
+	{31.000,0,1},
+	{31.125,3,1},
+	{31.250,0,1},
+	{31.375,3,1},
+	{31.500,0,1},
+	{31.625,3,1},
+	{31.750,0,1},
+	{31.875,3,1},
+	{32.000,0,1},
+	{116.000,0,1},
+	{116.500,3,1},
+	{117.000,0,1},
+	{117.500,3,1},
+	{118.000,0,1},
+	{118.500,3,1},
+	{119.000,0,1},
+	{119.500,3,1},
+	{120.000,0,1},
+	{120.500,3,1},
+	{121.000,0,1},
+	{121.500,3,1},
+	{122.000,0,1},
+	{122.500,3,1},
+	{123.000,0,1},
+	{123.500,3,1},
+	{124.000,0,1},
+	{124.333,3,1},
+	{124.500,0,1},
+	{124.833,3,1},
+	{125.000,0,1},
+	{125.333,3,1},
+	{125.500,0,1},
+	{125.833,3,1},
+	{126.000,0,1},
+	{126.333,3,1},
+	{126.500,0,1},
+	{126.833,3,1},
+	{127.000,0,1},
+	{127.125,3,1},
+	{127.250,0,1},
+	{127.375,3,1},
+	{127.500,0,1},
+	{127.625,3,1},
+	{127.750,0,1},
+	{127.875,3,1},
+	{128.000,0,1},
+	}
+	
+	finale_kick = {
+	{197.000,0,1},
+	{199.000,3,1},
+	{201.000,0,1},
+	{203.000,3,1},
+	{205.000,0,1},
+	{207.000,3,1},
+	{209.000,0,1},
+	{211.000,3,1},
+	{212.000,0,1},
+	{213.000,3,1},
+	{214.000,0,1},
+	{215.000,3,1},
+	{216.000,0,1},
+	{217.000,3,1},
+	{218.000,0,1},
+	{219.000,3,1},
+	{220.000,0,1},
+	{220.500,3,1},
+	{221.000,0,1},
+	{221.500,3,1},
+	{222.000,0,1},
+	{222.500,3,1},
+	{223.000,0,1},
+	{223.500,3,1},
+	}
+	
+	poppin = {
+	{135.000,0,1},
+	{135.500,1,1},
+	{138.500,2,1},
+	{139.000,3,1},
+	{139.500,0,1},
+	{139.750,1,1},
+	{140.250,2,1},
+	{143.000,3,1},
+	{143.500,0,1},
+	{151.000,1,1},
+	{151.500,2,1},
+	{154.500,3,1},
+	{155.000,0,1},
+	{155.500,1,1},
+	{155.750,2,1},
+	{156.250,3,1},
+	{159.000,0,1},
+	{159.500,1,1},
+	{167.000,2,1},
+	{167.500,3,1},
+	{170.500,0,1},
+	{171.000,1,1},
+	{171.500,2,1},
+	{171.750,3,1},
+	{172.250,0,1},
+	{175.000,1,1},
+	{175.500,2,1},
+	{183.000,3,1},
+	{183.500,0,1},
+	{186.500,1,1},
+	{187.000,2,1},
+	{187.500,3,1},
+	{187.750,0,1},
+	{188.250,1,1},
+	{191.000,2,1},
+	{191.500,3,1},
+	}
+	
+	WarpSprite:SetTexture(WarpAft:GetTexture())
+	
+	VhsSprite:SetTexture(VhsAft:GetTexture())
+	
+	definemod {'bgzoom','bgkick', function(percent,percent2)
+		WarpSprite:zoom(1+percent+percent2)
+	end}
+	
+	definemod {'bgrotx','bgroty','bgrotz','bgrotz2', function(p,pp,ppp,pppp)
+		WarpSprite:rotationx(p)
+		WarpSprite:rotationy(pp)
+		WarpSprite:rotationz(ppp+pppp)
+	end}
+	
+	definemod {'quaddiffuse', function(p)
+		BlackQuad:diffusealpha(p+1)
+	end}
+	
+	
+	local function your(beat,reversedir)
+		ease2(beat,1.5,QuartS,reversedir,'reverse')
+		kick(beat,0.5,2,'Expo','Expo',0,-5000,'tinyz')
+		kick(beat,0.5,2,'Expo','Expo',0,-100,'tiny')
+		ease {beat,1,bounce,1,'bgzoom'}
+	end
+	
+	local function gotme(beat)
+		ease2(beat,0.5,QuartS,100,'invert')
+		ease2(beat+0.5,0.5,QuartS,0,'invert')
+		ease2(beat,1,QuartS,2,'bgzoom')
+		ease2(beat+1,1,QuartS,0,'bgzoom')
+		
+		ease2(beat,1,QuartS,100,'z')
+		ease2(beat+1,1,QuartS,0,'z')
+	end
+	
+	definemod {'shake', function(p)
+		for pn = 1,2 do
+		P[pn]:vibrate()
+		P[pn]:effectmagnitude(p,0,0)
+		end
+	end}
+	
+	definemod {'bgshake', function(p)
+		WarpSprite:vibrate()
+		WarpSprite:effectmagnitude(p,0,0)
+	end}
+	
+	
+	local function angel(beat,rotxdir)
+		ease2(beat,1,QuartS,20*rotxdir,'rotationx')
+		ease2(beat+1,1,QuartS,-20*rotxdir,'rotationx')
+		ease2(beat+2,1,QuartS,0,'rotationx')
+		
+		
+		ease2(beat,1,QuartS,-200,'z')
+		ease2(beat+1,1,QuartS,200,'z')
+		ease2(beat+2,1,QuartS,0,'z')
+		
+		ease2(beat+1,1,QuartS,-1000,'tinyz')
+		ease2(beat+2,1,QuartS,0,'tinyz')
+		
+		ease2(beat+1,1,QuartS,-100,'wave')
+		ease2(beat+2,1,QuartS,0,'wave')
+		
+		ease2(beat,1,QuartS,10,'stealth')
+		ease2(beat+1,1,QuartS,20,'stealth')
+		ease2(beat+2,1,QuartS,0,'stealth')
+		
+		
+		ease2(beat,1,QuartS,-50,'tinyx')
+		ease2(beat+1,1,QuartS,-100,'tinyx')
+		ease2(beat+2,1,QuartS,0,'tinyx')
+		
+		ease2(beat,1,QuartS,-50,'tinyy')
+		ease2(beat+1,1,QuartS,-100,'tinyy')
+		ease2(beat+2,1,QuartS,0,'tinyy')
+		
+		ease2(beat+1,1,QuartS,130,'zoom')
+		ease2(beat+2,1,QuartS,100,'zoom')
+		
+	end
+	
+	
+	local function wait(beat)
+		ease2(beat,0.5,QuartS,100,'flip')
+		ease2(beat+0.5,0.5,QuartS,0,'flip')
+		
+		ease2(beat,0.5,QuartS,100,'wave')
+		ease2(beat+0.5,0.5,QuartS,0,'wave')
+	end
+	
+	
+	local function imsohappy(beat,rotdir)
+		add2(beat,1,CubicS,100,'reverse')
+		add2(beat+1,1,CubicS,-100,'reverse')
+		
+		ease2(beat,1,CubicS,-200*rotdir,'tipsy')
+		ease2(beat+1,1,CubicS,0,'tipsy')
+		
+		ease2(beat,1,flip(CubicS),-628,'confusionoffset')
+		
+		ease2(beat+1,1,CubicS,180*rotdir,'rotationy2')
+		ease2(beat+2,1,CubicS,360*rotdir,'rotationy2')
+		set{beat+3,0,'rotationy2'}
+		
+		ease2(beat,1,QuartS,-0.75,'bgzoom')
+		ease2(beat+1,1,QuartS,0,'bgzoom')
+		
+		ease2(beat,1,QuartS,-800,'z')
+		ease2(beat+1,1,QuartS,0,'z')
+		
+		ease2(beat,1,QuartS,-200,'tiny')
+		ease2(beat+1,1,QuartS,0,'tiny')
+		
+		
+	end
+	
+	local function warp(beat)
+		ease2(beat,1,inverse,-1000,'z')
+		ease{beat,2,flip(outElastic.params(1, 0.05)),500,'drunk'}
+		ease{beat,1,bounce,20,'bgzoom'}
+		
+		ease{beat,2,flip(outElastic.params(1, 2)),-500,'tiny'}
+	end
+	
+	
+	local function baebee(beat)
+		kick(beat,0.5,0.5,'Quart','Expo',0,75,'y')
+		kick(beat+0.5,0.5,0.5,'Quart','Expo',0,75,'y')
+		kick(beat+4,0.5,0.5,'Quart','Expo',0,75,'y')
+		kick(beat+4.5,0.5,0.5,'Quart','Expo',0,75,'y')
+		
+		kick(beat,0.5,0.5,'Quart','Cubic',0,50,'stealth')
+		kick(beat+0.5,0.5,0.5,'Quart','Cubic',0,50,'stealth')
+		kick(beat+4,0.5,0.5,'Quart','Cubic',0,50,'stealth')
+		kick(beat+4.5,0.5,0.5,'Quart','Cubic',0,50,'stealth')
+		
+		add2(beat+1,0.5,CubicS,50,'reverse')
+		add2(beat+1.5,0.5,CubicS,-50,'reverse')
+		
+		ease{beat,2,bounce,-0.5,'bgzoom'}
+		ease{beat,2,bounce,200,'z'}
+		
+		ease{beat+4,1,bounce,-0.5,'bgzoom'}
+		ease{beat+4,1,bounce,200,'z'}
+		
+		
+		
+		--kick(beat,0.5,0.5,'Quart','Expo',100,200,'zoomx')
+		--kick(beat+0.5,0.5,0.5,'Quart','Expo',100,200,'zoomx')
+		--kick(beat+4,0.5,0.5,'Quart','Expo',100,200,'zoomx')
+		--kick(beat+4.5,0.5,0.5,'Quart','Expo',100,200,'zoomx')
+	end
+	
+	local function bopbeep(beat,rotdir)
+		
+		
+		ease2(beat,1.5,CubicS,180*rotdir,'rotationx2')
+		ease2(beat+2,1.5,CubicS,0,'rotationx2')
+		
+		ease2(beat,0.5,CubicS,100,'flip')
+		ease2(beat+0.5,0.5,CubicS,0,'flip')
+		
+		ease2(beat+2,0.5,CubicS,100,'flip')
+		ease2(beat+2.5,0.5,CubicS,0,'flip')
+	end
+	
+	local function bopbeep2(beat,rotdir)
+		ease2(beat,1.5,CubicS,180*rotdir,'rotationx2')
+		ease2(beat+2,1.5,CubicS,0,'rotationx2')
+		ease2(beat,0.5,CubicS,100,'flip')
+		ease2(beat+0.5,0.5,CubicS,0,'flip')
+	end
+	
+	local function bruhp(beat,rotdir)
+		ease{beat,2.5,SineO,10,'bgzoom'}
+		ease{beat+3.5,2,SineO,0,'bgzoom'}
+		
+		
+		ease{beat,2.5,SineO,-100,'tiny'}
+		ease{beat+3.5,2,SineI,0,'tiny'}
+		
+		ease{beat,2.5,SineO,100,'z'}
+		ease{beat+3.5,2,SineO,0,'z'}
+		
+		ease{beat,2.5,CubicO,360*rotdir,'rotationy2'}
+		ease{beat+3.5,1.5,CubicO,0,'rotationy2'}
+		
+		ease{beat,6,flip(BackO),360*rotdir,'bgrotz2'}
+		
+		ease{beat,2.5,CubicO,125,'zoom'}
+		ease{beat+3.5,1.5,CubicO,100,'zoom'}
+		
+		ease{beat,2.5,CubicO,1.3,'xmod'}
+		ease{beat+3.5,1.5,CubicO,2.3,'xmod'}
+		
+		kick(beat,0.5,0.5,'Quart','Expo',100,175,'zoomx')
+		kick(beat+0.5,0.5,0.5,'Quart','Expo',100,175,'zoomx')
+		kick(beat+1,0.5,0.5,'Quart','Expo',100,175,'zoomx')
+		kick(beat+1.5,0.5,0.5,'Quart','Expo',100,175,'zoomx')
+		kick(beat+2,0.5,0.5,'Quart','Expo',100,175,'zoomx')
+		kick(beat+2.5,0.5,0.5,'Quart','Expo',100,175,'zoomx')
+		
+		kick(beat+3.5,0.5,0.5,'Quart','Expo',100,175,'zoomx')
+		kick(beat+4,0.5,0.5,'Quart','Expo',100,175,'zoomx')
+		kick(beat+4.5,0.5,0.5,'Quart','Expo',100,175,'zoomx')
+		
+		--ease2(beat,0.5,CubicS,100,'flip')
+		--ease2(beat+0.5,0.5,CubicS,0,'flip')
+		ease2(beat+1,0.5,CubicS,100,'flip')
+		ease2(beat+1.5,0.5,CubicS,0,'flip')
+		ease2(beat+2,0.5,CubicS,100,'flip')
+		ease2(beat+2.5,0.5,CubicS,0,'flip')
+		ease2(beat+4,0.5,CubicS,100,'flip')
+		ease2(beat+4.5,0.5,CubicS,0,'flip')
+		ease2(beat+5,0.5,CubicS,100,'flip')
+		ease2(beat+5.5,0.5,CubicS,0,'flip')
+		
+	end
+	
+	local function fuck(beat)
+		ease2(beat+0.5,1,CubicS,-200,'movex',1)	
+		ease2(beat+0.5,1,CubicS,200,'movex',2)
+		
+		ease2(beat+0.5,0.5,CubicS,100,'tipsy')
+		ease2(beat+1.5,0.5,CubicS,0,'tipsy')
+		
+		ease2(beat+0.5,0.5,CubicS,-200,'tiny')
+		ease2(beat+1.5,0.5,CubicS,0,'tiny')
+		
+		ease2(beat,0.5,CubicS,100,'flip')	
+		ease2(beat+0.5,0.5,CubicS,0,'flip')	
+		
+		ease2(beat+0.5,1.5,inverse,1000,'z')	
+		
+		kick(beat+0.5,0.5,1,'Cubic','Cubic',100,175,'zoomx')
+		kick(beat+0.5,0.5,1,'Cubic','Cubic',0,-10000,'tinyz')
+		kick(beat+0.5,0.5,1,'Cubic','Cubic',0,50,'stealth')
+		
+		
+		ease2(beat+2.5,1,QuartS,0,'movex')	
+	end
+	
+	
+	local function drum(beat)
+		ease2(beat,1.5,Smooth,100,'flip')	
+		ease2(beat+0.5,1.5,Smooth,0,'flip')	
+		
+		ease2(beat+1,4,flip(Smooth),360,'rotationx2')	
+		ease{beat+1,1,bounce,-500,'tiny'}
+		kick(beat+1,0.5,0.5,'Quart','Expo',0,-200,'tinyy')
+	end
+	
+	local function idrop(beat)
+		ease2(beat,0.5,CubicS,100,'invert')	
+		ease2(beat+0.5,0.5,CubicS,0,'invert')	
+	end
+	
+	
+	-- your code goes here here:
+	set {0, 2.3, 'xmod', 1, 'zbuffer', 1, 'approachtype', 200, 'modtimer', 1, 'halgun', 100, 'dizzyholds', -100, 'drawsizeback', 1, 'stealthtype', 1, 'stealthpastreceptors', 1, 'receptorzbuffer',100,'cover',250,'zoomz',25,'bgzoom',500,'bumpyxperiod',100,'orient',
+	-50,'drunkperiod'}
+	
+	--set{132,1000,'zoomz'}
+	
+	ease{32,4,linear,0,'bgzoom'}
+	
+	ease{4,16,SineI,-1,'quaddiffuse'}
+	
+	
+	centerPlr(0)
+	
+	ease{4,16,flip(SineI),250,'zoom'}
+	ease{4,16,flip(ExpoI),100,'centered'}
+	
+	ease{20,8,ExpoI,40,'reverse'}
+	ease{20,12,ExpoI,500,'zoom'}
+	
+	ease{32,2,linear,0,'reverse',100,'zoom'}
+	
+	ease{31,1,flip(SineS),360*10,'rotationz2'}
+	
+	drum(34)
+	drum(130)
+	drum(146)
+	drum(178)
+	drum(226)
+	--drum2(99)
+	
+	func {34-0.5, 1, CubicS, scx, scx - (sw / 4), function(p) P1:x(p) end}
+	func {34-0.5, 1, CubicS, scx, scx + (sw / 4), function(p) P2:x(p) end}
+	
+	for i = 4,19 do
+		BeatX(i,250)
+	end
+	
+	local f = 1
+	for i = 20,27 do
+		ease2(i,2,Smooth,50*f,'coolskewx')
+		ease2(i,2,Smooth,15*f,'bgrotz')
+		kick(i,0.25,0.5,'Cubic','Back',100,150,'zoomx')
+	f = f * -1
+	end
+	
+	
+	local f = 1
+	for i = 28,31,0.5 do
+		ease2(i,2,Smooth,50*f,'coolskewx')
+		ease2(i,2,Smooth,15*f,'bgrotz')
+		kick(i,0.25,0.5,'Cubic','Back',100,150,'zoomx')
+	f = f * -1
+	end
+	
+	ease2(32,1,CubicS,0,'coolskewx')
+	ease2(32,1,CubicS,0,'bgrotz')
+	
+	local f = 1
+	for i =1, table.getn(main_kicks) do
+	local beat = main_kicks[i][1]
+	local col = main_kicks[i][2]
+		kick(beat,0.5,1,'Expo','Expo',0,0.3,'bgkick')
+		kick(beat,0.5,1,'Expo','Cubic',0,50,'brake')
+		kick(beat,0.5,1,'Cubic','Expo',0,-25*f,'coolskewx')
+		kick(beat,0.5,1,'Cubic','Expo',0,15*f,'rotationz')
+		kick(beat,0.5,1,'Cubic','Expo',0,-100*f,'drunk')
+		
+		if beat > 67 then 
+			kick(beat,0.5,1,'Cubic','Expo',0,15*f,'bgrotz')
+		end
+		
+		if beat > 131 then 
+			kick(beat,0.5,1,'Cubic','Expo',0,-50*f,'x')
+		end
+		
+		if beat > 163 then 
+			--kick(beat,0.5,1,'Cubic','Back',100,150,'zoomx')
+		end
+		
+	f = f*-1
+	end
+	
+	local f = 1
+	for i =1, table.getn(fast_kick) do
+	local beat = fast_kick[i][1]
+	local col = fast_kick[i][2]
+		ease{beat,1,flip(ExpoO),-200,'tiny'}
+		ease{beat,1,flip(ExpoO),100*f,'tipsy'}
+		ease{beat,1,flip(ExpoO),50,'brake'}
+		ease{beat,1.5,flip(ExpoO),250,'z'}
+		
+	f = f*-1
+	end
+	
+	
+	local f = 1
+	for i =1, table.getn(got_me) do
+	local beat = got_me[i][1]
+	local col = got_me[i][2]
+		gotme(beat)
+	f = f*-1
+	end
+	
+	local f = 1
+	for i =1, table.getn(synth) do
+	local beat = synth[i][1]
+	local col = synth[i][2]
+		kick(beat,0.25,0.5,'Cubic','Cubic',0,-200*f,'bumpyx')
+		kick(beat,0.25,0.5,'Cubic','Cubic',0,25,'y')
+	f = f*-1
+	end
+	
+	local f = 1
+	for i =1, table.getn(daft_punk) do
+	local beat = daft_punk[i][1]
+	local col = daft_punk[i][2]
+		kick(beat,0.5,1,'Expo','Expo',0,3,'bgkick')
+		kick(beat,0.5,1,'Expo','Cubic',0,50,'brake')
+		kick(beat,0.5,1,'Expo','Expo',0,-150,'tiny')
+		kick(beat,0.5,1,'Expo','Expo',0,25,'stealth')
+		--kick(beat,0.5,1,'Cubic','Expo',0,-25*f,'coolskewx')
+		--kick(beat,0.5,1,'Cubic','Expo',0,15*f,'rotationz')
+		--kick(beat,0.5,1,'Cubic','Expo',0,-100*f,'drunk')
+		if col == 0 then
+		ease2(beat,1,ExpoS,100,'invert')
+		elseif col == 3 then
+		ease2(beat,1,ExpoS,0,'invert')
+		end
+		
+	f = f*-1
+	end
+	
+	
+	your(36,100)
+	your(52,0)
+	your(84,100)
+	ease2(98,2,Smooth,0,'reverse')
+	your(132,100)
+	your(164,0)
+	
+	angel(47,1)
+	angel(63,-1)
+	angel(79,1)
+	angel(95,-1)
+	angel(143,1)
+	angel(159,-1)
+	angel(175,1)
+	angel(191,-1)
+	
+	
+	wait(40.5)
+	wait(56.5)
+	wait(72.5)
+	wait(88.5)
+	
+	imsohappy(43,1)
+	imsohappy(59,1)
+	imsohappy(75,-1)
+	imsohappy(91,-1)
+	
+	
+	warp(68)
+	warp(148)
+	warp(180)
+	
+	
+	
+	baebee(38)
+	baebee(54)
+	baebee(70)
+	baebee(86)
+	
+	func {99-0.5, 1, CubicS, scx - (sw / 4), scx, function(p) P1:x(p) end}
+	func {99-0.5, 1, CubicS, scx + (sw / 4), scx, function(p) P2:x(p) end}
+	
+	ease2(100,1,CubicS,1,'xmod')
+	ease{116,8,linear,2.3,'xmod'}
+	
+	ease{116,22,flip(QuartS),360*4,'bgrotz'}
+	
+	ease2(100,1,CubicS,100,'drunk')
+	ease{116,8,ExpoI,0,'drunk'}
+	
+	ease2(100,2,ExpoS,50,'bgzoom')
+	ease{116,16,CubicI,0,'bgzoom'}
+	
+	ease2(100,2,ExpoS,125,'zoom')
+	ease{116,16,CubicI,100,'zoom'}
+	
+	ease2(116,1,CubicS,100,'reverse')
+	ease2(118,1,CubicS,0,'reverse')
+	ease2(120,1,CubicS,100,'reverse')
+	ease2(122,1,CubicS,0,'reverse')
+	ease2(124,1,CubicS,100,'reverse')
+	ease2(126,1,CubicS,0,'reverse')
+	
+	bopbeep(49,1)
+	bopbeep2(65,1)
+	bopbeep(81,1)
+	bopbeep2(65,1)
+	bopbeep2(97,1)
+	
+	bopbeep2(161,-1)
+	bopbeep2(193,-1)
+	
+	bruhp(133,-1)
+	bruhp(149,1)
+	bruhp(165,-1)
+	bruhp(181,1)
+	
+	fuck(140.5)
+	fuck(156.5)
+	fuck(172.5)
+	fuck(188.5)
+	
+	
+	--wiggle(31.5-0.25, 3, 0.5, CubicS, 100, 'bumpyx')
+	--wiggle(129.5-0.25, 3, 0.5, CubicS, 100, 'bumpyx')
+	--wiggle(222.5-0.25, 4, 0.5, CubicS, 100, 'bumpyx')
+	
+	wiggle(31.5-0.25, 3, 0.5, CubicS, -50, 'movex')
+	wiggle(129.5-0.25, 3, 0.5, CubicS, 50, 'movex')
+	wiggle(222.5-0.25, 4, 0.5, CubicS, -50, 'movex')
+	
+	wiggle(31.5-0.25, 3, 0.5, CubicS, 100, 'tipsy')
+	wiggle(129.5-0.25, 3, 0.5, CubicS, -100, 'tipsy')
+	wiggle(222.5-0.25, 4, 0.5, CubicS, 100, 'tipsy')
+	
+	wiggle(31.5-0.25, 3, 0.5, CubicS, 20, 'bgrotz2')
+	wiggle(129.5-0.25, 3, 0.5, CubicS, -20, 'bgrotz2')
+	wiggle(222.5-0.25, 4, 0.5, CubicS, 20, 'bgrotz2')
+	
+	ease2(196,2,CubicS,100,'bgzoom')
+	
+	ease2(196,1,CubicS,0.75,'xmod')
+	ease2(196,1,CubicS,50,'centered')
+	ease2(196,1,CubicS,200,'zoom')
+	ease2(196,1,CubicS,-100,'drunk')
+	
+	add2(101,1,CubicS,-90,'bgrotz2')
+	add2(103,1,CubicS,-90,'bgrotz2')
+	add2(105,1,CubicS,-90,'bgrotz2')
+	add2(107,1,CubicS,-90,'bgrotz2')
+	add2(109,1,CubicS,-90,'bgrotz2')
+	add2(111,1,CubicS,-90,'bgrotz2')
+	add2(113,1,CubicS,-90,'bgrotz2')
+	add2(115,1,CubicS,-90,'bgrotz2')
+	
+	set{116,0,'bgrotz2',0,'rotationz2'}
+	
+	add2(101,1,CubicS,-90,'rotationz2')
+	add2(103,1,CubicS,-90,'rotationz2')
+	add2(105,1,CubicS,-90,'rotationz2')
+	add2(107,1,CubicS,-90,'rotationz2')
+	add2(109,1,CubicS,-90,'rotationz2')
+	add2(111,1,CubicS,-90,'rotationz2')
+	add2(113,1,CubicS,-90,'rotationz2')
+	add2(115,1,CubicS,-90,'rotationz2')
+	
+	ease{116,12,ExpoI,500,'zoom'}
+	ease{127,1,flip(SineS),360*10,'rotationz2'}
+	ease2(127,1,CubicS,40,'reverse')
+	ease{128,2,linear,0,'reverse',100,'zoom'}
+	
+	--idrop(117)
+	--idrop(119)
+	--idrop(121)
+	--idrop(123)
+	--idrop(125)
+	
+	local f = 1
+	for i =1, table.getn(finale_kick) do
+	local beat = finale_kick[i][1]
+	local col = finale_kick[i][2]
+		if col == 0 then
+		ease2(beat,1,Smooth,100,'invert')
+		elseif col == 3 then
+		ease2(beat,1,Smooth,0,'invert')
+		end
+		ease{beat,2,flip(ExpoO),-200,'tiny'}
+		ease{beat,2,flip(ExpoO),100*f,'tipsy'}
+		ease{beat,2,flip(ExpoO),50,'brake'}
+		ease{beat,2,flip(ExpoO),250,'z'}
+		ease{beat,2,flip(ExpoO),20,'bgkick'}
+		--add{beat,2,flip(ExpoO),50,'bgzoom'}
+		
+	f = f*-1
+	end
+	
+	ease2(227.5,1,ExpoS,0,'quaddiffuse')
+	
+	
+	ease{116,12,ExpoI,500,'zoom'}
+	
+	ease{222.5,3,ExpoI,700,'bgzoom'}
+	
+	ease2(224,0.5,CubicS,100,'flip')
+	ease2(224.5,0.5,CubicS,0,'flip')
+	ease2(225,0.5,CubicS,100,'flip')
+	ease2(225.5,0.5,CubicS,0,'flip')
+	
+	
+	--ease{222.5,3,linear,500,'zoom'}
+	ease{222.5,3,SineI,50,'reverse'}
+	
+	ease{226,1,flip(ExpoO),400,'zoom'}
+	ease{226.5,1,flip(ExpoO),400,'zoom'}
+	
+	ease2(227.5,0.5,ExpoS,500,'zoom')
+	ease2(227.5,2,ExpoS,180,'rotationz2')
+	
+	ease{196,28,linear,360,'bgrotz'}
+	
+	ease2(99,1,ExpoS,100,'centered')
+	ease2(99,1,ExpoS,100,'reverse',2)
+	ease2(99,1,ExpoS,100,'dark',2)
+	ease2(127,1,ExpoS,0,'centered')
+	ease2(127,1,ExpoS,0,'dark')
+	--ease2(116,1,ExpoS,0,'flip')
+	
+	func {132, 196-132, function(beat, poptions)
+	local sin = math.sin(beat*math.pi*0.0125)
+	local cos = math.cos(beat*math.pi*0.0125)
+	
+	for pn = 1, 2 do
+			P[pn]:SetNumPathGradientPoints(0,2)
+			P[pn]:SetPathGradientPoint(0, 0, 0)
+			P[pn]:SetPathGradientColor(0, 0, 1*sin,1,1*cos, 1)
+			
+			P[pn]:SetNumPathGradientPoints(1,2)
+			P[pn]:SetPathGradientPoint(0, 1, 0)
+			P[pn]:SetPathGradientColor(0, 1, 1,1*sin,1*cos, 1)
+			
+			P[pn]:SetNumPathGradientPoints(2,2)
+			P[pn]:SetPathGradientPoint(0, 2, 0)
+			P[pn]:SetPathGradientColor(0, 2, 1*cos,1,1*sin, 1)
+			
+			P[pn]:SetNumPathGradientPoints(3,2)
+			P[pn]:SetPathGradientPoint(0, 3, 0)
+			P[pn]:SetPathGradientColor(0, 3, 1*sin,1*cos,1, 1)
+	end
+	
+	end}
+	
+	local f = 1
+	for i =1, table.getn(poppin) do
+	local beat = poppin[i][1]
+	local col = poppin[i][2]
+		if col == 0 then
+		ease{beat,1,flip(CubicO),100,'arrowpath0'}
+		elseif col == 1 then
+		ease{beat,1,flip(CubicO),100,'arrowpath1'}
+		elseif col == 2 then
+		ease{beat,1,flip(CubicO),100,'arrowpath2'}
+		elseif col == 3 then
+		ease{beat,1,flip(CubicO),100,'arrowpath3'}
+		end
+		
+		ease{beat,1,flip(ExpoO),5000,'arrowpathsize'}
+		
+		ease{beat,1,flip(ExpoO),100*f,'shake'}
+		ease{beat,1,flip(ExpoO),10,'spiralx'}
+		ease{beat,1,flip(ExpoO),20*f,'bgshake'}
+		
+	f = f*-1
+	end
+	
+	set{132,50,'arrowpathdrawsize',250,'arrowpathdrawsizeback'}
+	
+	ease2(196,1.5,flip(QuartS),-360,'rotationz2')
+	
+	set{226,100,'disablemines'}
+	
+	
+end)"
+Type = "ActorFrame"
+><children>
+	
+	<Layer Type="ActorFrameTexture" InitCommand="%xero.aft" Name="WarpAft" />
+	<Layer Type="Sprite" Frag="shaders/warp.frag" InitCommand="%xero.sprite" Name="WarpSprite"/>
+	
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	
+	
+	<Layer
+    Type="Quad"
+	Name = "BlackQuad"
+    InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1"
+	/>
+	
+	<Layer Type="ActorFrameTexture" InitCommand="%xero.aft" Name="VhsAft" />
+	<Layer Type="Sprite" Frag="shaders/vhs.frag" InitCommand="%xero.sprite" Name="VhsSprite"/>
+	
+	
+</children></Mods>

@@ -1,0 +1,31 @@
+c2l mod 
+----------
+[x] [ ] 808s - perc_main 0 (all holds)
+[x] [ ] kicks - perc_main 1
+[x] [ ] barks - perc_main 2
+[x] [ ] hats - perc_main 3 (tap = big, mine = small, roll = big to small on 1/8 notes)
+
+[x] [ ] cello - cello 0-3, all holds, column represents pitch
+
+[x] [ ] pizz strings - strings 3
+[x] [ ] string/choral stabs - strings 2
+[x] [ ] high long beeps - strings 1 (all holds)
+[x] [ ] crashes - strings 0
+
+[x] [ ] noise percussion -- noise 0-3, all holds, column represents intensity
+
+[x] [ ] scrape - ear_candy 0 (all holds)
+[x] [ ] zap sound - ear_candy 1 (all holds)
+[x] [ ] "AAHHHH!" - ear_candy 2 (all holds)
+[x] [ ] weird sounds during long high note - ear_candy 3 (hold in, roll out)
+
+-- no c2ls for these prolly
+    [ ] xylophone restating the melody
+    [ ] main vocals
+
+
+		if note[COL] == 0 then
+		elseif note[COL] == 1 then
+		elseif note[COL] == 2 then
+		elseif note[COL] == 3 then
+		end

@@ -1,0 +1,674 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 4 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+	-- stolen code snippet
+	function maprange( a1, a2, b1, b2, s )
+    	return b1 + ((s-a1)*(b2-b1))/(a2-a1)
+	end
+	-- your code goes here here:
+	local p1defx = P1:GetX()
+	local p2defx = P2:GetX()
+	local p1defy = P1:GetY()
+
+	definemod {'centeredx', function(percent)
+		for pn = 1,2 do
+			local defX = 0
+			local player = P1
+			if (pn == 1) then
+				defX = p1defx
+			else
+				defX = p2defx
+				player = P2
+			end
+			local newx = maprange(0, 100, defX, scx, percent)
+			--SCREENMAN:SystemMessage(newx..scx)
+			player:x(newx)
+		end
+	end}
+	definemod {'screenrotationx', function(percent)
+		SCREENMAN:GetTopScreen():rotationx(percent)
+	end}
+
+	definemod {'judgmenty', function(percent, pn)
+		if PJ[pn] then 
+			PJ[pn]:y(scy-percent*64/100)
+		end
+	end}	
+	definemod {'comboy', function(percent, pn)
+		if PC[pn] then
+			PC[pn]:y(scy-percent*64/100)
+		end
+	end}
+	local allplr = {1,2,3,4}
+
+	bgquad:xywh(scx, scy, sw+200, sh+100)
+	bgquad:diffuse(0, 0.09, 0.12, 1)
+
+	lowlightquad:xywh(scx, scy, 320, sh+100)
+	lowlightquad:diffuse(0, 0.2, 0.35, 1)
+
+	midlightquad:xywh(scx, scy, 192, sh+100)
+	midlightquad:diffuse(0, 0.49, 0.65, 1)
+
+	highlightquad:xywh(scx, scy, 64, sh+100)
+	highlightquad:diffuse(0, 0.65, 1, 1)
+
+	P3:SetAwake(true)
+	P3:SetInputPlayer(0)
+	PP[3]:hidden(1)
+
+	P4:SetAwake(true)
+	P4:SetInputPlayer(0)
+	PP[4]:hidden(1)
+
+	--GAMESTATE:LaunchAttack(0, 400, 'scalable')
+
+	setdefault {2, 'xmod', 100, 'overhead', 100, 'dizzyholds', 100, 'modtimer', 100, 'stealthpastreceptors', plr=allplr}
+	set {0, 0, 'centeredx'}
+	add {0, 1, inQuad, 50, 'reverse', 100, 'beat'}
+	add {0.5, 1, outBounce, 50, 'reverse'}
+	ease {0, 1, inQuad, 1256, 'confusionxoffset'}
+	set {2, 0, 'confusionxoffset'}
+
+	ease {8, 1, outExpo, 100, 'tipsy'}
+	ease {8.5, 0.5, inExpo, 0, 'tipsy'}
+	ease {10, 1, outExpo, -100, 'tipsy'}
+	ease {10.5, 0.5, inExpo, 0, 'tipsy'}
+	ease {11.5, 1, outQuad, -628, 'confusionoffset'}
+	ease {11.5, 1, bounce, -150, 'movex0'}
+	set {13, 0, 'confusionoffset'}
+
+	ease {12.5, 0.5, outCubic, 40, 'skewx', 80, 'reverse'}
+	ease {13, 0.5, outCubic, -40, 'skewx', 60, 'reverse'}
+	ease {14, 0.5, outCubic, 40, 'skewx', 40, 'reverse'}
+	ease {15, 0.5, outCubic, -40, 'skewx', 20, 'reverse'}
+	ease {16, 0.5, outCubic, 0, 'skewx', 0, 'reverse'}
+
+	ease {16, 1, outExpo, 100, 'tipsy'}
+	ease {16.5, 0.5, inExpo, 0, 'tipsy'}
+	ease {18, 1, outExpo, -100, 'tipsy'}
+	ease {18.5, 0.5, inExpo, 100, 'tipsy'}
+	ease {19, 0.5, inExpo, 0, 'tipsy'}
+
+	set{20, 100, 'reversetype'}
+	ease {20.5, 2, outQuad, -360, 'rotationy', 628, 'confusionyoffset'}
+	ease {22, 0.5, outElastic, 100, 'invert'}
+	ease {23, 0.5, outElastic, 0, 'invert'}
+
+	ease {24, 1, outExpo, 100, 'tipsy'}
+	ease {24.5, 0.5, inExpo, 0, 'tipsy'}
+	ease {26, 1, outExpo, -100, 'tipsy'}
+	ease {26.5, 0.5, inExpo, 100, 'tipsy'}
+	ease {27, 0.5, inExpo, 0, 'tipsy'}
+
+	ease {28.5, 0.25, outQuad, -40, 'skewy'}
+	ease {28.75, 0.25, inQuad, 0, 'skewy'}
+	ease {29, 1, outElastic, 100, 'reverse3'}
+	ease {30, 1, outElastic, 100, 'reverse2'}
+	ease {31, 1, outElastic, 100, 'reverse1'}
+	ease {32, 1, outElastic, 100, 'reverse0'}
+	for c=0,3 do
+		set {33, 0, 'reverse'..c}
+	end
+	set {33, 100, 'reverse'}
+
+	ease {32, 1, linear, 0, 'beat', 100, 'arrowpath'}
+	set {32, 100, 'arrowpathdrawdistanceback', 50, 'drawdistanceback', 25, 'squareoffset'}
+	set {32, 150, 'arrowpathgrain'}
+	set {112, 0, 'arrowpathgrain'}
+	ease {32, 1, linear, 2512, 'confusionyoffset'}
+	set {33.5, 0, 'confusionyoffset'}
+
+	local value = 100
+	for i=32,64,1 do 
+		ease {i, 1, flip(inExpo), value, 'square', plr=1}
+		ease {i, 1, flip(inExpo), -value, 'square', plr=2}
+		value = value*-1
+	end
+	ease {37, 1, bounce, -100, 'movey2'}
+	ease {37, 1, outQuad, 628, 'confusionoffset2'}
+	ease {38, 1, bounce, -100, 'movey3'}
+	ease {38, 1, outQuad, 628, 'confusionoffset3'}
+	ease {39, 1, bounce, -100, 'movey0'}
+	ease {39, 1, outQuad, 628, 'confusionoffset0'}
+	ease {40, 1, bounce, -100, 'movey1'}
+	ease {40, 1, outQuad, 628, 'confusionoffset1'}
+	
+
+	local valuetwo = 50
+	for i=44.5,46.5,0.5 do
+		ease {i, 0.5, flip(inExpo), valuetwo, 'tipsy'}
+		valuetwo = valuetwo*-1
+	end
+	for i=53,55,1 do
+		ease {i, 0.5, flip(inExpo), -50, 'movey0', -50, 'movey1'}
+		ease {i+0.5, 0.5, flip(inExpo), -50, 'movey3', -50, 'movey2'}
+	end
+
+	set {60.5, -25, 'movey'}
+	set {61, -50, 'movey'}
+	set {61.5, -25, 'movey'}
+	set {62, -50, 'movey'}
+	set {62.5, -75, 'movey'}
+	set {63, -50, 'movey'}
+	set {63.5, 0, 'movey'}
+
+
+	set {64, 50, 'bumpyxoffset', 100, 'orient', 100, 'bumpyxperiod', -33, 'bumpyx'}
+	ease {62, 2, inExpo, 0, 'reverse'}
+	value = 33
+	ease {64, 47, linear, 6000, 'bumpyxoffset'}
+	for i=71.5,79,1 do
+		--ease {i, 0.5, flip(linear), 628, 'confusionxoffset'}
+		
+		for j=i,i+0.5,0.25 do
+			ease {j, 0.15, outQuint, value, 'bumpyx'}
+			value = value*-1
+		end
+				
+	end
+
+	for i=112,240,1 do
+
+		func {i, 1, outCubic, 340, 320, function(p)
+			lowlightquad:zoomx(p)
+		end}
+		func {i+0, 1.5, outCubic, 212, 192, function(p)
+			midlightquad:zoomx(p)
+		end}	
+		func {i+0, 1.5, outCubic, 84, 64, function(p)
+			highlightquad:zoomx(p)
+		end}
+		
+	end
+	
+	set {68, -50, 'squareperiod'}
+	ease {70, 1.5, flip(linear), 1000, 'squareoffset', 100, 'square'}
+
+	ease {80, 1, linear, 2, 'xmod'}
+
+	add {83.5, 0.25, outBack, 100, 'square'}
+	add {83.75, 0.75, inQuad, -100, 'square'}
+	add {87.5, 0.25, outBack, -100, 'square'}
+	add {87.75, 0.75, inQuad, 100, 'square'}
+	add {91.5, 0.25, outBack, 100, 'square'}
+	add {91.75, 0.75, inQuad, -100, 'square'}
+
+	add {99.5, 0.25, outBack, 100, 'square'}
+	add {99.75, 0.75, inQuad, -100, 'square'}
+	add {103.5, 0.25, outBack, -100, 'square'}
+	add {103.75, 0.75, inQuad, 100, 'square'}
+	add {107.5, 0.25, outBack, 100, 'square'}
+	add {107.75, 0.75, inQuad, -100, 'square'}
+	
+	
+
+	ease {111, 1, outExpo, 0, 'bumpyx', 0, 'orient', 100, 'spiralholds', 1.5, 'xmod', 100, 'centeredx', 100, 'reverse'}
+	
+	set {111, 0, 'drawsize', 0, 'arrowpathdrawsize', 200, 'grain'}
+	set {176, 0, 'grain'}
+
+	value = 100
+
+	for b=111,175,1 do 
+		--ease {b, 1, pop, value, 'movex'}
+		value = value*-1
+		--SCREENMAN:SystemMessage(value)
+		func {b, 1, flip(inExpo), 0, value, function(p) 
+
+			for pn = 1,2 do
+				for i=0,10,1 do
+					--local h = math.cos(i*math.pi/4)*p*10-p*10+i*10
+					local h = 0
+					local hOffset = 0
+					local hPoints = 20
+					if (i%4 == 2 or (i+2)%4 == 2) then
+						h = 50
+					elseif (i > hPoints) then
+						h = hOffset+hPoints*50
+					end
+					local splintensityx = p
+					local splintensityz = 50
+					local splinx = splintensityx
+					if i%4 < 2 then
+						splinx = 0
+					end
+					local splinz = -splintensityz
+					if (i+1)%4 < 2 then
+						splinz = splintensityz
+					end
+					P[pn]:SetXSpline(
+						i,
+						-1,
+						splinx,
+						--math.sin(i*(math.pi/4))*p*10,
+						i*50,
+						-1
+					)
+					P[pn]:SetYSpline(
+						i,
+						-1,
+						h,
+						i*50,
+						-1
+					)
+					P[pn]:SetZSpline(
+						i,
+						-1,
+						splinz,
+						--math.cos(i*math.pi/4)*p*10-p*10,
+						i*50,
+						-1
+					)
+				end
+			end
+		end}
+	end
+	ease {176, 1, linear, 100, 'splinexreset', 100, 'splineyreset', 100, 'splinezreset', 0, 'rotationy', 50, 'movey'}
+	ease {176, 1, inExpo, 0, 'rotationy', 0, 'rotationx', 0, 'confusionyoffset', 0, 'confusionxoffset'}
+
+	ease {110, 1, inExpo, -78.5, 'confusionxoffset', 20, 'rotationx', -25, 'movey', -20, 'flip'}
+	ease {110, 1, inExpo, 100, 'arrowpath', plr=1}
+	set {110, 0, 'rotationy'}
+	set {112, 200, 'beat', 50, 'beatperiod'}
+	value = 45
+	value2 = 100*value*math.pi/180
+	for i=110,175,1 do
+		-- spin to the beat
+		ease {i+0.5, 0.5, inExpo, value/4, 'rotationy'}
+		add {i+1, 0.5, outElastic, value/4, 'rotationy'}
+		--ease {i+0.2, 0.5, outExpo, 0, 'rotationy', 0, 'confusionyoffset'}
+		
+		value = value*-1
+		value2 = value2*-1
+	end
+
+	set {110.5, 90, 'zoomy'}
+	for i=111,206,1 do
+		-- bounce to the beat
+		--add {i, 1, bounce, -0.2, 'xmod'}
+		add {i, 1, bounce, -50, 'movey', 20, 'zoomy', -20, 'zoomx'}
+		
+		if i >= 176 and i < 206 then
+			ease {i, 0.5, flip(outQuad), value*2, 'bumpyx'}
+			ease {i, 1, bounce, value/2, 'rotationz'}
+		end
+		value = value*-1
+	end
+	ease {176, 1, outExpo, 0, 'rotationy', 0, 'flip', 2, 'xmod', 0, 'reverse'}
+	ease {207, 1, linear, 100, 'zoomy'}
+	func {111, function()
+		-- fnf column coloring
+		for pn = 1,2 do
+			for col = 0,3 do
+				P[pn]:SetNumStealthGradientPoints(col, 1)
+				P[pn]:SetStealthGradientPoint(0,col,1)
+			end
+			P[pn]:SetStealthGradientColor(0,0,1,0,1,1)
+			P[pn]:SetStealthGradientColor(0,1,0,1,1,1)
+			P[pn]:SetStealthGradientColor(0,2,0,1,0,1)
+			P[pn]:SetStealthGradientColor(0,3,1,0,0,1)
+		end
+	end}
+	set {113, 100, 'holdtiny', 75, 'holdstealth', plr=2}
+	for i=113,202,4 do 
+		-- funny style swapping
+		ease {i, 0.5, outCubic, 628, 'confusionoffset', 100, 'holdtiny', 50, 'stealth', 85, 'holdstealth', 100, 'straightholds'}
+		add {i, 0.5, outCubic, 20, 'flip'}
+		ease {i, 1, flip(linear), 100, 'arrowpath',plr=1}
+		ease {i+2, 0.5, outCubic, 0, 'confusionoffset', 0, 'holdtiny', 0, 'stealth', 0, 'holdstealth', 0, 'straightholds'}
+		add {i+2, 0.5, outCubic, -20, 'flip'}
+		ease {i+2, 1, flip(linear), 100, 'arrowpath',plr=1}
+	end
+	ease {206, 2, outBack, 360, 'rotationy', -66, 'rotationx', 0, 'spiralholds', 200, 'movey', 0, 'beat', 100, 'reverse', 150, 'holdtiny', plr=allplr}
+	ease {206, 2, outBack, 100, 'arrowpath', plr=1}
+	ease {206, 2, instant, 50, 'arrowpathsize', 0, 'arrowpathgranulate', -100, 'arrowpathdrawdistanceback', plr=1}
+	set {206, 30, 'arrowpathdrawsize', 30, 'drawsize', 50, 'stealth', plr=allplr}
+
+	ease {206, 2, linear, 70, 'tiny', 100, 'holdstealth', 13, 'movez', 200, 'tinyz', 100, 'dark', 0, 'arrowpath', plr=3}
+	
+	ease {206, 2, linear, 100, 'tiny', 100, 'holdstealth', 13, 'movez', 100, 'tinyz', 100, 'dark', 0, 'arrowpath', plr=4}
+	ease {206, 2, linear, -20, 'tiny', 100, 'holdstealth', -8, 'movez', 200, 'tinyz', 100, 'dark', 0, 'arrowpath', plr=1}
+	
+	func {206, function()
+		PP[3]:hidden(0)
+		PP[4]:hidden(0)
+	end}
+
+	-- Set stealth colors
+	func {206, function()
+		for pn = 1,4 do
+		local cc = {
+			[0] = {0.0, 0.7, 0.0},
+			[1] = {1.0, 0.0, 0.0},
+			[2] = {1.0, 1.0, 0.0},
+			[3] = {0.0, 0.0, 1.0}
+		}
+			for col = 0,3 do
+				P[pn]:SetNumStealthGradientPoints(col, 3)
+				P[pn]:SetStealthGradientPoint(0, col, 1)
+				P[pn]:SetStealthGradientPoint(1, col, 9)
+				P[pn]:SetStealthGradientPoint(2, col, 11)
+				
+				if pn == 2 then
+					P[pn]:SetStealthGradientColor(0, col, cc[col][1], cc[col][2], cc[col][3], 1)
+					P[pn]:SetStealthGradientColor(1, col, cc[col][1], cc[col][2], cc[col][3], 1)
+					P[pn]:SetStealthGradientColor(2, col, cc[col][1], cc[col][2], cc[col][3], 0)
+				elseif pn == 3 then
+					P[pn]:SetStealthGradientColor(0, col, 0, 0, 0, 1)
+					P[pn]:SetStealthGradientColor(1, col, 0, 0, 0, 1)
+					P[pn]:SetStealthGradientColor(2, col, 0, 0, 0, 0)
+				else 
+					P[pn]:SetStealthGradientColor(0, col, 1, 1, 1, 1)
+					P[pn]:SetStealthGradientColor(1, col, 1, 1, 1, 1)
+					P[pn]:SetStealthGradientColor(2, col, 1, 1, 1, 0)
+				end
+			end	
+		end
+	end}	
+	-- Set arrowpath colors
+	func {206, function()
+		for pn = 1,2 do
+		local cc = {
+			[0] = {0.0, 0.7, 0.0},
+			[1] = {1.0, 0.0, 0.0},
+			[2] = {1.0, 1.0, 0.0},
+			[3] = {0.0, 0.0, 1.0}
+		}
+			for col = 0,3 do
+				P[pn]:SetNumPathGradientPoints(col, 3)
+				P[pn]:SetPathGradientPoint(0, col, 1)
+				P[pn]:SetPathGradientPoint(1, col, 5)
+				P[pn]:SetPathGradientPoint(2, col, 7)
+				
+
+				P[pn]:SetPathGradientColor(0, col, 1, 1, 1, 0.5)
+				P[pn]:SetPathGradientColor(1, col, 1, 1, 1, 0.5)
+				P[pn]:SetPathGradientColor(2, col, 1, 1, 1, 0)
+			end	
+		end
+	end}
+
+
+	measureline:xywh(0,200,256,4)
+	measurelines:hidden(1)
+
+	playfieldframe:xy(scx,scy)
+	playfieldframe:z(-30)
+
+	local offset = -sh
+	measurelines:SetDrawFunction(function(self)
+		for i=1,10 do
+			measureline:y(i*96+offset)
+			if i%2 == 0 then
+				measureline:diffuse(1,1,1,0.2)
+			else 
+				measureline:diffuse(1,1,1,0.7)
+			end
+			measureline:Draw()
+		end
+	end)
+	ease {206, 2, linear, 3, 'xmod', plr=allplr}
+	for i=206,238,1 do
+		func {i, 1, linear, -96, 96, function(p)
+			offset = p-sh
+		end}
+	end
+	SCREENMAN:GetTopScreen():fov(90)
+	for i=206,236,2 do
+
+
+		func {i+0.5, 0.5, inExpo, 0, -50, function(p)
+			SCREENMAN:GetTopScreen():x(p)
+		end}		
+		func {i+1, 1, outExpo, -50, 0, function(p)
+			SCREENMAN:GetTopScreen():x(p)
+		end}		
+		func {i+1.5, 0.5, inExpo, 0, 50, function(p)
+			SCREENMAN:GetTopScreen():x(p)
+		end}		
+		func {i+2, 1, outExpo, 50, 0, function(p)
+			SCREENMAN:GetTopScreen():x(p)
+		end}
+
+	end
+	func {238, 1, inExpo, p1defy-50, p1defy, function(p)
+		PJ[2]:y(p)
+		PC[2]:y(p)
+	end}
+
+	playfieldoutline:xywh(0, 0, 266, sh*2)
+	playfieldoutline:diffuse(1,1,1,0)
+	playfieldquad:xywh(0, 0, 256, sh*2)
+	playfieldquad:diffuse(0, 0, 0, 0)
+	playfieldframe:fov(45)
+	func {206, 2, outQuad, 0, 1, function(p)
+		measurelines:hidden(0)
+		playfieldquad:diffuse(0,0,0,p)
+		playfieldoutline:diffuse(1,1,1,p)
+		playfieldframe:rotationx(p*-66.5)
+		playfieldframe:y(scy*p)
+		measurelines:diffuse(1,1,1,p)
+	end}
+
+	func {206, 2, outBack, p1defx, scx-220, function(p)
+		PJ[1]:x(p)
+		PC[1]:x(p)
+	end}
+	func {206, 2, outBack, p2defx, scx+220, function(p)
+		PJ[2]:x(p)
+		PC[2]:x(p)
+	end}
+	func {206, 2, outBack, 0, 75, function(p)
+		for pn=1,2 do
+			if pn==1 then
+				PJ[pn]:rotationy(-p)
+				PC[pn]:rotationy(-p)
+			else 
+				PJ[pn]:rotationy(p)
+				PC[pn]:rotationy(p)
+			end
+		end
+	end}	
+	func {206, 2, outBack, 0, 0, function(p)
+		for pn=1,2 do
+			PJ[pn]:rotationx(p)
+			PC[pn]:rotationx(p)
+		end
+	end}
+	func {206, 2, outBack, 0, 50, function(p)
+		for pn=1,2 do
+			if pn == 1 then
+				PJ[pn]:rotationz(-p)
+				PC[pn]:rotationz(-p)
+			else 
+				PJ[pn]:rotationz(p)
+				PC[pn]:rotationz(p)
+			end
+		end
+	end}
+
+	ease {211.5, 1, flip(linear), 20, 'bumpyx2', 200, 'bumpyxoffset2', plr=allplr}
+	ease {219.5, 1, flip(linear), 20, 'bumpyx2', 200, 'bumpyxoffset2', plr=allplr}
+	ease {227.5, 1, flip(linear), 20, 'bumpyx0', 200, 'bumpyxoffset0', plr=allplr}
+	ease {232, 1, flip(linear), 20, 'bumpyx3', 200, 'bumpyxoffset3', plr=allplr}
+	ease {234, 1, flip(linear), 20, 'bumpyx3', 200, 'bumpyxoffset3', plr=allplr}
+	ease {238, 2, flip(linear), 20, 'bumpyx3', 400, 'bumpyxoffset3', plr=allplr}
+	
+	
+	ease {233.5, 0.5, outExpo, 100, 'invert', plr=allplr}
+	ease {234, 0.5, outExpo, 0, 'invert', plr=allplr}
+	for i=235.5,237.5,1 do
+		ease {i, 0.5, outExpo, 100, 'invert', plr=allplr}
+		ease {i+0.5, 0.5, outExpo, 0, 'invert', plr=allplr}
+	end
+
+	ease {238, 2, outBack, 0, 'rotationy', 0, 'rotationx', 0, 'movey', 0, 'reverse', 2, 'xmod', plr=allplr}
+	ease {238, 1, linear, 0, 'stealth', plr={1,2}}
+	ease {238, 1, linear, 100, 'stealth', plr={3,4}}
+	set {238, 0, 'drawsize', 0, 'arrowpathdrawsize'}
+	reset {240, plr=allplr, exclude={'centeredx', 'xmod'}}
+	func {240, function()
+		PP[3]:hidden(1)
+		PP[4]:hidden(1)
+	end}
+	func {236, 8, inSine, scy, sh*7, function(p)
+		playfieldframe:y(p)
+	end}
+	func {236, 8, inSine, 0, -180, function(p)
+		playfieldframe:rotationy(p)
+	end}
+	for i=238,304 do
+		func {i, 1, linear, 64, -64, function(p)
+			offset = p-sh
+		end}
+	end
+	func {240, function(p)
+		SCREENMAN:GetTopScreen():vibrate()
+		SCREENMAN:GetTopScreen():effectmagnitude(30,10,0)
+		for pn = 1,2 do
+			PJ[pn]:rotationz(0)
+			PC[pn]:rotationz(0)
+		end
+	end}
+	func {240.5, function(p)
+		SCREENMAN:GetTopScreen():stopeffect()
+	end}
+
+	value = 100*32/40
+	local bp = 200*32/40
+	local oofset = ((bp/100)+1)*math.pi*8
+	set {240, oofset, 'bumpyxoffset', bp, 'bumpyxperiod', 100, 'arrowpath', 100, 'arrowpathdrawdistanceback'}
+	
+	for b=240,288,16 do
+		for i=b,b+8,4 do
+			ease {i, 1, outExpo, value, 'bumpyx'}
+			ease {i+1, 0.5, inExpo, 0, 'bumpyx'}
+			ease {i+1.5, 0.5, outExpo, -value/2, 'bumpyx'}
+			ease {i+2, 1, inQuad, 0, 'bumpyx'}
+			value = value*-1
+		end
+		ease {b+12, 1, outExpo, value, 'bumpyx'}
+		value = value*-1
+		for i=b+14,b+15.5,0.5 do
+			ease {i, 0.5, outExpo, value, 'bumpyx'}
+			value = value*-1
+		end
+	end
+
+	ease {240, 1, outElastic, 100, 'alternate'}
+	ease {256, 2, outElastic, 100, 'split', 100, 'invert'}
+	ease {272, 2, outElastic, 0, 'alternate', 100, 'cross', 0, 'split', 0, 'invert', 100, 'movex1', -200, 'movex3', 100, 'movex2'}
+	value = -15
+	for i=272,296,2 do
+		add {i+0.5, 0.5, inExpo, -100, 'mini'}
+		add {i+1, 0.5, inExpo, 100, 'mini'}
+		value = value*-1
+		ease {i+0.5, 0.5, inQuint, value, 'rotationz'}
+		ease {i+1, 0.5, outQuint, 0, 'rotationz'}
+	end
+	set {272, -200, 'beat'}
+	ease {288, 12, linear, 50, 'movex0', -50, 'movex3', 50, 'movex1', -50, 'movex2'}
+	ease {288, 12, linear, 0, 'cross', 100, 'centered', 50, 'reverse0', 100, 'reverse2', 50, 'reverse3', -100, 'movey2', 100, 'movey1', -100, 'arrowpathdrawdistanceback', -70, 'drawdistanceback'}
+	ease {288, 16, linear, 100, 'judgmenty', -100, 'comboy', 0, 'beat', 300, 'arrowpathwidth', 1.5, 'xmod'}
+	func {288, 16, linear, 0, 30, function(p)
+		SCREENMAN:GetTopScreen():vibrate()
+		SCREENMAN:GetTopScreen():effectmagnitude(p, p, 0)
+	end}
+	func {288, 16, linear, 0, 30, function(p)
+		for pn=1,2 do
+			for i=0,5 do
+				P[pn]:SetXSpline(
+					i,
+					0,
+					-p*i*50,
+					i*1500,
+					-1
+				)
+				P[pn]:SetXSpline(
+					i,
+					3,
+					p*i*50,
+					i*1500,
+					-1
+				)
+			end
+		end
+	end}
+	func {304, 68, function(p)
+		for pn=1,2 do
+			for i=0,5 do
+				P[pn]:SetXSpline(
+					i,
+					0,
+					-30*i*50,
+					i*1500,
+					-1
+				)
+				P[pn]:SetXSpline(
+					i,
+					3,
+					30*i*50,
+					i*1500,
+					-1
+				)
+			end
+		end
+	end}
+	func {304, function()
+		SCREENMAN:GetTopScreen():stopeffect()
+	end}
+	set {304, 100, 'beatyperiod1', 100, 'beatyperiod2', 100, 'beatperiod0', 100, 'beatperiod3', 0, 'beat'}
+	set {304, 100, 'beat0', 100, 'beaty1', -100, 'beaty2', -100, 'beat3', -70, 'drawdistanceback', 0, 'bumpyx', 100, 'spiralholds'}
+
+	for i=304,376,4 do
+		add {i, 1, inExpo, -100, 'movey1', 100, 'movey2', -100, 'movex0', -100, 'movex1', 100, 'movex2', 100, 'movex3', 78.5, 'confusionoffset', 50, 'holdtiny', -100, 'judgmenty', 100, 'comboy'}
+		set {i+1, 100, 'beat0', 100, 'beaty1', -100, 'beaty2', -100, 'beat3'}
+		add {i+2, 1, inExpo, 100, 'movey1', -100, 'movey2', 100, 'movex0', 100, 'movex1', -100, 'movex2', -100, 'movex3', -78.5, 'confusionoffset', -50, 'holdtiny', 100, 'judgmenty', -100, 'comboy'}
+		set {i+3, -100, 'beat0', -100, 'beaty1', 100, 'beaty2', 100, 'beat3'}
+
+
+	end
+	for i = 0,3 do
+	end
+
+end)"
+Type = "ActorFrame", Name = "everything"
+><children>
+	<Layer Type = "Quad" Name = "bgquad" />
+	<Layer Type = "Quad" Name = "lowlightquad" />
+	<Layer Type = "Quad" Name = "midlightquad" />
+	<Layer Type = "Quad" Name = "highlightquad" />
+	<Layer Type = "ActorFrame" Name = "playfieldframe"> <children>
+		<Layer Type = "Quad" Name = "playfieldoutline" />
+		<Layer Type = "Quad" Name = "playfieldquad" />
+		<Layer Type = "ActorFrame" Name = "measurelines" ><children>
+			<Layer Type = "Quad" Name = "measureline" />
+		</children></Layer>
+	</children></Layer>
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PC[3]" />
+	<Layer Type = "ActorProxy" Name = "PC[4]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[3]" />
+	<Layer Type = "ActorProxy" Name = "PJ[4]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[3]" />
+	<Layer Type = "ActorProxy" Name = "PP[4]" />
+</children></Mods>

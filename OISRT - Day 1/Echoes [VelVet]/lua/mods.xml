@@ -1,0 +1,421 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+		self:fov(45)
+		func {0, function()
+    	for pn=1,2 do
+        local plr = P[pn]
+        --local pos = 0.25
+  	   --if pn == 2 then pos = 0.75 end
+       		if plr then plr:x(SCREEN_CENTER_X) end
+    end
+    end}
+	
+	function ease2(t)
+    	t[1] = t[1] - t[2]
+    	return ease(t)
+    end
+	echoes:xy(scx,scy)
+	sky:xy(scx,scy)
+	star:xy(scx,scy)
+	cloud:xy(scx/3,scy/4)
+	cloud2:xy(scx/0.75,scy/3.5)
+	black:diffuse(0,0,0,1)
+	star:basezoomx(0.5)
+	star:basezoomy(0.5)
+	black:zoomy(SCREEN_HEIGHT)
+	black:zoomx(SCREEN_WIDTH)
+	black:xy(scx,scy)
+	aux('centerx')
+	aux('echo')
+	aux('echoy')
+	aux('cloudy')
+	aux('cloudx')
+	aux('built')
+	aux('builtx')
+	aux('builty')
+	aux('built2')
+	node {'echo', function(p)
+		echoes:rotationx(p)
+    end}
+	node {'echoy', function(p)
+		echoes:y(scy+p)
+    end}
+	node {'cloudy', function(p)
+		cloud:y((scy/4)+p)
+		cloud2:y((scy/3.5)+p)
+    end}
+	node {'cloudx', function(p)
+		cloud:x((scx/3)+p)
+		cloud2:x((scx/0.75)+p)
+    end}
+	node {'built', function(p)
+		black:diffusealpha(1-p)
+    end}
+	node {'built2', function(p)
+		star:diffusealpha(1-p)
+    end}
+	node {'builtx', function(p)
+		star:x(scx+p)
+    end}
+	node {'builty', function(p)
+		star:y(scy+p)
+    end}
+
+	node {'x','centerx', function (x,centerx, pn) 
+	return x + scx * ((pn-1)%2 -0.5)*(1-centerx*0.01)
+	end, 'x'}
+	set{0, 3 , 'xmod'}
+	set{0, 1 , 'built2'}
+	set{0, -500 , 'cloudy'}
+	set{0, 495 , 'z'}
+	set{0, 100 , 'centerx'}
+	set{0, 100 , 'dizzyholds'}
+	set{0, 100 , 'centered'}
+	set{29, 0 , 'rotationy'}
+	set{29, 0 , 'confusionyoffset'}
+	set{48, 0 , 'rotationx'}
+	set{46, 1 , 'built'}
+	
+	set{48, 0 , 'confusionxoffset'}
+	
+	set{133, 0 , 'reverse'}
+	set{133, 0 , 'centered'}
+
+	set{133, 0 , 'rotationx'}
+	set{133, 0 , 'confusionxoffset'}
+	set{133, 0 , 'z'}
+	set{5.5, 0 , 'z'}
+	ease {0,1, outBack, 100, 'dark1',}
+	ease {2,1, outBack, 100, 'dark3',}
+	ease {4,1, outBack, 100, 'dark2',}
+	ease {5,1, outBack, 100, 'dark0',}
+	ease {6,1, outBack, 0, 'dark1',}
+	ease {7,1, outBack, 0, 'dark3',}
+	ease {8,1, outBack, 0, 'dark2',}
+	ease {10,1, outBack, 0, 'dark0',}
+	ease {11.5,1, outBack, 100, 'dark', plr = 2}
+	ease {11.5,1, outBack, 0, 'dark', plr = 2}
+	ease {11.5,1, outBack, 90, 'dark', plr = 1}
+
+	ease {46,2, outBack, 2.75, 'xmod',}
+	ease {46,2, outBack, 0, 'cloudy',}
+	ease {118,2, outBack, 500, 'cloudy',}
+	ease {202,2, outBack, -500, 'cloudy',}
+	ease {49,750, linear, 500, 'cloudx',}
+	ease {136,2, outBack, 0, 'cloudy',}
+	ease {46,2, outBack, 0, 'centered',}
+	ease {46,2, outBack, 0, 'dark',}
+	ease {46,2, outBack, 0, 'stealth',}
+	ease {46,2, outBack, 500, 'echoy',}
+	ease {120,2, outBack, 25, 'tornado',}
+	ease {119,2, outBack, 0, 'built',}
+	ease {119,2, outBack, 0, 'built2',}
+	ease {133,2, outBack, 0, 'tornado',}
+	ease {136,2, outBack, 1, 'built',}
+	ease {136,2, outBack, 1, 'built2',}
+	ease {202,1, outExpo, 0, 'echoy',}
+	ease {202,1, outExpo, 100, 'centered',}
+	ease {202,1, outExpo, 100, 'reverse',plr = 2}
+	ease {216,1, outExpo, 100, 'dark',}
+
+	ease {48,2, outBack, 0, 'centerx',}
+	ease {50,2, outBack, 200, 'centerx',}
+	ease {52,2, outBack, 0, 'centerx',}
+	ease2 {55.5,2, outBack, 100, 'centerx',}
+	ease {80,2, outBack, 100, 'centerx',}
+	ease {80,2, outBack, 25, 'pulse',}
+	ease {119,2, outBack, 0, 'pulse',}
+	ease {56,2, outBack, 200, 'centerx',}
+	ease {46,2, outBack, 0, 'reverse',}
+	ease2 {59.5,2, outBack, 100, 'centerx',}
+	ease {120,15, linear, 2000, 'centered2', 2000, 'movey',}
+	ease {133,1, outBack, 0, 'centered2', 0, 'movey',}
+	ease {59,2, outBack, 0, 'centerx',}
+	ease {60,2, outBack, 100, 'centerx',}
+	ease {61,2, outBack, 0, 'centerx',}
+	ease {62,2, outBack, 100, 'centerx',}
+	ease {63,2, outBack, 0, 'centerx',}
+	ease {65,2, outBack, 200, 'centerx',}
+	ease {67,2, outBack, 0, 'centerx',}
+	ease {69,2, outBack, 200, 'centerx',}
+	ease {70,2, outBack, 100, 'centerx',}
+	ease {73,2, outBack, 200, 'centerx',}
+	ease {73,2, outBack, 0, 'centerx',}
+	ease {74,2, outBack, 200, 'centerx',}
+	ease {75,2, outBack, 190, 'centerx',}
+	ease {75.5,2, outBack, 180, 'centerx',}
+	ease {76,2, outBack, 170, 'centerx',}
+	ease {76.5,2, outBack, 160, 'centerx',}
+	ease {77,2, outBack, 150, 'centerx',}
+	ease {77.5,2, outBack, 140, 'centerx',}
+	ease {78,2, outBack, 130, 'centerx',}
+	ease {78.5,2, outBack, 120, 'centerx',}
+	ease {79,2, outBack, 110, 'centerx',}
+	ease {80,2, outBack, 100, 'centerx',}
+	--------------------------------------
+	ease {75.5,2, outBack, 180, 'square',}
+	ease {76,2, outBack, -170, 'square',}
+	ease {76.5,2, outBack, 160, 'square',}
+	ease {77,2, outBack, -150, 'square',}
+	ease {77.5,2, outBack, 140, 'square',}
+	ease {78,2, outBack, -130, 'square',}
+	ease {78.5,2, outBack, 120, 'square',}
+	ease {79,2, outBack, -110, 'square',}
+	ease {79.5,2, outBack, 100, 'square',}
+	ease {80,2, outBack, 0, 'square',}
+	ease {137,1, outBack, 100, 'flip',}
+	ease {138,1, outBack, 0, 'flip',}
+	ease {140,1, outBack, 100, 'flip',}
+	ease {141,1, outBack, 0, 'flip',}
+	ease {143,1, outBack, 100, 'flip',}
+	ease {144,1, outBack, 0, 'flip',}
+	ease {145,1, outBack, 100, 'flip',}
+	ease {147,1, outBack, 0, 'flip',}
+	ease {148,1, outBack, 100, 'flip',}
+	ease {149,1, outBack, 0, 'flip',}
+	ease {150,1, outBack, 100, 'flip',}
+	ease {151,1, outBack, 0, 'flip',}
+	ease {152,1, outBack, 100, 'flip',}
+	ease {153,1, outBack, 0, 'flip',}
+	ease {155,1, outBack, 100, 'flip',}
+	ease {156,1, outBack, 0, 'flip',}
+	ease {157,1, outBack, 100, 'flip',}
+	ease {158,1, outBack, 0, 'flip',}
+	ease {159,1, outBack, 100, 'flip',}
+	ease {160,1, outBack, 0, 'flip',}
+	ease {161,1, outBack, 100, 'flip',}
+	ease {162,1, outBack, 0, 'flip',}
+	-----------------------------------
+	ease {169,1, outBack, 100, 'flip',}
+	ease {170,1, outBack, 0, 'flip',}
+	ease {172,1, outBack, 100, 'flip',}
+	ease {173,1, outBack, 0, 'flip',}
+	ease {175,1, outBack, 100, 'flip',}
+	ease {176,1, outBack, 0, 'flip',}
+	ease {177,1, outBack, 100, 'flip',}
+	ease {179,1, outBack, 0, 'flip',}
+	ease {180,1, outBack, 100, 'flip',}
+	ease {181,1, outBack, 0, 'flip',}
+	ease {182,1, outBack, 100, 'flip',}
+	ease {183,1, outBack, 0, 'flip',}
+	ease {184,1, outBack, 100, 'flip',}
+	ease {185,1, outBack, 0, 'flip',}
+	ease {187,1, outBack, 100, 'flip',}
+	ease {188,1, outBack, 0, 'flip',}
+	ease {189,1, outBack, 100, 'flip',}
+	ease {190,1, outBack, 0, 'flip',}
+	ease {191,1, outBack, 100, 'flip',}
+	ease {192,1, outBack, 0, 'flip',}
+	ease {193,1, outBack, 100, 'flip',}
+	ease {194,1, outBack, 0, 'flip',}
+
+	ease {96,2, outBack, 400, 'square',}
+	ease {96.25,2, outBack, -400, 'square',}
+	ease {96.5,2, outBack, 0, 'square',}
+	
+	ease {46,2, inOutSine, 0, 'y',}
+	ease {119,2, outBack,6, 'xmod',}
+	ease {119,2, outBack, 100, 'centered',}
+	ease {132,2, outBack, 0, 'arrowpath',}
+	ease {132,2, outBack, 100, 'dark',}
+	ease {136,2, outBack, 0, 'dark',}
+	ease {119,2, outBack, 100, 'arrowpath',}
+	ease {119,2, outBack, 100, 'rotationx',}
+	ease {119,2, outBack, 100, 'reverse',}
+	ease2 {119.5, 1, inOutSine, -100, 'arrowpathdrawsizeback'}
+	ease2 {119.5, 1, inOutSine, 100, 'arrowpathdrawsizefront'}
+	ease2 {119.5, 1, inOutSine, 10000, 'arrowpathdrawdistance'}
+	ease {119,2, outBack, -100, 'z',}
+	ease {119,2, outBack, -157, 'confusionxoffset',}
+	ease {134,1, linear, 2.75, 'xmod',}
+	ease {202,2, outBack, 3, 'xmod',}
+	set{0, 100 , 'reverse', plr = 2}
+	set{0, 30 , 'y', plr = 1}
+	set{0, -30 , 'y', plr = 2}
+	set{0, 75 , 'stealth', plr = 1}
+	ease {80.5,2, outBack, 200, 'tipsy',}
+	ease {81.5,2, outBack, -200, 'tipsy',}
+	ease {82.5,2, outBack, 200, 'tipsy',}
+	ease {84,1, outBack, 200, 'square',}
+	ease {84.25,1, outBack, -200, 'square',}
+	ease {84.5,1, outBack, 0, 'square',}
+	ease {86.5,2, outBack, -200, 'tipsy',}
+	ease {87,2, outBack, 200, 'tipsy',}
+	ease {88,2, outBack, -200, 'tipsy',}
+	ease {88.5,2, outBack, 200, 'tipsy',}
+	ease {91,2, outBack, -200, 'tipsy',}
+	ease {91.5,2, outBack, 200, 'tipsy',}
+	ease {92,2, outBack, -200, 'tipsy',}
+	ease {92.5,2, outBack, 200, 'tipsy',}
+	ease {93,2, outBack, -200, 'tipsy',}
+	ease {93.5,2, outBack, 200, 'tipsy',}
+	ease {94,2, outBack, -200, 'tipsy',}
+	ease {95,2, outBack, 200, 'tipsy',}
+	ease {97.5,2, outBack, -200, 'tipsy',}
+	ease {98.5,2, outBack, 200, 'tipsy',}
+	ease {102.5,2, outBack, 200, 'tipsy',}
+	ease {103,2, outBack, -200, 'tipsy',}
+	ease {104,2, outBack, 200, 'tipsy',}
+	ease {104.5,2, outBack, -200, 'tipsy',}
+	ease {107,2, outBack, 200, 'tipsy',}
+	ease {107.5,2, outBack, -200, 'tipsy',}
+	ease {107,2, outBack, 200, 'tipsy',}
+	ease {107.5,2, outBack, -200, 'tipsy',}
+	ease {107,2, outBack, 200, 'tipsy',}
+	ease {107.5,2, outBack, -200, 'tipsy',}
+	ease {108,2, outBack, 200, 'tipsy',}
+	ease {108.5,2, outBack, -200, 'tipsy',}
+	ease {109,2, outBack, 200, 'tipsy',}
+	ease {109.5,2, outBack, -200, 'tipsy',}
+	ease {110,2, outBack, 200, 'tipsy',}
+	ease {111,2, outBack, -200, 'tipsy',}
+	ease {112,2, outBack, 200, 'tipsy',}
+	ease {112.5,2, outBack, -200, 'tipsy',}
+	ease {115,2, outBack, 200, 'tipsy',}
+	ease {115.5,2, outBack, -200, 'tipsy',}
+	ease {116,2, outBack, 200, 'tipsy',}
+	ease {116.5,2, outBack, -200, 'tipsy',}
+	ease {117,2, outBack, 200, 'tipsy',}
+	ease {117.5,2, outBack, -200, 'tipsy',}
+	
+	ease {202,2, inOutSine, 100, 'stealth',}
+	ease {204,0.1, inOutSine, 0, 'stealth',}
+	ease {204.5,2, inOutSine, 100, 'stealth',}
+	ease {206,0.1, inOutSine, 0, 'stealth',}
+	ease {206.5,2, inOutSine, 100, 'stealth',}
+	ease {208,0.1, inOutSine, 0, 'stealth',}
+	ease {208.5,2, inOutSine, 100, 'stealth',}
+	ease {210,0.1, inOutSine, 0, 'stealth',}
+	ease {210.5,2, inOutSine, 100, 'stealth',}
+	ease {212,0.1, inOutSine, 0, 'stealth',}
+	ease {212.5,2, inOutSine, 100, 'stealth',}
+	ease {214,0.1, inOutSine, 0, 'stealth',}
+	ease {214.5,2, inOutSine, 100, 'stealth',}
+
+	ease {119,2, outBack, 0, 'tipsy',}
+	ease {100,1, outBack, -200, 'square',}
+	ease {100.25,1, outBack, 0, 'square',}
+	ease {100.5,2, outBack, -200, 'tipsy',}
+
+
+
+
+		for loop = 0,13 do
+	
+			if loop % 2 == 0 then
+			ease2 {137+loop*2, 2, inOutSine, -200, 'x', plr = 1}
+			ease2 {137+loop*2, 2, inOutSine, 200, 'x', plr = 2}
+			ease2 {137+loop*2, 4, inOutSine, 200, 'z', plr = 1}
+			ease2 {137+loop*2, 4, inOutSine, -200, 'z', plr = 2}
+			ease2 {137+loop*2, 2, inOutBack, -10, 'rotationz', plr = 1}
+			ease2 {137+loop*2, 2, inOutBack, 10, 'rotationz', plr = 2}
+			
+			
+		
+			
+			end
+			
+
+			if loop % 2 == 1 then
+			ease2 {137+loop*2, 2, inOutSine, 200, 'x', plr = 1}
+			ease2 {137+loop*2, 2, inOutSine, -200, 'x', plr = 2}
+			ease2 {137+loop*2, 4, inOutSine, -200, 'z', plr = 1}
+			ease2 {137+loop*2, 4, inOutSine, 200, 'z', plr = 2}
+			ease2 {137+loop*2, 2, inOutBack, 10, 'rotationz', plr = 1}
+			ease2 {137+loop*2, 2, inOutBack, -10, 'rotationz', plr = 2}
+	
+			
+		
+			end
+			if loop == 13 then
+			ease2 {137+loop*2, 2, inOutSine, 0, 'x',}
+			ease2 {137+loop*2, 4, inOutSine, 0, 'z',}
+			ease2 {137+loop*2, 2, inOutSine, 0, 'rotationz',}
+			
+			
+			
+			end
+	    end
+		for loop = 0,12 do
+			
+			if loop % 2 == 0 then
+			ease2 {169+loop*2, 2, inOutSine, -200, 'x', plr = 1}
+			ease2 {169+loop*2, 2, inOutSine, 200, 'x', plr = 2}
+			ease2 {169+loop*2, 4, inOutSine, 200, 'z', plr = 1}
+			ease2 {169+loop*2, 4, inOutSine, -200, 'z', plr = 2}
+			ease2 {169+loop*2, 2, inOutBack, -10, 'rotationz', plr = 1}
+			ease2 {169+loop*2, 2, inOutBack, 10, 'rotationz', plr = 2}
+			
+			
+		
+			
+			end
+			if loop == 12 then
+			ease2 {169+loop*2, 2, inOutSine, 0, 'x',}
+			ease2 {169+loop*2, 4, inOutSine, 0, 'z',}
+			ease2 {169+loop*2, 2, inOutSine, 0, 'rotationz',}
+			
+			
+			
+			end
+
+			if loop % 2 == 1 then
+			ease2 {169+loop*2, 2, inOutSine, 200, 'x', plr = 1}
+			ease2 {169+loop*2, 2, inOutSine, -200, 'x', plr = 2}
+			ease2 {169+loop*2, 4, inOutSine, -200, 'z', plr = 1}
+			ease2 {169+loop*2, 4, inOutSine, 200, 'z', plr = 2}
+			ease2 {169+loop*2, 2, inOutBack, 10, 'rotationz', plr = 1}
+			ease2 {169+loop*2, 2, inOutBack, -10, 'rotationz', plr = 2}
+		
+			end
+		
+			
+	    end
+		for loop = 0,3 do
+		ease2 {18.5+loop*4, 8, inOutSine, 360*loop, 'rotationy'}
+		
+		ease2 {18.5+loop*4, 8, inOutSine, -628*loop, 'confusionyoffset'}
+		
+	 end
+	 for loop = 0,10000 do
+		set{120+loop/5, math.random(-300,300) , 'builtx'}
+		set{120+loop/5, math.random(-300,300) , 'builty'}
+		
+	 end
+	 for loop = 0,3 do
+		ease2 {34.5+loop*4, 8, inOutSine, 360*loop, 'rotationx'}
+		ease2 {34.5+loop*4, 8, inOutSine, 360*loop, 'echo'}
+		ease2 {34.5+loop*4, 8, inOutSine, -628*loop, 'confusionxoffset'}
+		
+	 end
+
+end)"
+Type = "ActorFrame"
+><children>
+	<Layer File = "../images/sky.png" Name = "sky" />
+	<Layer File = "../images/cloud.png" Name = "cloud" />
+	<Layer File = "../images/cloud.png" Name = "cloud2" />
+	<Layer Type = "Quad" Name = "black" />
+	<Layer File = "../images/star.png" Name = "star" />
+	<Layer File = "../images/echoes.png" Name = "echoes" />
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+</children></Mods>

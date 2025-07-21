@@ -1,0 +1,67 @@
+<ActorFrame InitCommand="%function(self)
+	function nitg_send_spellcards(cards)
+		if table.getn(cards) == 0 or tonumber(GAMESTATE:GetVersionDate()) < 20170714 then return false end
+		
+		local s = GAMESTATE:GetCurrentSong()
+		s:SetNumSpellCards(table.getn(cards))
+		for i=1,table.getn(cards) do
+			local a = cards[i]
+			s:SetSpellCardTiming(i-1,a[1],a[2])
+			s:SetSpellCardName(i-1,a[3])
+			s:SetSpellCardDifficulty(i-1,a[4])
+			s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+		end
+		
+	end
+	
+	function nitg_send_labels(labels)
+		if table.getn(labels) == 0 or tonumber(GAMESTATE:GetVersionDate()) < 20170714 then return false end
+		
+		local s = GAMESTATE:GetCurrentSong()
+		s:ClearLabels();
+		for i=1,table.getn(labels) do
+			s:AddLabel(labels[i][1],labels[i][2])
+		end
+		
+	end
+	
+	--start,end,name,difficulty,color
+	prefix_spellcards = {
+	
+		--{40,64,'name',6,{.1,.2,.8,1}},
+		{4, 36, 'Intro', 4, {.1, .2, .8, 1}},
+		{36, 67, 'Prepare for Takeoff', 3, {.5, .1, .1, 1}},
+		{67, 68, 'Fire!', 1, {.5, .2, .2, 1}},
+		{68, 132, 'haha rocket go brrr', 9, {.2, .5, .7, 1}},
+		{132, 188, 'The New Fronteir', 6, {.6, .6, .6, 1}},
+		{188, 236, 'Lets explore around', 8, {.4, .4, .9, 1}},
+		{236, 244, 'oh hello tamaneko', 7, {1, 1, 0.1, 1}},
+		{244, 267.5, 'Where did the ship go?', 7, {0, 0, 0.6, 1}},
+		{267.5, 288, 'When Gravity Takes Over', 6, {0.6, 0.2, 0.6, 1}},
+		{288, 292, 'you know what time it is', 1, {0.9, 0.2, 0.1, 1}},
+		{292, 296, 'yep its a haunted house', 5, {0.4, 0.7, 0.2, 1}},
+		{296, 324, 'Falling to Earth', 10, {0.5, 0.5, 0.5, 1}},
+		{324, 356, 'Picking Up Speed', 11, {0.4, 0.2, 0.1, 1}},
+		{356, 364, 'Down to Earth - Peter Gabriel', 1, {0.1, 0.9, 0.5, 1}},
+		
+	}
+	
+	--[[
+	4.000=Intro=0
+	36.000=Fire It Up!=0
+	66.000=Heart Like a Lion=0
+	100.000=Rest=0
+	128.000=Battle!=0
+	156.000=Gravity-defying Moves=0
+	164.000=A winner is you=0
+	187.000=sike=0
+	197.500=Unfocused Attack=0
+	204.000=Combo Breaker=0
+	212.000=Gaining the Upper Hand=0
+	224.000=Last Chance Attack=0
+	292.000=Opponent Defeated=0
+	308.000=Victory Spoils=0
+	324.000=Don't Hit This=0
+]]
+	nitg_send_spellcards(prefix_spellcards)
+end"/>

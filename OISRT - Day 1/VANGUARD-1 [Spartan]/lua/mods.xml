@@ -1,0 +1,247 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+
+	definemod {
+        'alpha',
+        function(val,pn)
+            if P[pn] then
+                for col = 0,3 do
+                    P[pn]:SetNumArrowGradientPoints(col, 2)
+                    P[pn]:SetArrowGradientColor(0, col, 1, 1, 1, val/100)
+                    P[pn]:SetArrowGradientColor(1, col, 1, 1, 1, val/100)
+                end
+            end
+        end
+    }
+	
+--------------------------------------
+	-- this is where the mods go! --    
+--------------------------------------
+	
+	--initialize:
+	setdefault {2.5, 'xmod', 100, 'overhead', 100, 'dizzyholds', 100, 'modtimer', 1, 'halgun', 100, 'stealthpastreceptors', 100, 'dark'}
+	
+	--playfield in centre, make player 2 disappear, you get the idea	
+	for i=1, 1 do
+		PP[1]:x(SCREEN_CENTER_X - 160)
+		PP[2]:x(SCREEN_CENTER_X - 480)
+		PP[2]:hidden(1)
+		endcard:hidden(1)
+	end
+	
+	set {0, 20, 'alpha'}
+	ease {2, 2, linear, 80, 'dark'}
+	
+	--tons of opening affects - spins, offsets, but hopefully not too much spice
+	
+	ease {20, 1, pop, 100, 'stealth'}
+	for i = 36, 99, 32 do
+		ease {i, 1, outExpo, 50, 'digital'}
+		ease {i, 1, pop, 100, 'stealth'}
+		ease {i, 1, pop, 100, 'pulse'}
+		ease {i + 16, 1, outExpo, -50, 'digital'}
+		ease {i + 16, 1, pop, 100, 'stealth'}
+		ease {i + 16, 1, pop, 100, 'pulse'}
+	end
+	ease {100, 1, pop, 100, 'stealth'}
+	ease {100, 1, outExpo, 0, 'digital'}
+	
+	for i = 21.75, 68, 8 do
+		add {i, 4, outExpo, -628.3, 'confusionoffset'}
+		ease {i, 1, pop, 100, 'bumpyy'}
+		add {i + 4, 4, outExpo, 628.3, 'confusionoffset'}
+		ease {i + 4, 1, pop, -100, 'bumpyy'}
+	end
+	
+	for i = 34, 100, 32 do
+		set {i + 0.75, 50, 'x'}
+		set {i + 1, -50, 'x'}
+		set {i + 1.5, 25, 'x'}
+		set {i + 1.75, -25, 'x'}
+		set {i + 2, 0, 'x'}
+	end
+	
+	for i = 68.875, 83, 4 do
+		add {i, 2, outExpo, -628.3, 'confusionoffset'}
+		ease {i, 1, pop, 100, 'bumpyy'}
+		add {i + 2, 2, outExpo, 628.3, 'confusionoffset'}
+		ease {i + 2, 1, pop, -100, 'bumpyy'}
+	end
+	
+	for i = 85.75, 100, 8 do
+		add {i, 4, outExpo, -628.3, 'confusionoffset'}
+		ease {i, 1, pop, 100, 'bumpyy'}
+		add {i + 4, 4, outExpo, 628.3, 'confusionoffset'}
+		ease {i + 4, 1, pop, -100, 'bumpyy'}
+	end
+	
+	
+	--slight break!
+	 
+	set {100, 1, 'wireframe'}
+	set {100, 100, 'alpha'}
+	
+	
+	local violetarray = {
+	100, 101.25, 102.5, 103.75, 105, 106.25, 107.75,
+	109, 110.25, 111.5, 112.75, 114.25}
+	--object contains 12 numbers
+	
+	for j = 0, 16, 16 do
+		for i = 1, 12, 1 do
+			ease {violetarray[i] + j, 0.75, inverse, 100, 'brake'}
+		end
+	end
+	
+	func {131.25, function()
+		spacescroll:hidden(1)
+	end}
+	
+	--driven dro- wait no the background isn't what you're supposed to drop
+	
+	set {132, 0, 'wireframe'}
+	
+	ease {132, 4, linear, 100, 'dark'}
+	
+	func {132, function()
+		corruptedspacescroll:hidden(0)
+	end}
+	
+	for i = 132, 194, 4 do
+		ease {i, 2, bounce, -100, 'x'}
+		ease {i + 2, 2, bounce, 100, 'x'}
+	end
+	
+	for i = 132, 164, 2 do
+		ease {i, 2, inverse, 100, 'spiralx'}
+		add {i, 2, outExpo, -628.3, 'confusionoffset'}
+	end
+	for i = 165, 194, 2 do
+		ease {i, 2, inverse, -100, 'spiralx'}
+		add {i, 2, outExpo, 628.3, 'confusionoffset'}
+	end
+	
+	
+	func {196, function()
+		corruptedspacescroll:hidden(1)
+	end}
+	
+	set {196, 80, 'dark'}
+	set {196, 0, 'wireframe'}
+	set {196, 20, 'alpha'}
+	
+	
+	--fadein/fadeout effects
+	
+	func {196, function()
+		stars:playcommand('Scroll')
+		spacescroll:hidden(0)
+	end}
+	
+	for i = 196, 224, 4 do
+		ease {i, 1, linear, 100, 'hidden'}
+		set {i, -100, 'hiddenoffset'}
+		ease {i, 4, linear, 100, 'hiddenoffset'}
+		ease {i + 3, 1, linear, 0, 'hidden'}
+	end
+	
+	set {228, 0, 'hidden'}
+	
+	
+	
+	
+	--flashy ending - like, literally
+	
+	set {228, 0, 'alpha'}
+	set {228, 100, 'dark'}
+	
+	
+	local phase3 = {
+	228, 228.5, 229, 229.5, 230.17, 230.75, 231.25, 231.75, 232.33, 233, 233.5, 234, 234.66, 235.25, 235.75, 
+	236.25, 236.83, 237.5, 238, 238.5, 239, 239.5, 240, 240.66, 241.25, 241.75, 242.25, 242.83, 243.5}
+	--29 numbers, going for 16 beats
+	
+	for j = 0, 48, 16 do
+		for i = 1, 29, 1 do
+			ease {phase3[i] + j, 0.25, pop, 50, 'alpha'}
+			set {phase3[i] + j,((i % 4) - 1.5) * 50, 'x'}
+		end
+	end
+	
+	ease {259.5, 0.5, inExpo, 40, 'drunk'}
+	ease {259.5, 0.5, inExpo, 80, 'wave'}
+	
+	set {292, 0, 'x'}
+	set {292, 20, 'alpha'}
+	set {292, 0, 'confusionoffset'}
+	
+	
+	--a
+	
+	add {298, 4, outExpo, -628.3, 'confusionoffset'}
+	add {306, 4, outExpo, 628.3, 'confusionoffset'}
+	
+	func{324, function()
+		endcard:hidden(0)
+	end}
+	
+	
+	
+	
+	
+	
+	
+end)"
+Type = "ActorFrame"
+><children>
+
+	<Layer
+        File="shaderbg.png"
+		Name="spacescroll"
+        Frag="shaders\spacescroll.frag"
+        InitCommand="x, SCREEN_CENTER_X; y, SCREEN_CENTER_Y;"/>
+   />
+   
+   	<Layer
+        File="shaderbg2.png"
+		Name="corruptedspacescroll"
+        Frag="shaders\corruptedspacescroll.frag"
+        InitCommand="x, SCREEN_CENTER_X; y, SCREEN_CENTER_Y; hidden, 1;"/>
+   />
+
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	
+	<Layer
+		File="stars.png"
+		Name="stars"
+		InitCommand="x, 3200; y, SCREEN_CENTER_Y; diffusealpha, 0.5;"
+		ScrollCommand="linear, 40; x, -3200"/>
+	/>
+	
+	<Layer
+		File="endcard.png"
+		Name="endcard"
+        InitCommand="x, SCREEN_CENTER_X; y, SCREEN_CENTER_Y;"/>
+   />
+	
+
+</children></Mods>

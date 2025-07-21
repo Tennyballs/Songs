@@ -1,0 +1,513 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		EPP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+		if pn >= 3 then
+			PP[pn]:hidden(1)
+			P[pn]:GetChild('Judgment'):hidden(1)
+		end
+	end
+	
+	for pp = 1, 8 do
+		KAPP[pp][1]:SetTarget(P[1])
+		KAPP[pp][2]:SetTarget(P[2])
+		KAPP[pp][1]:hidden(1)
+		KAPP[pp][2]:hidden(1)
+	end
+	
+	
+	aux 'KimiAux'
+	-- your code goes here here:
+	plr = {1,2,3,4}
+	set{0,2.5,'XMod',0,'KimiAux',100,'Modtimer',100,'Stealthtype',100,'Zbuffer'}
+	set{0,250,'Invert',plr = 1}
+	set{0,-250,'Invert',plr = 2}
+	set{0,100,'Beat'}
+	ease{12,4,inCirc,1,'KimiAux'}
+	func{0,function(self)
+		P[1]:SetFarDist(5000)
+		P[2]:SetFarDist(5000)
+		for pn = 1,4 do
+			P[pn]:x(scx)
+		end
+	end}
+	
+	ease{6.5,.25,outQuad,75,'Drunk'}
+	ease{6.75,.25,outQuad,-75,'Drunk'}
+	ease{7,.25,outQuad,150,'Drunk'}
+	ease{7.5,.25,outQuad,0,'Drunk'}
+	
+	ease{12.5,.5,outQuad,150,'Drunk'}
+	ease{13,.5,outQuad,-150,'Drunk'}
+	ease{13.5,.5,inCirc,0,'Drunk'}
+	ease{14,.5,outCirc,150,'Drunk'}
+	ease{14.5,.5,inCirc,0,'Drunk'}
+	ease{15,.5,outCirc,-150,'Drunk'}
+	ease{15.5,.5,inCirc,0,'Drunk'}
+	ease{16,.5,outCirc,150,'Drunk'}
+	ease{16.5,3.5,inCirc,0,'Drunk'}
+	
+	ease{20.5,.5,outQuad,75,'Drunk'}
+	ease{21,.5,outCirc,-75,'Drunk'}
+	ease{21.5,.5,inCirc,-0,'Drunk'}
+	ease{22,.5,outCirc,75,'Drunk'}
+	ease{22.5,.5,inCirc,0,'Drunk'}
+	ease{23,.5,outCirc,-75,'Drunk'}
+	ease{23.5,.5,inCirc,0,'Drunk'}
+	ease{24,.5,outCirc,75,'Drunk'}
+	ease{24.5,.5,inCirc,0,'Drunk'}
+	ease{25,.5,outCirc,-75,'Drunk'}
+	ease{25.5,.5,inCirc,75,'Drunk'}
+	ease{27,1,outCirc,-150,'Drunk'}
+	ease{27.5,.5,inCirc,0,'Tipsy'}
+	ease{27.5,.5,outCirc,75,'Tipsy'}
+	ease{28,4,outCirc,0,'Tipsy',0,'Drunk'}
+	ease{32,4,outCirc,0,'KimiAux'}
+	ease{31.75,.25,inCirc,200,'Tipsy'}
+	set{32,-75,'Tiny2'}
+	ease{32,4,outCirc,0,'Tipsy',0,'Tiny2'}
+	
+	for b = 0,6 do
+		inv = b % 2 * 2 - 1
+		ease{21+.5*b,.5,outCirc,75*inv,'Tipsy'}
+	end
+	
+	func{12,24,function(beat,poptions)
+		local aux = poptions[1]['KimiAux']
+		for pn = 1,2 do
+			local inv = pn % 2 * 2 - 1
+			poptions[pn]['Centered2'] = math.abs(math.sin(beat*math.pi)*50) * aux
+			poptions[pn]['RotationX'] = math.sin(beat*math.pi)*30*inv  * aux
+		end
+	end}
+	set{36,0,'Invert'}
+	func{36,function(beat)
+		for pn = 1,2 do
+			local inv = (pn-1) % 2 * 2 - 1
+			P[pn]:x(scx+(128+32)*inv)
+		end
+	end
+	}
+	
+	ease{32,4,inQuad,1.5,'XMod'}
+	set{35,-150,'HiddenOffset',628,'ConfusionOffset'}
+	ease{35,1,inQuint,-300,'Tiny',85,'Hidden',200,'Tipsy'}
+	ease{36,2,outCirc,0,'Tiny',200,'HiddenOffset',0,'Tipsy',0,'ConfusionOffset'}
+	
+	ease{43.75,.25,inQuad,-50,'Stealth',200,'Drunk'}
+	ease{44,4,outCirc,0,'Stealth',0,'Drunk'}
+	
+	ease{51,1,inQuint,-300,'Tiny',50,'Hidden',200,'Tipsy',50,'Reverse'}
+	ease{52,2,outCirc,0,'Tiny',85,'Hidden',200,'HiddenOffset',0,'Tipsy',100,'Reverse'}
+	
+	ease{51.75,.25,inQuad,-200,'Drunk'}
+	ease{52,4,outCirc,0,'Drunk'}
+	
+	ease{55.75,.25,inQuad,-50,'Stealth',200,'Drunk'}
+	ease{56,4,outCirc,0,'Stealth',0,'Drunk'}
+	
+	ease{59.75,.25,inQuad,-50,'Stealth',-200,'Drunk'}
+	ease{60,4,outCirc,0,'Stealth',0,'Drunk'}
+	
+	ease{52,4,outCirc,0,'Stealth',0,'Drunk'}
+	
+	ease{65,.5,outCirc,125,'Drunk',15,'RotationZ'}
+	ease{65.5,.5,inCirc,0,'Drunk',0,'RotationZ'}
+	ease{66,.5,outCirc,-125,'Drunk',-15,'RotationZ'}
+	ease{66.5,.5,inCirc,0,'Drunk',0,'RotationZ'}
+	ease{67,.5,outCirc,125,'Drunk',15,'RotationZ'}
+	ease{67.5,.5,inCirc,0,'Drunk',0,'RotationZ'}
+	ease{65,4,linear,0,'Hidden'}
+	
+	for b = 0,7 do
+		local inv = b % 2 * 2 - 1
+		ease{68+4*b,.5,outCirc,50*inv,'Tipsy'}
+		
+		ease{69.5+4*b,.25,outCirc,-50*inv,'Tipsy'}
+		ease{70+4*b,.5,outCirc,50*inv,'Tipsy'}
+	end
+	
+	ease{81,2,inOutQuart,100,'Reverse2',628,'ConfusionOffset2'}
+	ease{82,2,inOutQuart,100,'Reverse3',628,'ConfusionOffset3'}
+	ease{83,2,inOutQuart,100,'Reverse0',100,'Reverse1',628,'ConfusionOffset0',628,'ConfusionOffset1'}
+	set{85,0,'Reverse0',0,'Reverse2',0,'Reverse3',0,'Reverse1',0,'Reverse'}
+	
+	local HarpNotes = {
+		{82.000,0,1},
+		{82.083,1,1},
+		{82.167,2,1},
+		{83.000,3,1},
+		{83.083,1,1},
+		{83.167,2,1},
+		{84.000,0,1},
+		{84.083,1,1},
+		{84.167,2,1},
+	}
+	set{82,400,'ArrowpathGirth'}
+	for i,v in pairs(HarpNotes) do
+		set{v[1],100,'Arrowpath'..v[2]..''}
+		ease{v[1],.5,outCirc,0,'Arrowpath'..v[2]..''}
+	end
+	
+	ease{75.75,.25,inQuad,-200,'Drunk',50,'Stealth'}
+	ease{76,4,outCirc,0,'Drunk',0,'Stealth'}
+	
+	ease{83.75,.25,inQuad,50,'Stealth',200,'Drunk'}
+	ease{84,4,outCirc,0,'Stealth',0,'Drunk'}
+	
+	ease{87.75,.25,inQuad,50,'Stealth',200,'Drunk'}
+	ease{88,4,outCirc,0,'Stealth',0,'Drunk'}
+	
+	ease{91.75,.25,inQuad,50,'Stealth',-200,'Drunk'}
+	ease{92,4,outCirc,0,'Stealth',0,'Drunk'}
+	ease{99,1,inCirc,0,'Tipsy',100,'Invert'}
+	
+	func{97,function(beat)
+		for pn = 1,2 do
+			local inv = (pn-1) % 2 * 2 - 1
+			P[pn]:x(scx)
+			PP[pn]:x((128+32)*inv)
+		end
+		EPP[1]:hidden(0)
+		EPP[1]:x((-128-32)*3)
+		EPP[2]:hidden(0)
+		EPP[2]:x((-128-32)*5)
+	end
+	}
+	
+	for b = 0,6 do
+		local inv = b % 2 * 2 - 1
+		if b < 3 or b > 4 then
+			ease{98+4*b,.5,outCirc,125*inv,'Tipsy'}
+			ease{98.5+4*b,.5,outCirc,-125*inv,'Tipsy'}
+			ease{99+4*b,.5,outCirc,125*inv,'Tipsy'}
+			ease{99.5+4*b,.5,inExpo,0,'Tipsy'}
+		end
+	end
+	
+	ease{110,.5,outCirc,125,'Tipsy'}
+	ease{110.5,.5,outCirc,-125,'Tipsy'}
+	ease{111,.5,outCirc,125,'Tipsy'}
+	ease{111.5,.5,outCirc,-75,'Drunk',0,'Tipsy'}
+	ease{113,.5,outCirc,75,'Drunk'}
+	ease{113.5,.5,outCirc,-75,'Drunk'}
+	ease{115,.5,outCirc,75,'Drunk'}
+	ease{115.5,.5,inExpo,0,'Drunk'}
+	
+	
+	ease{126,.5,outCirc,125,'Tipsy'}
+	ease{126.5,.5,outCirc,-125,'Tipsy'}
+	ease{127,.5,outCirc,125,'Tipsy'}
+	ease{127.5,.5,outCirc,-125,'Tipsy'}
+	ease{128.5,.5,outCirc,0,'Tipsy'}
+	
+	ease{130,.5,outCirc,125,'Tipsy'}
+	ease{130.5,.5,outCirc,-125,'Tipsy'}
+	ease{131,.5,outCirc,125,'Tipsy'}
+	ease{131.5,.5,outCirc,-125,'Tipsy'}
+	ease{132,.5,outCirc,0,'Tipsy'}
+	
+	func{100,32,function(beat,poptions)
+		local thing = math.mod(beat,4)
+		for pn = 1,4 do
+			P[pn]:x(scx+(64+16)*thing)
+			
+			poptions[pn]['Invert']= math.cos(beat*math.pi)*50+50
+			if math.mod(beat,2) > 1 then
+				poptions[pn]['MoveY2']= math.sin(beat*math.pi)*100
+				poptions[pn]['MoveY0']= math.sin(beat*math.pi)*100
+			else
+				poptions[pn]['MoveY1']= math.sin(beat*math.pi)*-100
+				poptions[pn]['MoveY3']= math.sin(beat*math.pi)*-100
+			end
+		end
+		
+	end
+	}
+	ease{131,1,inCirc,125,'Drunk'}
+	ease{132.5,1,inCirc,0,'Invert'}
+	ease{135.5,.5,outCirc,-125,'Drunk'}
+	ease{137.5,.5,outCirc,0,'Drunk',75,'Tipsy'}
+	ease{139.5,.25,outCirc,0,'Drunk',-75,'Tipsy'}
+	ease{139.75,.25,outCirc,125,'Drunk',0,'Tipsy'}
+	ease{140,.25,outCirc,-75,'Drunk',0,'Tipsy'}
+	ease{144,.75,outCirc,200,'Drunk'}
+	ease{144.75,.75,inCirc,0,'Drunk'}
+	ease{145.5,1.5,outCirc,-200,'Drunk'}
+	ease{147,1,inCirc,0,'Drunk'}
+	
+	ease{136,.5,outCirc,100,'Flip'}
+	ease{136.5,.5,outCirc,0,'Flip',100,'Invert'}
+	ease{137,.5,outCirc,100,'Flip',-100,'Invert'}
+	ease{137.5,.5,outCirc,0,'Flip',0,'Invert'}
+	
+	
+	func{132,function(beat)
+		for pn = 1,2 do
+			local inv = (pn-1) % 2 * 2 - 1
+			P[pn]:x(scx)
+			PP[pn]:x((128+32)*inv)
+		end
+		EPP[1]:hidden(1)
+		EPP[2]:hidden(1)
+	end
+	}
+	ease{148,1,inCirc,2,'XMod'}
+	set{148,100,'Sudden',100,'SuddenOffset',200,'Drawsize'}
+	set{148,1,'KimiAux', plr = 4}
+	func{148,function(beat)
+		KAPPaFrame:SetFarDist(10000)
+		for pn = 1,2 do
+			local inv = pn % 2 * 2 - 1
+			P[pn]:x(scx)
+			PP[pn]:x(0)
+			PP[pn]:hidden(1)
+			PC[pn]:tween((60/129)*4,'inCirc(%f,0,1,1)')
+			PJ[pn]:tween((60/129)*4,'inCirc(%f,0,1,1)')
+			PJ[pn]:y(scy*1.75)
+			PC[pn]:y(scy*1.75)
+		end
+		
+		
+		for pn = 1,10 do
+			KAPP[pn][1]:tween((60/129)*4,'inCirc(%f,0,1,1)')
+			KAPP[pn][2]:tween((60/129)*4,'inCirc(%f,0,1,1)')
+			KAPP[pn][1]:hidden(0)
+			KAPP[pn][1]:z((4096-1024*1)-1024*pn)
+			KAPP[pn][2]:hidden(0)
+			KAPP[pn][2]:z((-4096-1024*2)+1024*pn)
+			--KAPP[pn][2]:y(32*pn)
+		end
+		
+	end
+	}
+	
+	set{148,250,'Invert', plr = 1}
+	set{148,-250,'Invert', plr = 2}
+	
+	func{152,121-32,function(beat,poptions)
+		local thing = math.mod((beat-152),4)
+		local Aux1 = poptions[1]['KimiAux']
+		local Aux2 = poptions[2]['KimiAux']
+		local Aux3 = poptions[3]['KimiAux']
+		local Aux4 = poptions[4]['KimiAux']
+		for pn = 1,2 do
+			local inv = pn % 2 * 2 - 1
+			PP[pn]:hidden(1)
+			poptions[pn]['RotationX'] = math.sin(beat*math.pi)*30*inv * Aux1
+			if beat < 240 then
+				poptions[pn]['Z'] = (-512)*inv*thing
+			else
+				poptions[pn]['Z'] = 0
+			end
+			poptions[pn]['Invert'] = (250*inv + (math.cos(beat*math.pi)*50+50) * Aux2) * Aux4
+			if beat < 271.5 then
+				poptions[pn]['Centered2'] = math.abs(math.sin(beat*math.pi)*100) *Aux3
+			end
+		end
+		KAPPaFrame:x(math.sin(beat*math.pi/16)*128*Aux3) 
+		KAPPaFrame:rotationy(math.sin(beat*math.pi/16)*10*Aux3) 
+		
+		ITBG:rotationy(math.sin(beat*math.pi/16)*15*Aux3) 
+		ITBG:rotationx(math.cos(beat*math.pi/16)*15*Aux3) 
+		ITBG:z(math.abs(math.sin(beat*math.pi)*25) *Aux1) 
+	end}
+	
+	for b = 0,63-8 do
+		local inv = b % 2 * 2 - 1
+		ease{184+b,.5,outCirc,25,'Stealth'}
+		ease{184.5+b,.5,outCirc,0,'Stealth'}
+		ease{184+b,.5,outCirc,50*inv,'Drunk'}
+		ease{184.5+b,.5,outCirc,0,'Drunk'}
+	end
+	
+	ease{152,8,linear,1,'KimiAux', plr = 3}
+	ease{180,4,inQuint,1,'KimiAux', plr = 1}
+	ease{214,2,linear,1,'KimiAux', plr = 2}
+	ease{236,4,inCirc,0,'KimiAux', plr = {3}}
+	ease{239,1,inCirc,0,'KimiAux', plr = 4}
+	
+	func{239,function(beat)
+		KAPPaFrame:SetFarDist(10000)
+		for pn = 1,10 do
+			KAPP[pn][1]:tween((60/129)*1,'inCirc(%f,0,1,1)')
+			KAPP[pn][2]:tween((60/129)*1,'inCirc(%f,0,1,1)')
+			KAPP[pn][1]:z(0)
+			KAPP[pn][2]:z(0)
+		end
+		for pn = 1,2 do
+			PC[pn]:tween((60/129)*1,'inCirc(%f,0,1,1)')
+			PJ[pn]:tween((60/129)*1,'inCirc(%f,0,1,1)')
+			PJ[pn]:y(scy)
+			PC[pn]:y(scy)
+		end
+	end
+	}
+	
+	func{240,function(beat)
+		for pn = 1,2 do
+			local inv = (pn-1) % 2 * 2 - 1
+			P[pn]:x(scx)
+			P[pn]:z(0)
+			PP[pn]:z(0)
+			PP[pn]:x((128+32)*inv)
+			PP[pn]:hidden(0)
+		end
+		
+		for pn = 2,10 do
+			KAPP[pn][1]:hidden(1)
+			KAPP[pn][2]:hidden(1)
+		end
+		
+		ITBG:rotationy(0) 
+		ITBG:rotationx(0) 
+		ITBG:z(0)
+	end
+	}
+	
+	func{240,64,function(beat,poptions)
+		local Aux1 = poptions[1]['KimiAux']
+		local Aux2 = poptions[2]['KimiAux']
+		local Aux3 = poptions[3]['KimiAux']
+		local Aux4 = poptions[4]['KimiAux']
+		for pn = 1,2 do
+			local inv = pn % 2 * 2 - 1
+			PP[pn]:hidden(1)
+			poptions[pn]['RotationX'] = math.sin(beat*math.pi)*30*inv * Aux1
+			poptions[pn]['Invert'] = (250*inv + (math.cos(beat*math.pi)*50+50)* Aux2) * Aux4
+			poptions[pn]['MoveY'] = math.abs(math.sin(beat*math.pi)*100) *Aux3
+		end
+		ITBG:rotationy(0) 
+		ITBG:rotationx(0) 
+		ITBG:z(math.abs(math.sin(beat*math.pi)*25) *Aux3) 
+	end}
+	
+	ease{240,1,outCirc,1,'KimiAux', plr = 4}
+	
+	set{240,0,'Sudden',50,'Drawsize'}
+	
+	set{240,0,'KimiAux', plr = 1}
+	set{240,0,'KimiAux', plr = 2}
+	set{240,1,'KimiAux', plr = 3}
+	
+	set{239.5,-628,'ConfusionOffset',0,'Beat'}
+	set{239,-628,'ConfusionOffset'}
+	ease{239,1,inCirc,-500,'Tiny',50,'Stealth',200,'Tipsy',200,'Drunk'}
+	ease{240,1,outCirc,0,'Tiny',85,'Stealth',0,'Tipsy',0,'Drunk',0,'ConfusionOffset',50,'Hidden'}
+	
+	set{247,628,'ConfusionOffset'}
+	ease{247,1,inCirc,-500,'Tiny',50,'Stealth',200,'Tipsy',200,'Drunk',0,'Hidden'}
+	ease{248,1,outCirc,0,'Tiny',0,'Stealth',0,'Tipsy',0,'Drunk',0,'ConfusionOffset'}
+	ease{248,1,outCirc,1,'KimiAux',plr = 2}
+	
+	set{255,-628,'ConfusionOffset'}
+	ease{255,1,inCirc,-500,'Tiny',50,'Stealth',200,'Tipsy',200,'Drunk'}
+	ease{256,1,outCirc,0,'Tiny',0,'Stealth',0,'Tipsy',0,'Drunk',0,'ConfusionOffset'}
+	ease{270.5,1,linear,0,'KimiAux',plr = {1,2,3}}
+	set{270.5,1,'Halgun'}
+	
+	for b = 0,31 do
+		local inv = b % 2 * 2 - 1
+		ease{240+b,.5,outCirc,100*inv,'Drunk'}
+		ease{240.5+b,.5,outCirc,0,'Drunk'}
+		ease{240+b,.5,outCirc,25,'Stealth'}
+		ease{240.5+b,.5,outCirc,0,'Stealth'}
+		if b > 7 and b < 17 then
+			ease{240+b,.5,outCirc,100*inv,'Tipsy'}
+		ease{240.5+b,.5,outCirc,0,'Tipsy'}
+		end
+	end
+	set{272,0,'Disablemines'}
+	func{271.5,function(beat)
+		ITBG:tween((60/129)*5,'outCirc(%f,0,1,1)')
+		ITBG:diffusealpha(0) 
+	end
+	}
+	--ease{271.5,4,linear,0,'KimiAux', plr = 1}
+	ease{271.5,4,linear,100,'Tornado',200,'Longboys',100,'Dark',800,'DrunkZ'}
+	ease{271.5,4,linear,800,'Centered2'}
+	set{277,-100,'Drawsizeback'}
+	spellcard{36 ,100 ,
+		name = 'Silent Meadow',
+		difficulty = 3,
+		color = {.7,.7,.7,1}}
+		
+	spellcard{100 ,132 ,
+		name = 'Serene Stroll',
+		difficulty = 4,
+		color = {.9,.9,.9,1}}
+		
+	spellcard{152 ,185 ,
+		name = 'Serene Tunnel',
+		difficulty = 3,
+		color = {1,1,1,1}}
+		
+	spellcard{185 ,216 ,
+		name = 'Swinging Tunnel',
+		difficulty = 5,
+		color = {1,1,1,1}}
+		
+	spellcard{216 ,240 ,
+		name = 'Shifting Tunnel',
+		difficulty = 7,
+		color = {1,1,1,1}}
+		
+	spellcard{240 ,276.5 ,
+		name = 'Reminiscience',
+		difficulty = 6,
+		color = {0.7,.7,.7,1}}
+	
+	
+end)"
+Type = "ActorFrame"
+><children>
+	<Layer Type="ActorFrame" OnCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;fov,60"><children>
+		<Layer Type = "Quad" OnCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1" />
+		<Layer File = "itbg.png" Name = "ITBG" />
+		<Layer Type = "Quad" OnCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,.5" />
+	</children></Layer>
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	<Layer Type = "ActorProxy" Name = "EPP[1]" />
+	<Layer Type = "ActorProxy" Name = "EPP[2]" />
+	<Layer Type = "ActorFrame" Name="KAPPaFrame" OnCommand="%function(self) self:SetFarDist(1000) end"><children>
+	<Layer Type = "ActorProxy" Name = "KAPP[1][1]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[2][1]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[3][1]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[4][1]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[5][1]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[6][1]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[7][1]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[8][1]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[9][1]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[10][1]" />
+	
+	<Layer Type = "ActorProxy" Name = "KAPP[1][2]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[2][2]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[3][2]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[4][2]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[5][2]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[6][2]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[7][2]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[8][2]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[9][2]" />
+	<Layer Type = "ActorProxy" Name = "KAPP[10][2]" />
+	</children></Layer>
+	
+</children></Mods>

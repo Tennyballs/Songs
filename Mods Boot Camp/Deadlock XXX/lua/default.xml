@@ -1,0 +1,479 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,GAMESTATE:GetCurrentSong():MusicLengthSeconds()"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				
+				prefix_curmessage = 1;
+				prefix_inc = 0;
+				
+				prefix_xpos = 160;
+				prefix_minishift = 0;
+				
+				prefix_messages = {
+					{28.740,'ViolentBounce'},
+					{64.416,'ViolentBounce2'},
+					
+					{81.713+240/444/4*0,'MiniShiftRight'},
+					{81.713+240/444/4*1,'MiniShiftRight'},
+					{81.713+240/444/4*2,'MiniShiftRight'},
+					{81.713+240/444/4*3,'MiniShiftRight'},
+					{81.713+240/444/4*4,'MiniShiftRight'},
+					
+					{82.524+240/444/4*0,'MiniShiftRight'},
+					{82.524+240/444/4*1,'MiniShiftRight'},
+					{82.524+240/444/4*2,'MiniShiftRight'},
+					{82.524+240/444/4*3,'MiniShiftRight'},
+					{82.524+240/444/4*4,'MiniShiftRight'},
+					
+					{83.875+240/444/4*0,'MiniShiftLeft'},
+					{83.875+240/444/4*1,'MiniShiftLeft'},
+					{83.875+240/444/4*2,'MiniShiftLeft'},
+					{83.875+240/444/4*3,'MiniShiftLeft'},
+					{83.875+240/444/4*4,'MiniShiftLeft'},
+					
+					{84.686+240/444/4*0,'MiniShiftLeft'},
+					{84.686+240/444/4*1,'MiniShiftLeft'},
+					{84.686+240/444/4*2,'MiniShiftLeft'},
+					{84.686+240/444/4*3,'MiniShiftLeft'},
+					{84.686+240/444/4*4,'MiniShiftLeft'},
+					
+					{86.037+240/444/4*0,'MiniShiftRight'},
+					{86.037+240/444/4*1,'MiniShiftRight'},
+					{86.037+240/444/4*2,'MiniShiftRight'},
+					{86.037+240/444/4*3,'MiniShiftRight'},
+					{86.037+240/444/4*4,'MiniShiftRight'},
+					
+					{86.848+240/444/4*0,'MiniShiftRight'},
+					{86.848+240/444/4*1,'MiniShiftRight'},
+					{86.848+240/444/4*2,'MiniShiftRight'},
+					{86.848+240/444/4*3,'MiniShiftRight'},
+					{86.848+240/444/4*4,'MiniShiftRight'},
+					
+					{88.200+240/444/4*0,'MiniShiftLeftSmall'},
+					{88.200+240/444/4*1,'MiniShiftLeftSmall'},
+					{88.200+240/444/4*2,'MiniShiftLeftSmall'},
+					{88.200+240/444/4*3,'MiniShiftLeftSmall'},
+					{88.200+240/444/4*4,'MiniShiftLeftSmall'},
+					{88.200+240/444/4*5,'MiniShiftLeftSmall'},
+					{88.200+240/444/4*6,'MiniShiftLeftSmall'},
+					{88.200+240/444/4*7,'MiniShiftLeftSmall'},
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'1x,C350,-999999% Cover','end'},
+				
+				{0.000,27.389,'*10000 50% Reverse,*10000 -6% Split,*10000 6% Alternate,*10000 25% Flip,*10000 -25% Invert,*10000 2000% Bumpy,*10000 800% Sudden,*10000 -98% SuddenOffset,*10000 150% Mini,*10000 0.1x','end'},
+				
+				{19.010,27.389,'*0.005 0x,*0.125 200% Distant,*0 Reverse','end'},
+				
+				
+				{27.389,28.200,'*1 200% Mini,*2 No Reverse,*0.25 No Split,*0.25 No Alternate,*1 No Flip,*1 No Invert,*40 No Bumpy,*12.5 No Sudden,*2 Overhead','end'},
+				{28.200,29.000,'*8 No Mini','end'},
+				
+				{28.740,36.848,'*0.125 200% Drunk','end',1},
+				{28.740,36.848,'*0.125 -200% Drunk','end',2},
+				
+				{36.848,37.118,'*2 50% Reverse,*2 Sudden,*10000 -40% SuddenOffset,C250,*12 No Drunk','end'},
+				{37.118,45.497,'*2 No Reverse,*2 Sudden,*10000 -40% SuddenOffset,C250','end',1},
+				{37.118,45.497,'*2 100.01% Reverse,*2 Sudden,*10000 -40% SuddenOffset,C250','end',2},
+				
+				{45.497,46.037,'*2 No Reverse,*2 No Sudden,C350','end'},
+				
+				{46.037,63.335,'-50% Flip','end'},
+				{46.037,53.605,'*4 200% Tornado','end'},
+				{46.037,53.605,'*16 800% Bumpy','end',1},
+				{46.037,53.605,'*16 -800% Bumpy','end',2},
+				{53.605,64.000,'*10000 No Reverse,*10000 No Split,*10000 No Cross,*10000 No Alternate,*4 -200% Hidden,*4 -200% Sudden,*4 200% Stealth,*10000 5% HiddenOffset,*10000 -40% SuddenOffset,*16 No Bumpy,*4 No Tornado','end'},
+				{54.686,64.000,'*16 300% Stealth','end'},
+				{63.335,64.416,'*8 No Stealth','end'},
+				
+				{63.335,63.875,'*5 200% Mini','end'},
+				{63.875,64.010,'*32 -250% Mini','end'},
+				{64.010,64.416,'*6 No Mini','end'},
+				
+				{63.875,81.713,'*10000 No Hidden,*10000 No Sudden','end'},
+				{63.875,81.713,'*2 No Reverse,*10000 Sudden,*10000 -40% SuddenOffset,*10000 C225','end',1},
+				{63.875,81.713,'*10000 100.01% Reverse,*10000 Sudden,*10000 -40% SuddenOffset,*10000 C225','end',2},
+				
+				{72.524,81.713,'*2 C250','end'},
+				
+				{67.659,69.010,'*10000 No Centered','end'},
+				{67.659,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*1,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*2,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*3,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*4,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*5,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*6,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*7,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*8,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*9,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*10,240/440/6 - 0.050,'*4 200% Centered','len'},
+				{67.659+240/440/6*11,240/440/6 - 0.050,'*4 200% Centered','len'},
+				
+				
+				{67.659,68.740,'*10000 100.01% Reverse,*10000 Alternate','end',1},
+				{67.659,68.740,'*10000 No Reverse,*10000 Alternate','end',2},
+				
+				{68.740,69.281,'*10000 No Reverse,*10000 No Alternate','end',1},
+				{68.740,69.281,'*10000 100.01% Reverse,*10000 No Alternate','end',2},
+				
+				{71.848,72.929,'*10000 800% Beat','end'},
+				{72.929,74.000,'*10000 No Beat','end'},
+				
+				{72.524,81.443,'*10000 Alternate','end'},
+				
+				{77.389,80.000,'*10000 No Drunk','end'},
+				
+				{81.443,81.713,'*10000 No Alternate,*8 200% Mini','end'},
+				{81.713,999,'*10000 No Hidden,*10000 No Sudden,*10000 C400,*4 150% Wave','end'},
+				{81.713,999,'*10000 100.01% Reverse','end',2},
+				
+				{89.281,240/222/12,'*32 400% Drunk','len'},
+				{89.281+240/222/12*1,240/222/12,'*64 -400% Drunk','len'},
+				{89.281+240/222/12*2,240/222/12,'*64 400% Drunk','len'},
+				{89.281+240/222/12*3,240/222/12,'*64 -400% Drunk','len'},
+				{89.281+240/222/12*4,240/222/12,'*64 400% Drunk','len'},
+				{89.281+240/222/12*5,240/222/12,'*32 No Drunk','len'},
+				
+				{90.362,999,'Brake,*1.5 No Wave','end'},
+				};
+				
+				local inc = 0;
+				for i = 54.686,63.3,240/222/12 do
+					-- 0 = left, 1 = down, 2 = up, 3 = right
+					
+					local s = '';
+					if math.mod(inc,6) == 0 then s = '*10000 No Reverse,*10000 -250% Split,*10000 -250% Cross,*10000 -250% Alternate';
+				elseif math.mod(inc,6) == 1 or math.mod(inc,6) == 5 then s = '*10000 -500% Reverse,*10000 -250% Split,*10000 250% Cross,*10000 250% Alternate';
+				elseif math.mod(inc,6) == 2 or math.mod(inc,6) == 4 then s = '*10000 -500% Reverse,*10000 250% Split,*10000 250% Cross,*10000 -250% Alternate';
+				elseif math.mod(inc,6) == 3 then s = '*10000 -500% Reverse,*10000 250% Split,*10000 -250% Cross,*10000 250% Alternate';
+					end
+					
+					if math.mod(inc,6) == 4 or math.mod(inc,6) == 5 or math.mod(inc,6) == 0 then
+						table.insert(prefix_mods,{i+240/222/24,240/222/24*3,s,'len',1});
+						table.insert(prefix_mods,{i,240/222/24*3,s,'len',2});
+						table.insert(prefix_mods,{i,240/222/24,'*8 50% Dark,*16 200% Stealth','len',1});
+						table.insert(prefix_mods,{i+240/222/24,240/222/24,'*8 50% Dark,*16 200% Stealth','len',2});
+					else
+						table.insert(prefix_mods,{i,240/222/24*3,s,'len',1});
+						table.insert(prefix_mods,{i+240/222/24,240/222/24*3,s,'len',2});
+						table.insert(prefix_mods,{i+240/222/24,240/222/24,'*8 50% Dark,*16 200% Stealth','len',1});
+						table.insert(prefix_mods,{i,240/222/24,'*8 50% Dark,*16 200% Stealth','len',2});
+					end
+					
+					inc = inc + 1;
+				end
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			prefix_inc = prefix_inc + 1;
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:rotationx(0);							
+						v:rotationy(0);
+						v:rotationz(0);
+						v:x(SCREEN_CENTER_X+160*multi);
+						v:y(SCREEN_CENTER_Y);
+						v:zoomx(1);
+						v:zoomy(1);
+						v:GetChild('Judgment'):stopeffect();
+						
+						--v:rotationy(multi*-5);
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 102 and fgcurcommand == 1 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:x(SCREEN_CENTER_X);
+						v:GetChild('Judgment'):x(160*multi);
+						v:GetChild('Combo'):x(160*multi);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			
+			
+			
+			
+			if beat >= 232 and fgcurcommand == 2 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:decelerate(0.540);
+						v:x(SCREEN_CENTER_X+32*multi);
+						v:GetChild('Judgment'):decelerate(0.540);
+						v:GetChild('Judgment'):x(32*multi*4);
+						v:GetChild('Combo'):decelerate(0.540);
+						v:GetChild('Combo'):x(32*multi*4);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 296 and fgcurcommand == 3 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:decelerate(0.540);
+						v:x(SCREEN_CENTER_X);
+						v:GetChild('Judgment'):decelerate(0.540);
+						v:GetChild('Judgment'):x(160*multi);
+						v:GetChild('Combo'):decelerate(0.540);
+						v:GetChild('Combo'):x(160*multi);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			if beat >= 324 and fgcurcommand == 4 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:linear(240/440);
+						v:x(SCREEN_CENTER_X+160*multi);
+						v:linear(240/440);
+						v:x(SCREEN_CENTER_X);
+						v:GetChild('Judgment'):linear(240/440);
+						v:GetChild('Judgment'):x(0);
+						v:GetChild('Judgment'):linear(240/440);
+						v:GetChild('Judgment'):x(160*multi);
+						v:GetChild('Combo'):linear(240/440);
+						v:GetChild('Combo'):x(0);
+						v:GetChild('Combo'):linear(240/440);
+						v:GetChild('Combo'):x(160*multi);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat > 0 and beat < 103 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if beat < 102 then
+						if v then
+							v:rotationx(math.sin(beat*math.pi/2)*(beat / 100));
+							v:rotationy(math.cos(beat*math.pi/2)*(beat / 100));
+						end
+					else
+						v:rotationx(0);
+						v:rotationy(0);
+					end
+				end
+			end
+			
+			if beat > 104 and beat < 232 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						
+						if i == 1 then
+							v:z(math.abs(math.sin(beat*math.pi/2)*auxvar:getaux())*400);
+							if beat > 199 then
+								v:rotationz(math.cos(beat*math.pi)*auxvar:getaux()*25);
+								if beat > 214 then
+									v:rotationx(math.sin(beat*math.pi)*auxvar:getaux()*25);
+									v:rotationy(math.sin(beat*math.pi)*auxvar:getaux()*25);
+								end
+							end
+						else
+							v:z(math.abs(math.cos(beat*math.pi/2)*auxvar:getaux())*400);
+							if beat > 199 then
+								v:rotationz(math.sin(beat*math.pi)*auxvar:getaux()*25);
+								if beat > 214 then
+									v:rotationx(math.sin(beat*math.pi)*auxvar:getaux()*25);
+									v:rotationy(math.sin(beat*math.pi)*auxvar:getaux()*25);
+								end
+							end
+						end
+					end
+				end
+			end
+			
+			if beat > 300 and beat < 428 then
+				local freq = 2; if beat >= 324 or beat < 332 then freq = 1.5; end
+				
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						
+						if i == 1 then
+							v:z(math.abs(math.sin(beat*math.pi/freq)*auxvar:getaux())*400);
+							if beat < 364 then v:rotationz(math.cos(beat*math.pi)*auxvar:getaux()*25); else v:rotationz(math.cos(beat*math.pi)*auxvar:getaux()*10); end
+							v:rotationx(math.sin(beat*math.pi)*auxvar:getaux()*25);
+							v:rotationy(math.sin(beat*math.pi)*auxvar:getaux()*25);
+						else
+							v:z(math.abs(math.cos(beat*math.pi/freq)*auxvar:getaux())*400);
+							if beat < 364 then v:rotationz(math.sin(beat*math.pi)*auxvar:getaux()*25); else v:rotationz(math.sin(beat*math.pi)*auxvar:getaux()*10); end
+							v:rotationx(math.sin(beat*math.pi)*auxvar:getaux()*25);
+							v:rotationy(math.sin(beat*math.pi)*auxvar:getaux()*25);
+						end
+					end
+				end
+				
+				if beat > 392 and beat < 396 then
+					local multi = 1; if math.mod(prefix_inc,2) == 0 then multi = -1; end
+					GAMESTATE:ApplyGameCommand('mod,*10000 '..math.max(0,(396-beat)*100)*multi..'% Drunk');
+				end
+			end
+			
+			if beat > 428 and beat < 999 then
+				GAMESTATE:ApplyGameCommand('mod,*16 200% Mini');
+				GAMESTATE:ApplyGameCommand('mod,*16 No Mini',math.mod(prefix_minishift,2) + 1);
+			end
+			
+				if beat > 488 and beat < 492 then
+					local multi = 1; if math.mod(prefix_inc,2) == 0 then multi = -1; end
+					GAMESTATE:ApplyGameCommand('mod,*10000 '..math.max(0,(492-beat)*100)*multi..'% Drunk');
+				end
+			
+			
+			
+			
+			
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (-0.622 - -0.636) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		ViolentBounceMessageCommand="finishtweening;aux,0;linear,0.1;aux,1;sleep,8;linear,0.27;aux,0;linear,0.27;aux,1;sleep,4.054;linear,0.13513;aux,0;linear,0.13513;aux,1;sleep,1.892;decelerate,0.27;aux,0;linear,0.135;aux,1;sleep,1.5;linear,0.25;aux,0"
+		ViolentBounce2MessageCommand="finishtweening;aux,0;linear,240/440/4;aux,1;sleep,240/440/4*21;linear,240/440/4;aux,0;sleep,240/440/4*9;linear,240/440/4;aux,1;sleep,240/440/4*22;linear,240/440/4;aux,0;sleep,240/440/4*8;linear,240/440/4;aux,1;sleep,240/440/4*12;linear,240/440/4;aux,0;sleep,240/440/4;linear,240/440/4;aux,1;sleep,240/440/4*7;linear,240/440/4;aux,0;sleep,240/440/4*7;linear,240/440/4;aux,1;sleep,240/440/4*28;linear,240/440/4*2;aux,0"
+		MiniShiftLeftMessageCommand="%function(self)
+			prefix_minishift = prefix_minishift + 1;
+			prefix_xpos = prefix_xpos - 32;
+			local pn = math.mod(prefix_minishift,2) + 1;
+			for i,v in pairs(prefix_plr) do
+				if v then
+					if i == pn then
+						v:x(prefix_xpos);
+					end
+				end
+			end
+		end"
+		
+		MiniShiftLeftSmallMessageCommand="%function(self)
+			prefix_minishift = prefix_minishift + 1;
+			prefix_xpos = prefix_xpos - 20;
+			local pn = math.mod(prefix_minishift,2) + 1;
+			for i,v in pairs(prefix_plr) do
+				if v then
+					if i == pn then
+						v:x(prefix_xpos);
+					end
+				end
+			end
+		end"
+		
+		MiniShiftRightMessageCommand="%function(self)
+			prefix_minishift = prefix_minishift + 1;
+			prefix_xpos = prefix_xpos + 32;
+			local pn = math.mod(prefix_minishift,2) + 1;
+			for i,v in pairs(prefix_plr) do
+				if v then
+					if i == pn then
+						v:x(prefix_xpos);
+					end
+				end
+			end
+		end"
+	/>
+	
+</children></ActorFrame>

@@ -1,0 +1,66 @@
+hexOS [Destabilized Version]
+
+In order to run hexOS-based programs, some data must first be installed to your computer.
+We swear that this data is not able to log any of your personal data, or do anything of the like.
+As no terms and conditions have been set, we are willing to be sued for breaking this statement.
+If you are willing to continue, press the enter key and continue running this program.
+
+-------------------
+
+Verifying system data...
+Installing connection points...
+Connecting to servers...
+
+A link has successfully been established between this computer and the Nullified Database.
+
+-------------------
+
+Action - Loading data restrictions...
+Action - Downloading raw text data...
+
+Info - This information has no assigned permission level. As such, it is free to access.
+
+-------------------
+--BEGIN INFO LOG---
+-------------------
+
+Heya! You probably have a few questions about what's going on here. Honestly, I do too - but let's try to resolve yours first.
+
+-What is this, and what is its purpose?
+
+This folder is a container for important details about the Nullified Entities; both past and present. This may refer to lifestyles, logic, and various other things that are happening.
+We've taken a great interest in your world, so we intend to scan it's various unique elements to learn more about the universe. Retaliation will not be met with any strict consequences, except that we might be a little disappointed in that choice of action.
+
+As time goes on, this folder will be updated with more logs. Requests for (currently) restricted data can be sent to the data server, and considerations will be made to remove their access levels if unanimous agreement is made towards doing so.
+Requests are currently sent and received through these unofficial server links:
+ | Direct Message Bot: (Spartan#8574)
+ | "UKSRT Official Discord": #lore-discussion (sending a ping to our direct messaging bot may be required!)
+
+---
+
+-Why should I trust you?
+
+We've collectively done everything we can to be as harmless as possible to you and your environment. We leave no carbon footprint, and could be beaten in combat by a good number of household pets. And if that's not enough: we intend to offer you equal value for anything that we take in information.
+For example: your current transport technology, while highly advanced, could use some updating. We have the means to allow you to begin travelling between planets, provided you're willing to cooperate with our projects.
+
+We can't force you to trust us, as mindwashing is strictly banned by our governing system. But if we try to hurt you, we receive all of the pain we intend to inflict. And we're not the greatest fans of pain, to say the least.
+
+---
+
+-Who are you?
+
+Collectively, we make up the Nullified Entities: but as a single point of communication for new projects, we always go through Hexyl first - our personal team leader. Many different types of minds make up our group, but we've mutually agreed to work together for a few select causes.
+We all work under the same conditions, and agree that we can leave this group whenever we want to. If you wish for further information about one select entity, this can be provided by said entity's agreement to offer this information!
+(Note: All Entity ID's are reviewed by multiple other entities, both to ensure high-quality overviews, and to prevent possible bias!)
+
+---
+
+These are all of the most important questions we have to answer right now. If you have further questions, please use our contacts contained within the "Unofficial Sever Links" section. We're hoping to open up a more official link soon!
+
+-------------------
+--END INFO LOG---
+-------------------
+
+
+
+

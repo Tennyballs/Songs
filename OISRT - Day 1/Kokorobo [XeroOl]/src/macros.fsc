@@ -1,0 +1,63 @@
+# vi: ft=scopes
+
+let return; =
+    `(lua "return")
+
+let map f xs =
+    icollect _ x in (ipairs xs)
+        f x
+
+let parse str =
+    icollect s in ('gmatch str "%w%w")
+        (tonumber s 16) / 256
+
+let colors = {
+    night = (map parse ["#2E3440" "#3B4252" "#434C5E" "#4C566A"])
+    storm = (map parse ["#D8DEE9" "#E5E9F0" "#ECEFF4"])
+    frost = (map parse ["#8FBCBB" "#88C0D0" "#81A1C1" "#5E81AC"])
+    aurora = (map parse ["#BF616A" "#D08770" "#EBCB8B" "#A3BE8C" "#B48EAD"])
+}
+
+let color name alpha =
+    let k = tostring name
+    local j = colors @ ('sub k 1 -2) @ (tonumber ('sub k -1 -1))
+    list
+        sym :values
+        j @ 1
+        j @ 2
+        j @ 3
+        alpha or 1
+
+let func self f =
+    if f
+        table.insert self f
+    `(xero.func ,self)
+
+let definemod pre f post =
+    if f
+        table.insert pre f
+    if post
+        for _ v in (ipairs post)
+            table.insert pre v
+    `(xero.definemod ,pre)
+
+let node pre f post =
+    if f
+        table.insert pre f
+    if post
+        for _ v in (ipairs post)
+            table.insert pre v
+    `(xero.node ,pre)
+
+let export symbol =
+    `(tset xero ,(tostring symbol) ,symbol)
+
+{
+    return
+    color
+    func
+    definemod
+    node
+    export
+}
+

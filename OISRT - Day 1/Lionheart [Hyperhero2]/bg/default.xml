@@ -1,0 +1,8 @@
+<ActorFrame> <children>
+        <Layer Type="Quad" OnCommand="hidden,1;sleep,999;"/>
+    <Layer
+        File="bg.png" Var="prefix_background"
+        OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;"
+    />
+
+</children> </ActorFrame>

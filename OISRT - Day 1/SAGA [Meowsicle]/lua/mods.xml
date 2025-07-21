@@ -1,0 +1,518 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+	
+	--set {beat, percent, mod} = m()
+	--ease {beat, len, ease_fn, percent, mod} = me()
+	--add {beat, len, ease_fn, relative_percent, mod}
+	-- Scheduled Function:
+    --func {beat, function(b)} = mm()
+	-- Perframe:
+	--func {beat, len, function(b, poptions)} = mpf()
+	-- Function Eases:
+	--func {beat, len, ease_fn, function(p)}
+	--func {beat, len, ease_fn, percent, function(p)}
+	--func {beat, len, ease_fn, begin_percent, end_percent, function(p)}
+	
+	--driven drop: centered = xmod*len*100
+	
+	--{0,9999,'*2 2x, *-1 overhead, *-1 approachtype, *-1 dizzyholds, *-1 stealthpastreceptors, *-1 modtimer, *-1 -99999 cover','end'},
+	
+	-- your code goes here here:
+	setdefault{1.5,'xmod',100,'overhead',100,'dizzyholds',100,'stealthpastreceptors',100,'modtimer',100,'cover',100,'proxywall',-10,'proxywalloffset',100,'proxywall2',10,'proxywalloffset2',50,'bumpyoffset',1,'bgzoom',1000,'grain'}
+	
+	local p1stxpos = P[1]:GetX()
+	local p2stxpos = P[2]:GetX()
+	
+	local function fliperoo()
+		if (GAMESTATE:GetSongTime() * 60) % 2 < 1 then
+			return -1
+		else
+			return 1
+		end
+	end
+	
+	definemod{'spin', 'spin_radius', function(amt,radius)
+		local sin = radius*math.sin(amt*math.pi/180)
+		local cos = radius*math.cos(amt*math.pi/180)
+		return sin, cos
+	end,'x','z'}
+	
+	local condor = {}
+    condor.const1 = math.sqrt(math.pow(SCREEN_WIDTH/2,2)+math.pow(SCREEN_HEIGHT/2,2))
+    condor.const2 = 180+math.deg(math.atan(SCREEN_HEIGHT/SCREEN_WIDTH))
+
+    condor.zoom = function(amt,obj)
+		local saga_s = obj
+        if not obj then saga_s = SCREENMAN:GetTopScreen() end
+        saga_s:x(SCREEN_WIDTH/2+(condor.const1*amt*math.cos((condor.const2)/180*math.pi)));
+        saga_s:y(SCREEN_HEIGHT/2+(condor.const1*amt*math.sin((condor.const2)/180*math.pi)));
+        saga_s:zoom(amt)
+    end
+    
+    condor.rotation = function(ang,obj)
+        local saga_s = obj
+        if not obj then saga_s = SCREENMAN:GetTopScreen() end
+        saga_s:x(SCREEN_WIDTH/2+(condor.const1*math.cos((ang+condor.const2)/180*math.pi)));
+        saga_s:y(SCREEN_HEIGHT/2+(condor.const1*math.sin((ang+condor.const2)/180*math.pi)));
+        saga_s:rotationz(ang)
+    end
+	
+	local function mix(a, b, x) return a * (1 - x) + b * x end
+	--oatmealine's proxy wall function
+	local proxPos = {}
+    local proxZoom = 1
+    local proxDist = 64 * 4 * proxZoom -- 4 - column number
+    for i,prox in ipairs(saga_proxyMarch) do
+        local pn = ((i - 1) % 2) + 1
+
+        local start = scx - proxDist * #saga_proxyMarch/2
+
+        local x = (start + proxDist * (i - 1)) + 128
+
+        prox:SetTarget(P[1]:GetChild('NoteField'))
+        proxPos[i] = x
+        prox:xy(scx, scy)
+
+        prox:hidden(1)
+        prox:diffusealpha(1/#saga_proxyMarch)
+    end
+	
+	definemod{'proxywalloffset', function(a)
+    for i,prox in ipairs(saga_proxyMarch) do
+        prox:x(proxPos[i] + (a * proxDist) % proxDist)
+    end
+	end}
+
+	definemod{'proxywall', function(a)
+    for _,prox in ipairs(saga_proxyMarch) do
+        prox:zoom(mix(1, proxZoom, a / 100))
+        prox:diffusealpha(mix(1/#saga_proxyMarch, 1, a / 100))
+    end
+	end}
+	
+	definemod{'proxyrotate1', function(a)
+		saga_proxies1:rotationy(a)
+	end}
+	
+	local proxPos2 = {}
+    local proxZoom2 = 1
+    local proxDist2 = 64 * 4 * proxZoom2 -- 4 - column number
+    for i,prox in ipairs(saga_proxyMarch2) do
+        local pn = ((i - 1) % 2) + 1
+
+        local start = scx - proxDist2 * #saga_proxyMarch2/2
+
+        local x = (start + proxDist * (i - 1)) + 128
+
+        prox:SetTarget(P[2]:GetChild('NoteField'))
+        proxPos2[i] = x
+        prox:xy(scx, scy)
+
+        prox:hidden(1)
+        prox:diffusealpha(1/#saga_proxyMarch2)
+    end
+	
+	definemod{'proxywalloffset2', function(a)
+    for i,prox in ipairs(saga_proxyMarch2) do
+        prox:x(proxPos2[i] + (a * proxDist2) % proxDist2)
+    end
+	end}
+
+	definemod{'proxywall2', function(a)
+    for _,prox in ipairs(saga_proxyMarch2) do
+        prox:zoom(mix(1, proxZoom2, a / 100))
+        prox:diffusealpha(mix(1/#saga_proxyMarch2, 1, a / 100))
+    end
+	end}
+	
+	definemod{'proxyrotate2', function(a)
+		saga_proxies2:rotationy(a)
+	end}
+	
+	local function hidecolumn(beat,per,col,pn)
+		for i,v in ipairs(col) do
+			set{beat,per,'stealth'..v,per,'dark'..v,per,'hidenoteflashes'..v,plr=pn}
+		end
+	end
+	
+	saga_bg:xy(scx,scy)
+	saga_bg:zoom(1)
+	
+	definemod{'bgzoom',function(a)
+		saga_bg:zoom(a)
+	end}
+	definemod{'bgrotate',function(a)
+		saga_bg:rotationz(a)
+	end}
+	
+	set{0,100,'bumpy',100,'wave',50,'bumpyy'}
+	local saga_fliefsdfdsf = 0
+	ease{7,0.5,inCubic,100,'orient'}
+	set{7.5,0,'orient'}
+	func{7,0.5,inCubic,0,300,function(p)
+		saga_fliefsdfdsf = p
+	end}
+	func{7,0.5,function(beat,poptions)
+		local flip = fliperoo()
+		for pn=1,2 do
+			poptions[pn].drunk = saga_fliefsdfdsf*flip
+			poptions[pn].tipsy = saga_fliefsdfdsf*flip
+		end
+	end}
+	
+	local saga_flicker = 0
+	for i,v in ipairs(kick) do
+		if v[2] == 0 then
+			if i%2==0 then mult=1 else mult=-1 end
+			ease{v[1],0.75,flip(outCubic),-200,'tiny',200*mult,'drunk',200*mult,'tipsy',100,'orient',-10000,'tinyz'}
+		end
+		
+		if v[2] == 1 then
+			ease{v[1],0.5,flip(outCubic),200,'square'}
+			ease{v[1]+0.25,0.5,flip(outCubic),-200,'square'}
+			ease{v[1]+0.5,0.5,flip(outCubic),200,'square'}
+		end
+		
+		if v[2] == 2 then
+			ease{v[1],1,flip(outCubic),100,'orient'}
+			func{v[1],1,outCubic,300,0,function(p)
+				saga_flicker = p
+			end}
+			func{v[1],1,function(beat,poptions)
+				local flip = fliperoo()
+				for pn=1,2 do
+					poptions[pn].drunk = saga_flicker*flip
+					poptions[pn].tipsy = saga_flicker*flip
+				end
+			end}
+		end
+		ease{v[1],0.75,flip(outCubic),1.25,'bgzoom'}
+		
+		if i%2==0 then
+			ease{v[1],0.75,flip(outCubic),45/3,'bgrotate'}
+		else
+			ease{v[1],0.75,flip(outCubic),-45/3,'bgrotate'}
+		end
+	end
+	
+	for i,v in ipairs(cymbal) do
+		if v[2] == 0 then
+			ease{v[1],2,flip(outCubic),50,'stealth'}
+		end
+		if v[2] == 1 then
+			ease{v[1],1,flip(outCubic),50,'stealth'}
+		end
+		if v[2] == 2 then
+			ease{v[1],4,inCubic,50,'stealth'}
+			set{v[1]+4,0,'stealth'}
+		end
+		if v[2] == 3 then
+			ease{v[1],2,inCubic,50,'stealth'}
+			set{v[1]+2,0,'stealth'}
+		end
+	end
+	
+	for i=0.5,31,2 do
+		if i==6.5 then
+			ease{i,0.5,outCubic,-5,'invert'}
+			ease{i+0.25,0.5,outCubic,5,'invert'}
+		else
+			ease{i,0.5,outCubic,-5,'invert'}
+			ease{i+1,0.5,outCubic,5,'invert'}
+		end
+	end
+	
+	function saga_inv(first,last)
+		for i=first,last,2 do
+			ease{i,0.5,outCubic,-10,'invert'}
+			ease{i+1,0.5,outCubic,10,'invert'}
+		end
+		ease{last,0.5,outCubic,0,'invert'}
+	end
+	saga_inv(32.5,56)
+	saga_inv(64.5,80)
+	saga_inv(84.5,92)
+	saga_inv(96.5,124)
+	saga_inv(144.5,156)
+	saga_inv(160.5,188)
+	saga_inv(224.5,252)
+	saga_inv(256.5,280)
+	
+	for i=16,55,8 do
+		swap{i+1,0.5,outCubic,'durl'}
+		swap{i+3,0.5,outCubic,'urld'}
+		swap{i+5,0.5,outCubic,'rldu'}
+		swap{i+7,0.5,outCubic,'ldur'}
+	end
+	
+	func{56,8,inCubic,p1stxpos,scx,'P1:x'}
+	func{56,8,inCubic,p2stxpos,scx,'P2:x'}
+	
+	mirror{56,8,inCubic,200,'spin_radius'}
+	
+	for i=56,61 do
+		if i==61 then
+			ease{i,0.5,outCubic,100,'invert',100,'drunk'}
+			ease{i+0.5,0.5,outCubic,0,'invert',0,'drunk'}
+		else
+			ease{i,0.5,outCubic,100,'invert',100,'drunk'}
+			ease{i+0.5,0.5,outCubic,0,'invert',-100,'drunk'}
+		end
+	end
+	
+	
+	for i=64,79 do
+		--if not ((i%4)-3==0) then
+			add{i,0.5,outCubic,45,'spin'}
+		--end
+		ease{i,1,bounce,-10,'reverse'}
+	end
+	for i=80,83 do
+		ease{i,1,bounce,-25,'reverse'}
+		if i%2==0 then
+			ease{i,1,flip(outCubic),180,'confusionoffset'}
+		else
+			ease{i,1,flip(outCubic),-180,'confusionoffset'}
+		end
+	end
+	for i=84,91 do
+		--if not ((i%4)-3==0) then
+			add{i,0.5,outCubic,45,'spin'}
+		--end
+		ease{i,1,bounce,-10,'reverse'}
+	end
+	
+	ease{92,4,outCubic,0,'spin_radius'}
+	
+	func{92,4,inCubic,0,300,function(p)
+		saga_flickkkkkkkkkkk = p
+	end}
+	func{92,4,function(beat,poptions)
+		local flip = fliperoo()
+		for pn=1,2 do
+			poptions[pn].drunk = saga_flickkkkkkkkkkk*flip
+			poptions[pn].tipsy = saga_flickkkkkkkkkkk*flip
+		end
+	end}
+	
+	func{96,32-4,inSine,1,0.5,function(a) 
+		condor.zoom(a)
+	end}
+	
+	ease{96,32-4,inSine,-150,'reverse',-100,'tornado',200,'wave'}
+	
+	func{125,1,function(beat,poptions)
+		local flip = fliperoo()
+		for pn=1,2 do
+			poptions[pn].drunk = 100*flip
+			--poptions[pn].tipsy = 100*flip
+		end
+	end}
+	
+	func{126,1,outCubic,0.5,0.75,function(a) 
+		condor.zoom(a)
+	end}
+	func{127,1,outCubic,0.75,1,function(a) 
+		condor.zoom(a)
+	end}
+	ease{126,1,outCubic,-100,'reverse',-50,'tornado',100,'wave'}
+	ease{127,1,outCubic,0,'reverse',0,'tornado',100,'wave'}
+	mirror{127,1,outCubic,100,'spin_radius'}
+	for i=128,143,2 do
+		add{i,1,outCubic,-45,'spin'}
+		add{i,2,bounce,-10,'reverse'}
+	end
+	mirror{144,1,outCubic,200,'spin_radius'}
+	for i=144,155 do
+		--if not ((i%4)-3==0) then
+			add{i,0.5,outCubic,-45,'spin'}
+		--end
+		ease{i,1,bounce,-10,'reverse'}
+	end
+	ease{156,4,inCubic,0,'spin_radius'}
+	
+	local to_rad = (math.pi/180)*100
+	
+	for i=160,187,2 do
+		ease{i,0.5,outCubic,100,'stealth0',100,'stealth2',0,'stealth1',0,'stealth3',plr=1}
+		ease{i,0.5,outCubic,0,'stealth0',0,'stealth2',100,'stealth1',100,'stealth3',plr=2}
+		ease{i+1,0.5,outCubic,0,'stealth0',0,'stealth2',100,'stealth1',100,'stealth3',plr=1}
+		ease{i+1,0.5,outCubic,100,'stealth0',100,'stealth2',0,'stealth1',0,'stealth3',plr=2}
+	end
+	for i=160,187,8 do
+		mirror{i,8,bounce,75,'skewx'}
+	end
+	
+	--ease{192,0.5,outCubic,0,'stealth0',0,'stealth1',0,'stealth2',0,'stealth3'}
+	
+	for i=192,215,8 do
+		swap{i+1,0.5,outCubic,'durl'}
+		swap{i+3,0.5,outCubic,'urld'}
+		swap{i+5,0.5,outCubic,'rldu'}
+		swap{i+6.5,0.5,outCubic,'rlud'}
+		swap{i+7,0.5,outCubic,'ldur'}
+	end
+	
+	ease{192,3,outExpo,200,'movex',plr=1}
+	ease{192,3,outExpo,-200,'movex',plr=2}
+	
+	set{220,0,'movex'}
+	func{220,function()
+		for i,prox in ipairs(saga_proxyMarch) do
+			prox:hidden(0)
+		end
+		for i,prox in ipairs(saga_proxyMarch2) do
+			prox:hidden(0)
+		end
+		for pn=1,2 do
+			PP[pn]:hidden(1)
+		end
+	end}
+	
+	saga_proxies1:fov(60)
+	saga_proxies2:fov(60)
+	
+	--ease{222,2,linear,45/2,'proxyrotate1'}
+	--ease{222,2,linear,-45/2,'proxyrotate2'}
+	
+	--[[for i=222,223.5,0.5 do
+		hidecolumn(i,100,{0,2},1)
+		hidecolumn(i,100,{1,3},2)
+		
+		hidecolumn(i+0.25,0,{0,2},1)
+		hidecolumn(i+0.25,0,{1,3},2)
+	end]]
+	
+	for i=222,223.75,0.25 do
+		acc{i,(45/2)/8,'proxyrotate1'}
+		acc{i,(-45/2)/8,'proxyrotate2'}
+	end
+	
+	ease{220,4,outQuint,0,'proxywalloffset'}
+	ease{220,4,outQuint,0,'proxywalloffset2'}
+
+	hidecolumn(220,100,{1,3},1)
+	hidecolumn(220,100,{0,2},2)
+	
+	for i=224,251 do
+		add{i,1,outCubic,1,'proxywalloffset'}
+		add{i,1,outCubic,-1,'proxywalloffset2'}
+	end
+	
+	--ease{252,2,linear,-45/2,'proxyrotate1'}
+	--ease{254,2,linear,45/2,'proxyrotate2'}
+	
+	for i=252,253.5,0.25 do
+		acc{i,-45/7,'proxyrotate1'}
+	end
+	for i=252+2,253.5+2,0.25 do
+		acc{i,45/7,'proxyrotate2'}
+	end
+	
+	for i=256,279 do
+		add{i,1,outCubic,-1,'proxywalloffset'}
+		add{i,1,outCubic,1,'proxywalloffset2'}
+	end
+	
+	ease{280,0.5,outCubic,0,'proxyrotate1',0,'proxyrotate2',50,'dark'}
+	
+	func{281,function()
+		for i,prox in ipairs(saga_proxyMarch2) do
+			prox:hidden(1)
+		end
+	end}
+	hidecolumn(281,0,{1,3},1)
+	hidecolumn(281,0,{0,2},2)
+	
+	local saga_flicjsfdhsk = 0
+	ease{287,0.5,inCubic,100,'orient'}
+	set{287.5,0,'orient'}
+	func{287,0.5,inCubic,0,300,function(p)
+		saga_fliefsdfdsf = p
+	end}
+	func{287,0.5,function(beat,poptions)
+		local flip = fliperoo()
+		for pn=1,2 do
+			poptions[pn].drunk = saga_fliefsdfdsf*flip
+			poptions[pn].tipsy = saga_fliefsdfdsf*flip
+		end
+	end}
+	
+	for i=280,308,8 do
+		swap{i+1,0.5,outCubic,'rldu'}
+		swap{i+3,0.5,outCubic,'urld'}
+		swap{i+5,0.5,outCubic,'durl'}
+		swap{i+7,0.5,outCubic,'ldur'}
+	end
+	ease{280,308-280,linear,100,'dark'}
+	for i=280.5,31+280-4,2 do
+		if i==6.5+280 then
+			ease{i,0.5,outCubic,-5,'invert'}
+			ease{i+0.25,0.5,outCubic,5,'invert'}
+		else
+			ease{i,0.5,outCubic,-5,'invert'}
+			ease{i+1,0.5,outCubic,5,'invert'}
+		end
+	end
+	ease{308,0.5,outCubic,0,'invert'}
+	
+	ease{312,4,outCubic,500,'tornado',500,'bumpy'}
+	
+	card{0,56,'intro',4,{0.0,1.0,1.0}}
+	card{64,92,'spin 1',7,{0.0,1.0,0.857}}
+	card{96,124,'speedup?!?!',8,{0.0,1.0,0.714}}
+	card{128,156,'spin 2',7,{0.0,1.0,0.571}}
+	card{160,192,'skewed funny',8,{0.0,1.0,0.428}}
+	card{192,220,'weird columns',8,{0.0,1.0,0.285}}
+	card{224,280,'oh no proxies',8,{0.0,1.0,0.142}}
+	card{280,316,'end',4,{0.0,1.0,0.0}}
+	
+end)"
+Type = "ActorFrame"
+><children>
+	<Layer File="kick.xml"/>
+	<Layer File="cymbal.xml"/>
+	<Layer File="b.png" Name="saga_bg" />
+	<Layer Type = "Quad" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH*2;ZoomToHeight,SCREEN_HEIGHT*2;diffuse,0,0,0,0.5"/>
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	<Layer Type="ActorFrame" Name="saga_proxies1" InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y"><children>
+		<Layer Type="ActorFrame" Name="saga_proxies1_1" InitCommand="xy,-SCREEN_CENTER_X,-SCREEN_CENTER_Y"><children>
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch[1]" />
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch[2]" />
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch[3]" />
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch[4]" />
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch[5]" />
+		</children></Layer>
+	</children></Layer>
+	
+	<Layer Type="ActorFrame" Name="saga_proxies2" InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y"><children>
+		<Layer Type="ActorFrame" Name="saga_proxies2_1" InitCommand="xy,-SCREEN_CENTER_X,-SCREEN_CENTER_Y"><children>
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch2[1]" />
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch2[2]" />
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch2[3]" />
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch2[4]" />
+			<Layer Type = "ActorProxy" Name = "saga_proxyMarch2[5]" />
+		</children></Layer>
+	</children></Layer>
+	
+    
+</children></Mods>

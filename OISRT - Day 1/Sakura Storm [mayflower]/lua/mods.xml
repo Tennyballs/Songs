@@ -1,0 +1,475 @@
+
+
+
+
+<!-- IMPORTANT -->
+<!-- DO NOT UNDER ANY CIRCUMSTANCES DELETE fgo.png IT WILL STOP TF2 FROM WORKING -->
+<!-- IMPORTANT -->
+
+
+
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+	sprite(mysprite) -- set up the sprite
+	aft(myaft) -- set up the aft
+	mysprite:SetTexture(myaft:GetTexture()) -- set up the texture
+
+	definemod{'freeze',function(penis)
+	mysprite:diffusealpha(penis/100)
+	end}
+	
+	supersex= SCREENMAN:GetTopScreen():GetChild('PlayerP1')
+	lawsuit= SCREENMAN:GetTopScreen()
+	
+	--WOW! Self centering playfields in MY File? Crazier than you might think!
+	local p1DefaultX = P1:GetX()
+    local p2DefaultX = P2:GetX()
+    local defaultZ = P1:GetZ()
+    definemod { 'centerPlayfields', function(percent) 
+        local scale = percent / 100
+        P1:x((scale*scx) + ((1-scale)*p1DefaultX))
+        P2:x((scale*scx) + ((1-scale)*p2DefaultX))
+    end }
+
+	definemod {'fov', function(f)
+		Background:SetFOV(60 + f)
+	end}
+
+
+	--oat magic dont ask what it does because i have no clue either
+	function mix(a, b, x) return a * (1 - x) + b * x end
+	
+local proxPos = {}
+local proxZoom = 1
+local proxDist = 64 * 4 * proxZoom -- 4 - column number
+local newprox = 1
+for i,prox in ipairs(oat_proxyMarch) do
+	local pn = ((i - 1) % 2) + 1
+	local start = scx - proxDist * #oat_proxyMarch/2
+	local x = start + proxDist * (i - 1)
+	prox:SetTarget(P[pn]:GetChild('NoteField'))
+	proxPos[i] = x
+	prox:xy(scx, scy)
+	prox:hidden(1)
+	prox:diffusealpha(1/#oat_proxyMarch)
+end
+
+for pn = 1,4 do
+	oat_proxyMarch[pn]:SetTarget(P[(pn % 2) + 1]:GetChild('NoteField'))
+	oat_proxyMarch[pn]:hidden(1)
+end
+
+definemod {'proxyZoom', function(a) proxZoom = a end}
+setdefault {1, 'proxyZoom'}
+--oat magic supported by rya (sorry for the now unecessary ping)
+aux {'proxywall', 'proxywallx'}
+node {'proxywall', 'proxywallx', function(a, x)
+	for i,prox in ipairs(oat_proxyMarch) do
+		local pn = ((i - 1) % 2) + 1
+
+		prox:xy(mix(scx, proxPos[i], a / 100) + ((x/100) * proxDist * 2) % (proxDist * 2), scy)
+
+		prox:zoom(mix(1, proxZoom, a / 100))
+		prox:hidden(a == 0 and 1 or 0)
+		prox:diffusealpha(mix(1/#oat_proxyMarch, 1, a / 100))
+	end
+end}
+
+definemod {'proxyZoom', function(a) proxZoom = a end}
+setdefault {0.8, 'proxyZoom'}
+
+aux {'proxywall', 'proxywallx'}
+node {'proxywall', 'proxywallx', function(a, x)
+	for i,prox in ipairs(oat_proxyMarch) do
+		local pn = ((i - 1) % 2) + 1
+
+		prox:xy(mix(scx, proxPos[i], a / 100) + ((x/100) * proxDist * 2) % (proxDist * 2), scy)
+
+		prox:zoom(mix(1, proxZoom, a / 100))
+		prox:hidden(a == 0 and 1 or 0)
+		prox:diffusealpha(mix(1/#oat_proxyMarch, 1, a / 100))
+	end
+end}
+
+	-- your code goes here here:
+	--Code that dont want to run in a OnCommand go here
+	func{0,function()
+	logo:xy(scx,scy)
+	logo:zoom(0.95)
+	funky:hidden(1);
+	funky2:hidden(1);
+	source:y(scy);
+	source:zoom(0.7)
+	source:x(-scx*3)
+	end}
+	set{0,1,'xmod',100,'centerPlayfields',50,'flip',50,'reverse',100,'Dark0',100,'Dark1',100,'Dark2',100,'Dark3',100,'drawdistance',-3000,'tinyz'}
+	--makes the arrows come from diffrent sides
+	ease{0,8,linear,0,'tinyz'}
+	--1 12 123 1234
+	set{0,50,'spiralx',50,'spiraly',100,'stealth3', plr= 1}
+	set{0,-50,'spiralx',-50,'spiraly',100,'stealth0', plr= 2}
+	ease{0,1,outBack,2,'xmod'}
+	
+	--c2l could be gucci here but i started it without it and im not stopping now
+	set{1,0,'Dark0'}
+	ease{1,0.5,outQuad,100,'Dark0'}
+	
+	set{2,0,'Dark0'}
+	ease{2,0.5,outQuad,100,'Dark0'}
+	set{2.5,0,'Dark1'}
+	ease{2.5,0.5,outQuad,100,'Dark1'}
+
+	set{3.5,0,'Dark0'}
+	ease{3.5,0.5,outQuad,100,'Dark0'}
+	set{4,0,'Dark1'}
+	ease{4,0.5,outQuad,100,'Dark1'}
+	set{4.5,0,'Dark2'}
+	ease{4.5,0.5,outQuad,100,'Dark2'}
+
+	set{5.5,0,'Dark0'}
+	ease{5.5,0.5,outQuad,100,'Dark0'}
+	set{6,0,'Dark1'}
+	ease{6,0.5,outQuad,100,'Dark1'}
+	set{6.5,0,'Dark2'}
+	ease{6.5,0.5,outQuad,100,'Dark2'}
+	set{7,0,'Dark3'}
+	ease{7,0.5,outQuad,100,'Dark3'}
+
+	func{8,function()
+	MainBG:hidden(0);
+	end}
+	
+	--the start may look a little empty but thats because the start is so sudden so I kinda have to
+	--this comment is now no longer true and a lie
+	reset{9,1, linear, exclude ='xmod'}
+	set{9,100,'dark'}
+	func{9, 2, outBack, scy*1.1, scy, 'logo:y'}
+	func{9, 1, outQuad, 0, 1, 'logo:diffusealpha'}
+	--hides the funky lil logo again for opening credits
+	func{16,function()
+	source:diffusealpha(1);
+	end}
+	func{17, 2, outQuad, -scx*3, scx, 'source:x'}
+	func{17, 2, outQuad, scx, scx*3, 'logo:x'}
+	func{19,function()
+	logo:hidden(1);
+	end}
+	func{24, 2, outQuad, scx, scx*3, 'source:x'}
+	func{26,function()
+	source:hidden(1);
+	end}
+
+	ease{24,1,outQuad,0,'Dark',100,'wave'}
+
+	--When in doubt, use c2l and (insert effect)
+	for i,v in ipairs(drunk1) do
+  		if v[2] == 0 then
+   			ease{v[1],0.25,outBack,10,'skewx'}
+			   ease{v[1],0.25,outBack,-10,'noteskewx'}
+			ease {v[1],0.25,outBack,-10,'confusionzoffset'}
+				ease {v[1]+0.25,0.25,outBack,0,'confusionzoffset'}
+ 		elseif v[2] == 1 then
+    		ease{v[1],0.25,outBack,-10,'skewx'}
+				ease{v[1],0.25,outBack,10,'noteskewx'}
+			ease {v[1],0.25,outBack,10,'confusionzoffset'}
+				ease {v[1]+0.25,0.25,outBack,0,'confusionzoffset'}
+  end
+  --code run before or after these if statements will run every time there is an entry.
+  --but noone answered.
+end
+
+	--funky flashy shit (aka column swaps)
+	for b =0,56,1 do
+	  add {b, 1, bounce, 20, 'fov'}
+	end
+	set{36.5,50,'stealth',100,'flip'}
+	ease{36.5,0.5,outQuad,0,'stealth'}
+
+	set{37.5,50,'stealth',0,'flip',100,'invert'}
+	ease{37.5,0.5,outQuad,0,'stealth'}
+
+	set{38.5,50,'stealth',0,'flip',0,'invert'}
+	ease{38.5,0.5,outQuad,0,'stealth'}
+
+	set{39,50,'stealth',0,'flip',100,'invert'}
+	ease{39,0.5,outQuad,0,'stealth'}
+
+	set{40,50,'stealth',0,'flip',0,'invert',0,'noteskewx',0,'skewx',100,'orient'}
+	ease{40,0.5,outQuad,0,'stealth'}
+
+	ease{48,0.5,outQuad,100,'centerPlayfields'}
+	ease{48,0.25,outQuad,-100,'tinyx',10,'skewx'}
+	ease{48.25,0.25,outQuad,-0,'tinyx',0,'skewx'}
+
+	ease{48,0.25,outQuad,-10,'skewx', plr= 1}
+	ease{48.25,0.25,outQuad,0,'skewx', plr = 1}
+	ease{48,0.25,outQuad,10,'skewx', plr= 2}
+	ease{48.25,0.25,outQuad,0,'skewx', plr = 2}
+	--I may be running out of ideas already
+	--no im not fuck you
+	set{48,100,'arrowpath'}
+
+	for i,v in ipairs(bouncz) do
+  		if v[2] == 0 then
+			ease{v[1],0.25,outExpo,100,'bumpyx0'}
+			ease{v[1]+0.25,0.25,inExpo,0,'bumpyx0'}
+			ease{v[1],0.25,outExpo,-100,'tinyx0'}
+			ease{v[1]+0.25,0.25,inExpo,0,'tinyx0'}
+ 		 elseif v[2] == 1 then
+			ease{v[1],0.25,outExpo,100,'bumpyx1'}
+			ease{v[1]+0.25,0.25,inExpo,0,'bumpyx1'}
+			ease{v[1],0.25,outExpo,-100,'tinyx1'}
+			ease{v[1]+0.25,0.25,inExpo,0,'tinyx1'}
+ 		 elseif v[2] == 2 then
+			ease{v[1],0.25,outExpo,100,'bumpyx2'}
+			ease{v[1]+0.25,0.25,inExpo,0,'bumpyx2'}
+			ease{v[1],0.25,outExpo,-100,'tinyx2'}
+			ease{v[1]+0.25,0.25,inExpo,0,'tinyx2'}
+
+  		elseif v[2] == 3 then
+    		ease{v[1],0.25,outExpo,100,'bumpyx3'}
+			ease{v[1]+0.25,0.25,inExpo,0,'bumpyx3'}
+			ease{v[1],0.25,outExpo,-100,'tinyx3'}
+			ease{v[1]+0.25,0.25,inExpo,0,'tinyx3'}
+
+ 	 	end
+	end
+	
+	--gonna mod more of the song now because as they say: perfection kills projects and boy does this need alot of perfection^
+	--so true hun
+	ease{63.5,0.25,outCirc,100,'flip'}
+	ease{64,0.25,outCirc,0,'flip'}
+
+
+	ease{74.5,0.25,outCirc,100,'flip'}
+	ease{75,0.25,outCirc,0,'flip'}
+	ease{75.5,0.25,outCirc,100,'flip'}
+	ease{76,0.25,outCirc,0,'flip'}
+
+	--NO MOER PLAYTEST OF EARLIER MOIDS
+	--func{0,function()
+	--GAMESTATE:SetSongBeat(129);
+	--end}
+	--NO MOER PLAYTEST OF EARLIER MOIDS
+	--NO MORE NO MOER PLAYTEST OF EARLIER MOIDS
+
+	ease{80,0.25,outExpo,0,'arrowpath',0,'centerPlayfields'}
+	func{80,function()
+	MainBG:hidden(1);
+	funky:hidden(0);
+	law:hidden(0);
+	funky:diffusealpha(1);
+	shitfuck:hidden(0);
+	end}
+	func {80, 0.5, outCirc, 1,0, 'shitfuck:diffusealpha'}
+	
+	mirror {80, 20, linear, 100, 'x'}
+	ease{80,13.5,inOutSine,68,'x',27,'y',20,'rotationy',-7,'rotationx',32,'drunk',15,'tipsy', plr = 1}
+	ease{80,13.5,inOutSine,-10,'x',27,'y',-15,'rotationy',-13,'rotationx',32,'tipsy',15,'drunk', plr = 2}
+
+
+	--droiven drope!!
+	--nvm too dumb to undertsnad and i gotta speedmod
+	set{93.5,33,'centerPlayfields',22,'drunk',10,'tipsy',33,'proxywall'}
+	func{93.5, 0.5, outQuad, 1,0, 'shitfuck:diffusealpha'}
+	set{94.5,66,'centerPlayfields',12,'drunk',5,'tipsy',66,'proxywall'}
+	func{94.5, 0.5, outQuad, 1,0, 'shitfuck:diffusealpha'}
+	set{95.5,100,'centerPlayfields',0,'drunk',0,'tipsy',0,'rotationy',0,'rotationx',0,'x',0,'y',90,'proxywall',0,'orient'}
+	func{95.5, 0.5, outQuad, 1,0, 'shitfuck:diffusealpha'}
+	func{95.5,function()
+	PP[1]:hidden(1);
+	PP[2]:hidden(1);
+	end}
+	ease{95.5,0.5,outCirc,50,'freeze'}
+	--ease{95.5,14.5,bounce,100,'proxywallx'}
+	for i,v in ipairs(woosh) do
+  		add{v[1],0.5,outBack,5,'proxywallx'}
+		add{v[1],0.5,outBack,5,'wave'}
+		ease{v[1],0.25,outCirc,50,'tinyy'}
+		ease{v[1]+0.25,0.25,outCirc,-0,'tinyy'}
+	end
+	--Im struggling a lil ngl
+	--but in the end I made it!!!
+	func{113,function()
+	shitfuck:hidden(0);
+	mysprite:diffusealpha(0);
+	PP[1]:hidden(0);
+	PP[2]:hidden(0);
+	end}
+	func {113, 0.5, outQuad, 1,0, 'shitfuck:diffusealpha'}
+	set{113,0,'proxywall',20,'wave'}
+
+	func {121, 0.5, outQuad, 1,0, 'shitfuck:diffusealpha'}
+	set{121,0,'centerPlayfields',200,'wave'}
+	--ANNYWAY
+	ease{124.5,0.25,outExpo,100,'flip', plr=1}
+
+	ease{125.5,0.25,outExpo,0,'flip', plr=1}
+	ease{125.5,0.25,outExpo,100,'flip', plr=2}
+
+	ease{126.5,0.25,outExpo,100,'flip', plr=1}
+	ease{126.5,0.25,outExpo,0,'flip', plr=2}
+
+	ease{127.5,0.25,outExpo,0,'flip'}
+
+	func{129,function()
+	funky:hidden(1);
+	law:hidden(0);
+	funky2:hidden(0);
+	shitfuck:hidden(0);
+	mysprite:hidden(1);
+	PP[1]:hidden(1);
+	PP[2]:hidden(1);
+	yoinky:fov(45);
+	invert2:hidden(0);
+	end}
+	func {129, 0.5, outCirc, 1,0, 'shitfuck:diffusealpha'}
+	func {129, 0.5, outCirc, 0,30, 'yoinky:rotationy'}
+
+
+
+	--Drum/cynmbal shit for more funk in the spunk
+	for i,v in ipairs(drums) do
+  		if v[2] == 0 then
+			ease{v[1]-0.25,0.25,outExpo,-1000,'DrunkZ'}
+			ease{v[1],0.25,inExpo,0,'DrunkZ'}
+			func {v[1]-0.25, 0.25, outCirc, 45,-45, 'yoinky:fov'}
+			func {v[1], 0.25, outCirc, 90,45, 'yoinky:fov'}
+
+  		elseif v[2] == 3 then
+    		set{v[1],314,'confusionzoffset'}
+			ease{v[1],1,outExpo,0,'confusionzoffset'}
+ 	 	end
+	end
+
+	--IT EVOLVED
+	set{129,10,'square',90,'proxywall',0,'stealth',100,'proxywallx',10,'TanExpand'}
+	ease{129,16,outSine,0,'proxywallx'}
+
+	set{145,0,'proxywall',0,'TanExpand'}
+	func {145, 0.5, outCirc, 1,0, 'shitfuck:diffusealpha'}
+	func{145,function()
+	PP[1]:hidden(0);
+	PP[2]:hidden(0);
+	funky2:clearzbuffer(1);
+	PP[2]:clearzbuffer(1);
+	yoinky:fov(45);
+	end}
+
+	set{152,100,'arrowpath',100,'orient',157,'confusionzoffset'}
+	func{145,function()
+	piss77:hidden(0)
+	end}
+
+	--they do be nintendo switchin ngl
+	ease{155,3,outBack,200,'centerPlayfields'}
+	ease{163,3,outBack,0,'centerPlayfields'}
+	ease{171,3,outBack,200,'centerPlayfields'}
+
+	for i,v in ipairs(bouncz2) do
+  		if v[2] == 0 then
+			ease{v[1],0.25,outExpo,100,'bumpyx0'}
+			ease{v[1]+0.25,0.25,inExpo,0,'bumpyx0'}
+			ease{v[1],0.25,outExpo,100,'boost0'}
+			ease{v[1]+0.25,0.25,inExpo,0,'boost0'}
+			ease{v[1],0.25,outExpo,-100,'tiny0'}
+			ease{v[1]+0.25,0.25,inExpo,0,'tiny0'}
+ 		 elseif v[2] == 1 then
+			ease{v[1],0.25,outExpo,100,'bumpyx1'}
+			ease{v[1]+0.25,0.25,inExpo,0,'bumpyx1'}
+			ease{v[1],0.25,outExpo,100,'boost1'}
+			ease{v[1]+0.25,0.25,inExpo,0,'boost1'}
+			ease{v[1],0.25,outExpo,-100,'tiny1'}
+			ease{v[1]+0.25,0.25,inExpo,0,'tiny1'}
+ 		 elseif v[2] == 2 then
+			ease{v[1],0.25,outExpo,100,'bumpyx2'}
+			ease{v[1]+0.25,0.25,inExpo,0,'bumpyx2'}
+			ease{v[1],0.25,outExpo,100,'boost2'}
+			ease{v[1]+0.25,0.25,inExpo,0,'boost2'}
+			ease{v[1],0.25,outExpo,-100,'tiny2'}
+			ease{v[1]+0.25,0.25,inExpo,0,'tiny2'}
+
+  		elseif v[2] == 3 then
+    		ease{v[1],0.25,outExpo,100,'bumpyx3'}
+			ease{v[1]+0.25,0.25,inExpo,0,'bumpyx3'}
+			ease{v[1],0.25,outExpo,100,'boost3'}
+			ease{v[1]+0.25,0.25,inExpo,0,'boost3'}
+			ease{v[1],0.25,outExpo,-100,'tiny3'}
+			ease{v[1]+0.25,0.25,inExpo,0,'tiny3'}
+ 	 	end
+	end
+	
+	ease{192,0.25,outExpo,1000,'drunk',1000,'tornado',200,'arrowpathgirth',100,'dark',700,'spiralz'}
+	ease{192.5,0.5,outExpo,0,'arrowpath'}
+
+end)"
+Type = "ActorFrame"
+><children>
+	<Layer Type="ActorFrame" Name="Background"><children>
+		<Layer Type = "Quad" Name="MainBG" OnCommand="diffuse,0.639,0.235,0.572,0.5;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;hidden,1;"/>
+		<Layer File = "bg" Name="invert2" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;hidden,1;"/>
+		<Layer
+		File="black"
+		Name="funky"
+		Frag="tunnel.frag"
+		InitCommand="%function(self)
+		self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y)
+		self:zoomto(SCREEN_WIDTH, SCREEN_HEIGHT)
+		self:clearzbuffer(1)
+		self:hidden(1);
+		end"/>
+		<Layer
+		File="black"
+		Name="funky2"
+		Frag="tunnel2.frag"
+		InitCommand="%function(self)
+		self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y)
+		self:zoomto(SCREEN_WIDTH, SCREEN_HEIGHT)
+		self:clearzbuffer(1)
+		self:hidden(1);
+		self:blend('invertdest')
+		end"/>
+		<Layer Type="Quad" Name="law" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,.6;hidden,1;" />
+	</children></Layer>
+	<Layer File = "drunk1.xml"/>
+	<Layer File = "drums.xml"/>
+	<Layer File = "bouncz.xml"/>
+	<Layer File = "bouncz2.xml"/>
+	<Layer File = "woosh.xml"/>
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	<Layer Type="ActorFrame" Name="yoinky"><children>
+	<Layer Type = "ActorProxy" Name = "oat_proxyMarch[1]" />
+	<Layer Type = "ActorProxy" Name = "oat_proxyMarch[2]" />
+	<Layer Type = "ActorProxy" Name = "oat_proxyMarch[3]" />
+	<Layer Type = "ActorProxy" Name = "oat_proxyMarch[4]" />
+	<Layer Type = "ActorProxy" Name = "oat_proxyMarch[5]" />
+	<Layer Type = "ActorProxy" Name = "oat_proxyMarch[6]" />
+	</children></Layer>
+	<Layer File = "logo.png" Name = "logo" OnCommand="diffusealpha,0"/>
+	<Layer File = "source.png" Name = "source" OnCommand="diffusealpha,0"/>
+	<Layer Type = "Quad" Name="shitfuck" OnCommand="diffuse,0,0,0,1;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;hidden,1;"/>
+	<Layer Type = "Sprite" Name = "mysprite" />
+	<Layer Type = "ActorFrameTexture" Name = "myaft" />
+	 <Layer Type="Quad" Name="piss77" InitCommand="clearzbuffer,1;x,-1;hidden,1"/>
+	
+	
+</children></Mods>

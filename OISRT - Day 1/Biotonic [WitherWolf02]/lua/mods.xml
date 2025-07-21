@@ -1,0 +1,912 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+
+	-- some c2l tables
+	-- there were going to be more drum tables 
+	-- but i realized i wanted the same mods for all of the drum parts
+	local drumintro = {
+		{4.000,0,1},
+		{4.500,0,1},
+		{5.000,1,1},
+		{6.500,1,1},
+		{8.000,0,1},
+		{8.500,0,1},
+		{9.000,1,1},
+		{10.500,1,1},
+		{12.000,0,1},
+		{12.500,0,1},
+		{13.000,1,1},
+		{14.500,1,1},
+		{16.000,1,1},
+		{16.500,0,1},
+		{17.500,0,1},
+		{18.000,0,1},
+		{18.500,0,1},
+		{19.000,1,1},
+		{20.000,0,1},
+		{20.500,0,1},
+		{21.000,1,1},
+		{22.500,1,1},
+		{24.000,0,1},
+		{24.500,0,1},
+		{25.000,1,1},
+		{26.500,1,1},
+		{28.000,0,1},
+		{28.500,0,1},
+		{29.000,1,1},
+		{30.500,1,1},
+		{32.000,1,1},
+		{32.500,0,1},
+		{33.000,0,1},
+		{33.500,0,1},
+		{34.000,0,1},
+		{34.500,0,1},
+		{35.000,1,1},
+		{35.000,2,1},
+		{116.000,0,1},
+		{116.000,1,1},
+		{116.500,0,1},
+		{117.000,0,1},
+		{117.500,0,1},
+		{117.500,1,1},
+		{118.000,0,1},
+		{118.500,0,1},
+		{119.000,0,1},
+		{119.000,1,1},
+		{119.500,0,1},
+		{120.000,0,1},
+		{120.000,1,1},
+		{120.500,0,1},
+		{121.000,0,1},
+		{121.500,0,1},
+		{121.500,1,1},
+		{122.000,0,1},
+		{122.500,0,1},
+		{123.000,0,1},
+		{123.000,1,1},
+		{123.500,0,1},
+		{124.000,0,1},
+		{124.000,1,1},
+		{124.500,0,1},
+		{125.000,0,1},
+		{125.000,1,1},
+		{125.500,0,1},
+		{126.000,0,1},
+		{126.000,1,1},
+		{126.500,0,1},
+		{127.000,0,1},
+		{127.000,1,1},
+		{127.500,0,1},
+		{128.000,0,1},
+		{128.167,0,1},
+		{128.333,0,1},
+		{128.500,0,1},
+		{128.667,0,1},
+		{128.833,0,1},
+		{129.000,0,1},
+		{129.167,0,1},
+		{129.333,0,1},
+		{129.500,0,1},
+		{129.667,0,1},
+		{129.833,0,1},
+		{130.000,0,1},
+		{130.500,0,1},
+		{131.000,0,1},
+		{131.000,1,1},
+		{244.000,0,1},
+		{244.000,1,1},
+		{244.500,0,1},
+		{245.000,0,1},
+		{245.500,0,1},
+		{245.500,1,1},
+		{246.000,0,1},
+		{246.500,0,1},
+		{247.000,0,1},
+		{247.000,1,1},
+		{247.500,0,1},
+		{247.750,0,1},
+		{248.000,0,1},
+		{248.000,1,1},
+		{248.500,0,1},
+		{249.000,0,1},
+		{249.500,0,1},
+		{249.500,1,1},
+		{250.000,0,1},
+		{250.500,0,1},
+		{251.000,0,1},
+		{251.000,1,1},
+		{251.500,0,1},
+		{251.750,0,1},
+		{252.000,0,1},
+		{252.000,1,1},
+		{252.500,0,1},
+		{253.000,0,1},
+		{253.000,1,1},
+		{253.500,0,1},
+		{254.000,0,1},
+		{254.000,1,1},
+		{254.500,0,1},
+		{255.000,0,1},
+		{255.000,1,1},
+		{255.500,0,1},
+		{256.000,0,1},
+		{256.000,1,1},
+		{257.000,0,1},
+		{257.000,1,1},
+		{257.250,0,1},
+		{257.250,1,1},
+		{257.500,0,1},
+		{257.500,1,1},
+		{257.750,0,1},
+		{257.750,1,1},
+		{258.000,0,1},
+		{258.000,1,1},
+		{258.500,0,1},
+		{259.000,0,1},
+		{259.000,1,1},
+		{260.000,2,1},
+		{244.000,0,1},
+		{244.000,1,1},
+		{244.500,0,1},
+		{245.000,0,1},
+		{245.500,0,1},
+		{245.500,1,1},
+		{246.000,0,1},
+		{246.500,0,1},
+		{247.000,0,1},
+		{247.000,1,1},
+		{247.500,0,1},
+		{247.750,0,1},
+		{248.000,0,1},
+		{248.000,1,1},
+		{248.500,0,1},
+		{249.000,0,1},
+		{249.500,0,1},
+		{249.500,1,1},
+		{250.000,0,1},
+		{250.500,0,1},
+		{251.000,0,1},
+		{251.000,1,1},
+		{251.500,0,1},
+		{251.750,0,1},
+		{252.000,0,1},
+		{252.000,1,1},
+		{252.500,0,1},
+		{253.000,0,1},
+		{253.000,1,1},
+		{253.500,0,1},
+		{254.000,0,1},
+		{254.000,1,1},
+		{254.500,0,1},
+		{255.000,0,1},
+		{255.000,1,1},
+		{255.500,0,1},
+		{256.000,0,1},
+		{256.000,1,1},
+		{257.000,0,1},
+		{257.000,1,1},
+		{257.250,0,1},
+		{257.250,1,1},
+		{257.500,0,1},
+		{257.500,1,1},
+		{257.750,0,1},
+		{257.750,1,1},
+		{258.000,0,1},
+		{258.000,1,1},
+		{258.500,0,1},
+		{259.000,0,1},
+		{259.000,1,1},
+		{260.000,2,1},
+	
+	}
+	-- same story with this one, i wanted mostly the same effects
+	local synthone = {
+		{36.000,0,2,length=0.500},
+		{37.500,2,2,length=1.000},
+		{38.500,1,2,length=1.000},
+		{39.500,3,1},
+		{40.000,1,2,length=1.000},
+		{41.500,3,2,length=0.500},
+		{42.500,2,2,length=1.000},
+		{43.500,1,2,length=0.500},
+		{44.000,0,2,length=0.500},
+		{45.000,1,1},
+		{45.500,3,2,length=1.000},
+		{46.500,1,1},
+		{47.000,0,1},
+		{47.500,3,1},
+		{48.000,1,2,length=1.000},
+		{50.000,0,1},
+		{50.500,3,1},
+		{51.000,0,2,length=1.000},
+		{52.000,3,2,length=0.500},
+		{53.500,1,2,length=1.000},
+		{54.500,2,2,length=1.000},
+		{55.500,0,2,length=0.500},
+		{56.000,3,2,length=1.000},
+		{57.500,0,2,length=1.000},
+		{58.500,2,2,length=1.000},
+		{59.500,1,2,length=0.500},
+		{60.000,3,1},
+		{61.000,1,1},
+		{62.500,3,1},
+		{64.000,2,1},
+		{65.000,3,1},
+		{66.000,0,1},
+		{66.500,1,1},
+		{67.000,2,2,length=1.000},
+		{196,2,1},
+		{197.500,3,2,length=1.000},
+		{198.500,2,2,length=1.000},
+		{199.500,1,2,length=0.500},
+		{200.000,0,2,length=1.000},
+		{201.500,2,2,length=1.000},
+		{202.500,1,2,length=1.000},
+		{203.500,3,1},
+		{204.000,0,1},
+		{205.000,1,1},
+		{205.500,3,1},
+		{206.500,1,1},
+		{207.000,0,1},
+		{207.500,3,1},
+		{208.000,2,2,length=1.000},
+		{210.000,3,1},
+		{210.500,0,1},
+		{211.000,3,2,length=0.500},
+		{212.000,0,2,length=0.500},
+		{213.500,1,2,length=1.000},
+		{214.500,2,2,length=1.000},
+		{215.500,3,2,length=0.500},
+		{216.000,0,2,length=1.000},
+		{217.500,3,2,length=1.000},
+		{218.500,1,2,length=1.000},
+		{219.500,2,2,length=0.500},
+		{220.000,0,2,length=0.500},
+		{221.000,2,1},
+		{222.500,3,1},
+		{224.000,0,1},
+		{225.000,2,1},
+		{226.000,0,1},
+		{226.500,2,1},
+		{227.000,0,2,length=1.000},
+		{228.000,1,2,length=1.000},
+		{229.500,3,2,length=1.000},
+		{230.500,1,1},
+		{231.500,0,1},
+		{232.000,1,2,length=1.000},
+		{233.500,2,2,length=1.000},
+		{234.500,3,2,length=1.000},
+		{235.500,1,1},
+		{236.000,2,1},
+		{237.000,0,1},
+		{237.500,3,2,length=1.000},
+		{238.500,1,1},
+		{239.000,2,1},
+		{239.500,0,1},
+		{240.000,1,2,length=1.000},
+		{242.000,2,1},
+		{242.500,3,1},
+		{243.000,2,1},
+		}
+	
+	-- spooky synth
+	seetwoell = {
+		{165.000,3,2,length=1.000},
+		{167.000,1,1},
+		{167.500,2,1},
+		{168.000,0,2,length=1.000},
+		{169.000,1,2,length=1.000},
+		{170.000,0,2,length=1.000},
+		{171.000,3,2,length=1.000},
+		{172.000,1,2,length=2.000},
+		{175.000,2,2,length=1.000},
+		{176.000,0,2,length=1.000},
+		{177.000,3,2,length=1.000},
+		{178.000,1,2,length=2.000},
+		{181.000,3,2,length=1.000},
+		{183.000,0,1},
+		{183.500,1,1},
+		{184.000,2,2,length=1.000},
+		{185.000,1,2,length=1.000},
+		{186.000,0,2,length=1.000},
+		{187.000,3,2,length=1.000},
+		{188.000,1,2,length=1.000},
+		{190.000,1,2,length=1.000},
+		{191.000,2,1},
+		{191.500,3,1},
+		{192.000,0,1},
+		{193.000,0,1},
+		{194.000,1,1},
+		{194.500,2,1},
+		{195.000,1,2,length=1.000},
+	}
+	-- WAW
+	wawsound = {
+		{166.000,3,1},
+		{170.000,3,1},
+		{174.000,3,1},
+		{177.000,3,1},
+		{182.000,3,1},
+		{186.000,3,1},
+		{190.000,3,1},
+	}
+	-- character related functions and mods
+	local function changePose(index, beat) 
+		func {beat, function()
+			for i=1,11 do
+				if i == index then
+					bleu[i]:hidden(0)
+				else
+					bleu[i]:hidden(1)
+				end
+			end
+		end}
+		if index <= 5 then
+			set {beat, 75, 'bleuzoomx', 125, 'bleuzoomy'}
+			ease {beat, 1.5, outElastic, 100, 'bleuzoomx', 100, 'bleuzoomy'}
+		else 
+			--becasuse the chibi sprites need to be smaller
+			set {beat, 60, 'bleuzoomx', 100, 'bleuzoomy'}
+			ease {beat, 1.5, outElastic, 75, 'bleuzoomx', 75, 'bleuzoomy'}
+		end
+	end
+	-- do this once outside of a func to hide all the other sprites before the player can see them
+	for i=1,11 do
+		if i == 4 then
+			bleu[i]:hidden(0)
+		else
+			bleu[i]:hidden(1)
+		end
+	end
+	definemod {'bleux', 'bleuy', 'bleuz', function(bleux, bleuy, bleuz)
+		bleuframe:x(scx+64*bleux/100)
+		bleuframe:y(scy+64*bleuy/100)
+		bleuframe:z(bleuz)
+	end}		
+	-- 'rot' stands for rotation becasue i cannot be bothered to type out 'bleurotationy' when i wanna rotate this guy
+	definemod {'bleurotx', 'bleuroty', 'bleurotz', function(bleurotx, bleuroty, bleurotz)
+		bleuframe:rotationx(bleurotx)
+		bleuframe:rotationy(bleuroty)
+		bleuframe:rotationz(bleurotz)
+	end}
+	definemod {'bleuzoomx', 'bleuzoomy', function(bleuzoomx, bleuzoomy)
+		-- we divide by 400 instead of 100 because the sprites are MASSIVE
+		bleuframe:zoomx((bleuzoomx)/400)
+		bleuframe:zoomy((bleuzoomy)/400)
+	end}
+
+	local function mixEase(e1, e2, point)
+        if not point then point = 0.5 end
+
+        return function(a)
+            if a < point then
+                return e1(a / point) * point
+            else
+                return e2((a - point) / (1 - point)) * (1 - point) + point
+            end
+        end
+    end
+
+	-- quote unquote easy way to center the playfields
+	function maprange( a1, a2, b1, b2, s )
+    	return b1 + ((s-a1)*(b2-b1))/(a2-a1)
+	end
+	local p1defx = P1:GetX()
+	local p2defx = P2:GetX()
+	local p1defy = P1:GetY()
+	definemod {'centeredx', function(percent)
+		for pn = 1,2 do
+			local defX = 0
+			local player = P1
+			if (pn == 1) then
+				defX = p1defx
+			else
+				defX = p2defx
+				player = P2
+			end
+			local newx = maprange(0, 100, defX, scx, percent)
+			--SCREENMAN:SystemMessage(newx..scx)
+			player:x(newx)
+		end
+	end}	
+	definemod {'judgmenty', function(percent, pn)
+		if PJ[pn] then 
+			PJ[pn]:y(scy+percent*64/100)
+		end
+	end}
+	definemod {'comboy', function(percent, pn)
+		if PC[pn] then
+			PC[pn]:y(scy+percent*64/100)
+		end
+	end}	
+	definemod {'judgmentx', function(percent, pn)
+		if PJ[pn] then
+			if pn == 1 then 
+				PJ[pn]:x(p1defx+percent)
+			else 
+				PJ[pn]:x(p2defx+percent)
+			end
+		end
+	end}
+	definemod {'combox', function(percent, pn)
+		if PC[pn] then
+			if pn == 1 then 
+				PC[pn]:x(p1defx+percent)
+			else 
+				PC[pn]:x(p2defx+percent)
+			end
+
+		end
+	end}
+	definemod {'screenx', function(percent)
+		SCREENMAN:GetTopScreen():x(percent)
+	end}
+	definemod {'screeny', function(percent)
+		SCREENMAN:GetTopScreen():y(percent)
+	end}
+	definemod {'playerx', function(percent, pn)
+		if PP[pn] then
+			PP[pn]:x(percent)
+		end
+	end}
+
+
+	function bndysplinex(receptorx)
+		-- the goal of this spline is to allow the receptors to move freely and have the arrowpath bnd to them
+		-- this should be used with splinetype
+		for pn=1,2 do
+			local xpos = receptorx
+			local ypos = receptory
+			for i=0,5 do
+				if i > 0 then
+					xpos = 0
+					ypos = 0
+				end
+				P[pn]:SetXSpline(
+					i,
+					-1,
+					xpos,
+					i*150,
+					-1
+				)
+			end
+		end
+	end
+	local ypos = 0
+	definemod {'bndysplineypos', function(percent)
+		ypos = percent
+	end}
+	function bndyspliney(receptory)
+		local whypose = ypos
+		for i=0,5 do
+			if i>0 then whypose = 0 end
+			for pn=1,2 do
+				P[pn]:SetYSpline(
+					i,
+					-1,
+					whypose,
+					i*150,
+					-1
+				)
+			end
+		end
+	end
+	
+	-- MODS START HERE
+	setdefault {2, 'xmod', 100, 'overhead', 100, 'dizzyholds', 100, 'modtimer', 100, 'stealthpastreceptors', -250, 'centered2', 100, 'bleuzoomx', 100, 'bleuzoomy', 200, 'stealthtype', 100, 'cover'}
+
+	set {0, 25, 'bumpyxoffset', 100, 'splinextype', 200, 'splineytype'}
+	ease {0, 4, outCubic, 0, 'centered2'}
+	--set {7.5, 100, 'beat'}
+	local angle = 15
+	local intensity = 200
+	for i=1,table.getn(drumintro) do
+		local beat = drumintro[i][1]
+		if drumintro[i][2] == 0 then
+			-- kick
+			ease {beat, 0.5, flip(outQuint), 75, 'centered2', angle, 'rotationz'}	
+			angle = -angle
+		elseif drumintro[i][2] == 1 then
+			-- snare
+			--ease {beat-0.75, 1.5, spike, -intensity, 'bumpyx'}
+			ease {beat-0.5, 0.5, inExpo, -intensity, 'bumpyx', -100, 'tinyx'}
+			ease {beat, 0.5, outExpo, 0, 'bumpyx', 0, 'tinyx'}
+			intensity = -intensity
+		end
+		
+	end
+	changePose(1,20)
+	func {20, function()
+		for pn=1,2 do
+			PP[pn]:vibrate()
+		end
+	end}
+	func {20, 15, linear, 0, 32, function(p)
+		for pn=1,2 do
+			PP[pn]:effectmagnitude(p,p,0)
+		end
+	end}
+	func {35, 1, outExpo, 32, 0, function(p)
+		for pn=1,2 do
+			PP[pn]:effectmagnitude(p,p,0)
+		end
+	end}
+
+	-- i want the arrows to explode here
+	ease {35, 1, inCubic, 100, 'centeredx'}
+	ease {35, 1, bounce, -100, 'flip'}
+	ease {35, 1, bounce, 300, 'tipsy'}
+	ease {35, 1, outBack, 
+		math.pi*-400, 'confusionoffset0',
+		math.pi*-200, 'confusionoffset1',
+		math.pi*200, 'confusionoffset2',
+		math.pi*400, 'confusionoffset3'
+	}
+	changePose(2,35)
+	--ease {35, 1, outCubic, 90, 'dark', 100, 'hidenoteflash', 0, 'drawsizeback', 50, 'hidden', -75, 'hiddenoffset', 10, 'arrowpath', plr=2}
+	ease {35, 1, outCubic, 100, 'stealth', 100, 'dark', 100, 'hidenoteflash', plr=1}
+	ease {35, 1, inOutCubic, -300, 'bleux', -250, 'judgmenty', -250, 'comboy'}
+	ease {36, 1, outCubic, 1, 'xmod', 20, 'holdtiny'}
+	set {35, 100, 'spiralholds', 100, 'grain', 100, 'halgun', 100, 'orient'}
+	--set {36, -20000, 'cubicxoffset'}
+	--ease {36, 12, outCubic, 10, 'cubicx'}
+
+	for i=36,64,4 do
+		add {i, 4, linear, 400, 'movey', plr=2}
+		add {i, 4, linear, -400, 'bndysplineypos'}
+		add {i+4, 0.5, outExpo, -400, 'movey', plr=2}
+		add {i+4, 0.5, outExpo, 400, 'bndysplineypos'}
+	end
+	func {36, 68, function()
+		bndyspliney()
+	end}
+	intensity = 100
+	set {196, 200, 'bumpyxperiod', 25, 'orient'}
+	for i=1,table.getn(synthone) do
+		local beat = synthone[i][1]
+		func {beat-0.25, 0.25, inOutCirc, -intensity/2, intensity, function(p)
+			bndysplinex(p)
+		end}		
+		func {beat, 1, inOutCubic, intensity, 3*intensity/4, function(p)
+			bndysplinex(p)
+		end}
+		-- mixEase(inCirc,outBack)
+		if beat ~= 36 then 
+			if beat > 140 then
+				ease {beat-0.25, 0.5, inOutCirc, intensity, 'tipsy', intensity, 'bumpyx', 20, 'sinclip'}
+				add {beat-0.25, 0.5, inOutCirc, 100, 'tipsyoffset'}
+			end
+			ease {beat-0.25, 0.5, inOutCirc, beat%4*100-350, 'bndysplineypos'}
+			--ease {beat+0.25, 1, inOutCubic, beat%4*100-400, 'bndysplineypos'}
+		end
+		intensity = -intensity
+	end
+	ease {67, 1, outBack, -400, 'bndysplineypos', 2, 'xmod'}
+	func {67, 1, outBack, -intensity, 0, function(p)
+		bndysplinex(p)
+	end}
+
+	set {70, 100, 'splinexreset', 100, 'splineyreset', 100, 'splinezreset', 0, 'halgun', 0, 'dark', 0, 'stealth', 0, 'hidenoteflash'} 
+	ease {68, 1, outExpo, -40, 'skewx', 40, 'noteskewx', 20, 'reverse'}
+	ease {69, 1, outExpo, 40, 'skewx', -40, 'noteskewx', 40, 'reverse'}
+	ease {70, 1, outExpo, -40, 'skewx', 40, 'noteskewx', 60, 'reverse'}
+	ease {70.5, 1, outExpo, 40, 'skewx', -40, 'noteskewx', 80, 'reverse'}
+	ease {71.5, 1, outExpo, 0, 'skewx', 0, 'noteskewx', 100, 'reverse'}
+	
+	ease {72, 0.5, outExpo, 100, 'movex0', -100, 'movex1'}
+	ease {72.5, 0.5, outExpo, 0, 'movex0', 0, 'movex1'}
+	ease {73, 0.5, outExpo, -100, 'flip'}
+	ease {73.5, 0.5, outExpo, 0, 'flip'}
+	ease {73.5, 1, outExpo, 50, 'tornado'}
+	add {74.5, 0.75, outQuad, -math.pi*200, 'confusionoffset3'}
+	add {75, 0.75, outQuad, -math.pi*200, 'confusionoffset0'}
+	add {75.5, 0.75, outQuad, -math.pi*200, 'confusionoffset2'}
+	add {76, 0.75, outQuad, -math.pi*200, 'confusionoffset1'}
+	ease {74.5, 0.75, bounce, -100, 'movey3'}
+	ease {75, 0.75, bounce, -100, 'movey0'}
+	ease {75.5, 0.75, bounce, -100, 'movey2'}
+	ease {76, 0.75, bounce, -100, 'movey1'}
+	ease {76, 1, outExpo, 0, 'tornado'}
+
+	ease {76, 1, outExpo, -40, 'skewx', 40, 'noteskewx', 80, 'reverse'}
+	ease {77, 1, outExpo, 40, 'skewx', -40, 'noteskewx', 60, 'reverse'}
+	ease {78, 1, outExpo, -40, 'skewx', 40, 'noteskewx', 40, 'reverse'}
+	ease {78.5, 1, outExpo, 40, 'skewx', -40, 'noteskewx', 20, 'reverse'}
+	ease {79.5, 1, outExpo, 0, 'skewx', 0, 'noteskewx', 0, 'reverse', 1, 'xmod'}
+	set {79.25, 400, 'beat', 100, 'beatmult', 0, 'orient', 0, 'spiralholds'}
+	ease {79.5, 4, linear, 400, 'centered2'}
+
+	set {83.75, 0, 'beat'}
+	ease {84, 1, outBack, 2, 'xmod', 0, 'centered2'}
+
+	ease {84, 1, outExpo, -40, 'skewx', 40, 'noteskewx', 20, 'reverse'}
+	ease {85, 1, outExpo, 40, 'skewx', -40, 'noteskewx', 40, 'reverse'}
+	ease {86, 1, outExpo, -40, 'skewx', 40, 'noteskewx', 60, 'reverse'}
+	ease {86.5, 1, outExpo, 40, 'skewx', -40, 'noteskewx', 80, 'reverse'}
+	ease {87.5, 1, outExpo, 0, 'skewx', 0, 'noteskewx', 100, 'reverse'}
+
+	ease {88, 0.5, outExpo, 200, 'movex0', -200, 'movex2'}
+	ease {88.5, 0.5, outExpo, 0, 'movex0', 0, 'movex2'}
+	ease {89, 0.5, outExpo, 100, 'invert', -100, 'flip'}
+	ease {89.5, 0.5, outExpo, 0, 'invert', 100, 'tornado', 0, 'flip'}
+	ease {91.5, 0.5, outExpo, 0, 'tornado'}
+
+	ease {92, 1, outExpo, -40, 'skewx', 40, 'noteskewx', 80, 'reverse'}
+	ease {93, 1, outExpo, 40, 'skewx', -40, 'noteskewx', 60, 'reverse'}
+	ease {94, 1, outExpo, -40, 'skewx', 40, 'noteskewx', 40, 'reverse'}
+	ease {94.5, 1, outExpo, 0, 'skewx', 0, 'noteskewx', 0, 'reverse'}
+
+	
+	changePose(5, 96)
+	
+	ease {96, 2, outQuad, 360*2, 'bleuroty', -500, 'bleux', 360*4, 'rotationy', 50, 'centeredx', -250, 'judgmenty'}
+	ease {98, 2, outQuad, 0, 'bleuroty', -sw, 'bleux', 0, 'rotationy', 0, 'centeredx', -150, 'comboy'}
+
+	intensity = 60/3
+	for i=100,126,2 do
+		add {i+0.5, 0.5, outExpo, intensity, 'flip'}
+		add {i+1, 0.5, outExpo, intensity, 'flip'}
+		add {i+1.5, 0.5, outExpo, intensity, 'flip'}
+		intensity = -intensity
+	end
+
+	ease {100, 26, linear, 200, 'drunk'}
+
+	--set {116, 200, 'beat', 0, 'beatmult', 200, 'beaty', 50, 'beatyoffset',}
+	set {116, 0, 'bleux', -sh*1.3, 'bleuy'}
+
+	changePose(7, 128)
+	ease {128, 2, outElastic, 0, 'drunk', 0, 'beat', 0, 'beaty'}
+	ease {128, 2, outQuad, 360*4, 'rotationy', 1.5, 'xmod'}
+	ease {130, 2, outQuad, 0, 'rotationy', 100, 'arrowpath'}
+	ease {131, 2, outElastic, 0, 'bleuy', 75, 'bleuzoomx', 75, 'bleuzoomy'}
+	changePose(11, 139)
+	changePose(8, 147)
+	set {139, 2350, 'bleuy', 75, 'bleuzoomx', 75, 'bleuzoomy'}
+	changePose(4, 154)
+	set {154, 0, 'bleuy'}
+	
+	
+	-- lord forgive me for what i'm about to do
+	set {130, 650, 'arrowpathdrawdistanceback', 20, 'arrowpathdrawsize', 20, 'drawsize'}
+
+	add {131, 14, linear, 2100, 'centered2', 2100, 'judgmenty', 2100, 'comboy'}
+	
+	for i=132,160,4 do
+		ease {i, 1, bounce, 100, 'tipsy'}
+		ease {i+1, 1, bounce, -100, 'tipsy'}
+	end
+	local pn = 1
+	local modname = 'stealth'
+	for i=134,144,4 do
+		-- reset the driven drop every time that WAW sound plays
+		ease {i, 0.5, outExpo, 100, modname, 0, 'arrowpath', plr=pn}
+		add {i-1, 1, inQuad, -200, 'screeny'}
+		add {i, 0.5, outExpo, -184, 'screeny'}
+		if pn == 1 then
+			pn = 2
+			ease {i, 0.5, outExpo, 0, modname, 100, 'arrowpath', plr=2}
+		else 
+			pn = 1
+			ease {i, 0.5, outExpo, 0, modname, 100, 'arrowpath', plr=1}
+		end
+	end
+	--pn = nil
+	-- for reasons beyond our understanding, this one doesn't line up with the rest
+	add {144, 1, inQuad, -100, 'screeny'}
+	add {145, 0.5, outExpo, -92, 'screeny'}
+	ease {145, 0.5, outExpo, 0, modname, 100, 'arrowpath', 100, 'reverse', -2100, 'centered2'}
+	ease {146, 1, bounce, 100, 'tipsy'}
+	ease {147, 1, bounce, -100, 'tipsy'}
+	
+	acc {145, 425, 'judgmenty', 425, 'comboy'}
+	add {147, 14, linear, -2100, 'judgmenty', -2100, 'comboy'}
+	ease {147, 14, linear, 0, 'centered2'}
+	modname = 'invert'
+	for i=150,159,4 do
+		ease {i, 0.5, outExpo, 100, modname, 0, 'arrowpath', plr=pn}
+		add {i-1, 1, inQuad, 200, 'screeny'}
+		add {i, 0.5, outExpo, 184, 'screeny'}
+		if pn == 1 then
+			pn = 2
+			ease {i, 0.5, outExpo, 0, modname, 100, 'arrowpath', plr=2}
+		else 
+			pn = 1
+			ease {i, 0.5, outExpo, 0, modname, 100, 'arrowpath', plr=1}
+		end
+	end
+	add {160, 1, inQuad, 100, 'screeny'}
+	add {161, 0.5, outExpo, 92, 'screeny'}
+	ease {161, 0.5, outExpo, 0, modname, 0, 'arrowpath'}
+	ease {162, 1, bounce, 100, 'tipsy'}
+	ease {163, 1, bounce, -100, 'tipsy'}
+	
+	set {164, 0, 'drawsize', 0, 'arrowpathdrawdistanceback', 0, 'arrowpathdrawsize'}
+	ease {164, 1, outExpo, 0, 'reverse', 0, 'judgmenty', 0, 'comboy'}
+	ease {164, 1, linear, 100, 'boost', 100, 'centeredx', 200, 'drunk', 100, 'dark', 25, 'orient'}
+	ease {164, 1, outQuad, 50, 'movex', 100, 'flip', plr=1}
+	ease {164, 1, outQuad, -50, 'movex', plr=2}
+
+	pn = 1
+	for i=1,table.getn(wawsound) do
+		local beat = wawsound[i][1]
+		ease {beat, 1, outExpo, 100, 'stealth', plr=pn}
+		if pn == 1 then 
+			pn = 2
+		else 
+			pn = 1 
+		end
+		ease {beat, 0.5, outExpo, 0, 'stealth', plr=pn}
+	end
+	
+	for i=1,table.getn(seetwoell) do
+		local beat = seetwoell[i][1]
+		local length = seetwoell[i].length
+		if length == nil then length = 0.5 end
+		SCREENMAN:HideOverlayMessage()
+		ease {beat, length, flip(linear), 100, 'bumpyx', -400*length, 'bumpyxoffset'}
+	end
+
+	ease {192, 1, outExpo, 0, 'dark', 0, 'drunk', 50, 'centeredx', 0, 'movex', 0, 'orient', 0, 'boost', plr=1}
+	ease {193, 1, outExpo, 0, 'dark', 0, 'drunk', 0, 'centeredx', 0, 'movex', 0, 'orient', 0, 'boost', plr=2}
+	changePose(5, 192)
+	ease {192, 1, outQuad, 360, 'bleuroty', 0, 'stealth', 0, 'flip'}
+	changePose(5, 193)
+	ease {193, 1, outQuad, 0, 'bleuroty'}
+	changePose(2, 194)
+	func {195, 1, linear, 1, 0, function(p)
+		bgquad:diffuse(45/255, 17/255, 21/255, p)
+	end}
+	set {196, -100, 'tipsyspeed'}
+	changePose(9, 200)
+	func {200, 1, linear, 0, 1, function(p)
+		backgroundframe:SetDrawFunction(function(self)
+			for i=0,18 do
+				bgquad:x(sw*i)
+				if i%2==0 then
+					-- lavender
+					bgquad:diffuse(235/255, 160/255, 30/255, p)
+				else
+					-- orange
+					bgquad:diffuse(98/255, 75/255, 150/255, p)
+				end
+				bgquad:Draw()
+			end
+		end)
+	end}
+	func {201.5, 42, function()
+		bndyspliney()
+	end}
+	for i=200,243,4 do
+		add {i, 4, linear, 400, 'movey'}
+		add {i, 4, linear, -400, 'bndysplineypos'}
+		add {i+4, 0.5, outExpo, -400, 'movey'}
+		add {i+4, 0.5, outExpo, 400, 'bndysplineypos'}
+	end
+	set {196, 0, 'spiralholds'}
+	
+	func {200, 1, outExpo, 0, -80, function(p)
+		for pn=1,2 do
+			PP[pn]:y(p)
+		end
+	end}
+	ease {200, 1, outExpo, 2, 'xmod', 100, 'centeredx', 0, 'arrowpath', 70, 'arrowpathgrain', -20, 'flip', 20, 'drawsize'}
+	local distance = 14*sw
+	ease {200, 60, outQuad, distance, 'playerx', distance, 'judgmentx', distance, 'combox',}
+	ease {200, 60, outQuad, -distance, 'screenx'}
+
+	for i=200,240,4 do
+		add {i, 4, bounce, angle, 'rotationz'}
+		--add {i, 4, bounce, intensity, 'movey'}
+		angle = -angle
+		--intensity = -intensity
+	end
+
+	changePose(2, 224)
+	func {244, function()
+		bleuframe:vibrate()
+	end}
+	func {244, 14, linear, 0, 30, function(p)
+		bleuframe:effectmagnitude(p,p,0)
+	end}
+	func {244, 1, outExpo, -80, 0, function(p)
+		for pn=1,2 do
+			PP[pn]:y(p)
+		end
+	end}
+	set {244, 100, 'splinexreset', 100, 'splineyreset', distance*100/64, 'bleux'}
+	ease {244, 1, outExpo, 0, 'tipsy', 0, 'bumpyx'}
+
+	func {259, function()
+		bleuframe:stopeffect()
+	end}
+	changePose(5, 259)
+	ease {259, 1, flip(linear), 100, 'bumpyx', 1000, 'bumpyxoffset'}
+
+	-- i made the arrows explode here
+	set {260, 0, 'tipsyspeed', 50, 'drawsize'}
+	ease {260, 16, outCubic, 0, 'centeredx'}
+	ease {260, 16, outCubic, -100, 'flip'}
+	ease {260, 16, outCubic, 300, 'tipsy', 300, 'tornado'}
+	ease {260, 16, outBack, 
+		math.pi*-400, 'confusionoffset0',
+		math.pi*-200, 'confusionoffset1',
+		math.pi*200, 'confusionoffset2',
+		math.pi*400, 'confusionoffset3'
+	}
+	ease {260, 12, outBack, 100, 'mini'}
+	
+	changePose(3, 260)
+	ease {260, 12.5, outQuart, 360*8, 'bleuroty', -360*1, 'bleurotx'}
+	ease {260, 12.5, outQuad, -1000, 'bleuz'}
+	func {272.5, 1, linear, 1, 0, function(p)
+		bleuframe:diffuse(1, 1, 1, p)
+		--bleuframe:glow(1,1,1,p)
+	end}
+
+	bgquad:xywh(scx,scy,sw,sh)
+	bgquad:diffuse(45/255, 17/255, 21/255, 1)
+
+	mlquad1:xywh(p1defx, sh*4, 256, sh*6)
+	hlquad1:diffuse(235/255, 160/255, 30/255, 1)
+
+	hlquad1:xywh(p1defx, sh*4, 128, sh*6)
+	mlquad1:diffuse(230/255, 146/255, 2/255, 1)
+
+	mlquad2:xywh(p2defx, sh*4, 256, sh*6)
+	mlquad2:diffuse(58/255, 18/255, 150/255, 1)
+	
+	hlquad2:xywh(p2defx, sh*4, 128, sh*6)
+	hlquad2:diffuse(98/255, 75/255, 150/255, 1)
+
+	bleuframe:zoom(0.25)
+	bleuframe:fov(45)
+	bleuframe:bob()
+	bleuframe:effectmagnitude(0,5,0)
+	bleuframe:effectperiod(5)
+
+	bleu[11]:zoomx(-1)
+end)"
+Type = "ActorFrame"
+><children>
+	<Layer Type = "ActorFrame" Name = "backgroundframe"><children>
+		<Layer Type = "Quad" Name = "bgquad" />
+		<Layer Type = "Quad" Name = "mlquad1" />
+		<Layer Type = "Quad" Name = "hlquad1" />
+		<Layer Type = "Quad" Name = "mlquad2" />
+		<Layer Type = "Quad" Name = "hlquad2" />
+	</children></Layer>
+	<Layer Type = "ActorFrame" Name = "bleuframe"><children>
+		<Layer File = "sprites/nitg s 1.png" Name = "bleu[1]" />
+		<Layer File = "sprites/nitg s 2.png" Name = "bleu[2]" />
+		<Layer File = "sprites/nitg s 3.png" Name = "bleu[3]" />
+		<Layer File = "sprites/nitg s 4.png" Name = "bleu[4]" />
+		<Layer File = "sprites/nitg s 5.png" Name = "bleu[5]" />
+		<Layer File = "sprites/nitg arrow left.png" Name = "bleu[6]" />
+		<Layer File = "sprites/nitg arrow down.png" Name = "bleu[7]" />
+		<Layer File = "sprites/nitg arrow up.png" Name = "bleu[8]" />
+		<Layer File = "sprites/nitg arrow right.png" Name = "bleu[9]" />
+		<Layer File = "sprites/nitg_arrow_pose_1.png" Name = "bleu[10]" />
+		<Layer File = "sprites/nitg_arrow_pose_2.png" Name = "bleu[11]" />
+	</children></Layer>
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+</children></Mods>

@@ -1,0 +1,3 @@
+<Layer LoadCommand = "%xero(function(self)
+{{ readlua "splines.lua" }}
+end)" />

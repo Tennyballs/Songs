@@ -1,0 +1,32 @@
+<!-- I'm sure there's a better way to do this, but I implemented this in half an hour for a mod jam... it'll work -->
+
+<Chara Type = "ActorFrame"
+
+	InitCommand = "y,SCREEN_CENTER_Y; zoom,0.85; zoomy,0; bob; effectmagnitude,0,22,0; effectclock,bgm; effectperiod,10"
+	OnCommand = "%xero(function(self)
+		--Manual overrides
+		function beta_spawn(b)   ease {b, 1, outExpo, 1, 'beta_zoom'} end
+		function beta_begone(b)  ease {b, 1, outExpo, 0, 'beta_zoom'} end
+		function beta_pose(b, p) set {b, p, 'beta_spr'}               end
+		
+		--Handy shortcuts
+		function beta_idle(b)
+			beta_spawn(b)
+			beta_pose(b, 1)
+		end
+		function beta_cast(b)
+			ease {b,      0.25, outExpo, 0.8, 'beta_zoom'}
+			ease {b+0.25, 0.25, outExpo,   1, 'beta_zoom'}
+			beta_pose(b+0.25, 2)
+		end
+		
+		definemod {'beta_zoom', function(y) self:zoomy(0.85*y) end}
+		definemod {'beta_X'   , function(x) self:x(x)          end}
+		definemod {'beta_spr' , function(s) P_betaIdleS:hidden((s==1) and 0 or 1); P_betaCastS:hidden((s==2) and 0 or 1); end}
+		setdefault {0, 'beta_zoom', scx, 'beta_X', 1, 'beta_spr'}
+	end)"
+	
+><children>
+	<Layer File = "idle.png" InitCommand = "%xero(function(self) P_betaIdleS = self; self:hidden(1) end)"/>
+	<Layer File = "cast.png" InitCommand = "%xero(function(self) P_betaCastS = self; self:hidden(1) end)"/>
+</children></Chara>

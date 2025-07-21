@@ -1,0 +1,717 @@
+<Mods LoadCommand = "%xero(function(self)
+
+	card {0, 48, 'friendly wiggling', 2, {0.5, 0.5, 0.5}}
+	card {48, 64, 'nyan cat has logged in', 5, {0.3, 0.3, 0.3}}
+	card {64, 96, 'funny split!!!', 7, {0.7, 0.7, 0.7}}
+	card {96, 160, 'pump!n rhythm', 8, {1, 1, 1}}
+	card {160, 224, 'funny split???', 8, {0.7, 0.7, 0.7}}
+	card {224, 292, 'pump?n rhythm', 8, {1, 1, 1}}
+
+	self:SetFarDist(99999)
+	math.randomseed(134598213588943)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	plr = {1, 2, 3, 4}
+
+	local modulo = function(a, b) return a - math.floor(a/b)*b end
+
+	aft(pmp_aft_tex)
+	for i, v in ipairs(split) do
+		sprite(v)
+		v:SetTexture(pmp_aft_tex:GetTexture())
+	end
+	aft(pmp_bg_tex)
+	sprite(bg_funny)
+	bg_funny:SetTexture(pmp_bg_tex:GetTexture())
+
+	for i, v in ipairs(square) do
+		v:zoom(0.03 + i * 0.04)
+		v:z(-400 + i * 50)
+		v:diffusealpha((i-1) * 0.1)
+	end
+	for i, v in ipairs(gradient) do
+		v:SetVertexPosition(0, 0, 0, 0)
+		v:SetVertexPosition(1, SCREEN_WIDTH, 0, 0)
+		v:SetVertexPosition(2, SCREEN_WIDTH, SCREEN_HEIGHT, 0)
+		v:SetVertexPosition(3, 0, SCREEN_HEIGHT, 0)
+		for j = 0, 3 do
+			local strength = .5
+			if j == i then strength = 1
+			elseif (i+2)%4==j then strength = 0 end
+			v:SetVertexColor(j, 0.7 - i * 0.1, 0.1, 0.1 + i * 0.2, strength)
+		end
+		v:diffusealpha(0)
+		v:blend('add')
+	end
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+		PJ[pn]:zoom(0.66)
+		PC[pn]:zoom(0.66)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+
+		if pn > 2 then
+			P[pn]:SetAwake(false)
+			P[pn]:SetInputPlayer((pn+1)%2)
+			P[pn]:GetChild('Judgment'):hidden(1)
+			P[pn]:GetChild('Combo'):hidden(1)
+			PP[pn]:hidden(1)
+		end
+
+		P[pn]:hidden(1)
+		P[pn]:x(SCREEN_CENTER_X)
+		P[pn]:SetFarDist(99999)
+	end
+	-- your code goes here here oes here here oes here here oes here here oes here here oes here here oes here here oes here here oes here here oes here here oes here here oes here here :
+
+	local perc = {{96.000,0,1},{97.500,0,1},{98.000,3,1},{99.000,0,1},{101.000,0,1},{102.000,3,1},{103.000,0,1},{104.000,0,1},{105.500,0,1},{106.000,3,1},{107.000,0,1},{109.000,0,1},{110.000,3,1},{110.208,3,1},{110.396,3,1},{110.604,3,1},{111.000,0,1},{111.000,3,1},{111.500,0,1},{112.000,0,1},{113.500,0,1},{114.000,3,1},{115.000,0,1},{117.000,0,1},{118.000,3,1},{119.000,0,1},{120.000,0,1},{121.500,0,1},{122.000,3,1},{123.000,0,1},{125.000,0,1},{126.000,3,1},{136.000,3,1},{136.250,3,1},{136.750,3,1},{137.000,3,1},{137.500,3,1},{137.750,3,1},{138.250,3,1},{138.500,3,1},{139.000,3,1},{139.250,3,1},{139.750,3,1},{144.000,3,1},{144.250,3,1},{144.750,3,1},{145.000,3,1},{145.500,3,1},{145.750,3,1},{146.250,3,1},{146.500,3,1},{147.000,3,1},{147.250,3,1},{147.750,3,1}}
+	func {0, 999, function(beat)
+		fucking_bxoox:rotationx(beat * 1)
+		fucking_bxoox:rotationy(beat * 2.7)
+		fucking_bxoox:rotationz(beat * -1.6)
+		fucking_bxoox2:rotationx(beat * -1)
+		fucking_bxoox2:rotationy(beat * -2.7)
+		fucking_bxoox2:rotationz(beat * 1.6)
+	end}
+
+	setdefault {2, 'xmod', 100, 'dizzyholds', 100, 'stealthtype', 100, 'stealthpastreceptors', 100, 'approachtype', 100, 'modtimer', 0, 'drivendropstealth', 100, 'hidemines'}
+
+	definemod {'gradient1', 'gradient2', 'gradient3', 'gradient4', function(a, b, c, d)
+		gradient[1]:diffusealpha(a)
+		gradient[2]:diffusealpha(b)
+		gradient[3]:diffusealpha(c)
+		gradient[4]:diffusealpha(d)
+	end}
+
+	definemod {'bgbrightness', function(p)
+		bg_dark:diffusealpha(1 - p)
+	end}
+
+	definemod {'bgsquarepos', function(p)
+		for i, v in ipairs(square) do
+			v:zoom(0.03 + modulo(i+p, 10) * 0.04)
+			v:z(-400 + modulo(i+p, 10)*50)
+			v:diffusealpha(modulo(i+p, 10) * 0.1)
+		end
+	end}
+
+	definemod {'strips', 'stripsmode', function(p, mode)
+		local margin = p > 0 and 1E-3 or 0
+		for i, v in ipairs(split) do
+			v:zoom(1 - p * 0.25)
+			if mode == 0 then
+				local top, bottom = (i-1) * 0.25, (4-i)*0.25
+				if top == 0 then top = margin end
+				if bottom == 0 then bottom = margin end
+				v:croptop(margin + top)
+				v:cropbottom(margin + bottom)
+				v:y((2.5 - i) * p * 16)
+				v:cropleft(margin + p * 0.1)
+				v:cropright(margin + p * 0.1)
+			else
+				local left, right = 0.167 + (i-1) * 0.167, 0.167 + (4-i)*0.167
+				v:cropleft(left)
+				v:cropright(right)
+				v:x((i - 2.5) * p * 16)
+				v:croptop(margin)
+				v:cropbottom(margin)
+			end
+		end
+	end}
+
+	definemod {'stripshift', function(p)
+		for i, v in ipairs(split) do
+			v:x(p * (i%2*2-1))
+		end
+	end}
+
+	definemod {'stripshifty', function(p)
+		for i, v in ipairs(split) do
+			v:y(p * (i%2*2-1))
+			v:rotationx(p * (i%2*2-1) * .1)
+		end
+	end}
+
+	definemod {'circradius', 'circangle', function(r, a)
+		return math.sin(a * math.pi / 180) * r, math.cos(a * math.pi / 180) * r
+	end, 'movex', 'movez'}
+
+	definemod {'alternut', function(p)
+		return p, -p, p, -p
+	end, 'movey0', 'movey1', 'movey2', 'movey3'}
+
+	local function cymballs(beat, nocrash)
+		for i = 0, 3 do
+			set {beat + .5 * i, 0, 'stealth', 0, 'dark'}
+			set {beat + .25 + .5 * i, 100, 'stealth', 100, 'dark'}
+			set {beat + .25 + .5 * i, -20 * i, 'tiny'}
+		end
+		if nocrash then
+			set {beat + 2, 0, 'stealth', 0, 'dark', 0, 'tiny'}
+		else
+			set {beat + 2, 50, 'stealth', 50, 'dark', -100, 'tiny'}
+			ease {beat + 2, 2, outQuad, 0, 'stealth', 0, 'dark', 0, 'tiny'}
+		end
+	end
+
+	set {0, -100, 'drawsizeback', plr = {3, 4}}
+	set {0, 100, 'dark', 100, 'stealth', 25, 'mini', .5, 'xmod', 25, 'brake'}
+	set {0, -90, 'rotationx', 157, 'confusionxoffset', -200, 'attenuatex', -50, 'z', 50, 'drawsize', 157, 'dizzy'}
+	ease {0, 16, linear, 0, 'rotationx', 0, 'confusionxoffset', 0, 'attenuatex', 0, 'z', 0, 'dizzy'}
+	ease {12, 4, inQuad, 0, 'mini', 2, 'xmod', 0, 'brake'}
+	local intro_beats = {.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6, 6.5, 7, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13, 13.5, 14, 14.5, 15, 15.5}
+	for i, v in ipairs(intro_beats) do
+		set {v, 50, 'dark', v > 12 and 90 - 30 * (v - 12) or 90, 'stealth', 0.05, 'bgbrightness'}
+		if v < 14 then
+			ease {v, .5, inQuad, 100, 'dark', 100, 'stealth', 0, 'bgbrightness'}
+		end
+		ease {16 + v, 0.5, outBack, 10 * -(i%2*2-1), 'alternut'}
+		if v < 7.5 then
+			ease {32 + v, 0.5, outBack, 15 * (i%2*2-1), 'alternut'}
+		end
+	end
+	set {6, 100, 'invert'}
+	set {6.5, -100, 'invert', 100, 'flip'}
+	set {7, 0, 'invert', 100, 'flip'}
+	set {7.5, 0, 'invert', 0, 'flip'}
+	set {12.5, 100, 'invert'}
+	set {13, -100, 'invert', 100, 'flip'}
+	set {13.5, 0, 'invert', 100, 'flip'}
+	set {14, 0, 'invert', 0, 'flip'}
+	cymballs(14)
+	cymballs(30)
+	cymballs(46, true)
+	cymballs(62)
+	cymballs(126)
+	cymballs(158)
+	cymballs(206, true)
+	cymballs(214, true)
+	ease {16, 2, outQuad, .15, 'bgbrightness'}
+
+	set {16, 0, 'bgsquarepos'}
+	set {32, 0, 'bgsquarepos'}
+	for i = 0, 15 do
+		ease {16 + i, 1, outQuad, (i+1) / 8, 'bgsquarepos'}
+	end
+	for i = 0, 11 do
+		set {32.5 + i, .6, 'gradient'..(i%4+1)}
+		ease {32.5 + i, 1, inQuad, 0, 'gradient'..(i%4+1)}
+		ease {32 + i, 1, outQuad, (i+1)/4, 'bgsquarepos'}
+	end
+	ease {39.5, .5, outBack, 0, 'alternut'}
+	--set {44, 700, 'bumpyperiod', 100, 'drawsize'}
+	--ease {44, 4, outQuad, -90, 'rotationx', 157, 'confusionxoffset', 200, 'bumpy', 400, 'zoomz', -1000, 'z'}
+
+	for i = 0, 23 do
+		ease {15.5 + i, .5, outQuad, 25, 'brake'}
+		ease {16 + i, .5, inQuad, 0, 'brake'}
+	end
+
+	for i = 0, 2 do
+		local mult = i%2*2-1
+		set {i * 8 + 22, 628 * mult, 'confusionoffset'}
+		ease {i*8 + 22, .5, outCirc, mult*25, 'drunk', 471 * mult, 'confusionoffset'}
+		ease {i*8 + 22.5, .5, outCirc, mult*-25, 'drunk', 314 * mult, 'confusionoffset'}
+		ease {i*8 + 23, .5, outCirc, mult*25, 'drunk', 157 * mult, 'confusionoffset'}
+		ease {i*8 + 23.5, .5, outCirc, 0, 'drunk', 0, 'confusionoffset'}
+	end
+
+	ease {32, 8, outSine, -50, 'flip', -100, 'tiny'}
+	ease {40, 4, inSine, 0, 'flip', 0, 'tiny'}
+	ease {32, 8, linear, 50, 'mini', 1.5, 'xmod'}
+	ease {39, 2, inOutExpo, 50, 'reverse3'}
+	ease {40, 2, inOutExpo, 50, 'reverse1'}
+	ease {41, 2, inOutExpo, 50, 'reverse2'}
+	ease {42, 2, inOutExpo, 50, 'reverse0'}
+	ease {44, 4, outCirc, 0, 'reverse0', 0, 'reverse1', 0, 'reverse2', 0, 'reverse3', 0, 'mini'}
+	set {44, 100, 'reverse'}
+	set {48, 95, 'stealth', -200, 'tiny'}
+	ease {48, 12, linear, 0, 'stealth', 0, 'tiny', .15, 'bgbrightness'}
+	ease {92, 2, outCirc, 0, 'reverse'}
+	ease {44, 4, outSine, 50, 'flip', 1.5, 'xmod'}
+	ease {56, 8, inOutSine, 0, 'flip', 2, 'xmod'}
+	--ease {56, 8, inOutSine, -60, 'rotationx', 300, 'zoomz'}
+	ease {44, 4, outCirc, 0, 'bgsquarepos', 0, 'bgbrightness'}
+	set {48, 100, 'dark', 100, 'hidenoteflash', plr = 2}
+	set {48, 100, 'stealth', plr = 1}
+	for i = 0, 12 do
+		set {48 + i, 0, 'centered2', plr = 2}
+		ease {48 + i, 1, linear, 150, 'centered2', plr = 2}
+	end
+	ease {61, 1, inOutSine, 0, 'centered2', 0, 'hidenoteflash'}
+
+	set {64, 100, 'drawsize'}
+	ease {60, 4, inOutSine, -45, 'rotationx'}
+	func {64, function()
+		for pn = 3, 4 do
+			P[pn]:SetAwake(true)
+			PP[pn]:hidden(0)
+		end
+	end}
+	ease {64, 12, inOutSine, 15, 'rotationy'}
+	ease {76, 12, inOutSine, -15, 'rotationy'}
+	ease {88, 4, inOutSine, 0, 'rotationy'}
+	definemod {'shimmy', function(p, plr)
+		local a = P[plr]
+		if a then
+			for col = 0, 3 do
+				if p == 0 then
+					a:SetNumArrowGradientPoints(col, 0)
+				elseif p < 0 then
+					a:SetNumArrowGradientPoints(col, 1)
+					a:SetArrowGradientPoint(0, col, 0)
+					a:SetArrowGradientColor(0, col, 1, 1, 1, (100+p)/100)
+				else
+					a:SetNumArrowGradientPoints(col, 1)
+					a:SetArrowGradientPoint(0, col, 0)
+					a:SetArrowGradientColor(0, col, 1, 1, 1, (300-p)/300)
+				end
+			end
+		end
+		if p == 0 then
+			return 0, 0, 0, 0, 0, 0, 0
+		elseif p > 0 then
+			return -2 * p, -2 * p, 2 * p, 2 * p, 0, 100 - 50 * (300 - p)/300, 0
+		else
+			return 0, 0, 0, 0, 0, (50-p/2), p
+		end
+	end, 'movex0', 'movex1', 'movex2', 'movex3', 'movez', 'dark', 'zoomx'}
+
+	set {64, 100, 'orient'}
+	ease {64, 16, inOutSine, 25, 'mini'}
+	ease {80, 10, inSine, -80, 'mini'}
+	ease {80, 8, inSine, 50, 'drunk'}
+	ease {64, 4, linear, 25, 'brake', plr = {1, 3}}
+	ease {64, 4, linear, 25, 'boost', plr = {2, 4}}
+	for i = 0, 27 do
+		for pn = 1, 4 do
+			local pos = (i + pn) % 4 * 100
+			if pos > 200 then
+				set {64 + i, -100, 'shimmy', plr = pn}
+				ease{64 + i, 1, outQuad, 0, 'shimmy', plr = pn}
+			else
+				ease {64 + i, 1, outQuad, pos + 100, 'shimmy', plr = pn}
+			end
+		end
+	end
+	ease {88, 4, inOutSine, 0, 'rotationx', 0, 'drunk'}
+	set {92, 0, 'shimmy', plr = {1, 2}}
+	set {92, 100, 'shimmy', plr = 3}
+	set {92, 200, 'shimmy', plr = 4}
+	ease {92, 2, outSine, 400, 'shimmy', plr = 3}
+	ease {92, 2, outSine, 600, 'shimmy', plr = 4}
+	func {94, function()
+		for pn = 3, 4 do
+			P[pn]:SetAwake(false)
+			PP[pn]:hidden(1)
+		end
+	end}
+	ease {92, 2, outSine, 0, 'brake', plr = {1, 3}}
+	ease {92, 2, outSine, 0, 'boost', plr = {2, 4}}
+
+	func {160, function()
+		for pn = 3, 4 do
+			P[pn]:SetAwake(true)
+			PP[pn]:hidden(0)
+		end
+	end}
+
+	set {158, 200, 'suddenoffset'}
+	ease {158, 2, inOutSine, -25, 'rotationx'}
+	ease {158, 2, inOutSine, -200, 'z'}
+	ease {158, 2, inOutSine, 100, 'sudden'}
+	ease {160, 8, inOutSine, 10, 'rotationy'}
+	ease {168, 8, inOutSine, -10, 'rotationy'}
+	ease {176, 8, inOutSine, 10, 'rotationy'}
+	ease {184, 8, inOutSine, -10, 'rotationy'}
+	ease {192, 8, inOutSine, 10, 'rotationy'}
+	ease {200, 8, inOutSine, 0, 'rotationy'}
+	ease {200, 8, inOutSine, 0, 'rotationx', 0, 'z'}
+	ease {174, 2, inOutSine, 100, 'reverse',  plr = {1, 3}}
+	ease {160, 4, linear, 25, 'brake', plr = {1, 3}}
+	ease {160, 4, linear, 25, 'boost', plr = {2, 4}}
+	set {160, 0, 'shimmy'}
+	for i = 0, 45 do
+		for pn = 1, 4 do
+			local pos = (i + pn) % 4 * 100
+			if pos > 200 then
+				set {160 + i, -100, 'shimmy', plr = pn}
+				ease{160 + i, 1, outQuad, 0, 'shimmy', plr = pn}
+			else
+				ease {160 + i, 1, outQuad, pos + 100, 'shimmy', plr = pn}
+			end
+		end
+	end
+
+	for i = 0, 6 do
+		for j = 0, i == 6 and 7 or 4 do
+			set {176 + .75 * j + 4 * i, -200, 'tiny'}
+			ease {176 + .75 * j + 4 * i, 1, outSine, 0, 'tiny'}
+			set {176 + .75 * j + 4 * i, 1, 'gradient'..((i*4+j)%4+1)}
+			ease {176 + .75 * j + 4 * i, 1, linear, 0, 'gradient'..((i*4+j)%4+1)}
+		end
+	end
+	ease {176, 24, inOutSine, 25, 'rotationx'}
+
+	set {206, 0, 'shimmy', plr = 2}
+	set {206, 100, 'shimmy', plr = 1}
+	set {206, 200, 'shimmy', plr = 4}
+	set {206, 300, 'shimmy', plr = 3}
+	set {207.5, 0, 'shimmy', 0, 'reverse', plr = 1}
+	set {207.5, 0, 'brake', 0, 'boost'}
+
+	func {206.5, function() P[3]:SetAwake(false) PP[3]:hidden(1) end}
+	func {207, function() P[4]:SetAwake(false) PP[4]:hidden(1) end}
+
+	ease {200, 8, linear, 50, 'mini', 1.5, 'xmod'}
+	ease {208, 4, linear, -50, 'flip', -150, 'tiny'}
+	ease {212, 2, outQuad, 0, 'flip', 0, 'tiny'}
+	ease {216, 4, linear, -50, 'flip', -150, 'tiny'}
+	ease {220, 2, outQuad, 0, 'flip', 0, 'tiny'}
+	ease {207, 2, inOutExpo, 50, 'reverse0'}
+	ease {208, 2, inOutExpo, 50, 'reverse2'}
+	ease {209, 2, inOutExpo, 50, 'reverse1'}
+	ease {210, 2, inOutExpo, 50, 'reverse3'}
+	ease {212, 4, outCirc, 0, 'reverse0', 0, 'reverse1', 0, 'reverse2', 0, 'reverse3'}
+	set {212, 100, 'reverse'}
+	ease {215, 2, inOutExpo, 50, 'reverse3'}
+	ease {216, 2, inOutExpo, 50, 'reverse2'}
+	ease {217, 2, inOutExpo, 50, 'reverse1'}
+	ease {218, 2, inOutExpo, 50, 'reverse0'}
+	ease {220, 4, outCirc, 0, 'reverse0', 0, 'reverse1', 0, 'reverse2', 0, 'reverse3', 0, 'mini', 2, 'xmod'}
+	set {220, 0, 'reverse'}
+
+	set {64, 0, 'bgsquarepos'}
+	for i = 0, 27 do
+		ease {64 + i, 1, outQuad, (i+1)/2, 'bgsquarepos'}
+	end
+
+	set {126, 628, 'confusionoffset'}
+	ease {126, 2, outCirc, 0, 'confusionoffset'}
+	ease {92, 4, outBack, 50, 'mini', 1, 'xmod', 100, 'drivendropstealth', 1, 'strips'}
+	ease {92, 3, outQuad, -50, 'drivendrop'}
+	ease {95, 1, inQuad, 0, 'drivendrop'}
+	set {92, 100, 'orient', 500, 'bumpyxperiod', 500, 'bumpyperiod', 150, 'bumpyoffset', 300, 'zoomz', -50, 'drunkperiod'}
+	set {92, 150, 'bumpyxoffset', plr = 2}
+	definemod {'drivendrop', 'drivendropstealth', function(p, st, pn)
+		local a = P[pn]
+		if a then
+			a:SetStealthSpline(0, -1, st, p - 50, -1)
+			a:SetStealthSpline(1, -1, 0, p, -1)
+			a:SetStealthSpline(2, -1, 0, p + 500, -1)
+			a:SetStealthSpline(3, -1, st, p + 550, -1)
+			a:SetStealthSpline(4, -1, st, p + 2000, -1)
+		end
+		return p
+	end, 'centered2'}
+
+	local function rotatethemboys(beat, length, ease, start, stop, delay)
+		for i, v in ipairs(square) do
+			local v = v
+			func {beat + delay * i, length, ease, start, stop, function(p) v:rotationz(p) end}
+		end
+	end
+
+
+	for i = 0, 7 do
+		set {96 + 8 * i, -800, 'drivendrop', plr = 1+i%2}
+		set {96 + 8 * i, 0, 'drivendrop', plr = 2-i%2}
+		ease {96 + 8 * i, 8, linear, 0, 'drivendrop', plr = 1+i%2}
+		ease {96 + 8 * i, 8, linear, 800, 'drivendrop', plr = 2-i%2}
+		set {96 + 8 * i, 0, 'bgsquarepos'}
+		ease {96 + 8 * i, 8, inOutQuad, -1, 'bgsquarepos'}
+		rotatethemboys(96 + 8 * i, 6, inOutQuad, 0, 90 * (i%2*2-1), 0.25)
+
+		ease {96.5 + 8 * i, 6.5, linear, -100, 'tinyx', -50, 'tinyy', -50, 'flip', 100, 'bumpy', 100, 'drunk'}
+		ease {103 + 8 * i, 1, outCirc, 0, 'tinyx', 0, 'tinyy', 0, 'flip', 0, 'bumpy', 0, 'drunk', 0, 'stripshift'}
+		local lim = i%4==3 and 4 or 12
+		for j = 0, lim do
+			local xamount = (i%2*2-1)*(j%2*2-1)*(24*(j+1)/11)
+			ease {96.5 + 8 * i + 0.5 * j, 0.5, outExpo, xamount, 'stripshift'}
+		end
+
+		if i%4==3 then
+			ease {99 + 8 * i, 1, outCirc, 30, 'stripshift'}
+			ease {100 + 8 * i, 1, outCirc, -30, 'stripshift'}
+			ease {101 + 8 * i, 1, outCirc, 30, 'stripshift'}
+			ease {102 + 8 * i, 0.5, outCirc, -24, 'stripshift'}
+			ease {102.5 + 8 * i, 0.5, outCirc, 16, 'stripshift'}
+			ease {103 + 8 * i, 0.5, outCirc,  -8, 'stripshift'}
+			ease {103.5 + 8 * i, 0.5, outCirc, 0, 'stripshift'}
+		end
+		--[[for pn = 1, 2 do
+			for j = 0, 12 do
+				local xamount = (j%2*2-1)*(100*(j+1)/11)*(pn*2-3)
+				ease {96.5 + 8 * i + 0.5 * j, 0.5, outExpo, xamount, 'bumpyx', plr = pn}
+			end
+			ease {103 + 8 * i, 1, outCirc, 0, 'bumpyx', plr = pn}
+		end]]
+	end
+
+	local snaredir = 1
+	for i, v in ipairs(perc) do
+		if v[2] == 0 then
+			set {v[1], -800, 'tinyz', 25, 'stealth'}
+			ease {v[1], 2, outQuad, 0, 'tinyz', 0, 'stealth'}
+			func {v[1], 2, outQuad, 1, 0, function(p)
+				fucking_bxoox:diffuse(.3 + p*.6, .7, .9, .2 + p * .05)
+			end}
+		else
+			set {v[1], snaredir * 50, 'noteskew'}
+			ease {v[1], 0.5, outSine, 0, 'noteskew'}
+			snaredir = -snaredir
+		end
+	end
+
+	for i = 0, 23 do
+		set {128 + i, 1, 'gradient'..(i%4+1)}
+		ease {128 + i, 1, linear, 0, 'gradient'..(i%4+1)}
+		add {128 + i, 0.5, outCubic, -100, 'drivendrop'}
+		add {128.5 + i, 0.5, inCubic, 100, 'drivendrop'}
+		func {128 + i, 1, outQuad, 1, 0, function(p)
+			fucking_bxoox:diffuse(.3 + p*.7, .7 + p*.1, .9 + p*.1, .2 + p * .05)
+		end}
+	end
+	for i = 0, 11 do
+		ease {128 + 2 * i, 1, inCirc, 0.7, 'strips'}
+		ease {129 + 2 * i, 1, outExpo, 1, 'strips'}
+		set {129 + 2 * i, -800, 'tinyz'}
+		ease {129 + 2 * i, 1, outQuad, 0, 'tinyz'}
+	end
+	ease {156, 4, inQuad, 2, 'xmod', 0, 'mini', 0, 'strips'}
+	set{160, 0, 'drivendrop', 0, 'drivendropstealth', 2, 'xmod'}
+
+	ease {158, 2, linear, .05, 'bgbrightness'}
+	ease {174, 2, linear, .15, 'bgbrightness'}
+
+	set {160, 0, 'bgsquarepos'}
+	set {176, 0, 'bgsquarepos'}
+	set {192, 0, 'bgsquarepos'}
+	for i = 0, 15 do
+		ease {160 + i, 1, outQuad, (i+1)/2, 'bgsquarepos'}
+		ease {176 + i, 1, outQuad, i+1, 'bgsquarepos'}
+		ease {192 + i, 1, outQuad, i+1, 'bgsquarepos'}
+	end
+	set {208, 0, 'bgsquarepos'}
+	for i = 0, 3 do
+		ease {208 + i, 1, outCirc, i+1, 'bgsquarepos'}
+		ease {216 + i, 1, outCirc, i-1, 'bgsquarepos'}
+	end
+	ease {212, 4, outQuad, 0, 'bgsquarepos'}
+	ease {220, 4, outQuad, 0, 'bgsquarepos'}
+
+	set {212, 360, 'rotationy', -628, 'confusionyoffset'}
+	ease {212, 4, outCirc, 0, 'rotationy', 0, 'confusionyoffset'}
+	set {220, 360, 'rotationy', -628, 'confusionyoffset'}
+	ease {220, 4, outCirc, 0, 'rotationy', 0, 'confusionyoffset'}
+
+	set {220, 1, 'stripsmode'}
+	ease {220, 2, outQuad, 1, 'strips', -33, 'flip'}
+	set {224, 300, 'arrowcull', 300, 'zoomz'}
+
+	definemod {'splitrot', 'splitangle', function(rot, angle)
+		local x, y = math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180)
+		split_sprites:rotationx(rot * x)
+		split_sprites:rotationy(rot * y)
+	end}
+
+	rotatethemboys(224, 16, inOutQuad, 0, 360, 0.5)
+	rotatethemboys(224+16, 16, inOutQuad, 0, -360, 0.5)
+	for i = 0, 31 do
+		ease {224 + i, 0.5, outCubic, (16 + .5 * i) * (i%2*2-1), 'stripshifty'}
+		ease {224.5 + i, 0.5, inCubic, 0, 'stripshifty'}
+		set {224 + i, 0, 'bgsquarepos'}
+		ease {224 + i, 1, outBack, -1, 'bgsquarepos'}
+	end
+	ease {256, 23.5, inQuad, 64, 'bgsquarepos'}
+	set {279.5, 0, 'bgsquarepos'}
+	for i = 0, 9 do
+		ease {279.5 + .75 * i, .75, outBack, (i+1)*2, 'bgsquarepos'}
+	end
+	ease {287, 1, inCubic, 0, 'bgsquarepos'}
+	ease {288, 8, outCirc, -2, 'bgsquarepos'}
+	local kicks = {256, 257.5, 259, 261, 263, 264, 265.5, 267, 269, 271}
+	for i, v in ipairs(kicks) do
+		local dur = (i <= #kicks - 1) and kicks[i+1] - v or 8.5
+		ease {v, dur * .5, outCirc, -32 * (i%2*2-1), 'stripshifty'}
+		ease {v + dur * .5, dur * .5, dur > 8 and inOutSine or inCirc, 0, 'stripshifty'}
+	end
+	--[[for i = 0, 31 do
+		local i = i
+		func {224 + .75 * i, 1, outQuad, 1, 0, function(p)
+			split[i%4+1]:diffuse(1 - p * .5, 1 - p * .5, 1 - p * .5, 1 - p * .5)
+			split[i%4+1]:blend('add')
+		end}
+	end]]
+
+	for i = 0, 10 do
+		set {279.5 + .75 * i, 0, 'stealth', 0, 'dark'}
+		set {279.5 + .375 + .75 * i, 100, 'stealth', 100, 'dark'}
+	end
+	ease {279.5, 8.5, linear, -1000, 'tinyz'}
+	--[[for i = 0, 31 do
+		ease {256 + .75*i, 0.375, outCubic, 32 * (i%2*2-1), 'stripshifty'}
+		ease {256.375 + .75*i, 0.375, inCubic, 0, 'stripshifty'}
+	end]]
+	for i = 0, 15 do
+		ease {224 + 2 * i, 1, inCirc, 0.7, 'strips'}
+		ease {225 + 2 * i, 1, outExpo, 1, 'strips'}
+	end
+
+	for i = 0, 75 do
+		set {224 + .75 * i, 1, 'gradient'..(i%4+1)}
+		ease {224 + .75 * i, 1, inQuad, 0, 'gradient'..(i%4+1)}
+		func {224 + .75 * i, .75, linear, 1, 0, function(p)
+			fucking_bxoox:diffuse(.3 + p*.8, .7 + p*.1, .9 + p*.1, .2 + p * .2)
+		end}
+	end
+
+	ease {224, 16, linear, 200, 'tinyy', plr = 2}
+	ease {224, 16, inQuad, -160, 'tinyx', plr = 2}
+	set {224, 100, 'dark', 100, 'hidenoteflash', plr = 2}
+	set {224, 100, 'stealth', plr = 1}
+	ease {279.5, 8.5, linear, 0, 'strips'}
+	set{288, 0, 'strips'}
+	ease {224, 56, linear, 360 * 3.5, 'splitangle', 30, 'splitrot'}
+	ease {280, 8, linear, 360 * 4, 'splitangle', 0, 'splitrot'}
+	ease{272, 7.5, linear, 0, 'tinyy', plr = 2}
+	ease{272, 7.5, linear, 0, 'tinyx', plr = 2}
+	ease {279.5, 8.5, linear, -100, 'tiny'}
+	ease {279.5, 8.5, outQuad, 100, 'brake'}
+	func {216, 4, outQuad, 1, 0, function(p)
+		for i, v in ipairs(split) do
+			v:cropleft(0.167 * (1 - p))
+			v:cropright(0.167 * (1 - p))
+		end
+	end}
+	func {288, 4, outQuad, 0, 1, function(p)
+		for i, v in ipairs(split) do
+			v:cropleft(0.167 * (1 - p))
+			v:cropright(0.167 * (1 - p))
+		end
+	end}
+	for i = 0, 3 do
+		set {254.25 + .5 * i, 100, 'stealth', plr = 2}
+		set {254.5 + .5 * i, 50, 'stealth', plr = 2}
+	end
+	ease {256, 2, linear, 0, 'stealth', plr = 2}
+	set {288, 0, 'stealth'}
+	ease {286, 2, inQuad, 50, 'reverse', 50, 'flip'}
+	ease {288, 4, inCirc, 200, 'mini'}
+	ease {288, 8, inCirc, 0, 'bgbrightness'}
+
+
+	func {94, 1, outExpo, 400, 0, function(p) pumpin:hidden(0) pumpin:y(SCREEN_CENTER_Y + p) end}
+	func {95, 1, inCirc, 0, -400, function(p) pumpin:hidden(0) pumpin:y(SCREEN_CENTER_Y + p) end}
+	func {95, 1, outExpo, -400, 0, function(p) rhythm:hidden(0) rhythm:y(SCREEN_CENTER_Y + p) end}
+	func {96, 1, inCirc, 0, 400, function(p) rhythm:hidden(0) rhythm:y(SCREEN_CENTER_Y + p) end}
+	func {97, function()
+		pumpin:hidden(1)
+		rhythm:hidden(1)
+	end}
+
+	func {222, function()
+		pumpin:rotationz(90)
+		pumpin:x(SCREEN_CENTER_X + 220)
+		rhythm:x(SCREEN_CENTER_X - 220)
+		rhythm:rotationz(-90)
+	end}
+	func {222, 1, outExpo, -400, 0, function(p) pumpin:hidden(0) pumpin:y(SCREEN_CENTER_Y + p) end}
+	func {223, 1, inCirc, 0, 400, function(p) pumpin:hidden(0) pumpin:y(SCREEN_CENTER_Y + p) end}
+	func {223, 1, outExpo, 400, 0, function(p) rhythm:hidden(0) rhythm:y(SCREEN_CENTER_Y + p) end}
+	func {224, 1, inCirc, 0, -400, function(p) rhythm:hidden(0) rhythm:y(SCREEN_CENTER_Y + p) end}
+	func {225, function()
+		pumpin:hidden(1)
+		rhythm:hidden(1)
+	end}
+
+
+end)" Type = "ActorFrame"
+><children>
+	<Layer Type="Quad" OnCommand="%xero(function(self) self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT) self:diffuse(0, 0, 0, 1) self:clearzbuffer(1) end)" />
+	<Layer Type="ActorFrame"><children>
+		<Layer Type="Polygon"
+			DrawMode="Quads"
+			Vertices="128"
+			 Name="fucking_bxoox2"
+			InitCommand="xyz,SCREEN_CENTER_X,SCREEN_CENTER_Y,0;zoom,1.5"
+			OnCommand="queuecommand,RandomizeFuckCube;diffuse,0.5,0.3,0.3,1"
+			RandomizeFuckCubeCommand="%function(self)
+				for i = 0, 127 do
+					self:SetVertexPosition(i, math.random(-1, 1) * 400, math.random(-1, 1) * 300, math.random(-1, 1) * 300)
+					self:SetVertexTexCoord(i, math.random(0, 1), math.random(0, 1))
+					self:SetVertexColor(i, math.random() * 0.3 + 0.2, math.random() * 0.5 + 0.5, math.random() * 0.5 + 0.5, 1)
+				end
+			end"
+		/>
+	</children></Layer>
+
+	<Layer Type="Polygon" DrawMode="Quads" Vertices="4" Name="gradient[1]"/>
+	<Layer Type="Polygon" DrawMode="Quads" Vertices="4" Name="gradient[2]"/>
+	<Layer Type="Polygon" DrawMode="Quads" Vertices="4" Name="gradient[3]"/>
+	<Layer Type="Polygon" DrawMode="Quads" Vertices="4" Name="gradient[4]"/>
+	<Layer Type="ActorFrame" Name="tunnel"  OnCommand="%xero(function(self) self:fov(45) self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y) self:zoomz(5) self:SetFarDist(99999) end)"><children>
+		<Layer File="img/square" Name="square[1]"/>
+		<Layer File="img/square" Name="square[2]"/>
+		<Layer File="img/square" Name="square[3]"/>
+		<Layer File="img/square" Name="square[4]"/>
+		<Layer File="img/square" Name="square[5]"/>
+		<Layer File="img/square" Name="square[6]"/>
+		<Layer File="img/square" Name="square[7]"/>
+		<Layer File="img/square" Name="square[8]"/>
+		<Layer File="img/square" Name="square[9]"/>
+		<Layer File="img/square" Name="square[10]"/>
+	</children></Layer>
+	<Layer Type="Quad" Name="bg_dark" OnCommand="%xero(function(self)
+		self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT)
+		self:diffuse(0, 0, 0, 1)
+		self:clearzbuffer(1)
+	end)"/>
+
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[3]" />
+	<Layer Type = "ActorProxy" Name = "PP[4]" />
+
+	<Layer Type="ActorFrameTexture" Name="pmp_aft_tex" />
+	<Layer Type="Quad" OnCommand="%xero(function(self) self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT) self:diffuse(0, 0, 0, 0.7) self:clearzbuffer(1) end)" />
+	<Layer Type="ActorFrame"><children>
+		<Layer Type="Polygon"
+			DrawMode="Quads"
+			Vertices="128"
+			 Name="fucking_bxoox"
+			InitCommand="xyz,SCREEN_CENTER_X,SCREEN_CENTER_Y,0;zoom,1.5;blend,add"
+			OnCommand="queuecommand,RandomizeFuckCube;diffuse,.3,.7,.9,0.2"
+			RandomizeFuckCubeCommand="%function(self)
+				for i = 0, 127 do
+					self:SetVertexPosition(i, math.random(-1, 1) * 400, math.random(-1, 1) * 300, math.random(-1, 1) * 300)
+					self:SetVertexTexCoord(i, math.random(0, 1), math.random(0, 1))
+					self:SetVertexColor(i, math.random() * 0.3 + 0.2, math.random() * 0.2 + 0.5, math.random() * 0.2 + 0.5, 0.2)
+				end
+			end"
+		/>
+	</children></Layer>
+	<Layer Type="ActorFrameTexture" Name="pmp_bg_tex" />
+	<Layer Type="Sprite" Name="bg_funny" Frag="shaders/tile.frag"/>
+	<Layer Type="Quad" OnCommand="%xero(function(self) self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT) self:diffuse(0, 0, 0, 0.7) self:clearzbuffer(1) end)" />
+	<Layer Type="ActorFrame" Name="split_sprites"  OnCommand="%xero(function(self) self:fov(45) self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y) end)"><children>
+		<Layer Type="Sprite" Name="split[1]"/>
+		<Layer Type="Sprite" Name="split[2]"/>
+		<Layer Type="Sprite" Name="split[3]"/>
+		<Layer Type="Sprite" Name="split[4]"/>
+	</children></Layer>
+	<Layer File="img/pumpin" Name="pumpin" OnCommand="%xero(function(self) self:hidden(1) self:zoom(.2) self:diffusealpha(0.2) self:rotationz(-90) self:xy(SCREEN_CENTER_X - 220, SCREEN_CENTER_Y) end)" />
+	<Layer File="img/rhythm" Name="rhythm" OnCommand="%xero(function(self) self:hidden(1) self:zoom(.2) self:diffusealpha(0.2) self:rotationz(90) self:xy(SCREEN_CENTER_X + 220, SCREEN_CENTER_Y) end)" />
+
+</children></Mods>

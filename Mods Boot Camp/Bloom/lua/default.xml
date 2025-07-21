@@ -1,0 +1,334 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,GAMESTATE:GetCurrentSong():MusicLengthSeconds()"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+					--{25.612,'SkewTwitch'},
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'1.75x,-999999% Cover,*10000 No Beat','end'},
+				
+				{0.032,8.308,'*0.725 No Mini','end'},
+				{0.032,0.050,'*10000 200% Mini','len'},
+				{2.791,0.050,'*10000 200% Mini','len'},
+				{5.549,0.050,'*10000 200% Mini','len'},
+				{8.308,11.066,'*1.45 No Mini','end'},
+				{8.308,0.050,'*10000 200% Mini','len'},
+				{9.687,0.050,'*10000 200% Mini','len'},
+				
+				{9.687,32.446,'*0.75 1x','end'},
+				
+				{11.066,33.135,'*4 Stealth','end'},
+				{12.101,240/174/8,'*8 No Stealth','len'},
+				{13.480,240/174/8,'*8 No Stealth','len'},
+				{14.687,240/174/8*3,'*8 No Stealth','len'},
+				{15.204,240/174/2,'*2 Stealth','len'},
+				{15.894,240/174/2,'*2 No Stealth','len'},
+				{12.101+240/174*4,240/174/8,'*8 No Stealth','len'},
+				{13.480+240/174*4,240/174/8,'*8 No Stealth','len'},
+				{14.687+240/174*4,240/174/8*3,'*8 No Stealth','len'},
+				{15.204+240/174*4,240/174/2,'*2 Stealth','len'},
+				{15.894+240/174*4,240/174/2,'*2 No Stealth','len'},
+				{12.101+240/174*8,240/174/8,'*8 No Stealth','len'},
+				{13.480+240/174*8,240/174/8,'*8 No Stealth','len'},
+				{14.687+240/174*8,240/174/8*3,'*8 No Stealth','len'},
+				{15.204+240/174*8,240/174/2,'*2 Stealth','len'},
+				{15.894+240/174*8,240/174/2,'*2 No Stealth','len'},
+				{12.101+240/174*12,240/174/8,'*8 No Stealth','len'},
+				{13.480+240/174*12,240/174/8,'*8 No Stealth','len'},
+				{14.687+240/174*12,240/174/8*3,'*8 No Stealth','len'},
+				{15.204+240/174*12,240/174/2,'*2 Stealth','len'},
+				{15.894+240/174*12,240/174/2,'*2 No Stealth','len'},
+				
+				{31.756,999,'*0.25 1.25x','end'},
+				{33.135,49.687,'*2 Stealth','end'},
+				{12.101+240/174*16,240/174/8,'*8 No Stealth','len'},
+				{13.480+240/174*16,240/174/8,'*8 No Stealth','len'},
+				{14.687+240/174*16,240/174/8*3,'*8 No Stealth','len'},
+				{15.204+240/174*16,240/174/2,'*2 Stealth','len'},
+				{15.894+240/174*16,240/174/2,'*2 No Stealth','len'},
+				{12.101+240/174*20,240/174/8,'*8 No Stealth','len'},
+				{13.480+240/174*20,240/174/8,'*8 No Stealth','len'},
+				{14.687+240/174*20,240/174/8*3,'*8 No Stealth','len'},
+				{15.204+240/174*20,240/174/2,'*2 Stealth','len'},
+				{15.894+240/174*20,240/174/2,'*2 No Stealth','len'},
+				{12.101+240/174*24,240/174/8,'*8 No Stealth','len'},
+				{13.480+240/174*24,240/174/8,'*8 No Stealth','len'},
+				{14.687+240/174*24,240/174/8*3,'*8 No Stealth','len'},
+				{15.204+240/174*24,240/174/2,'*2 Stealth','len'},
+				{15.894+240/174*24,240/174/2,'*2 No Stealth','len'},
+				
+				
+				{49.687,53.480,'*4 Stealth','end'},
+				{50.204,240/174/4,'*4 No Stealth','len'},
+				{50.894,240/174/2,'*4 No Stealth','len'},
+				{51.929,240/174/4,'*4 No Stealth','len'},
+				{52.618,240/174/4,'*4 No Stealth','len'},
+				
+				{54.687,71.756,'1x','end'},
+				{55.204,75.894,'*10000 500% Invert','end'},
+				
+				{55.204,71.756,'*8 Stealth','end'},
+				{55.549,240/174/8,'*8 No Stealth','len',1},
+				{55.894,240/174/8,'*8 No Stealth','len',2},
+				{56.239,240/174/8,'*8 No Stealth','len',1},
+				{56.584,240/174/8,'*8 No Stealth','len',2},
+				{56.929,240/174/8,'*8 No Stealth','len',1},
+				{57.273,240/174/8,'*8 No Stealth','len',2},
+				{57.618,240/174/8,'*8 No Stealth','len',1},
+				{57.963,240/174/8,'*8 No Stealth','len',2},
+				{58.135,240/174/8,'*8 No Stealth','len',1},
+				
+				{58.825,240/174/16,'*16 No Stealth','len',1},
+				{58.998,240/174/16,'*16 No Stealth','len',2},
+				{59.170,240/174/16,'*16 No Stealth','len',1},
+				{59.342,240/174/16,'*16 No Stealth','len',2},
+				{59.515,240/174/16,'*16 No Stealth','len',1},
+				{59.687,240/174/16,'*16 No Stealth','len',2},
+				{59.860,240/174/16,'*16 No Stealth','len',1},
+				{60.204,240/174/16,'*16 No Stealth','len',2},
+				{60.549,240/174/16,'*16 No Stealth','len',1},
+				
+				{61.411,240/174/8,'*8 No Stealth','len',2},
+				{61.756,240/174/8,'*8 No Stealth','len',1},
+				{62.101,240/174/8,'*8 No Stealth','len',2},
+				{62.618,240/174/8,'*8 No Stealth','len',1},
+				{62.791,240/174/8,'*8 No Stealth','len',2},
+				{63.308,240/174/8,'*8 No Stealth','len',1},
+				{63.480,240/174/8,'*8 No Stealth','len',2},
+				{63.653,240/174/8,'*8 No Stealth','len',1},
+				{63.825,240/174/8,'*8 No Stealth','len',2},
+				
+				{63.998,64.860,'*1 No Stealth','end'},
+				{64.860,66.239,'*1 Stealth','end'},
+				
+				{66.584,240/174/8,'*8 No Stealth','len',1},
+				{66.929,240/174/8,'*8 No Stealth','len',2},
+				{67.273,240/174/8,'*8 No Stealth','len',1},
+				{67.618,240/174/8,'*8 No Stealth','len',2},
+				{67.963,240/174/8,'*8 No Stealth','len',1},
+				{68.308,240/174/8,'*8 No Stealth','len',2},
+				{68.653,240/174/8,'*8 No Stealth','len',1},
+				{68.998,240/174/8,'*8 No Stealth','len',2},
+				{69.342,240/174/8,'*8 No Stealth','len',1},
+				{69.515,240/174/8,'*8 No Stealth','len',2},
+				{69.860,240/174/8,'*8 No Stealth','len',1},
+				{70.204,240/174/8,'*8 No Stealth','len',2},
+				
+				{71.066,240/174/8,'*8 No Stealth','len',1},
+				{71.411,240/174/8,'*8 No Stealth','len',2},
+				
+				
+				{71.584,74.342,'*10000 Beat','end'},
+				{74.515,77.000,'*32 No Drunk','end'},
+				{74.515,0.050,'*32 200% Drunk','len'},
+				{74.687,0.050,'*32 -200% Drunk','len'},
+				{74.860,0.050,'*32 200% Drunk','len'},
+				{75.032,0.050,'*32 -200% Drunk','len'},
+				{75.204,0.050,'*32 200% Drunk','len'},
+				{75.377,0.050,'*32 -200% Drunk','len'},
+				{75.549,0.050,'*32 200% Drunk','len'},
+				{75.722,0.050,'*32 -200% Drunk','len'},
+				
+				{75.894,78.000,'*16 No Invert,*2 2.5x','end'},
+				
+				{88.308,108.998,'*4 400% Drunk','end'},
+				
+				{76.584,108.998,'*3 200% Distant,*1.5 Mini,*10000 0.1125x,*10000 -1000% Reverse,*10000 95.45% Centered,*24 -1600% Bumpy,*1.5 -100% Flip','end'},
+				{108.998,110.377,'*1.5 Overhead,*0.75 200% Mini,*0.75 No Flip,*3 No Drunk,*10000 2.5x,*10000 No Reverse,*10000 No Centered,*10000 No Bumpy','end'},
+				{110.377,113.135,'*2.1 -400% Mini,*0.175 50% Reverse,*0.175 50% Flip','end'},
+				{113.135,120.000,'*2.25 200% Mini,*0.125 No Reverse,*0.125 No Flip,*8 10000% Tornado,*8 10000% Bumpy,*8 10000% Drunk,*8 10000% Tipsy,','end'},
+				
+				}
+				
+				
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:rotationx(0);							
+						v:rotationy(0);
+						v:rotationz(0);
+						v:x(SCREEN_CENTER_X+160*multi);
+						v:y(SCREEN_CENTER_Y);
+						v:zoomx(1);
+						v:zoomy(1);
+						v:GetChild('Judgment'):stopeffect();
+						
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+					end
+				end
+			end
+			
+			if beat >= 158.500 and fgcurcommand == 1 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:decelerate(240/174/8*3);
+						v:GetChild('Judgment'):decelerate(240/174/8*3);
+						v:GetChild('Combo'):decelerate(240/174/8*3);
+						
+						v:x(SCREEN_CENTER_X);
+						v:GetChild('Judgment'):x(multi*160);
+						v:GetChild('Combo'):x(multi*160);
+						
+						v:sleep(0);
+						v:GetChild('Judgment'):sleep(0);
+						v:GetChild('Combo'):sleep(0);
+						
+						v:x(SCREEN_CENTER_X+multi*320);
+						v:GetChild('Judgment'):x(multi*-160);
+						v:GetChild('Combo'):x(multi*-160);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 220 and fgcurcommand == 2 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:linear(240/174/4);
+						v:GetChild('Judgment'):linear(240/174/4);
+						v:GetChild('Combo'):linear(240/174/4);
+						
+						v:x(SCREEN_CENTER_X+multi*160);
+						v:GetChild('Judgment'):x(0);
+						v:GetChild('Combo'):x(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 224 and fgcurcommand == 3 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:bob();
+						v:effectclock('bgm');
+						v:effectperiod(8);
+						v:effectmagnitude(0,100,0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 316 and fgcurcommand == 4 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:stopeffect();
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat > 64 and beat < 96 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						--v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()))
+					end
+				end
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (-0.006 - -0.001) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		SkewTwitchMessageCommand="finishtweening;aux,0;linear,9.6;aux,1.5;linear,1.6;aux,0"
+	/>
+	
+</children></ActorFrame>

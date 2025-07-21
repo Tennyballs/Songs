@@ -1,0 +1,188 @@
+<Mods LoadCommand = "%xero(function(self)
+
+	slumpo = false
+	
+	for pn=1,2 do
+		if GAMESTATE:IsPlayerEnabled(pn-1) then
+			if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 3 then
+				slumpo = true
+			end
+		end
+	end
+	
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+		P[pn]:GetChild('Judgment'):basezoomx(.75)
+		P[pn]:GetChild('Combo'):basezoomx(.75)
+		P[pn]:GetChild('Judgment'):basezoomy(.75)
+		P[pn]:GetChild('Combo'):basezoomy(.75)
+		
+		P[pn]:GetChild('Judgment'):x2(50*(pn*2-3))
+		P[pn]:GetChild('Combo'):x2(50*(pn*2-3))
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+		P[pn]:SetNoteTypeMults{{0,1},{228,2/3},{252,1}}
+		P[pn]:SetFarDist(9e9)
+		for col = 0,3 do
+			P[pn]:SetNumArrowGradientPoints(col, 2)
+			P[pn]:SetArrowGradientPoint(0, col, 5)
+			P[pn]:SetArrowGradientPoint(1, col, 6)
+			P[pn]:SetArrowGradientColor(0, col, hal.rgba{255,255,255,255})
+			P[pn]:SetArrowGradientColor(1, col, hal.rgba{255,255,255,0})
+		end
+	end
+	-- your code goes here here:
+	aux {'gdrawsize'}
+	node {
+		'gdrawsize','centered2',
+		function(val,cen,pn)
+			for col = 0,3 do
+				P[pn]:SetNumArrowGradientPoints(col, 2)
+				P[pn]:SetArrowGradientPoint(0, col, 5 + 6*(val/100) + cen/100)
+				P[pn]:SetArrowGradientPoint(1, col, 6 + 6*(val/100) + cen/100)
+			end
+			return val
+		end,
+		'drawsize'
+	}
+	definemod {
+		'alpha',
+		function(val,pn)
+			if P[pn] then
+				for col = 0,3 do
+					P[pn]:SetNumArrowGradientPoints(col, 2)
+					P[pn]:SetArrowGradientColor(0, col, hal.rgba{255,255,255,255*(val/100)})
+				end
+			end
+		end
+	}
+
+	-- thanks mang :)
+	
+	definemod {'coolskewx','coolskewy', function(x, y)
+			return x, -x, y, -y
+		end,
+		'skewx','noteskew','skewy','noteskewy'
+	}
+	
+	definemod {'coolrotationx','coolrotationy','coolrotationz',function(xd, yd, zd, plr)
+		local d2r = math.pi / 180
+		local ang = mojo.reverse_rotation (xd * d2r, yd * d2r, zd * d2r)
+		local rx, ry, rz = xd, yd, zd
+		local cx, cy, cz = ang[1] * 100, ang[2] * 100, ang[3] * 100
+			return rx, ry, rz, cx, cy, cz
+		end,
+		'rotationx','rotationy','rotationz','confusionxoffset','confusionyoffset','confusionzoffset'
+	}
+	
+	definemod {'confx','confy','confz',function(xd, yd, zd)
+			return 100*math.rad(xd), 100*math.rad(yd), 100*math.rad(zd)
+		end,
+		'confusionxoffset','confusionyoffset','confusionzoffset'
+	}
+	definemod {'conf',function(zd)
+			return 100*math.rad(zd)
+		end,
+		'confusionoffset'
+	}
+	
+	tester = {0,0}
+	
+	setdefault {100,'alpha'}
+	
+	
+	--
+	setdefault {2, 'xmod'}
+	
+	
+end)"
+Type = "ActorFrame" OnCommand="fov,0;hidden,0;" InitCommand="%function(self) sw,sh,scx,scy = SCREEN_WIDTH,SCREEN_HEIGHT,SCREEN_CENTER_X,SCREEN_CENTER_Y end" FarDist="999999"
+><children>
+	<Layer File = "taro/mods.xml" />
+	
+	<Layer Type="Quad" OnCommand="stretchto,0,0,xero.sw,xero.sh;diffuse,0,0,0,0;clearzbuffer,1" />
+	
+	<Layer Type = "ActorFrame" Name="topscreen" OnCommand="fov,0;hidden,0;x,SCREEN_WIDTH/2;y,SCREEN_HEIGHT/2;" FarDist="999999"><children>
+	
+		<Layer File="sky1" Name="s_sky[1]" HideCommand="hidden,1" OnCommand="scaletocover,-sw/1.5,-sh/1.5,sw/1.5,sh/1.5;z,-100;" />
+		<Layer File="sky2" Name="s_sky[2]" HideCommand="hidden,1" OnCommand="scaletocover,-sw/1.5,-sh/1.5,sw/1.5,sh/1.5;diffusealpha,0;z,-100;" />
+		<Layer File="sky3" Name="s_sky[3]" HideCommand="hidden,1" OnCommand="scaletocover,-sw/1.5,-sh/1.5,sw/1.5,sh/1.5;diffusealpha,0;z,-100;" />
+		
+		<Layer File="stars" Name="s_stars" OnCommand="cropbottom,.6;fadebottom,.05;z,-300;zoom,4;blend,add;customtexturerect,0,0,4,4;diffusealpha,.5;texcoordvelocity,0,-.02;" />
+		
+		<Layer File="clouds" Name="s_clouds"
+		OnCommand="customtexturerect,0,0,3,1;basezoomx,1.5;basezoomy,1.5;stretchto,-512,100-SCREEN_HEIGHT/2,512,356-SCREEN_HEIGHT/2;z,-300;
+		blend,add;texcoordvelocity,.03,0;diffusealpha,.5;" />
+		
+		<Layer File="city" Name="s_city" OnCommand="cropbottom,.1;y,50;z,-600;zoom2,.7;zoomx,8;zoomy,.7;customtexturerect,0,0,8,1;diffuse,.4,.3,.2,1;" />
+		
+		<Layer Type = "ActorFrame"
+		Name="s_cave"
+		OnCommand="fov,60;rotationx,0;hidden,1"
+		FarDist="999999"
+		><children>
+			<Layer File="ground" Name="s_ceiling" OnCommand="rotationx,90;y,sh*1;z,-1024;customtexturerect,0,0,10,5;zoomx,20;zoomy,10;zoomz,16;fadebottom,0.2;" />
+			<Layer File="ground" Name="s_floor" OnCommand="rotationx,90;y,sh*2;z,-1024;customtexturerect,0,0,10,5;zoomx,20;zoomy,10;zoomz,16;fadebottom,0.2;" />
+			<Layer Type="Quad" OnCommand="zoomto,sw*20,sh*2;z,-4096;y,sh*1.5;diffuse,0,0,0,1;fadetop,.2;fadebottom,.2;" />
+			
+			<Layer Type = "ActorFrame" Name="s_aux" FarDist="999999" OnCommand="fov,60;z,-1000;zoom,2;zoomz,2;y,sh*1.5" ><children>
+				<Layer Type="Quad" OnCommand="zoomto,sw*.5,sh*.5;diffusebottomedge,.7,.6,.5,.7;diffusetopedge,.9,.8,.7,.7" />
+				<Layer Type="BitmapText" Name="s_debug" Text="" Font="@'../../../'..GAMESTATE:GetCurrentSong():GetSongDir()..'lua/taro/_eurostile outline.ini'"
+				OnCommand="shadowlength,0;diffuse,.6,0,0,.7;zoom,1.4;" />
+			</children></Layer>
+			
+		</children></Layer>
+		
+		<Layer Type = "ActorFrame"
+		Name="s_worldg"
+		OnCommand="fov,60;rotationx,0;hidden,0"
+		FarDist="999999"
+		><children>
+			<Layer File="grass" Name="s_grass" OnCommand="rotationx,90;y,sh*1;z,-1024;customtexturerect,0,0,10,5;zoomx,20;zoomy,10;zoomz,16;fadebottom,0.2;diffuse,1,.8,.4,1;" />
+		</children></Layer>
+		
+		<Layer Type = "ActorFrame"
+		Name="s_world"
+		OnCommand="fov,60;rotationx,0;hidden,0"
+		FarDist="999999"
+		><children>
+			<Layer File = "dirt.png" Name="s_dirttex" OnCommand="hidden,1" />
+			<Layer Type = "Polygon" Name="s_dirtpoly" OnCommand="diffuse,1,.9,.7,1;" />
+		</children></Layer>
+		
+		<Layer Type="ActorFrame" Name="s_forest" OnCommand="fov,60;rotationx,0;hidden,0"
+		FarDist="999999" ><children>
+			<Layer File="tshadow" Name="s_treeshadow" OnCommand="zoom,1" />
+			<Layer File="tree" Name="s_tree" OnCommand="zoom,1" />
+		</children></Layer>
+	
+	</children></Layer>
+	
+	<Layer File="alice" Name="s_alice" OnCommand="animate,0;valign,1;zoom,.7;xy,sw-80,sh+10;addx,1*180;" />
+	
+	<Layer File="cuica" HideCommand="hidden,1;" CuicaAppearMessageCommand="hidden,0;sleep,45/177;queuecommand,Hide" OnCommand="xy,120,sh-90;zoom,.4;hidden,1;" />
+	
+	<Layer Type="Quad" Name="s_bgtint" OnCommand="stretchto,0,0,xero.sw,xero.sh;diffuse,.4,.2,0,.4;" />
+	
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	
+	<Layer Type="ActorFrame" Name="s_econt" OnCommand="vibrate;effectmagnitude,0,0,0" ><children>
+	<Layer File="erika" Name="s_erika" OnCommand="animate,0;basezoomx,.55;basezoomy,.55;xy,scx,scy;wag;effectmagnitude,0,0,5;effectperiod,.5;align,.3,.7;effectclock,bgm;" />
+	</children></Layer>
+	
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	
+	<Layer File="darkvig" OnCommand="stretchto,0,0,sw+2,sh+2;diffusealpha,1;" />
+	
+	<Layer Type="Quad" OnCommand="stretchto,0,0,xero.sw,xero.sh;diffuse,1,1,1,0" WFlashMessageCommand="diffusealpha,.8;linear,1;diffusealpha,0;" />
+	
+</children></Mods>

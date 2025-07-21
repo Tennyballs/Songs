@@ -1,0 +1,100 @@
+
+
+
+	math.mod(a, b)
+		modulo that supports negative numbers
+
+	math.clamp(val, min, max)
+		restricts `val` between `min` and `max`
+
+	spb(beat)
+		returns the amount of seconds in `beat` beats
+
+	Plr(pn)
+		returns player `pn`
+
+	fluct(i)
+		returns a rounded float alternating between positive and negative `i`
+
+	realFov(fov)
+		use when calling `fov` on an ActorFrame for consistent zoomz across aspect ratios
+		➜	frame:fov(realFov(60))
+
+	randomxd(t)
+		returns a normalized pseudo-random seeded number based on `t`
+
+	ease2 {beat, len, curve, from, to, mod, plr = int -or- table}
+		emulate classic tempalte behavior
+		➜	ease2 {2, 1, inOutExpo, 360, 0, 'rotationz'}
+
+	hal.swap {beat, len, curve, which, width = 1 -or- 2}
+		does a column swap
+		set `width` to 2 if you're in an ayakashi (🠈🠈🠋🠋🠉🠉🠊🠊)
+		➜	hal.swap {4, 1, inOutExpo, 'drlu'}
+		➜	valid entries
+				normal  🠈🠋🠉🠊
+				invert  🠋🠈🠊🠉
+				flip    🠊🠉🠋🠈
+				ludr    🠈🠉🠋🠊
+				drlu    🠋🠊🠈🠉
+				rdul    🠊🠋🠉🠈
+				ulrd    🠉🠈🠊🠋
+				urld    🠉🠊🠈🠋
+
+	hal.rgba {r, g, b, a}
+		returns a table of normalized red, blue, green, and alpha values using the 0-255 range
+
+	hal.msg {t}
+		shorthand for MESSAGEMAN:Broadcast(t)
+
+	hal.qcmd {obj, c}
+		shorthand for obj:queuecommand(c)
+
+	hal.between {a, b, c}
+		returns true if [a] is between [b] and [c], returns false otherwise
+
+	condor.zoom(amt)
+		zooms an actor assuming it's positioned at xy(0, 0)
+		➜	local a = condor.zoom(2)
+			obj:zoom(a.zoom)
+			obj:xy(a.x, a.y)
+
+	condor.rotation(amt)
+		rotates an actor on the z axis assuming it's positioned at xy(0, 0)
+		➜	local a = condor.rotation(45)
+			obj:rotationz(a.rot)
+			obj:xy(a.x, a.y)
+
+	oat.mix {curve_in, curve_out, p}
+		returns a function where `p` is the normalized duration of some tween length; `curve_in` is returned before `p`, `curve_out` is returned after.
+		➜	ease {4, 2, oat.mix{inExpo, outBack, 0.5}, 'invert'}
+			oat.mix{inBack, outElastic.params(100, 0.05), 0.25}
+
+	mojo.reverse_rotation(angleX, angleY, angleZ)
+		returns a table of the inverse of a given matrix
+
+	mojo.rotate_and_counter(xDegrees, yDegrees, zDegrees, player_or_object)
+		returns a mod string with the proper inverse confusionoffsetx/y/z values of a given matrix
+
+	mojo.getCounterRotation(xDegrees, yDegrees, zDegrees)
+		functionally the same as reverse_rotation but returned in radians*100
+
+	mojo.axisRot(x, y, z, rad)
+		what the fuck is this
+
+	taro.wiggle{beat, len, num, curve, amt -or- {amt1, amt2}, mod, persist = bool, sus = float, plr = int -or- table}
+		repeatedly transition between two mod values at a fixed rate
+		`persist` dictates whether or not to return the last value in the loop back to 0
+		`sus` is the amount of beats to wait before transitioning to the next value
+		➜	taro.wiggle {4, 0.25, 32, inOutCirc, 100, 'invert', sus = 1}
+			taro.wiggle {4, 0.25, 32, inOutCirc, {-50, 200}, 'drunk', persist = true}
+
+	taro.bounce{beat, len, curve_in, curve_out, amt, mod -or- function, mirror = bool, plr = int -or- table}
+		transition to `amt` using `curve_in`, then return back to 0 using `curve_out`
+		`mirror` is a flag that negates `amt` during the transition back to 0
+		➜	taro.bounce {4, 1, inExpo, outCirc, 150, 'skewx', mirror = true}
+			taro.bounce {4, 1, inExpo, outCirc, 100, function(v)
+				for pn = 1,2 do
+					P[pn]:x(v)
+				end
+			end}

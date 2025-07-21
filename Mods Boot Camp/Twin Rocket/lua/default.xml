@@ -1,0 +1,519 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,GAMESTATE:GetCurrentSong():MusicLengthSeconds()"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				prefix_countdown = 0;
+				
+				
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+					{3.267,'StoreStar'},
+					
+					{55.158,'BlastOff'},
+					{65.375,'SpaceStart'},
+					{85.969,'SpaceMoreIntense'},
+					{105.753,'SpaceEnd'},
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'2x,-999999% Cover,*10000 No Beat','end'},
+				
+				{0.996,2.456,'*0.9 0x','end'},
+				{2.456,3.267,'*8 2x','end'},
+				{2.537,0.050,'*10000 0x','len'},
+				{2.618,0.050,'*10000 0x','len'},
+				
+				{3.267,12.348,'*4 Drunk,*4 Tipsy,*2 50% Brake','end'},
+				
+				{12.348,13.645,'*1.5 0.5x','end'},
+				{12.996,13.158,'*32 1000% Dizzy','end'},
+				{13.158,13.500,'*32 No Dizzy','end'},
+				{13.321,13.483,'*16 Invert','end'},
+				{13.483,13.645,'*16 No Invert','end'},
+				{13.645,15.000,'*16 2x','end'},
+				
+				{13.645,240/185/4,'*8 No Mini','len'},
+				{13.645,0.050,'*10000 -200% Mini','len'},
+				
+				{13.807,17.375,'*10000 200% Beat','end'},
+				{13.645,28.888,'*8 400% Bumpy','end'},
+				{22.726,24.023,'*8 No Bumpy','end'},
+				{28.888,30.000,'*8 No Bumpy','end'},
+				
+				{17.537,19.000,'*32 No Drunk','end'},
+				{17.537,0.050,'*256 400% Drunk','len'},
+				{17.780,0.050,'*256 -400% Drunk','len'},
+				{18.023,0.050,'*256 400% Drunk','len'},
+				{18.186,0.050,'*256 -400% Drunk','len'},
+				{18.348,0.050,'*256 400% Drunk','len'},
+				{18.510,0.050,'*256 -400% Drunk','len'},
+				
+				{18.996,22.564,'*10000 200% Beat','end'},
+				
+				{18.834,240/185/4,'*8 No Mini','len'},
+				{18.834,0.050,'*10000 -200% Mini','len'},
+				
+				{22.726,24.023,'*1.5 0.5x','end'},
+				{23.375,23.537,'*32 1000% Dizzy','end'},
+				{23.537,24.000,'*32 No Dizzy','end'},
+				{24.023,26.000,'*16 2x','end'},
+				
+				{24.023,240/185/4,'*8 No Mini','len'},
+				{24.023,0.050,'*10000 -200% Mini','len'},
+				
+				{24.186,25.807,'*10000 200% Beat','end'},
+				{26.456,27.753,'*10000 200% Beat','end'},
+				
+				{25.969,27.915,'*8 No Invert,*24 No Drunk,*24 No Tipsy','end'},
+				{25.969,240/185/4,'*8 Invert','len'},
+				{25.969,0.050,'*10000 300% Drunk,*10000 300% Tipsy','len'},
+				{26.294,0.050,'*10000 -300% Drunk,*10000 -300% Tipsy','len'},
+				{27.915,29.213,'*12 No Invert,*32 No Drunk,*32 No Tipsy','end'},
+				{27.915,0.050,'*10000 300% Drunk,*10000 300% Tipsy','len'},
+				{28.023,0.050,'*10000 -300% Drunk,*10000 -300% Tipsy','len'},
+				{28.131,0.050,'*10000 300% Drunk,*10000 300% Tipsy','len'},
+				{28.240,0.050,'*10000 -300% Drunk,*10000 -300% Tipsy','len'},
+				{27.915,240/185/12,'*12 Invert','len'},
+				{28.131,240/185/12,'*12 Invert','len'},
+				{28.564,0.050,'*10000 200% Drunk,*10000 200% Tipsy','len'},
+				{28.672,0.050,'*10000 -200% Drunk,*10000 -200% Tipsy','len'},
+				{28.780,0.050,'*10000 200% Drunk,*10000 200% Tipsy','len'},
+				{28.888,0.050,'*10000 -200% Drunk,*10000 -200% Tipsy','len'},
+				{28.564,240/185/12,'*12 Invert','len'},
+				{28.780,240/185/12,'*12 Invert','len'},
+				
+				{29.213,33.104,'Blind','end'},
+				{29.375,32.618,'*10000 -100% Flip','end',2},
+				{32.618,33.000,'*10000 No Flip','end',2},
+				
+				{32.618,33.000,'*10000 No Flip','end'},
+				
+				{33.753,240/185/4,'*5 0x','len'},
+				{34.077,240/185/4,'*5 2x','len'},
+				
+				{34.402,43.483,'*4 Drunk,*4 Tipsy,*2 50% Brake','end'},
+				
+				{43.807,51.915,'*2.5 1x','end'},
+				{43.807,43.969,'*32 1000% Dizzy','end'},
+				{43.969,44.500,'*32 No Dizzy','end'},
+				{44.131,44.456,'*8 Invert','end'},
+				{44.456,44.780,'*8 No Invert','end'},
+				
+				{44.780,52.564,'*10000 Sudden,*10000 40% SuddenOffset,*16 No Drunk,*16 No Tipsy,*16 No Bumpy,*16 No Tornado','end'},
+				
+				{44.780,0.08,'*64 1000% Drunk,*64 1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.104,0.08,'*64 -1000% Drunk,*64 -1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.429,0.08,'*64 1000% Drunk,*64 1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.591,0.08,'*64 -1000% Drunk,*64 -1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.915,0.08,'*256 5000% Drunk,*256 5000% Tipsy,*256 5000% Bumpy,*256 5000% Tornado','len'},
+				
+				{44.780+2.5946*1,0.08,'*64 1000% Drunk,*64 1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.104+2.5946*1,0.08,'*64 -1000% Drunk,*64 -1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.429+2.5946*1,0.08,'*64 1000% Drunk,*64 1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.591+2.5946*1,0.08,'*64 -1000% Drunk,*64 -1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.915+2.5946*1,0.08,'*256 5000% Drunk,*256 5000% Tipsy,*256 5000% Bumpy,*256 5000% Tornado','len'},
+				
+				{44.780+2.5946*2,0.08,'*64 1000% Drunk,*64 1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.104+2.5946*2,0.08,'*64 -1000% Drunk,*64 -1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.429+2.5946*2,0.08,'*64 1000% Drunk,*64 1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.591+2.5946*2,0.08,'*64 -1000% Drunk,*64 -1000% Tipsy,*64 1000% Bumpy,*64 1000% Tornado','len'},
+				{45.915+2.5946*2,0.08,'*256 5000% Drunk,*256 5000% Tipsy,*256 5000% Bumpy,*256 5000% Tornado','len'},
+				
+				{44.780,1.297,'*10000 35% SuddenOffset','len'},
+				{47.375,1.297,'*10000 35% SuddenOffset','len'},
+				{49.969,1.297,'*10000 35% SuddenOffset','len'},
+				
+				{46.077,47.375,'*1.45 No Centered,*2 No Stealth,*10000 No Drunk,*10000 No Tipsy,*10000 No Bumpy,*10000 No Tornado','end'},
+				{46.077,0.081,'*10000 -175% Centered,*10000 Stealth','len'},
+				
+				{48.672,49.969,'*1.45 No Centered,*2 No Stealth,*10000 No Drunk,*10000 No Tipsy,*10000 No Bumpy,*10000 No Tornado','end'},
+				{48.672,0.081,'*10000 -175% Centered,*10000 Stealth','len'},
+				
+				{51.267,52.564,'*1.45 No Centered,*2 No Stealth,*10000 No Drunk,*10000 No Tipsy,*10000 No Bumpy,*10000 No Tornado','end'},
+				{51.267,0.081,'*10000 -175% Centered,*10000 Stealth','len'},
+				
+				{51.915,55.000,'*2 2x','end'},
+				
+				{52.564,55.158,'*48 No Drunk,*48 No Tipsy','end'},
+				{52.564,0.060,'*64 1000% Drunk,*64 1000% Tipsy','len'},
+				{52.888,0.060,'*64 -1000% Drunk,*64 -1000% Tipsy','len'},
+				{53.050,0.060,'*64 1000% Drunk,*64 1000% Tipsy','len'},
+				{53.375,0.060,'*64 -1000% Drunk,*64 -1000% Tipsy','len'},
+				{53.537,0.060,'*64 1000% Drunk,*64 1000% Tipsy','len'},
+				
+				{64.240,999,'*10000 Sudden,*10000 120% SuddenOffset','end'},
+				
+				{75.915,107.050,'50% Bumpy','end'},
+				
+				{85.969,86.131,'*16 Invert','end'},
+				{86.131,86.300,'*16 No Invert','end'},
+				
+				{86.294,107.050,'*2 Wave','end'},
+				
+				{86.294,240/185/4,'*8 No Mini','len'},
+				{86.294,0.050,'*10000 -200% Mini','len'},
+				
+				{96.672,240/185/4,'*8 No Mini','len'},
+				{96.672,0.050,'*10000 -200% Mini','len'},
+				
+				{99.267,240/185/4,'*8 No Mini','len'},
+				{99.267,0.050,'*10000 -200% Mini','len'},
+				
+				{100.564,107.050,'*2 2.5x,25% Bumpy','end'},
+				
+				{105.753,107.050,'*24 No Mini','end'},
+				{105.753,0.050,'*10000 200% Mini','len'},
+				{105.753+240/185/16*1,0.050,'*10000 200% Mini','len'},
+				{105.753+240/185/16*2,0.050,'*10000 200% Mini','len'},
+				{105.753+240/185/16*3,0.050,'*10000 200% Mini','len'},
+				{105.753+240/185/16*4,0.050,'*10000 200% Mini','len'},
+				{105.753+240/185/16*5,0.050,'*10000 200% Mini','len'},
+				{105.753+240/185/16*6,0.050,'*10000 200% Mini','len'},
+				{105.753+240/185/16*7,0.050,'*10000 200% Mini','len'},
+				{105.753+240/185/16*8,0.050,'*10000 200% Mini','len'},
+				
+				{108.996,240/185/4,'*8 Invert','len'},
+				{109.321,240/185/4,'*8 No Invert','len'},
+				
+				{109.645,240/185/16,'*32 75% Mini','len'},
+				{109.726,240/185/16,'*32 150% Mini','len'},
+				{109.807,240/185/4,'*32 No Mini','len'},
+				
+				{110.131,240/185/16,'*32 75% Mini','len'},
+				{110.213,240/185/16,'*32 150% Mini','len'},
+				{110.294,240/185/4,'*32 No Mini','len'},
+				
+				{110.618,240/185/16,'*32 75% Mini','len'},
+				{110.699,240/185/16,'*32 150% Mini','len'},
+				{110.780,240/185/4,'*32 No Mini','len'},
+				
+				{111.104,240/185/8,'*32 200% Mini','len'},
+				{111.267,200,'*8 -1000% Mini,*10000 Dark,*10000 50% Reverse,*10000 50% Flip','end'},
+				}
+				
+				
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:rotationx(0);							
+						v:rotationy(0);
+						v:rotationz(0);
+						v:x(SCREEN_CENTER_X+160*multi);
+						v:y(SCREEN_CENTER_Y);
+						v:zoomx(1);
+						v:zoomy(1);
+						v:GetChild('Judgment'):stopeffect();
+						
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+						
+						v:x(SCREEN_CENTER_X);
+						v:GetChild('Judgment'):x(160*multi);
+						v:GetChild('Combo'):x(160*multi);
+						
+						SCREENMAN:GetTopScreen():SetDrawByZPosition(true);
+						SCREENMAN:GetTopScreen():GetChild('SongForeground'):z(999);
+						SCREENMAN:GetTopScreen():GetChild('SongBackground'):z(-999);
+					end
+				end
+			end
+			
+			if beat >= 88 and fgcurcommand == 1 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						local eighth = 240/185/8;
+						
+						if i == 2 then v:rotationx(-90); v:zoomy(0); end
+						v:sleep(eighth);
+						
+						if i == 1 then
+							for j = 1,6 do
+								v:accelerate(eighth);
+								v:rotationx(45);
+								v:zoomy(0.5);
+								v:decelerate(eighth);
+								v:rotationx(90);
+								v:zoomy(0);
+								v:accelerate(eighth);
+								v:rotationx(45);
+								v:zoomy(0.5);
+								v:decelerate(eighth);
+								v:rotationx(0);
+								v:zoomy(1);
+							end
+						else
+							for j = 1,6 do
+								v:accelerate(eighth);
+								v:rotationx(-45);
+								v:zoomy(0.5);
+								v:decelerate(eighth);
+								v:rotationx(0);
+								v:zoomy(1);
+								if j ~= 6 then
+									v:accelerate(eighth);
+									v:rotationx(-45);
+									v:zoomy(0.5);
+									v:decelerate(eighth);
+									v:rotationx(-90);
+									v:zoomy(0);
+								end
+							end
+						end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 168 and fgcurcommand == 2 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:linear(240/185*6);
+						v:z(-800);
+						v:addy(200);
+						
+						v:decelerate(240/185);
+						v:z(0);
+						v:addy(-200);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 199 and fgcurcommand == 3 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:linear(240/185/16*1.5);
+						v:rotationx(45);
+						v:rotationy(-45);
+						v:rotationz(45);
+						
+						v:GetChild('Judgment'):linear(240/185/16*1.5);
+						v:GetChild('Judgment'):rotationx(0);
+						v:GetChild('Judgment'):rotationy(0);
+						v:GetChild('Judgment'):rotationz(-15);
+						v:GetChild('Combo'):linear(240/185/16*1.5);
+						v:GetChild('Combo'):rotationx(0);
+						v:GetChild('Combo'):rotationy(0);
+						v:GetChild('Combo'):rotationz(-15);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 328 and fgcurcommand == 4 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:linear(240/185/4*6);
+						v:rotationx(0);
+						v:rotationy(0);
+						v:rotationz(0);
+						
+						v:GetChild('Judgment'):linear(240/185/4*6);
+						v:GetChild('Judgment'):rotationx(0);
+						v:GetChild('Judgment'):rotationy(0);
+						v:GetChild('Judgment'):rotationz(0);
+						v:GetChild('Combo'):linear(240/185/4*6);
+						v:GetChild('Combo'):rotationx(0);
+						v:GetChild('Combo'):rotationy(0);
+						v:GetChild('Combo'):rotationz(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			
+			
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat > 164 and beat < 168 then
+				local flip = math.sin(beat*math.pi*2)*50; if flip < 0 then flip = flip*2; end
+				if beat > 167 then flip = 0; end
+				GAMESTATE:ApplyGameCommand('mod,*10000 '..flip..'% Flip');
+			end
+			
+			if beat > 168 and beat < 199 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:vibrate();
+						v:effectmagnitude(auxvar:getaux(),auxvar:getaux(),0);
+					end
+				end
+			end
+			
+			if beat > 199.500 and beat < 999 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						
+						if beat < 263.500 then
+							v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/4)*auxvar:getaux())*multi + math.sin(beat*math.pi/8) );
+							v:GetChild('Judgment'):x((math.sin(beat*math.pi/4)*auxvar:getaux()*multi + math.sin(beat*math.pi/8))*-2 + multi*200);
+						else
+							v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/4)*auxvar:getaux()*2)*multi + math.sin(beat*math.pi/8) );
+							v:GetChild('Judgment'):x((math.sin(beat*math.pi/4)*auxvar:getaux()*2*multi + math.sin(beat*math.pi/8))*-2 + multi*200);
+						end
+						
+						v:y(SCREEN_CENTER_Y+(math.cos(beat*math.pi/4)*auxvar:getaux())*-multi*0.5);
+						v:z((math.cos(beat*math.pi/4)*auxvar:getaux())*-multi);
+						
+						
+					end
+				end
+				
+				if beat > 232 and beat < 320 then
+					prefix_countdown = prefix_countdown - 1;
+					if prefix_countdown < 0 then
+						prefix_shootstar();
+						prefix_countdown = 15;
+						if beat > 264 then
+							prefix_countdown = 10;
+						end
+					end
+				end
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (-0.674 - -1.048) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		BlastOffMessageCommand="finishtweening;aux,0;linear,240/185*6;aux,25;linear,240/185/4*2;aux,0"
+		SpaceStartMessageCommand="finishtweening;aux,0;linear,240/185/4;aux,100"
+		SpaceMoreIntenseMessageCommand="finishtweening;aux,100;linear,240/185/8;aux,0;linear,240/185/8;aux,100"
+		SpaceEndMessageCommand="finishtweening;aux,100;linear,240/185/4*3;aux,0"
+	/>
+	
+	<ActorFrame InitCommand="%function(self) self:SetDrawByZPosition(true) end" ><children>
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+		<Layer File="star" OnCommand="x,SCREEN_RIGHT+100" StoreStarMessageCommand="%prefix_storestar" />
+	</children></ActorFrame>
+	
+</children></ActorFrame>

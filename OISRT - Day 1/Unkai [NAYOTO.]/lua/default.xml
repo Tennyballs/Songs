@@ -1,0 +1,73 @@
+<ActorFrame InitCommand="%function(a)local b=getfenv(0)local c,d,e=b.table,b.string,b.debug local f,g,h=b.assert,b.setmetatable,b.type local i=print or Trace local j=d.gmatch or d.gfind f(GameState.GetVersionDate and tonumber(GAMESTATE:GetVersionDate())>=20210420,&quot;Please playing in latest NotITG!&quot;)local function k(l,m)for n in j(m,&quot;[%w_]+&quot;)do if not l[n]then return nil end l=l[n]end return l end local function o(l,m,p)for n,q in j(m,&quot;([%w_]+)(.?)&quot;)do if q==&quot;.&quot;then l[n]=l[n]or{}l=l[n]else l[n]=p end end end local function r(s)if h(s)~=&quot;table&quot;then return s end local t={}for u,p in next,s do rawset(t,u,p)end return t end local function v(l)for u,p in next,b do if not l[u]then if h(p)==&quot;function&quot;then local w=e.getinfo(p,&quot;S&quot;)if w.what==&quot;C&quot;then l[u]=p end else l[u]=r(p)end end end end local x=1 local y=a:GetXMLDir()local z={assert=b.assert,collectgarbage=b.collectgarbage,dofile=b.dofile,error=b.error,getmetatable=b.getmetatable,ipairs=b.ipairs,load=b.load,loadfile=b.loadfile,next=b.next,pairs=b.pairs,pcall=b.pcall,print=b.print,rawequal=b.rawequal,rawget=b.rawget,rawlen=b.rawlen,rawset=b.rawset,require=b.require,select=b.select,setmetatable=b.setmetatable,tonumber=b.tonumber,tostring=b.tostring,type=b.type,warn=b.warn,xpcall=b.xpcall}local A={base={},coroutine=r(b.coroutine),table=r(b.table),io=r(b.io),os=r(b.os),string=r(b.string),utf8=r(b.utf8),math=r(b.math),debug=r(b.debug),package=r(b.package)}local B={}local C={__index=z,__newindex=z}v(z)v(A[&quot;base&quot;])local function D(E)local l={}for n in j(E,&quot;[^/]+&quot;)do c.insert(l,n)end return l end local function F(G,H)local I=D(G)local J=D(H)local t={}for K,p in ipairs(J)do if p~=I[K]then c.insert(t,p)end end return c.concat(t,&quot;/&quot;)end local function L(M,N)local w=e.getinfo(N+1,&quot;S&quot;)f(w)local O=d.sub(w.source,2)local P=d.sub(O,1,d.find(O,&quot;/[^/]*$&quot;))local E=F(y,P)if E~=&quot;&quot;then E=d.gsub(E,&quot;/&quot;,&quot;%.&quot;)M=d.format(&quot;%s.%s&quot;,E,M)end return M end local function Q(M,R)local M=d.gsub(M,&quot;%.&quot;,&quot;/&quot;)local E=d.format(&quot;%s%s.lua&quot;,R,M)f(GAMESTATE:GetFileStructure(E),d.format(&quot;error loading module \&quot;%s\&quot;&quot;,E))return E end local function S(M)M=d.gsub(M,&quot;/&quot;,&quot;%.&quot;)local m=rawget(A,M)if m then return m end M=L(M,x+1)local m=k(B,M)if m then return m end local E=Q(M,y)local T,U=loadfile(E)f(T,e.traceback(U))local V={_G=z,_LOADED=A,_PRELOAD=B,_VERSION=&quot;0.1.3&quot;,import=S}g(V,C)setfenv(T,V)local t=T()o(B,M,t)return t end local m=S&quot;main&quot;if m then a:addcommand(&quot;ScreenReady&quot;,m.Init)a:SetUpdateFunction(m.Update)a:SetDrawFunction(m.Draw)a:sleep(1E9)end collectgarbage()end"><children>
+
+	<Layer
+		Type="ActorSound"
+		File="@THEME:GetPath(EC_SOUNDS,&quot;Player&quot;,&quot;mine&quot;)"
+		Condition="GAMESTATE:IsPlayerEnabled(PLAYER_1)"
+		InitCommand="%function(self) self:get():pan(GAMESTATE:GetNumPlayersEnabled() == 2 and -1 or 0); end"
+		HitMineP1MessageCommand="%function(self) self:start(); end"
+	/>
+
+	<Layer
+		Type="ActorSound"
+		File="@THEME:GetPath(EC_SOUNDS,&quot;Player&quot;,&quot;mine&quot;)"
+		Condition="GAMESTATE:IsPlayerEnabled(PLAYER_2)"
+		InitCommand="%function(self) self:get():pan(GAMESTATE:GetNumPlayersEnabled() == 2 and  1 or 0); end"
+		HitMineP2MessageCommand="%function(self) self:start(); end"
+	/>
+
+	<Layer
+		File="gradation"
+		InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0.8,0.8,0.8,1.0"
+	/>
+
+	<Layer
+		File="particle"
+		InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y"
+	/>
+
+	<Layer
+		File="background"
+		InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0.5,0.5,0.5,1.0"
+		ShowParticleMessageCommand="sleep,240/160*2;diffusealpha,0"
+		HideParticleMessageCommand="sleep,240/160*2;diffusealpha,1"
+	/>
+
+	<Layer
+		Type="Quad"
+		InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,1.0,1.0,1.0,0.0"
+		ShowParticleMessageCommand="accelerate,240/160*2;diffusealpha,1;decelerate,240/160;diffusealpha,0"
+		HideParticleMessageCommand="accelerate,240/160*2;diffusealpha,1;decelerate,240/160;diffusealpha,1"
+	/>
+
+	<Layer
+		Type="Quad"
+		InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0.0,0.0,0.0,0.0"
+		ShowBlackScreenMessageCommand="accelerate,240/160*2;diffusealpha,1"
+		HideBlackScreenMessageCommand="accelerate,240/160*2;diffusealpha,0"
+	/>
+
+	<Layer Type="ActorFrame" Name="PlayField" FOV="45" InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y"><children>
+		<Layer Type="ActorProxy" Name="NoteField"/>
+		<Layer Type="ActorProxy" Name="NoteField"/>
+		<Layer Type="ActorProxy" Name="NoteField"/>
+		<Layer Type="ActorProxy" Name="NoteField"/>
+		<Layer Type="ActorProxy" Name="Judgment"/>
+		<Layer Type="ActorProxy" Name="Judgment"/>
+		<Layer Type="ActorProxy" Name="Combo"/>
+		<Layer Type="ActorProxy" Name="Combo"/>
+	</children></Layer>
+
+	<Layer
+		Type="Quad"
+		OnCommand="stretchto,SCREEN_LEFT,SCREEN_TOP,SCREEN_LEFT+128,SCREEN_BOTTOM;faderight,0.75;diffuse,1,0,0,0"
+		HitMineP1MessageCommand="stoptweening;diffusealpha,0.5;accelerate,0.6;diffusealpha,0"
+	/>
+
+	<Layer
+		Type="Quad"
+		OnCommand="stretchto,SCREEN_RIGHT-128,SCREEN_TOP,SCREEN_RIGHT,SCREEN_BOTTOM;fadeleft,0.75;diffuse,1,0,0,0"
+		HitMineP2MessageCommand="stoptweening;diffusealpha,0.5;accelerate,0.6;diffusealpha,0"
+	/>
+
+</children></ActorFrame>

@@ -1,0 +1,512 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,GAMESTATE:GetCurrentSong():MusicLengthSeconds()"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+				{25.612,'SkewTwitch'},
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'1.75x,-999999% Cover,*10000 No Beat','end'},
+				
+				{0,8.444,'*10000 1.15x,*0.225 Stealth','end'},
+				{2.607,240/185/8,'*10000 50% Stealth','len'},
+				{5.201,240/185/8,'*10000 50% Stealth','len'},
+				{7.796,240/185/8,'*10000 50% Stealth','len'},
+				{8.444,8.769,'*10000 0x,*10000 Stealth','end'},
+				{8.769,10.390,'*1.125 1.75x,*10000 No Stealth','end'},
+				
+				{10.390,240/185/8*3,'*2 Hallway','len'},
+				{10.877,240/185/8*3,'*4 Distant','len'},
+				{11.363,240/185/8*3,'*4 Hallway','len'},
+				{11.850,240/185/8*3,'*4 Distant','len'},
+				{12.336,240/185/8*3,'*6 Hallway','len'},
+				{12.661,240/185/8*3,'*6 Distant','len'},
+				
+				{12.985,240/185/8*3,'*4 Hallway','len'},
+				{13.471,240/185/8*3,'*4 Distant','len'},
+				{13.958,240/185/8*2,'*3 Overhead','len'},
+				
+				{10.390+240/185*4,240/185/8*3,'*2 Hallway','len'},
+				{10.877+240/185*4,240/185/8*3,'*4 Distant','len'},
+				{11.363+240/185*4,240/185/8*3,'*4 Hallway','len'},
+				{11.850+240/185*4,240/185/8*3,'*4 Distant','len'},
+				{12.336+240/185*4,240/185/8*3,'*6 Hallway','len'},
+				{12.661+240/185*4,240/185/8*3,'*3 Overhead','len'},
+				
+				{14.282+240/185/4*0,240/185/4,'*1.2 20% Reverse','len'},
+				{14.282+240/185/4*1,240/185/4,'*1.2 40% Reverse','len'},
+				{14.282+240/185/4*2,240/185/4,'*1.2 20% Reverse','len'},
+				{14.282+240/185/4*3,240/185/4,'*1.2 No Reverse','len'},
+				
+				{18.174+240/185/4*0,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 -50% Cross,*2 -50% Alternate','len'},
+				{18.174+240/185/4*1,240/185/4,'*4 100.01% Reverse,*2 -100% Split,*2 No Cross,*2 No Alternate','len'},
+				{18.174+240/185/4*2,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 50% Cross,*2 -50% Alternate','len'},
+				{18.174+240/185/4*3,240/185/4,'*4 100.01% Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				{18.174+240/185/4*4,240/185/4,'*4 No Reverse,*2 50% Split,*2 50% Cross,*2 50% Alternate','len'},
+				{18.174+240/185/4*5,240/185/4,'*4 No Reverse,*2 Split,*2 No Cross,*2 No Alternate','len'},
+				{18.174+240/185/4*6,240/185/4,'*4 No Reverse,*2 50% Split,*2 -50% Cross,*2 50% Alternate','len'},
+				{18.174+240/185/4*7,240/185/4,'*4 No Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				
+				{20.444,28.390,'*3.5 Mini,*3.5 Boost','end'},
+				{28.390,30.000,'*7 No Mini,*7 No Boost','end'},
+				
+				{28.553+240/185/4*0,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 -50% Cross,*2 -50% Alternate','len'},
+				{28.553+240/185/4*1,240/185/4,'*4 100.01% Reverse,*2 -100% Split,*2 No Cross,*2 No Alternate','len'},
+				{28.553+240/185/4*2,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 50% Cross,*2 -50% Alternate','len'},
+				{28.553+240/185/4*3,240/185/4,'*4 100.01% Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				{28.553+240/185/4*4,240/185/4,'*4 No Reverse,*2 50% Split,*2 50% Cross,*2 50% Alternate','len'},
+				{28.553+240/185/4*5,240/185/4,'*4 No Reverse,*2 Split,*2 No Cross,*2 No Alternate','len'},
+				{28.553+240/185/4*6,240/185/4,'*4 No Reverse,*2 50% Split,*2 -50% Cross,*2 50% Alternate','len'},
+				{28.553+240/185/4*7,240/185/4,'*4 No Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				
+				{29.039,240/185/4,'*10000 400% Beat','len'},
+				{29.688,240/185/4,'*10000 -400% Beat','len'},
+				
+				{30.498,240/185/2,'*3 0x','len'},
+				{33.093,240/185/2,'*3 0x','len'},
+				{35.688,240/185/2,'*3 0x','len'},
+				{40.877,240/185/2,'*3 0x','len'},
+				{43.471,240/185/2,'*3 0x','len'},
+				{46.066,240/185/2,'*3 0x','len'},
+				
+				
+				
+				{31.796,240/185/8,'*32 400% Drunk','len'},
+				{31.958,240/185/8,'*64 -400% Drunk','len'},
+				{32.120,240/185/16,'*128 400% Drunk','len'},
+				{32.201,240/185/16,'*128 -400% Drunk','len'},
+				{32.282,240/185/16,'*128 400% Drunk','len'},
+				{32.363,240/185/16,'*128 -400% Drunk','len'},
+				{32.444,240/185/16,'*128 400% Drunk','len'},
+				{32.526,240/185/16,'*128 -400% Drunk','len'},
+				{32.607,240/185/16,'*128 400% Drunk','len'},
+				{32.688,240/185/16,'*128 -400% Drunk','len'},
+				{32.769,240/185/8,'*64 400% Drunk','len'},
+				{32.931,240/185/8,'*64 -400% Drunk','len'},
+				{33.093,240/185/8*3,'*21 400% Drunk','len'},
+				{33.580,240/185/4,'*32 No Drunk','len'},
+				
+				{240/185*8+31.796,240/185/8,'*32 400% Drunk','len'},
+				{240/185*8+31.958,240/185/8,'*64 -400% Drunk','len'},
+				{240/185*8+32.120,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+32.201,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+32.282,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+32.363,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+32.444,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+32.526,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+32.607,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+32.688,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+32.769,240/185/8,'*64 400% Drunk','len'},
+				{240/185*8+32.931,240/185/8,'*64 -400% Drunk','len'},
+				{240/185*8+33.093,240/185/8*3,'*21 400% Drunk','len'},
+				{240/185*8+33.580,240/185/4,'*32 No Drunk','len'},
+				
+				
+				
+				{34.390,240/185/8,'*32 400% Drunk','len'},
+				{34.553,240/185/8,'*64 -400% Drunk','len'},
+				{34.715,240/185/16,'*128 400% Drunk','len'},
+				{34.796,240/185/16,'*128 -400% Drunk','len'},
+				{34.877,240/185/16,'*128 400% Drunk','len'},
+				{34.958,240/185/16,'*128 -400% Drunk','len'},
+				{35.039,240/185/16,'*128 400% Drunk','len'},
+				{35.120,240/185/16,'*128 -400% Drunk','len'},
+				{35.201,240/185/16,'*128 400% Drunk','len'},
+				{35.282,240/185/16,'*128 -400% Drunk','len'},
+				{35.363,240/185/8,'*64 400% Drunk','len'},
+				{35.526,240/185/8,'*64 -400% Drunk','len'},
+				{35.688,240/185/8,'*64 400% Drunk','len'},
+				{35.850,240/185/16,'*128 -400% Drunk','len'},
+				{35.931,240/185/16,'*128 400% Drunk','len'},
+				{36.012,240/185/16,'*128 -400% Drunk','len'},
+				{36.093,240/185/16,'*128 400% Drunk','len'},
+				{36.174,240/185/16,'*128 -400% Drunk','len'},
+				{36.255,240/185/4,'*64 No Drunk','len'},
+				
+				{240/185*8+34.390,240/185/8,'*32 400% Drunk','len'},
+				{240/185*8+34.553,240/185/8,'*64 -400% Drunk','len'},
+				{240/185*8+34.715,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+34.796,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+34.877,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+34.958,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+35.039,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+35.120,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+35.201,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+35.282,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+35.363,240/185/8,'*64 400% Drunk','len'},
+				{240/185*8+35.526,240/185/8,'*64 -400% Drunk','len'},
+				{240/185*8+35.688,240/185/8,'*64 400% Drunk','len'},
+				{240/185*8+35.850,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+35.931,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+36.012,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+36.093,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+36.174,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+36.255,240/185/4,'*64 No Drunk','len'},
+				
+				
+				
+				{36.985,240/185/16,'*128 400% Drunk','len'},
+				{37.066,240/185/16,'*128 -400% Drunk','len'},
+				{37.147,240/185/16,'*128 400% Drunk','len'},
+				{37.228,240/185/16,'*128 -400% Drunk','len'},
+				{37.309,240/185/8,'*64 400% Drunk','len'},
+				{37.471,240/185/8,'*64 -400% Drunk','len'},
+				{37.634,240/185/16,'*128 400% Drunk','len'},
+				{37.715,240/185/16,'*128 -400% Drunk','len'},
+				{37.796,240/185/16,'*128 400% Drunk','len'},
+				{37.877,240/185/16,'*128 -400% Drunk','len'},
+				{37.958,240/185/8,'*64 400% Drunk','len'},
+				{38.120,240/185/8,'*64 -400% Drunk','len'},
+				{38.282,240/185/8*3,'*21 400% Drunk','len'},
+				{38.769,240/185/4,'*32 No Drunk','len'},
+				
+				{240/185*8+36.985,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+37.066,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+37.147,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+37.228,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+37.309,240/185/8,'*64 400% Drunk','len'},
+				{240/185*8+37.471,240/185/8,'*64 -400% Drunk','len'},
+				{240/185*8+37.634,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+37.715,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+37.796,240/185/16,'*128 400% Drunk','len'},
+				{240/185*8+37.877,240/185/16,'*128 -400% Drunk','len'},
+				{240/185*8+37.958,240/185/8,'*64 400% Drunk','len'},
+				{240/185*8+38.120,240/185/8,'*64 -400% Drunk','len'},
+				{240/185*8+38.282,240/185/8*3,'*21 400% Drunk','len'},
+				{240/185*8+38.769,240/185/4,'*32 No Drunk','len'},
+				
+				
+				
+				{38.931+240/185/4*0,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 -50% Cross,*2 -50% Alternate','len'},
+				{38.931+240/185/4*1,240/185/4,'*4 100.01% Reverse,*2 -100% Split,*2 No Cross,*2 No Alternate','len'},
+				{38.931+240/185/4*2,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 50% Cross,*2 -50% Alternate','len'},
+				{38.931+240/185/4*3,240/185/4,'*4 100.01% Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				{38.931+240/185/4*4,240/185/4,'*4 No Reverse,*2 50% Split,*2 50% Cross,*2 50% Alternate','len'},
+				{38.931+240/185/4*5,240/185/4,'*4 No Reverse,*2 Split,*2 No Cross,*2 No Alternate','len'},
+				{38.931+240/185/4*6,240/185/4,'*4 No Reverse,*2 50% Split,*2 -50% Cross,*2 50% Alternate','len'},
+				{38.931+240/185/4*7,240/185/4,'*4 No Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				
+				{240/185*8+38.931+240/185/4*0,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 -50% Cross,*2 -50% Alternate','len'},
+				{240/185*8+38.931+240/185/4*1,240/185/4,'*4 100.01% Reverse,*2 -100% Split,*2 No Cross,*2 No Alternate','len'},
+				{240/185*8+38.931+240/185/4*2,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 50% Cross,*2 -50% Alternate','len'},
+				{240/185*8+38.931+240/185/4*3,240/185/4,'*4 100.01% Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				{240/185*8+38.931+240/185/4*4,240/185/4,'*4 No Reverse,*2 50% Split,*2 50% Cross,*2 50% Alternate','len'},
+				{240/185*8+38.931+240/185/4*5,240/185/4,'*4 No Reverse,*2 Split,*2 No Cross,*2 No Alternate','len'},
+				{240/185*8+38.931+240/185/4*6,240/185/4,'*4 No Reverse,*2 50% Split,*2 -50% Cross,*2 50% Alternate','len'},
+				{240/185*8+38.931+240/185/4*7,240/185/4,'*4 No Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				
+				
+				
+				{49.309,53.850,'*0.35 Dark','end'},
+				
+				{51.904,53.850,'*10000 Stealth','end'},
+				{52.553,63.580,'*10000 Centered','end'},
+				{52.553,59.039,'*10000 100.01% Reverse','end'},
+				
+				{54.498,63.580,'50% Wave','end'},
+				
+				{53.850,63.580,'*2 No Dark,*2 No Stealth,*10000 1.25x','end'},
+				{59.039,61.634,'*10000 No Reverse,*10000 Split','end'},
+				{61.634,62.282,'*10000 No Split','end'},
+				{63.580,64.877,'*0.8 No Centered','end'},
+				
+				{64.553,72.661,'*3.5 Mini,*3.5 Boost','end'},
+				{72.661,75.000,'*0.8 No Mini,*0.8 No Boost','end'},
+				
+				{73.958,100.000,'1.5x','end'},
+				
+				{73.958,83.039,'*10000 100% Stealth,*10000 -100% Hidden,*10000 -100% Sudden,*10000 180% HiddenOffset,*10000 265% SuddenOffset','end'},
+				{73.958,83.039,'Drunk,Bumpy','end'},
+				
+				{75.700,1.000,'*1.85 -200% HiddenOffset,*1.85 -200% SuddenOffset','len'},
+				{76.700,1.000,'*0 -200% HiddenOffset,*1.85 -200% SuddenOffset','len'},
+				
+				{75.700+240/185*2,1.000,'*1.85 -200% HiddenOffset,*1.85 -200% SuddenOffset','len'},
+				{76.700+240/185*2,1.000,'*0 -200% HiddenOffset,*1.85 -200% SuddenOffset','len'},
+				
+				{75.700+240/185*4,1.000,'*1.85 -200% HiddenOffset,*1.85 -200% SuddenOffset','len'},
+				{76.700+240/185*4,1.000,'*0 -200% HiddenOffset,*1.85 -200% SuddenOffset','len'},
+				
+				{83.039,84.000,'*10000 No Stealth,*10000 No Hidden,*10000 No Sudden','end'},
+				
+				{83.039+240/185/4*0,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 -50% Cross,*2 -50% Alternate','len'},
+				{83.039+240/185/4*1,240/185/4,'*4 100.01% Reverse,*2 -100% Split,*2 No Cross,*2 No Alternate','len'},
+				{83.039+240/185/4*2,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 50% Cross,*2 -50% Alternate','len'},
+				{83.039+240/185/4*3,240/185/4,'*4 100.01% Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				{83.039+240/185/4*4,240/185/4,'*4 No Reverse,*2 50% Split,*2 50% Cross,*2 50% Alternate','len'},
+				{83.039+240/185/4*5,240/185/4,'*4 No Reverse,*2 Split,*2 No Cross,*2 No Alternate','len'},
+				{83.039+240/185/4*6,240/185/4,'*4 No Reverse,*2 50% Split,*2 -50% Cross,*2 50% Alternate','len'},
+				{83.039+240/185/4*7,240/185/4,'*4 No Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				
+				{84.985,240/185*4,'Bumpy','len'},
+				{85.634+240/185/4*0,240/185/4,'*3 Distant','len'},
+				{85.634+240/185/4*1,240/185/4,'*6 Hallway','len'},
+				{85.634+240/185/4*2,240/185/4,'*6 Distant','len'},
+				{85.634+240/185/4*3,240/185/4,'*6 Hallway','len'},
+				{85.634+240/185/4*4,240/185/4,'*6 Distant','len'},
+				{85.634+240/185/4*5,240/185/4,'*6 Hallway','len'},
+				{85.634+240/185/4*6,240/185/4,'*6 Distant','len'},
+				{85.634+240/185/4*7,240/185/4,'*6 Hallway','len'},
+				{85.634+240/185/4*8,240/185/4,'*6 Distant','len'},
+				{85.634+240/185/4*9,240/185/4,'*6 Hallway','len'},
+				{85.634+240/185/4*10,240/185/4,'*6 Distant','len'},
+				{85.634+240/185/4*11,240/185/4,'*6 Hallway','len'},
+				{85.634+240/185/4*12,240/185/4,'*6 Distant','len'},
+				{85.634+240/185/4*13,240/185/4,'*6 Hallway','len'},
+				{85.634+240/185/4*14,240/185/4,'*6 Distant','len'},
+				{85.634+240/185/4*15,240/185/4,'*3 Overhead','len'},
+				
+				{90.823+240/185/4*0,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 -50% Cross,*2 -50% Alternate','len'},
+				{90.823+240/185/4*1,240/185/4,'*4 100.01% Reverse,*2 -100% Split,*2 No Cross,*2 No Alternate','len'},
+				{90.823+240/185/4*2,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 50% Cross,*2 -50% Alternate','len'},
+				{90.823+240/185/4*3,240/185/4,'*4 100.01% Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				{90.823+240/185/4*4,240/185/4,'*4 No Reverse,*2 50% Split,*2 50% Cross,*2 50% Alternate','len'},
+				{90.823+240/185/4*5,240/185/4,'*4 No Reverse,*2 Split,*2 No Cross,*2 No Alternate','len'},
+				{90.823+240/185/4*6,240/185/4,'*4 No Reverse,*2 50% Split,*2 -50% Cross,*2 50% Alternate','len'},
+				{90.823+240/185/4*7,240/185/4,'*4 No Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				
+				{90.823+240/185/4*8,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 -50% Cross,*2 -50% Alternate','len'},
+				{90.823+240/185/4*9,240/185/4,'*4 100.01% Reverse,*2 -100% Split,*2 No Cross,*2 No Alternate','len'},
+				{90.823+240/185/4*10,240/185/4,'*4 100.01% Reverse,*2 -50% Split,*2 50% Cross,*2 -50% Alternate','len'},
+				{90.823+240/185/4*11,240/185/4,'*4 100.01% Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				{90.823+240/185/4*12,240/185/4,'*4 No Reverse,*2 50% Split,*2 50% Cross,*2 50% Alternate','len'},
+				{90.823+240/185/4*13,240/185/4,'*4 No Reverse,*2 Split,*2 No Cross,*2 No Alternate','len'},
+				{90.823+240/185/4*14,240/185/4,'*4 No Reverse,*2 50% Split,*2 -50% Cross,*2 50% Alternate','len'},
+				{90.823+240/185/4*15,240/185/4,'*4 No Reverse,*2 No Split,*2 No Cross,*2 No Alternate','len'},
+				
+				{96.012,999,'*0.75 Stealth','end'},
+				
+				}
+				
+				
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:rotationx(0);							
+						v:rotationy(0);
+						v:rotationz(0);
+						v:x(SCREEN_CENTER_X+160*multi);
+						v:y(SCREEN_CENTER_Y);
+						v:zoomx(1);
+						v:zoomy(1);
+						v:GetChild('Judgment'):stopeffect();
+						
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+					end
+				end
+			end
+			
+			if beat >= 64 and fgcurcommand == 1 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:bounce();
+						v:effectmagnitude(0,40,300);
+						v:effectclock('bgm');
+						v:effectperiod(1);
+						
+						v:GetChild('Judgment'):bounce();
+						v:GetChild('Judgment'):effectmagnitude(0,-40,0);
+						v:GetChild('Judgment'):effectclock('bgm');
+						v:GetChild('Judgment'):effectperiod(1);
+						
+						v:GetChild('Combo'):bounce();
+						v:GetChild('Combo'):effectmagnitude(0,-40,0);
+						v:GetChild('Combo'):effectclock('bgm');
+						v:GetChild('Combo'):effectperiod(1);
+						
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 80 and fgcurcommand == 2 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:effectperiod(0.5);
+						v:GetChild('Judgment'):effectperiod(0.5);
+						v:GetChild('Combo'):effectperiod(0.5);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 88 and fgcurcommand == 3 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:stopeffect();
+						v:GetChild('Judgment'):stopeffect();
+						v:GetChild('Combo'):stopeffect();
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			if beat >= 200 and fgcurcommand == 4 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:bounce();
+						v:effectmagnitude(0,40,300);
+						v:effectclock('bgm');
+						v:effectperiod(1);
+						
+						v:GetChild('Judgment'):bounce();
+						v:GetChild('Judgment'):effectmagnitude(0,-40,0);
+						v:GetChild('Judgment'):effectclock('bgm');
+						v:GetChild('Judgment'):effectperiod(1);
+						
+						v:GetChild('Combo'):bounce();
+						v:GetChild('Combo'):effectmagnitude(0,-40,0);
+						v:GetChild('Combo'):effectclock('bgm');
+						v:GetChild('Combo'):effectperiod(1);
+						
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 214 and fgcurcommand == 5 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:effectperiod(0.5);
+						v:GetChild('Judgment'):effectperiod(0.5);
+						v:GetChild('Combo'):effectperiod(0.5);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 223.5 and fgcurcommand == 6 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:effectperiod(0.25);
+						v:GetChild('Judgment'):effectperiod(0.25);
+						v:GetChild('Combo'):effectperiod(0.25);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 228 and fgcurcommand == 7 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:stopeffect();
+						v:GetChild('Judgment'):stopeffect();
+						v:GetChild('Combo'):stopeffect();
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat > 64 and beat < 96 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						--v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()))
+					end
+				end
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (0.008 - 0.004) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		SkewTwitchMessageCommand="finishtweening;aux,0;linear,9.6;aux,1.5;linear,1.6;aux,0"
+	/>
+	
+</children></ActorFrame>

@@ -1,0 +1,152 @@
+# vi: ft=scopes
+require-macros :build.macros
+
+let oldpercent = []
+let final = []
+
+for col = (0 3)
+    oldpercent @ col = 0
+    final @ col = 0
+
+local which = 0
+func [0 9e9]
+    let splinereset b mods =
+        which = 0
+func
+    {
+        [1] = 0
+        [2] = 9e9
+        defer = true
+    }
+    let activate p =
+        for col = (0 3)
+            for pn = (1 2)
+                'SetXSpline (P @ pn) which col (final @ col) 600 -1
+                'SetXSpline (P @ pn) (which + 1) col -1 -1 -1
+
+let point b pos =
+    let len = 1
+    func
+        {
+            [1] = (b - 0.25)
+            [2] = len
+            [3] = linear
+            defer = true
+        }
+        let activate p =
+            if (p == 1)
+                for col = (0 3)
+                    final @ col = pos @ col
+            else
+                for col = (0 3)
+                    for pn = (1 2)
+                        'SetXSpline (P @ pn)
+                            \ which col
+                            pos @ col
+                            p * 800 - 200
+                            -1
+                which += 1
+
+let mix p old new =
+    p * new + (1 - p) * old
+
+let splinetimings = []
+let times = []
+local maxbeat = 0
+let except_there_are_splines self =
+    table.insert splinetimings self
+    for i = (0 1 (1 / 13))
+        times @ (self @ 1 + i * self @ 2) = true
+    let end = (self @ 1 + self @ 2)
+    if (end > maxbeat)
+        maxbeat = end
+
+
+let finalizesplines; =
+    let comparator a b =
+        a @ 1 < b @ 1
+    stable_sort splinetimings comparator
+    local splineindex = 1
+    let activesplines = []
+    let modstate = []
+    let modtargets = []
+    for col = (0 3)
+        modstate @ col = 0
+        modtargets @ col = 0
+    let beats = []
+    for v in (pairs times)
+        table.insert beats v
+    table.sort beats
+    for _ beat in (ipairs beats)
+        for col = (0 3)
+            modstate @ col = modtargets @ col
+        while (splineindex <= length splinetimings and splinetimings @ splineindex @ 1 < beat)
+            let e = splinetimings @ splineindex
+            for col = (0 3)
+                e @ (col + 4) -= modtargets @ col
+                modtargets @ col += e @ (col + 4)
+                modstate @ col += e @ (col + 4)
+            table.insert activesplines e
+            splineindex += 1
+        local touched = length activesplines != 0
+        local i = 1
+        while (i <= length activesplines)
+            let e = activesplines @ i
+            if (beat < e @ 1 + e @ 2)
+                let e3 = ((e @ 3) ((beat - e @ 1) / e @ 2)) - 1
+                for col = (0 3)
+                    modstate @ col += e3 * e @ (col + 4)
+                i += 1
+            else
+                activesplines @ i = table.remove activesplines
+        if touched
+            let cols = copy modstate
+            point beat cols
+
+let swaps = []
+let cols = {l = 0 d = 1 u = 2 r = 3}
+
+let has = string.find
+
+let lambda0 path =
+    local e = true
+    if (not (has path "l"))
+        lambda0 (path .. "l")
+        e = false
+    if (not (has path "d"))
+        lambda0 (path .. "d")
+        e = false
+    if (not (has path "u"))
+        lambda0 (path .. "u")
+        e = false
+    if (not (has path "r"))
+        lambda0 (path .. "r")
+        e = false
+    if e
+        let list = []
+        let list-flipped = []
+        for col = (0 3)
+            let t = cols @ string.sub path (col + 1) (col + 1)
+            list @ t = (col - t) * 100
+            list-flipped @ t = (t - col) * 100
+        swaps @ path = list
+        swaps @ (path .. "-flipped") = list-flipped
+
+lambda0 ""
+
+let swap t =
+    assert (type (t @ 1) == :number) "arg 1"
+    assert (type (t @ 2) == :number) "arg 2"
+    assert (type (t @ 3) != :nil) "arg 3"
+    assert (type (t @ 4) == :string) "arg 4"
+    assert (swaps @ (t @ 4)) (t @ 4)
+
+    let which = t @ 4
+    for col = (0 3)
+        t @ (col + 4) = swaps @ which @ col
+    except_there_are_splines t
+    swap
+
+
+export swap
+export finalizesplines

@@ -1,0 +1,218 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,GAMESTATE:GetCurrentSong():MusicLengthSeconds()"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+					--{25.612,'SkewTwitch'},
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'*10000 2.5x,Cover,*10000 No Beat,*2.75 1000% Centered,*10000 25% Reverse,*3 20% Stealth,*10000 80% Sudden,*10000 100% SuddenOffset','end'},
+				
+				{20.155,32.483,'*12 314% Dizzy','end',1},
+				{20.155,32.483,'*12 -314% Dizzy','end',2},
+				{32.483,33.000,'*10000 No Dizzy','end'},
+				
+				{47.583,60.869,'*4.5 200% Bumpy','end'},
+				
+				{60.869,74.583,'*2.4 Alternate,*4.5 No Bumpy','end'},
+				{74.583,999,'*2.4 No Alternate,*1.2 75% Reverse','end'},
+				
+				{88.726,100.726,'*4.5 200% Bumpy','end'},
+				{100.726,102.000,'*4.5 No Bumpy','end'},
+				
+				{102.441,999,'*10000 25% Reverse','end',1},
+				
+				{115.726,999,'Dark','end'},
+				
+				}
+				
+				
+				
+				for i = 0.012,130,240/140*2 do
+					table.insert(prefix_mods,{i,0.050,'*10000 -350% Centered,*10000 Stealth','len',1});
+				end
+				
+				for i = 1.726,130,240/140*2 do
+					table.insert(prefix_mods,{i,0.050,'*10000 -350% Centered,*10000 Stealth','len',2});
+				end
+				
+				for i = 34.298,59.000,240/140 do
+					table.insert(prefix_mods,{i+240/140/4*0,240/140/4,'*1.2 -50% Invert,*1.2 -50% Flip','len',1});
+					table.insert(prefix_mods,{i+240/140/4*1,240/140/4,'*3.6 100% Invert,*1.2 -100% Flip','len',1});
+					table.insert(prefix_mods,{i+240/140/4*2,240/140/4,'*3.6 -50% Invert,*1.2 -50% Flip','len',1});
+					table.insert(prefix_mods,{i+240/140/4*3,240/140/4,'*1.2 No Invert,*1.2 No Flip','len',1});
+				end
+				
+				for i = 35.155,60.000,240/140 do
+					table.insert(prefix_mods,{i+240/140/4*0,240/140/4,'*1.2 -50% Invert,*1.2 -50% Flip','len',2});
+					table.insert(prefix_mods,{i+240/140/4*1,240/140/4,'*3.6 100% Invert,*1.2 -100% Flip','len',2});
+					table.insert(prefix_mods,{i+240/140/4*2,240/140/4,'*3.6 -50% Invert,*1.2 -50% Flip','len',2});
+					table.insert(prefix_mods,{i+240/140/4*3,240/140/4,'*1.2 No Invert,*1.2 No Flip','len',2});
+				end
+				
+				
+				
+				for i = 75.441,100.000,240/140 do
+					table.insert(prefix_mods,{i+240/140/4*0,240/140/4,'*1.2 -50% Invert,*1.2 -50% Flip','len',1});
+					table.insert(prefix_mods,{i+240/140/4*1,240/140/4,'*3.6 100% Invert,*1.2 -100% Flip','len',1});
+					table.insert(prefix_mods,{i+240/140/4*2,240/140/4,'*3.6 -50% Invert,*1.2 -50% Flip','len',1});
+					table.insert(prefix_mods,{i+240/140/4*3,240/140/4,'*1.2 No Invert,*1.2 No Flip','len',1});
+				end
+				
+				for i = 76.298,101.000,240/140 do
+					table.insert(prefix_mods,{i+240/140/4*0,240/140/4,'*1.2 -50% Invert,*1.2 -50% Flip','len',2});
+					table.insert(prefix_mods,{i+240/140/4*1,240/140/4,'*3.6 100% Invert,*1.2 -100% Flip','len',2});
+					table.insert(prefix_mods,{i+240/140/4*2,240/140/4,'*3.6 -50% Invert,*1.2 -50% Flip','len',2});
+					table.insert(prefix_mods,{i+240/140/4*3,240/140/4,'*1.2 No Invert,*1.2 No Flip','len',2});
+				end
+				
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:rotationx(0);							
+						v:rotationy(0);
+						v:rotationz(0);
+						v:x(SCREEN_CENTER_X+160*multi);
+						v:y(SCREEN_CENTER_Y);
+						v:zoomx(1);
+						v:zoomy(1);
+						v:GetChild('Judgment'):stopeffect();
+						
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+						
+						v:x(SCREEN_CENTER_X);
+						v:GetChild('Judgment'):x(160*multi);
+						v:GetChild('Combo'):hidden(1);
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 238 and fgcurcommand == 1 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:linear(240/140/4);
+						v:GetChild('Judgment'):linear(240/140/4);
+						v:GetChild('Combo'):linear(240/140/4);
+						
+						v:x(SCREEN_CENTER_X+160*multi);
+						v:GetChild('Judgment'):x(0);
+						v:GetChild('Combo'):x(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat > 64 and beat < 96 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						--v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()))
+					end
+				end
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (0.010 - 0.010) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		SkewTwitchMessageCommand="finishtweening;aux,0;linear,9.6;aux,1.5;linear,1.6;aux,0"
+	/>
+	
+</children></ActorFrame>

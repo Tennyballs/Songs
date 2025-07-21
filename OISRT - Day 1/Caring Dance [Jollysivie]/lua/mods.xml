@@ -1,0 +1,250 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 3 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+	-- your code goes here here:
+	-- warning! this code is very, very messy
+	local speed = 3.5
+	setdefault{speed, 'xmod', 100, 'modtimer', 100, 'drawsize', 100, 'NoHoldJudge', 100, 'StealthPastReceptors', 200, 'drawsizeback', -50, 'drunkperiod'}
+	P3:SetAwake(true)
+	P3:SetInputPlayer(0)
+	
+	definemod{'hide', 100, 'stealth', 100, 'dark', 100, 'HideNotePress', 100, 'HideNoteFlash'}
+	
+	func{0, function()
+		for _, p in ipairs({P1, P2, P3}) do
+			p:x(scx)
+			p:z(0)
+		end
+		PP[3]:hidden(1)
+		PJ[3]:hidden(1)
+		PC[3]:hidden(1)
+	end}
+	
+	-- altale effect
+	local period = 1000
+	local strength = 250
+	set{32,period,'bumpyperiod',period,'bumpyxperiod',250,'bumpyxoffset',100,'spiralholds'}
+	ease{32,32.5,linear,10000,'centered2',-10000,'movey'}
+	ease{32,1,inSine,strength,'bumpy',strength,'bumpyx',100,'orient'}
+	ease{64.5,0.5,outCirc,0,'bumpyx',0,'bumpy'}
+	set{65,0,'centered2',0,'movey',0,'orient',0,'spiralholds'}
+	
+	
+	-- three playfield thing		
+	size = 510
+	function angle(angle, mag, oX, oZ)
+		local oX = oX or 0
+		local oZ = oZ or 0
+		local x = oX + mag * math.cos(math.rad(90 + angle))
+		local z = oZ + mag * math.sin(math.rad(90 + angle))
+		return {x, z}
+	end	
+	
+	c2 = angle(-25, size)
+	c1 = angle(60, size, c2[1], c2[2])
+	
+	c4 = angle(25, size)
+	c3 = angle(-60, size, c4[1], c4[2])
+
+	func{66, function()
+		P1:x(scx + c1[1])
+		P2:x(scx + c2[1])
+		P1:z(-c1[2])
+		P2:z(-c2[2])
+		
+		PP[3]:hidden(0)
+	end}
+	
+	local eas = inOutSine
+	
+	func{79, 3, eas, 0, -c3[1], 'frame:x'}
+	func{79, 3, eas, 0, c3[2], 'frame:z'}
+	func{79, 3, eas, scx + c1[1], scx + c3[1], 'P1:x'}
+	func{79, 3, eas, scx + c2[1], scx + c4[1], 'P2:x'}
+	func{79, 3, eas, -c1[2], -c3[2], 'P1:z'}
+	func{79, 3, eas, -c2[2], -c4[2], 'P2:z'}
+	
+	func{66, function() frame:z(c1[2]); frame:x(-c1[1]) end}
+	func{68, 2, eas, c1[2], c2[2], 'frame:z'}
+	func{72, 2, eas, c2[2], 0, 'frame:z'}
+	func{68, 2, eas, -c1[1], -c2[1], 'frame:x'}
+	func{72, 2, eas, -c2[1], 0, 'frame:x'}
+	
+	func{82, function() frame:z(c3[2]); frame:x(-c3[1]) end}
+	func{84, 2, eas, c3[2], c4[2], 'frame:z'}
+	func{88, 2, eas, c4[2], 0, 'frame:z'}
+	func{84, 2, eas, -c3[1], -c4[1], 'frame:x'}
+	func{88, 2, eas, -c4[1], 0, 'frame:x'}
+	
+	
+	func{96, 2, inSine, scx + c3[1], scx - 200, 'P1:x'}
+	func{96, 2, inSine, scx + c4[1], scx + 200, 'P2:x'}
+	func{96, 2, inSine, -c3[2], 0, 'P1:z'}
+	func{96, 2, inSine, -c4[2], 0, 'P2:z'}
+	ease{96, 2, inSine, 100, 'Mini', 2, 'xmod', 25, 'Drunk', plr = {1,2,3}}
+	ease{96, 1, inSine, 100, 'hide'}
+	
+	for b = 98, 114, 16 do
+		set{b, 100, 'hide'}
+		set{b, 0, 'MoveY', 0, 'Centered2', plr = {1,2,3}}
+		ease{b, 12, linear, 2400, 'Centered2', plr = {1,2,3}}
+		set{b + 3, -600-400, 'MoveY', plr = 2}
+		ease{b + 3, 1, linear, 100, 'hide', plr = 3}
+		ease{b + 3, 1, linear, 0, 'hide', plr = 2}
+		set{b + 7, -1400-400, 'MoveY', plr = 1}
+		ease{b + 7, 1, linear, 100, 'hide', plr = 2}
+		ease{b + 7, 1, linear, 0, 'hide', plr = 1}
+		set{b + 11, -1400-400, 'MoveY', plr = {1,2,3}}
+		ease{b + 11, 1, linear, 0, 'hide', plr = {1,2,3}}
+		ease{b + 12, 2, inOutSine, -2100, 'MoveY', plr = {1,2,3}}
+		ease{b + 14, 2, inOutSine, -2400, 'MoveY', plr = {1,2,3}}
+		ease{b + 15.5, 0.5, linear, 100, 'hide', plr = {1,2}}
+	end
+	set{114, 5, 'RotationZ', plr = 1}
+	set{114, -5, 'RotationZ', plr = 2}
+	ease{126, 2, inOutSine, 2.5, 'RotationZ', plr = 1}
+	ease{126, 2, inOutSine, -2.5, 'RotationZ', plr = 2}
+	ease{126, 2, inOutSine, 12.5, 'Drunk', plr = {1,2,3}}
+	ease{128, 2, inOutSine, 0, 'RotationZ', 0, 'Drunk', plr = {1,2,3}}
+	
+	ease{129.5, 0.5, linear, 100, 'hide', plr = {1,2,3}}
+	ease{131, 0.5, linear, 0, 'hide', plr = 3}
+	ease{131.5, 0.5, linear, 0, 'hide'}
+	
+	set{130, 0, 'MoveY', 0, 'Centered2', 0, 'Mini', speed, 'xmod', plr = {1,2,3}}
+	
+	
+	-- carousel
+	func{131, function()
+		frame:z(0)
+	end}
+	set{131, 0, 'carousel'}
+	
+	function carouselReorder()
+		function GetPos(p) return {p:GetEffectX(), p:GetEffectY(), p:GetEffectZ()} end
+		function pos(p, t) return {p:x(t[1]), p:y(t[2]), p:z(t[3])} end
+		local t = {GetPos(P1), GetPos(P2), GetPos(P3)}
+		table.sort(t, function(a,b) return a[3] < b[3] end)
+		pos(P1, t[1])
+		pos(P2, t[2])
+		pos(P3, t[3])
+	end
+	
+	definemod{'carousel', function(p)
+		local r = 250 -- radius
+		function pos(p, angle)
+			local a = math.rad(angle) -- new angle
+			p:x(scx + r * math.sin(a))
+			p:z(r * math.cos(a))
+		end
+		pos(P1, p)
+		pos(P2, p + 120)
+		pos(P3, p + 240)
+		carouselReorder()
+	end}
+	
+	func{131, 999, function(b, poptions)
+		for pn, p in ipairs({P1, P2, P3}) do
+			poptions[pn].stealth = math.max(-0.125 * p:GetZ(), 0)
+		end
+	end}
+	func{131, function() frame:zoom(0.75); frame:x(0.25 * scx); frame:y(0.25 * scy) end}
+	
+	
+	for b = 132.5, 194.5 do
+		add{b, 1, pop, -20, 'MoveY', plr = {1,2,3}}
+	end
+	
+	for b = 132.5, 146.5 do
+		add{b, 1, outQuad, 25, 'carousel'}
+		add{b, 1, pop, -10, 'RotationY', plr = {1,2,3}}
+		add{b, 1, pop, 2, 'RotationZ', plr = {1,2,3}}
+	end
+	
+	for b = 148.5, 162.5 do
+		add{b, 1, outQuad, -25, 'carousel'}
+		add{b, 1, pop, 10, 'RotationY', plr = {1,2,3}}
+		add{b, 1, pop, -2, 'RotationZ', plr = {1,2,3}}
+	end
+	
+	for b = 164.5, 170.5, 2 do
+		add{b, 1, outQuad, 25, 'carousel'}
+	end
+	
+	for b = 174.5, 186.5, 2 do
+		add{b, 1, outQuad, -25, 'carousel'}
+	end
+	
+	for b = 190.5, 194.5, 2 do
+		add{b, 1, outQuad, 25, 'carousel'}
+	end
+	
+	
+	function c2l(b, str)
+		for o = 1, 3, 2 do
+			add{b + o, 1, pop, str[1], 'tipsy', plr = {1,2,3}}
+		end
+		for _, o in ipairs({0,2,2.5}) do
+			add{b + o, 0.5, pop, str[2], 'tiny', plr = {1,2,3}}
+		end
+		for o = 0.5, 3.5 do
+			add{b + o, 0.5, pop, str[3], 'zoomx', plr = {1,2,3}}
+		end
+	end
+	
+	for b = 33, 64, 4 do c2l(b, {50,-50,0}) end
+	for b = 82, 95, 4 do c2l(b,{100,-50,10}) end
+	for b = 98, 128, 4 do c2l(b,{50,0,10}) end
+	for b = 132, 192, 4 do c2l(b,{50,0,0}) end
+	
+	for b = 17.5, 30.5 do add{b, 1, pop, 50, 'tipsy', plr = {1,2,3}} end
+	ease{0, 1, linear, 25, 'drunk', plr = {1,2,3}}
+	set{33, 0, 'drunk', plr = {1,2,3}}
+	ease{64.5, 2, linear, 25, 'drunk', plr = {1,2,3}}
+	ease{81, 0.5, linear, 0, 'drunk', plr = {1,2,3}}
+	ease{195, 0.5, linear, 25, 'drunk', plr = {1,2,3}}
+	for b = 66, 80, 4 do 
+		add{b, 1, pop, 50, 'tipsy', plr = {1,2,3}}
+		add{b + 0.75, 1, pop, 50, 'tipsy', plr = {1,2,3}} 
+	end
+	
+	local strength = 150
+	set{164,period,'bumpyperiod',period,'bumpyxperiod',250,'bumpyxoffset',100,'spiralholds', plr = {1,2,3}}
+	ease{164,32.5,linear,10000,'centered2',-10000,'movey', plr = {1,2,3}}
+	ease{164,1,inSine,strength,'bumpy',strength,'bumpyx',100,'orient', plr = {1,2,3}}
+	ease{196,0.5,outCirc,0,'bumpyx',0,'bumpy',0,'orient', plr = {1,2,3}}
+	set{196.5,0,'centered2',0,'movey',0,'spiralholds', plr = {1,2,3}}
+	
+	ease{198, 0.25, linear, 100, 'hide', plr = 1}
+	ease{198.5, 0.25, linear, 100, 'hide', plr = 2}
+	ease{199, 0.25, linear, 100, 'hide', plr = 3}
+	
+	end)"
+Type = "ActorFrame" Name = "frame2"
+><children>
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PC[3]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[3]" />
+	<Layer Type = "ActorFrame" Name = "frame">
+	<children>
+		<Layer Type = "ActorProxy" Name = "PP[1]" />
+		<Layer Type = "ActorProxy" Name = "PP[2]" />
+		<Layer Type = "ActorProxy" Name = "PP[3]" />
+	</children></Layer>
+</children></Mods>

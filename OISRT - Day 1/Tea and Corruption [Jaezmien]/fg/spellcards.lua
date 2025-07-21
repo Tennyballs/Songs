@@ -1,0 +1,16 @@
+spellcards
+.spellcard(33, 130, 'A Royal Tea with Your Majesty', 1, {254/255, 247/255, 251/255, 1})
+.spellcard(130, 188, 'Someone is brewing something up...', 2, {172/255, 167/255, 147/255, 1})
+.spellcard(194, 321.5, 'Discord has joined the par-tea!', 6, {104/255, 65/255, 61/255, 1})
+.spellcard(322, 386, 'Just kidding! It\'s cider.', 4, {158/255, 97/255, 138/255, 1})
+
+.label(33, 'Intro 1')
+.label(65, 'Intro 2a')
+.label(98, 'Intro 2b')
+.label(130, 'Slow 1')
+.label(168, 'Slow 2')
+.label(194, 'Chorus 1a')
+.label(258, 'Chorus 1b')
+.label(322, 'Chorus 2a')
+.label(354, 'Chorus 2b')
+.push()

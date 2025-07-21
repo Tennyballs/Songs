@@ -1,0 +1,753 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+		PJ[pn]:zoom(0.95)
+		PJ[pn]:addy(-14)
+	end
+	--
+	
+	sprite(wooblywub)
+	aft(shaderscreen)
+	wooblywub:SetTexture(shaderscreen:GetTexture())
+	
+
+--this is flickering setup
+	local function fliperoo()
+    if (GAMESTATE:GetSongTime() * 60) % 2 < 1 then
+        return -1
+    else
+        return 1
+    end
+end
+
+-- part 1 (flickering)
+-- building a flickering which is a main part and some mod
+-- and some shader aft
+
+local me = mod_ease
+	setdefault {2.25,'xmod',100,'overhead',0.5,'quadbg'}
+	
+	funcmod = 1
+	funcmod2 = 1
+	definemod {'funcmod', function(a) funcval = a end}
+	definemod {'funcmod2', function(a) funcval2 = a end}
+	setdefault {1, 'funcmod',1, 'funcmod2'}
+
+	for b=36,48,2 do
+	set {b, 1, 'funcmod'}
+	--ease {b, 3, outExpo, 0, 'funcmod'}
+	me(b,2,0,1,'funcmod','len',bounce)
+	func {b, 3, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].movex = flick*50*funcval
+	poptions[pn].mini = flick*-50*funcval
+	poptions[pn].stealth= flick*75
+	end
+	end}
+	end
+
+	for b=36,48,2 do
+	set {b+1,1, 'funcmod2'}
+	me(b+1,2,0,1,'funcmod2','len',bounce)
+	func {b+1, 2, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].movey= flick*50*funcval2
+	end
+	end}
+	end
+	
+	-- 2
+	
+		for b=53,62,2 do
+	set {b, 1, 'funcmod'}
+	--ease {b, 3, outExpo, 0, 'funcmod'}
+	me(b,2,0,1,'funcmod','len',bounce)
+	func {b, 3, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].movex = flick*50*funcval
+	poptions[pn].stealth= flick*75
+	end
+	end}
+	end
+
+	for b=53,62,2 do
+	set {b+1,1, 'funcmod2'}
+	me(b+1,2,0,1,'funcmod2','len',bounce)
+	func {b+1, 3, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].movey= flick*50*funcval2
+	poptions[pn].tipsy= flick*80*funcval2
+	
+	end
+	end}
+	end
+	
+	for b=68,80,2 do
+	set {b+1,1, 'funcmod'}
+	me(b+1,2,0,1,'funcmod','len',bounce)
+	func {b+1, 2, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+	poptions[pn].stealth= flick*75
+    poptions[pn].movex= math.sin(beat*math.pi*0.75)*flick*60*funcval
+	poptions[pn].movey= math.cos(beat*math.pi*0.75)*flick*80*funcval
+	end
+	end}
+	end
+	
+	for b=84,89,2 do
+	set {b+1,1, 'funcmod'}
+	me(b+1,3,0,1,'funcmod','len',bounce)
+	func {b+1, 3, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+	poptions[pn].stealth= flick*75
+	poptions[pn].rotationz= math.sin(beat*math.pi*0.75)*flick*25*funcval
+    poptions[pn].movex= math.sin(beat*math.pi*0.75)*flick*-30*funcval
+	poptions[pn].movey= math.cos(beat*math.pi*0.75)*flick*-70*funcval
+	end
+	end}
+	end
+	
+	
+	
+	me(92,0.5,-400,0,'tiny','len',outExpo)
+	me(92.5,0.5,-400,0,'tiny','len',outExpo)
+	me(93,0.5,-400,0,'tiny','len',outExpo)
+	
+	ease {92, 0.5, outQuad,100, 'reverse0'}
+	ease {92, 0.5, outQuad,100, 'reverse1'}
+	ease {92.5, 0.5, outQuad,100, 'reverse2'}
+	ease {92.5, 0.5, outQuad,100, 'reverse3'}
+	
+	me(94,0.5,-400,0,'tiny','len',outExpo)
+	me(94.5,0.5,-400,0,'tiny','len',outExpo)
+	me(95,0.5,-400,0,'tiny','len',outExpo)
+	
+	ease {94, 0.5, outQuad,0, 'reverse2'}
+	ease {94, 0.5, outQuad,0, 'reverse3'}
+	ease {94.5, 0.5, outQuad,0, 'reverse0'}
+	ease {94.5, 0.5, outQuad,0, 'reverse1'}
+	
+	mod_beat(92,800)
+	mod_beat(93,500)
+	mod_beat(95,-500)
+	mod_beat(100,-800)
+	
+	me(100,1,-400,0,'tiny','len',outExpo)
+	func {96,function()
+	for pn = 1,#PP do
+	P[pn]:decelerate(1.75)
+	P[pn]:x(scx)
+	end
+	end}
+	
+		func{132,function()
+		for pn = 1, #PP do
+		P[pn]:hidden(0)
+		
+	end
+	P1:x(sw/4)
+	P2:x(sw*3/4)
+	end}
+	
+		definemod {'sdsdsd', function(percent)
+		wooblywub:GetShader():uniform1f('tsuyoi', percent)
+		end} 
+			
+		definemod {'dsdsds', function(percent)
+		wooblywub:GetShader():uniform1f('frequencib', percent)
+		end}
+		
+		definemod {'quadbg', function(p)
+		quadtheback:diffuse(0,0,0,p)
+		end} 
+		
+	--set{100,0.01,'sdsdsd'}
+	set{100,35,'dsdsds'}
+	
+	
+	
+	reset{100,1,outQuint,exclude = {'quadbg','sdsdsd','dsdsds'}}
+	ease {96, 4, linear,1, 'quadbg'}
+	
+	
+	--set{100,3,'quadbg'}
+	ease {100, 20, outExpo,0.02, 'sdsdsd'}
+	--ease {100, 15, outExpo,30, 'dsdsds'}
+
+	ease{100, 4, outExpo,120,'bumpy'}
+	ease{100, 4, outExpo,1.5,'xmod'}
+	ease{100, 4, outExpo,120,'drunk', plr = 1}
+	ease{100, 4, outExpo,-120,'drunk', plr = 2}
+	ease{100, 4, outExpo,80,'tipsy', plr = 1}
+	ease{100, 4, outExpo,-80,'tipsy', plr = 2}
+	ease{100, 4, outExpo,-50,'flip'}
+	ease{100, 4, outExpo,50,'mini'}
+	ease{100, 4, outExpo,93,'spiralz'}
+	set{100,-98,'spiralzperiod'}
+	set{100,-1000,'spiralzoffset'}
+	
+	ease{100, 4, outExpo,23,'spiraly'}
+	set{100,-98,'spiralyperiod'}
+	set{100,100,'spiralyoffset'}
+	
+	
+	reset{132,exclude = {'beat','quadbg'}}
+	mod_beat(132,800)
+	
+	sprite(thespritethingy)
+	aft(screenthingy)
+	thespritethingy:SetTexture(screenthingy:GetTexture())
+	definemod {'sprite_x', function(p) thespritethingy:x(scx+p) end}
+	definemod {'sprite_y', function(p) thespritethingy:y(scy+p) end}
+	definemod {'sprite_zoom', function(p) thespritethingy:zoom(1-p) end}
+	definemod {'sprite_rotz', function(p) thespritethingy:rotationz(p) end}
+	
+
+	
+	ease{162, 5, outExpo,0.5,'quadbg'}
+	--set{164,80,'mini',80,'centered'}
+	ease{162, 4, outExpo,80,'mini'}
+	ease{162, 4, outExpo,80,'centered'}
+	set {164,1, 'funcmod'}
+	func {164, 33, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].movex= math.sin(beat*math.pi*0.25)*flick*500*funcval
+	poptions[pn].movey= math.cos(beat*math.pi*0.25)*flick*450*funcval
+	end
+	end}
+	
+	set {197,1, 'funcmod'}
+	func {197, 15, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].movex= math.cos(beat*math.pi*0.25)*flick*-500*funcval
+	poptions[pn].movey= math.sin(beat*math.pi*0.25)*flick*-350*funcval
+	poptions[pn].rotationz= math.cos(beat*math.pi*0.25)*flick*30*funcval
+	poptions[pn].rotationx= math.sin(beat*math.pi*0.25)*flick*30*funcval
+	end
+	end}
+	
+
+	mod_beat(164,-1200)
+	mod_beat(197,1200)
+	mod_beat(212,-800)
+	func {164,function()
+	for pn = 1,#PP do
+	--P[pn]:linear(1.75)
+	P[pn]:x(scx)
+	PJ[pn]:hidden(1)
+	PC[pn]:hidden(1)
+	end
+	end}
+	
+	
+	func{212,function()
+		for pn = 1, #PP do
+		P[pn]:hidden(0)
+		PJ[pn]:hidden(0)
+		PC[pn]:hidden(0)
+		
+	end
+	P1:x(sw/4)
+	P2:x(sw*3/4)
+	end}
+	
+	reset{212, exclude = {'quadbg','beat'}}
+	
+	set {212,1, 'funcmod'}
+	me(212,4,0,1,'funcmod','len',bounce)
+	func {212, 4, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].tipsy= flick*150*funcval
+	poptions[pn].zoomz= flick*3500*funcval
+	end
+	end}
+	
+	set {216,1, 'funcmod'}
+	me(216,4,0,1,'funcmod','len',bounce)
+	func {216, 4, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].sprite_x= flick*30*funcval
+	poptions[pn].zoomz= flick*3500*funcval
+	end
+	end}
+	
+	set {220,1, 'funcmod'}
+	me(220,2,0,1,'funcmod','len',bounce)
+	func {220, 2, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].rotationz= flick*15*funcval
+	poptions[pn].zoomz= flick*3500*funcval
+	poptions[pn].movey= flick*120*funcval
+	poptions[pn].sprite_x= flick*30*funcval
+	end
+	end}
+	
+	set {222,1, 'funcmod'}
+	me(222,2,0,1,'funcmod','len',bounce)
+	func {222, 5, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].rotationz= flick*15*funcval
+	poptions[pn].zoomz= flick*3500*funcval
+	poptions[pn].movey= flick*-120*funcval
+	poptions[pn].sprite_y= flick*30*funcval
+	end
+	end}
+	
+	definemod{'sp_l', 
+	function(a) 
+	sprite_left:x(scx+a) 
+	end}
+
+	definemod{'sp_r', 
+	function(a) 
+	sprite_right:x(scx+a) 
+	end}
+	
+	definemod{'sp_t', 
+	function(a) 
+	sprite_top:y(scy+a) 
+	end}
+
+	definemod{'sp_b', 
+	function(a) 
+	sprite_bottom:y(scy+a) 
+	end}
+	
+	
+	sprite(sprite_left) -- set up the sprite
+	aft(screencut) -- set up the aft
+	sprite_left:SetTexture(screencut:GetTexture()) -- set up the texture
+	--2
+	sprite(sprite_right) -- set up the sprite
+	aft(screencut) -- set up the aft
+	sprite_right:SetTexture(screencut:GetTexture()) -- set up the texture
+	
+	sprite(sprite_top) -- set up the sprite
+	aft(screencut2) -- set up the aft
+	sprite_top:SetTexture(screencut2:GetTexture()) -- set up the texture
+	--2
+	sprite(sprite_bottom) -- set up the sprite
+	aft(screencut2) -- set up the aft
+	sprite_bottom:SetTexture(screencut2:GetTexture()) -- set up the texture
+	
+	
+	sprite_left:cropleft(0.5)
+	sprite_right:cropright(0.5)
+	
+	sprite_top:croptop(0.5)
+	sprite_bottom:cropbottom(0.5)
+	
+	
+	
+	
+	for i=164,195,2 do
+	me(i,1,0,-60,'sp_r','len',bounce)
+	me(i+1,1,0,60,'sp_l','len',bounce)
+	end
+	
+	for i=198,210,2 do
+	me(i,1,0,-60,'sp_t','len',bounce)
+	me(i+1,1,0,60,'sp_b','len',bounce)
+	end
+	--me(211,1,0,-100,'sp_t','len',bounce)
+	
+	function snappyinverse(t) return inverse(math.sqrt(t)) end
+	
+	for b=229,241,1 do
+	set {b,1, 'funcmod'}
+	me(b,4,0,1,'funcmod','len',snappyinverse)
+	func {b, 3, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].movex= flick*30*funcval
+	poptions[pn].tipsy= flick*150*funcval
+	end
+	end}
+	end
+	
+	for b=245,258,2 do
+	set {b,1, 'funcmod'}
+	me(b,4,0,1,'funcmod','len',snappyinverse)
+	func {b, 3, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].movex= flick*30*funcval
+	poptions[pn].skewx= flick*50*funcval
+	end
+	end}
+	end
+	
+	for b=246,257,2 do
+	set {b,1, 'funcmod2'}
+	me(b,4,0,1,'funcmod2','len',snappyinverse)
+	func {b, 3, function(beat,poptions)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    poptions[pn].movey= flick*30*funcval2
+	end
+	end}
+	end
+
+	for i,v in pairs(wub)
+		do local b = wub[i][1] 
+			
+		set {b,1, 'funcmod'}
+		me(b,0.75,0,1,'funcmod','len',bounce)
+		func {b, 2, function(beat,poptions)
+		local flick = fliperoo()
+		for pn = 1,2 do
+		poptions[pn].sprite_x= flick*120*funcval
+		end
+		end}
+
+			
+	end
+	
+	--part 2
+	--hi
+
+
+
+	mod_beat(4,800)
+	mod_beat(36,800)
+	set{4,
+	150,'drunk',
+	150,'drunkz',
+	70,'wave',
+	1.25,'xmod',
+	}
+	
+	ease{34,3,linear,2.5,'xmod'}
+	set{36,
+	150,'beat',
+	150,'wave',
+	0,'drunkz',
+	0,'drunk',
+	}
+	
+	--set{1,100,'arrowpath'}
+	
+	--P1:SetZSpline(1,0,200,1500,-1)
+	
+	
+	func {4,function()
+	for pn =1,#PP do
+	P[pn]:SetXSpline(1,0,300,650,-1)
+	P[pn]:SetXSpline(1,3,-300,650,-1)
+	
+	P[pn]:SetXSpline(1,1,100,650,-1)
+	P[pn]:SetXSpline(1,2,-100,650,-1)
+	end
+	end}
+	
+	func {36,function()
+	for pn =1,#PP do
+	P[pn]:SetXSpline(1,0,0,0,2)
+	P[pn]:SetXSpline(1,3,0,0,2)
+	
+	P[pn]:SetXSpline(1,1,0,0,2)
+	P[pn]:SetXSpline(1,2,0,0,2)
+	end
+	end}
+	
+	
+	--P1:SetXSpline(1,2,200,-150,1)
+	for i,v in pairs(snare)
+		do local b = snare[i][1] 
+			
+		local col = snare[i][2]
+		
+		if col == 0 then
+		mod_beat(b,300)
+		end
+		
+		if col == 3 then
+		mod_beat(b,-300)
+		end
+	end	
+	
+	
+	me(52,1,-300,0,'tiny','len',outQuint)
+	me(52.5,1,-300,0,'tiny','len',outQuint)
+	me(53,1,-300,0,'tiny','len',outQuint)
+	
+	ease{64, 1, outExpo,100,'reverse0'}
+	ease{64.25, 1, outExpo,100,'reverse1'}
+	
+	ease{64.75, 1, outExpo,100,'reverse2'}
+	ease{65, 1, outExpo,100,'reverse3'}
+	
+	ease{65.5, 1, outExpo,0,'reverse3'}
+	ease{65.75, 1, outExpo,0,'reverse2'}
+	
+	ease{66.25, 1, outExpo,0,'reverse1'}
+	ease{66.5, 1, outExpo,0,'reverse0'}
+	
+	
+	
+	ease{67, 1, outExpo,100,'reverse0'}
+	ease{67, 1, outExpo,100,'reverse1'}
+	ease{67, 1, outExpo,100,'reverse2'}
+	ease{67, 1, outExpo,100,'reverse3'}
+	
+	
+	ease{68.5, 1, outExpo,0,'reverse1'}
+	ease{68.5, 1, outExpo,0,'reverse2'}
+	
+	ease{69, 1, outExpo,0,'reverse0'}
+	ease{69, 1, outExpo,0,'reverse3'}
+	
+	me(68.5,1,-300,0,'tiny','len',outQuint)
+	me(69,1,-300,0,'tiny','len',outQuint)
+	
+
+	ease{64, 1, outExpo,0,'beat'}
+	ease{64, 1, outExpo,0,'wave'}
+	
+	for i=36,50,1 do
+	me(i,2,-150,0,'tiny','len',outQuint)
+	end
+	
+	for i=53,63,1 do
+	me(i,2,-150,0,'tiny','len',outQuint)
+	
+	end
+	
+	for i=69,82,1 do
+	me(i,2,-250,0,'tiny','len',outQuint)
+	
+	end
+	
+	for i=85,91,1 do
+	me(i,2,-250,0,'tiny','len',outQuint)
+	
+	end
+	
+	me(84,1,-300,0,'tiny','len',outQuint)
+	me(84.5,1,-300,0,'tiny','len',outQuint)
+	
+	for i,v in pairs(h1)
+		do local b = h1[i][1] 
+			
+		local col = h1[i][2]
+		me(b,4,80,0,'brake','len',outQuint)
+		if col == 0 then
+		me(b,2,250,0,'distant','len',outQuint)
+		me(b,2,150,0,'tipsy','len',outQuint)
+		end
+		
+		if col == 1 then
+		me(b,2,-250,0,'distant','len',outQuint)
+		me(b,2,-150,0,'tipsy','len',outQuint)
+		end
+	end	
+	
+	for i,v in pairs(h2)
+		do local b = h2[i][1] 
+			
+		local col = h2[i][2]
+		me(b,4,80,0,'brake','len',outQuint)
+		if col == 0 then
+		me(b,2,250,0,'distant','len',outQuint)
+		me(b,2,150,0,'tipsy','len',outQuint)
+		end
+		
+		if col == 1 then
+		me(b,2,-250,0,'distant','len',outQuint)
+		me(b,2,-150,0,'tipsy','len',outQuint)
+		end
+	end	
+
+	
+
+for i=164,195,1 do
+me(i,4,80,0,'brake','len',outQuint)
+
+end
+
+for i=197,210,1 do
+me(i,4,80,0,'brake','len',outQuint)
+
+end
+
+for i=164,195,1 do
+me(i,2,-0.5,0,'sprite_zoom','len',outQuint)
+end
+
+for i=197,211,1 do
+me(i,1,-0.35,0,'sprite_zoom','len',bounce)
+end
+
+me(192,1,-250,0,'tiny','len',outExpo)
+me(193,1,-250,0,'tiny','len',outExpo)
+me(194,1,-250,0,'tiny','len',outExpo)
+me(195,1,-250,0,'tiny','len',outExpo)
+
+
+ease{212, 8, outQuint,0.5,'sprite_zoom'}	
+ease{215.5, 1, outQuint,0,'sprite_zoom'}
+ease{216, 8, outQuint,0.5,'sprite_zoom'}	
+ease{219.5, 1, outQuint,0,'sprite_zoom'}
+ease{220, 4, outQuint,0.5,'sprite_zoom'}
+ease{220, 4, outQuint,20,'sprite_rotz'}
+ease{221.5, 1, outQuint,0,'sprite_zoom'}
+ease{221.5, 1, outQuint,0,'sprite_rotz'}
+ease{222, 4, outQuint,0.5,'sprite_zoom'}	
+ease{222, 4, outQuint,-20,'sprite_rotz'}
+ease{223.5, 1, outQuint,0,'sprite_zoom'}
+ease{223.5, 4, outQuint,0,'sprite_rotz'}
+for i=224,227,1 do
+me(i,2,-0.5,0,'sprite_zoom','len',outExpo)
+me(i,1,-250,0,'tiny','len',outExpo)
+end
+
+for i=229,242,1 do
+me(i,2,-0.35,0,'sprite_zoom','len',outExpo)
+me(i,2,-250,0,'tiny','len',outQuint)
+end
+
+for i=245,259,1 do
+me(i,2,-0.5,0,'sprite_zoom','len',outExpo)
+me(i,1,0,-50,'sp_t','len',bounce)
+me(i,1,0,-50,'sp_b','len',bounce)
+me(i,1,-250,0,'tiny','len',outExpo)
+end
+
+me(244,1,-250,0,'tiny','len',outExpo)
+me(244.5,1,-250,0,'tiny','len',outExpo)
+--set{229,160,'beat'}
+
+ease{258.5, 0.5, outExpo,100,'reverse'}	
+ease{258.667, 0.5, outExpo,0,'reverse'}	
+ease{258.833, 0.5, outExpo,100,'reverse'}	
+ease{259, 0.5, outExpo,0,'reverse'}
+
+me(259,.8,-550,0,'tiny','len',outExpo)
+me(259.25,.8,-550,0,'tiny','len',outExpo)
+me(259.5,.8,-550,0,'tiny','len',outExpo)
+me(259.75,.8,-550,0,'tiny','len',outExpo)	
+
+me(259,1,450,-450,'drunk','len',outExpo)
+me(259.25,1,-450,450,'drunk','len',outExpo)
+me(259.5,1,450,-450,'drunk','len',outExpo)
+me(259.75,1,-450,0,'drunk','len',outExpo)	
+
+me(83,2,-0.5,0,'sprite_zoom','len',outQuint)
+
+ease{148, 8, linear,-50,'sprite_rotz'}
+ease{148, 8, linear,0.8,'sprite_zoom'}
+
+ease{148, 8, linear,150,'zigzag'}
+ease{148, 8, linear,150,'drunk'}
+ease{148, 8, linear,150,'tipsy'}
+ease{156, 6, linear,0,'sprite_rotz'}
+ease{156, 6, linear,0,'sprite_zoom'}
+ease{156, 6, linear,0,'zigzag'}
+ease{156, 6, linear,0,'drunk'}
+ease{156, 6, linear,0,'tipsy'}
+me(212,1,-350,0,'tiny','len',outExpo)
+me(215.5,1,-350,0,'tiny','len',outExpo)
+me(216,1,-350,0,'tiny','len',outExpo)
+me(219.5,1,-350,0,'tiny','len',outExpo)
+me(220,1,-350,0,'tiny','len',outExpo)
+me(221.5,1,-350,0,'tiny','len',outExpo)
+me(222,1,-350,0,'tiny','len',outExpo)
+me(223.5,1,-350,0,'tiny','len',outExpo)
+ease{259.75, 0.2, linear,1,'sprite_zoom'}	
+
+swap {224, 1, outExpo, 'lrdu'}
+swap {225, 1, outExpo, 'uldr'}
+swap {226, 1, outExpo, 'ludr'}
+swap {227, 1, outExpo, 'drlu'}
+swap {228, 4, outExpo, 'ldur'}
+
+func {4, 32, function(beat,fdsfsdfsdfd)
+	local flick = fliperoo()
+	for pn = 1,2 do
+    fdsfsdfsdfd[pn].rotationx= math.sin(beat*math.pi*0.2)*30
+	fdsfsdfsdfd[pn].rotationy= math.cos(beat*math.pi*0.2)*30
+	fdsfsdfsdfd[pn].tipsy= math.sin(beat*math.pi*0.2)*130
+	end
+	end}
+	
+--dech mia, den gio spellcard roi :)))))
+card {4, 36, 'welcome', 1, '#32a836'}
+card {36, 64, 'i heard you like flickering', 2, '#79a832'}
+card {69, 96, 'len69end96 moving flickerilization', 2, '#9aa832'}
+card {100, 132, 'á dđù, cái cmn gì vậy???', 2, '#32a875'}
+card {132, 148, 'simpple thing', 1, '#3298a8'}
+card {148, 163, 'O_o o_O', 1, '#325ba8'}
+card {164, 197, 'vibing asdasdasd ', 4, '#9432a8'}
+card {197, 212, 'playfield sdddsddsd ', 4, '#9432a8'}
+card {212, 224, 'wuUuUUUUuuuuuuuUUuuuUUuuub ', 3, '#46a832'}
+card {229, 260, 'inverseilion flickeroon ', 2, '#a4a832'}
+card {260, 264, 'bye', 0, '#ffffff'}
+end)"
+Type = "ActorFrame"
+><children>
+<Layer File="bg.png"  InitCommand = "stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+<Layer Type = "Quad" Name="quadtheback" InitCommand = "stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,0" />
+	
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	
+	
+	<Layer Type = "ActorFrameTexture" Name = "screencut" />
+		<Layer Type = "Quad" InitCommand = "stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1" />
+		<Layer Type = "Sprite" Name = "sprite_left" />
+		<Layer Type = "Sprite" Name = "sprite_right" />
+		<Layer Type = "ActorFrameTexture" Name = "screencut2" />
+		<Layer Type = "Quad" InitCommand = "stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1" />
+		<Layer Type = "Sprite" Name = "sprite_top" />
+		<Layer Type = "Sprite" Name = "sprite_bottom" />
+		
+		<Layer Type = "ActorFrameTexture" Name = "screenthingy" />
+		<Layer Type = "Quad" InitCommand = "stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1" />
+		<Layer Type = "Sprite" Name = "thespritethingy" />
+		
+
+		
+	
+	
+<Layer Type = "ActorFrameTexture" Name = "shaderscreen" />
+<Layer Type = "Sprite" Name = "wooblywub" Frag = "purupuru.frag" />
+	
+--c2l
+<Layer File = "wub.xml" />
+<Layer File = "snare.xml" />
+<Layer File = "h1.xml" />
+<Layer File = "h2.xml" />
+<Layer File = "a.xml" />	
+
+	
+	
+</children></Mods>

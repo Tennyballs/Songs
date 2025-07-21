@@ -1,0 +1,855 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	nitg_version = FUCK_EXE and tonumber(GAMESTATE:GetVersionDate()) >= 20180617 --NotITG version number to check for, v3 by default
+	
+	if not nitg_version then
+		SCREENMAN:SystemMessage('Outdated version of NotITG detected, mods will not work');
+	end
+	
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	m_bl = 60/170 --use this to define length of a beat for use in the rest of the song
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT 
+	rotatey = rotationy
+	rotatez = rotationz
+	rotatex = rotationx --shortcuts
+	
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+end"
+><children><ActorFrame Condition="nitg_version"
+OnCommand="%function(self)
+	nvidia = false
+	alphamult = 1
+	if string.find(string.lower(PREFSMAN:GetPreference('LastSeenVideoDriver')), 'nvidia') or string.find(string.lower(DISPLAY:GetVendor()),'nvidia') then
+		Trace('NVidia graphics driver detected.')
+		Trace('AFT multiplier set to 0.9')
+		nvidia = true
+		alphamult = 0.9
+	end
+	if not string.find(string.lower(PREFSMAN:GetPreference('VideoRenderers')), 'opengl')
+	or string.find(string.lower(PREFSMAN:GetPreference('VideoRenderers')), 'd3d')
+	and string.find(string.lower(PREFSMAN:GetPreference('VideoRenderers')), 'opengl') 
+	and string.find(string.lower(PREFSMAN:GetPreference('VideoRenderers')), 'd3d') < 
+	string.find(string.lower(PREFSMAN:GetPreference('VideoRenderers')), 'opengl') then
+		SCREENMAN:SystemMessage('D3D Video Renderer detected. Expect textures to fail.');
+	end
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers" />
+	<Layer File="easing" />
+	<Layer File="spellcards" />
+------------------------------------------------
+--------- Sprites are going here ---------------
+------------------------------------------------	
+	
+	<Layer
+		File="../bg/bg.png"
+		OnCommand="%
+		function(self)
+			self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y)
+			self:diffusealpha(0)
+			prefix_background = self
+		end
+	"/>
+	<Layer Type="ActorProxy" GetProxyMessageCommand="%function(self)
+	self:SetTarget(P1)
+	end" />
+	<Layer Type="ActorProxy" GetProxyMessageCommand="%function(self)
+	self:SetTarget(P2)
+	end" />
+	
+-----------------------------------------------
+----------- START EVERYTHING ELSE -------------
+-----------------------------------------------
+	<Layer
+		Type="ActorFrame"
+		InitCommand="%function(self)
+		
+			checked = false;
+			P1,P2,com1,com2 = nil,nil,nil,nil
+		
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_shader(beat,key,which)
+				--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+				
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+			--function mod_ease(beat, len, start_strength, end_strength, mod, len_or_end, ease_type, pn, sustain, opt1, opt2)
+				--insert mod into ease mods table
+			--function mod_perframe(start, end, function(beat, deltatime))
+				--insert function into perframe reader
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_spring(beat,strength,num,mod,pn)
+				--like mod_wiggle, but springier
+			
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_spring_adjustable(beat,strength,num,period,mod,pn, first)
+				--it's not very good
+			
+			--function mod_beat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+			
+			--function mod_bounce(beat,length,start,apex,mod,ease_type,pn)
+			--function func_bounce(beat,length,start,apex,function,ease_type)
+				--eases out from start to apex, then eases back in from apex to start
+				--ease_type should be a string, i.e. 'Quad', 'Cubic', 'Circ'
+			
+			
+			
+			--function modulo(a, b)
+				--returns the remainder when a is divided by b, works properly with negatives unlike math.mod
+			
+			--function randomXD(t)
+				--returns a pseudo-random number between 0 and 1 seeded based on the given argument
+				--returns 0.5 if t is 0 (useful sometimes!)
+				
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local linear, inQuad, outQuad, inOutQuad, outInQuad, inCubic, outCubic, inOutCubic, outInCubic, inQuart, outQuart, inOutQuart, outInQuart, inQuint, outQuint, inOutQuint, outInQuint, inSine, outSine, inOutSine, outInSine, inExpo, outExpo, inOutExpo, outInExpo, inCirc, outCirc, inOutCirc, outInCirc, inElastic, outElastic, inOutElastic, outInElastic, inBack, outBack, inOutBack, outInBack, inBounce, outBounce, inOutBounce, outInBounce = ease.linear, ease.inQuad, ease.outQuad, ease.inOutQuad, ease.outInQuad, ease.inCubic, ease.outCubic, ease.inOutCubic, ease.outInCubic, ease.inQuart, ease.outQuart, ease.inOutQuart, ease.outInQuart, ease.inQuint, ease.outQuint, ease.inOutQuint, ease.outInQuint, ease.inSine, ease.outSine, ease.inOutSine, ease.outInSine, ease.inExpo, ease.outExpo, ease.inOutExpo, ease.outInExpo, ease.inCirc, ease.outCirc, ease.inOutCirc, ease.outInCirc, ease.inElastic, ease.outElastic, ease.inOutElastic, ease.outInElastic, ease.inBack, ease.outBack, ease.inOutBack, ease.outInBack, ease.inBounce, ease.outBounce, ease.inOutBounce, ease.outInBounce
+			
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+			
+			mod_lasttime = 0
+			
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*2 *-1 overhead, *-1 approachtype, *-1 dizzyholds, *-1 stealthpastreceptors, *-1 modtimer, 100% cover','end'},
+				{0, 18, '*2 2.5x', 'end'},
+				{19, 13, '*2 0.2x', 'len'},
+				{32, 112, '*0.1 2.5x', 'len'},
+				{42, 30, '*-1 spiralholds', 'end'},
+				{316, 9999, '*0.25 2.5x', 'end'},
+				{144, 3, '*-1 0.2.5x', 'end'},
+				{147, 9999, '*2 2.5x', 'end'},
+				{240, 9999, '*-1 2x', 'end'},
+				--{3, 1.5, '*5 300% confusion, 400% zoomx', 'len'},
+			}
+			local function mod_insert(newMod)
+				table.insert(mods, newMod)
+			end
+			
+			for i = 100, 108, 1 do
+				if i % 2 == 1 then
+					mod_insert { i, 0.7, '*-1 2000% dizzy1', 'len' }
+					mod_insert { i + 0.7, 0.7, '*-1 0% dizzy1', 'len' }
+				end
+			end
+			
+			for i = 109, 116, 1 do
+				if i % 2 == 1 then
+					mod_insert { i, 0.7, '*-1 2000% dizzy2', 'len' }
+					mod_insert { i + 0.7, 0.7, '*-1 0% dizzy2', 'len' }
+				end
+			end
+			
+			for i = 117, 120, 1 do
+				if i % 2 == 1 then
+					mod_insert { i, 0.7, '*-1 2000% dizzy1', 'len' }
+					mod_insert { i + 0.7, 0.7, '*-1 0% dizzy1', 'len' }
+				else
+					mod_insert { i, 0.7, '*-1 2000% dizzy3', 'len' }
+					mod_insert { i + 0.7, 0.7, '*-1 0% dizzy3', 'len' }
+				end
+			end
+			
+			for i = 121, 123, 1 do
+				if i % 2 == 1 then
+					mod_insert { i, 0.7, '*-1 2000% dizzy1', 'len' }
+					mod_insert { i + 0.7, 0.7, '*-1 0% dizzy1', 'len' }
+				else
+					mod_insert { i, 0.7, '*-1 2000% dizzy0', 'len' }
+					mod_insert { i + 0.7, 0.7, '*-1 0% dizzy0', 'len' }
+				end
+			end
+			
+		for i = 196, 203 do
+				if i % 2 == 0 then
+					mod_insert { i, 1, '*100 5 rotationz, 300% bumpyz', 'len' }
+					mod_insert { i, 1, '*10 20% tiny', 'end' }
+				else
+					mod_insert { i, 1, '*100 -5 rotationz', 'len' }
+					mod_insert { i, 1, '*10 -20% tiny', 'len' }
+				end
+			end
+			--for i = 100, 112, 4 do
+				--if i % 4 == 0 then
+					--mod_insert { i, 0.5, '*-1 -25% flip', 'len' }
+				--end
+			--end
+			
+			--common mistakes for mods table: 
+			--	Forgetting a Comma after each {}
+			--  Forgetting to wrap each line in {}
+			--  not using correct syntax for each mod
+			--		Syntax is:
+			--		*x y modname
+			--		where x = how fast the mod is going to activate
+			--			  y = how much the mod is going to activate
+			--			  modname = the name of the mod
+			--		these need to also be separated by commas, while being contained between single quotes ''
+			--	forgetting a 'len', or 'end' at the end
+			--	not putting commas between the stuff again
+			
+			--beat-based ease mods
+			--{beat_start, beat_end, mod_start, mod_end, mod/function, len_or_end, ease_type, player_number, sustainbeats, optional_param1, optional_param2}
+			--valid ease types are:
+				--linear
+				--inQuad    outQuad    inOutQuad    outInQuad
+				--inCubic   outCubic   inOutCubic   outInCubic
+				--inQuart   outQuart   inOutQuart   outInQuart
+				--inQuint   outQuint   inOutQuint   outInQuint
+				--inSine    outSine    inOutSine    outInSine
+				--inExpo    outExpo    inOutExpo    outInExpo
+				--inCirc    outCirc    inOutCirc    outInCirc
+				--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+				--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+				--inBounce  outBounce  inOutBounce  outInBounce
+				
+				
+			mods_ease = {
+						--{4, 8, 0, 800, 'drunk', 'len', linear},
+						--{0, .1, 0, 100, 'cover', 'len', linear},
+						--{.1, 18.9, 100, 100, 'cover', 'len', linear},
+						--{19, 10, 100, 0, 'cover', 'len', inExpo},
+						
+						{4, 4, 0, 0.5, function(a) 
+						local screen = SCREENMAN:GetTopScreen()
+						local transform = condor.zoom(a)
+						screen:x(transform.x)
+						screen:y(transform.y)
+						screen:zoom(transform.zoom)
+						end, 'len', outExpo},
+						
+						{0, 1, 0, 100, 'stealth', 'len', linear},
+						{1, 18, 100, 100, 'stealth', 'len', linear},
+						--{18, 4, 100, 1000, 'drawsize', 'len', inCirc},
+						{19, 100, 0, 1, function(a) prefix_background:diffusealpha(a) end, 'len', outBack},
+						--{22, 34, 1000, 1000, 'drawsize', 'len', inCirc},
+						{19, 2, 100, 50, 'stealth', 'len', linear},
+						{19, 0.5, 0, 200, 'confusion', 'len', outExpo},
+						{20, 0.5, 200, 0, 'confusion', 'len', outExpo},
+						{21, 12, 50, 50, 'stealth', 'len', linear},
+						
+						{20, 12, 0, 100, 'tornado', 'len', linear},
+						
+						{17, 3, 0.5, 0.75, function(a) 
+						local screen = SCREENMAN:GetTopScreen()
+						local transform = condor.zoom(a)
+						screen:x(transform.x)
+						screen:y(transform.y)
+						screen:zoom(transform.zoom)
+						end, 'len', inExpo},
+						
+						{32, 2, 100, 0, 'tornado', 'len', linear},
+						
+						{32, 4, 0.75, 1, function(a) 
+						local screen = SCREENMAN:GetTopScreen()
+						local transform = condor.zoom(a)
+						screen:x(transform.x)
+						screen:y(transform.y)
+						screen:zoom(transform.zoom)
+						end, 'len', linear},
+						
+						{36, 28, 0, 200, 'beat', 'len', outExpo},
+						--{36, 10, 0, 45, function(a) SCREENMAN:GetTopScreen():rotationz(a) end, 'len', linear},
+						{36, 6, 0, -45, 'rotationx, movex', 'len', inQuad},
+						{42, 20, -45,-45, 'rotationx', 'len', inQuad},
+						{42, 5, 0, 20, 'rotationz', 'len', inQuad},
+						{47, 5, 20, -40, 'rotationz', 'len', inQuad},
+						{52, 5, -40, 60, 'rotationz', 'len', inQuad},
+						{57, 5, 60, -60, 'rotationz', 'len', inQuad},
+						{42, 5, 0, 100, 'bumpyy', 'len', inQuad},
+						{47, 16, 100, 100, 'bumpyy', 'len', linear},
+						
+						{64, 0.2, 10, 0, 'beat', 'len', inExpo},
+						
+						----------------Separate Playfields------------------
+						{66, .8, 0, 50, 'movex', 'len', outExpo, 1},
+						{66.7, .8, 50, 100, 'movex', 'len', outExpo, 1},
+						{67.4, .8, 100, 200, 'movex', 'len', outExpo, 1},
+						{68.1, 47.9, 200, 200, 'movex', 'len', inCirc, 1},
+						{66, .8, 0, -50, 'movex', 'len', outExpo, 2},
+						{66.7, .8, -50, -100, 'movex', 'len', outExpo, 2},
+						{67.4, .8, -100, -200, 'movex', 'len', outExpo, 2},
+						{68.1, 47.9, -200, -200, 'movex', 'len', inCirc, 2},
+						-----------------------------------------------------
+						{63.5, 0.7, 0, 100, 'reverse0, reverse1, reverse2, reverse3', 'len', inQuint},
+						{64, 18, 100, 100, 'reverse0, reverse1, reverse2, reverse3', 'len', linear},
+						{66, .7, 0, 75, 'flip, invert', 'len', outExpo},
+						{66.5, .7, 75, 125, 'invert', 'len', outExpo},
+						{66.5, .7, 75, 25, 'flip', 'len', outExpo},
+						{67, .7, 125, 100, 'invert', 'len', outExpo},
+						{67.5, .7, 100, 0, 'invert', 'len', outExpo},
+						{68, 1, 0, 30, 'drunk', 'len', inExpo},
+						{68, 1, 0, 50, 'beat', 'len', inExpo},
+						{69, 30, 30, 30, 'drunk', 'len', inExpo},
+						{69, 30, 50, 50, 'beat', 'len', inExpo},
+						
+						{80, 1, 100, 0, 'reverse3', 'len', outExpo},
+						{81, 4, 0, 0, 'reverse3', 'len', outExpo},
+						{81, 1, 100, 0, 'reverse0', 'len', outExpo},
+						{82, 3, 0, 0, 'reverse0', 'len', outExpo},
+						{82, 1, 100, 0, 'reverse2', 'len', outExpo},
+						{83, 2, 0, 0, 'reverse2', 'len', outExpo},
+						{83, 1, 100, 0, 'reverse1', 'len', outExpo},
+						{84, 1, 0, 0, 'reverse1', 'len', outExpo},
+						
+						{80, 2, 0, 45, 'rotationy', 'len', outCubic},
+						{82, 2, 45, -45, 'rotationy', 'len', outCubic},
+						{84, 2, -45, 0, 'rotationy', 'len', outCubic},
+						{85, 2, 0, 20, 'rotationz', 'len', linear},
+						{87, 4, 20, -20, 'rotationz', 'len', linear},
+						{90, 5, 0, 45, 'skewy', 'len', linear},
+						{95, 5, 0, -200, 'tinyx', 'len', inExpo},
+						
+						{98, 0.75, 0, 200, 'movez2, tinyy2', 'len', outElastic},
+						{98.75, .75, 200, 300, 'movez2, tinyz2', 'len', outElastic},
+						{99.5, .75, 300, 400, 'movez2, tinyz2', 'len', outElastic},
+						{100.25, 4.75, 400, 0, 'movez2, tinyz2', 'len', inCubic},
+						
+						{100, 28, 0, 100, 'tipsy, drunk, wave', 'len', inQuad},
+						
+						{116, 11.5, -200, 0, 'movex', 'len', inCirc, 2},
+						{116, 11.5, 200, 0, 'movex', 'len', inCirc, 1},
+						
+						{128, 0.67, 0, 20, 'rotationz', 'len', outQuad},
+						{128.67, 0.67, 20, -20, 'rotationz, rotationx', 'len', outQuad}, 
+						{129.34, 0.67, -20, 20, 'rotationz, rotationy', 'len', outQuad}, 
+						{130.01, 0.67, 20, -20, 'rotationz, rotationx', 'len', outQuad}, 
+						{131, 0.67, 0, 0, 'rotationz, rotationx', 'len', outQuad},
+						
+						{132, 1, 0, 500, 'drunkz', 'len', inQuad},
+						{133, 20, 500, 500, 'drunkz', 'len', inQuad},
+						{132, 1, 0, 300, 'beatz', 'len', inQuad},
+						{133, 20, 300, 300, 'beatz', 'len', inQuad},
+						
+						{156, 5, 0, 180, function(a) prefix_background:rotationz(a) end, 'len', outBack},
+						{156, 5, 0, -180, 'rotationz', 'len', outBack},
+						{160, .7, 0, 75, 'flip, invert', 'len', outExpo},
+						{160.5, .7, 75, 125, 'invert', 'len', outExpo},
+						{160.5, .7, 75, 25, 'flip', 'len', outExpo},
+						{161, .7, 125, 100, 'invert', 'len', outExpo},
+						{161.5, .7, 100, 0, 'invert', 'len', outExpo},
+						{162.67, .7, 0, -100, 'movex0, tiny0', 'len', outExpo},
+						{163.37, .7, -100, -200, 'movex0, tiny0', 'len', outExpo},
+						{164, 22, 0, 100, 'drunky', 'len', outExpo},
+						
+						{187, 1, 0, 1000, 'holdgirth1', 'len', outExpo},
+						{188, 1, 1000, 0, 'holdgirth1', 'len', outExpo},
+						{188, 0.67, 0, 100, 'movez', 'len', outElastic},
+						{188.67, 0.67, 100, 200, 'movez', 'len', outElastic},
+						{189.34, 0.67, 200, 300, 'movez', 'len', outElastic},
+						{189, 0.67, 300, 400, 'movez', 'len', outElastic},
+						{189.67, 0.67, 400, 500, 'movez', 'len', outElastic},
+						{190.34, 5, 500, 0, 'movez', 'len', outElastic},
+ 					
+						{192, 0.75, 0, 100, 'skewx', 'len', inCirc},
+						{192, 5, 180, 360, function(a) prefix_background:rotationz(a) end, 'len', outBack},
+						{193, 0.75, 0, -100, 'skewy', 'len', inCirc},
+						{194, 0.75, 0, 100, 'skewy', 'len', inCirc},
+						{195, 0.75, 0, -100, 'skewx', 'len', inCirc},
+						{196, 8, 0, 200, 'drunk', 'len', outElastic}, 
+						{204, 0.5, 200, 0, 'drunk', 'len', inElastic},
+						{204, 0.67, 0, 100, 'movez3', 'len', outElastic},
+						{204.67, .67, 100, 200, 'movez3', 'len', outElastic},
+						{205.34, .67, 200, 300, 'movez3', 'len', outElastic},
+						{206, 0.5, 0, 150, 'movez0', 'len', outElastic},
+						{206.5, 0.5, 150, 300, 'movez0', 'len', outElastic},
+						{207, 0.5, 0, 150, 'movez1', 'len', outElastic},
+						{207.5, 0.5, 0, 300, 'movez2', 'len', outElastic},
+						{208, 0.5, 150, 300, 'movez1', 'len', outElastic},
+						{208.75, .67, 120, 300, 'movez0', 'len', outElastic},
+						{204, 1, 300, 0, 'bumpyz', 'len', inCirc},
+						{209.5, 0.5, 120, 300, 'movez2', 'len', outElastic},
+						{210, 0.5, 120, 300, 'movez1', 'len', outElastic},
+						
+						{317, 7, 0, 50, 'flip', 'len', inCirc},
+						{317, 7, 0, 200, 'movey', 'len', inCirc},
+						{317, 7, 100, 400, 'zoomx', 'len', inCirc},
+						{317, 7, 100, 300, 'zoomy', 'len', inCirc},
+						
+						{204, .5, 0, 100, 'beat', 'len', outElastic},
+						{204.5, 6.5, 100, 100, 'beat', 'len', outElastic}, 
+						
+						{204, .8, 0, 50, 'movex', 'len', outExpo, 1},
+						{204.8, .8, 50, 100, 'movex', 'len', outExpo, 1},
+						{205.4, .8, 100, 200, 'movex', 'len', outExpo, 1},
+						{206.1, 1.9, 200, 200, 'movex', 'len', inCirc, 1},
+						{204, .8, 0, -50, 'movex', 'len', outExpo, 2},
+						{204.8, .8, -50, -100, 'movex', 'len', outExpo, 2},
+						{205.4, .8, -100, -200, 'movex', 'len', outExpo, 2},
+						{206.1, 1.9, -200, -200, 'movex', 'len', inCirc, 2},
+						
+						{208, .8, 200, 100, 'movex', 'len', outExpo, 1},
+						{208.75, .8, 100, 50, 'movex', 'len', outExpo, 1},
+						{209.4, .8, 50, 0, 'movex', 'len', outExpo, 1},
+						{210.1, 13.9, 0, 0, 'movex', 'len', inCirc, 1},
+						{208, .8, -200, -100, 'movex', 'len', outExpo, 2},
+						{208.75, .8, -100, -50, 'movex', 'len', outExpo, 2},
+						{205.4, .8, -50, 0, 'movex', 'len', outExpo, 2},
+						{210.1, 13.9, 0, 0, 'movex', 'len', inCirc, 2},
+						
+						{212, 1, 0, -200, 'holdtiny1', 'len', outCirc},
+						{212, 1, 0, 200, 'beat', 'len', outCirc},
+						{213, 7, 200, 200, 'beat', 'len', outCirc},
+						{220, 1, 200, 0, 'beat', 'len', outCirc},
+						{220, 5, 100, 150, 'zoom', 'len', outCirc},
+						
+						{224, 1, 0, 50, 'movex', 'len', outExpo, 1},
+						{225, 1, 50, 100, 'movex', 'len', outExpo, 1},
+						{226, 1, 100, 200, 'movex', 'len', outExpo, 1},
+						{227, 30, 200, 200, 'movex', 'len', inCirc, 1},
+						{224, 1, 0, -50, 'movex', 'len', outExpo, 2},
+						{225, 1, -50, -100, 'movex', 'len', outExpo, 2},
+						{226, 1, -100, -200, 'movex', 'len', outExpo, 2},
+						{227, 30, -200, -200, 'movex', 'len', inCirc, 2},
+						
+						{224, 4, 0, 300, 'movey', 'len', outCirc, 1},
+						{228, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{231, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{234, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{237, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{240, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{243, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{246, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{249, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{252, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{255, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{258, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{261, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{264, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{267, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{270, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{273, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{276, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{279, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{282, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						{285, 3, 0, 300, 'movey', 'len', outBounce, 1},
+						{288, 3, 300, 0, 'movey', 'len', inBounce, 1},
+						
+						{221, 3, 0, 300, 'movey', 'len', linear, 2},
+						{224, 3, 300, 0, 'movey', 'len', inBounce, 2},
+						{228, 3, 0, 300, 'movey', 'len', outBounce, 2},
+						{231, 3, 300, 0, 'movey', 'len', inBounce, 2},
+						{234, 3, 0, 300, 'movey', 'len', outBounce, 2},
+						{237, 3, 300, 0, 'movey', 'len', inBounce, 2},
+						{240, 3, 0, 300, 'movey', 'len', outBounce, 2},
+						{243, 3, 300, 0, 'movey', 'len', inBounce, 2},
+						{246, 3, 0, 300, 'movey', 'len', outBounce, 2},
+						{249, 3, 300, 0, 'movey', 'len', inBounce, 2},
+						{252, 3, 0, 300, 'movey', 'len', outBounce, 2},
+						{255, 3, 300, 0, 'movey', 'len', inBounce, 2},
+						{258, 3, 0, -300, 'movey', 'len', outBounce, 2},
+						{261, 3, -300, 0, 'movey', 'len', inBounce, 2},
+						{264, 3, 0, -300, 'movey', 'len', outBounce, 2},
+						{267, 3, -300, 0, 'movey', 'len', inBounce, 2},
+						{270, 3, 0, -300, 'movey', 'len', outBounce, 2},
+						{273, 3, -300, 0, 'movey', 'len', inBounce, 2},
+						{276, 3, 0, -300, 'movey', 'len', outBounce, 2},
+						{279, 3, -300, 0, 'movey', 'len', inBounce, 2},
+						{282, 3, 0, -300, 'movey', 'len', outBounce, 2},
+						{285, 3, -300, 0, 'movey', 'len', inBounce, 2},
+						{288, 3, 0, -300, 'movey', 'len', outBounce, 2},
+						{260, 20, 0, 100, 'beat', 'len', outBounce},
+						{292, 15, -300, 0, 'movey', 'len', linear, 2},
+						{263, 20, 100, 100, 'reverse', 'len', outBounce, 2},
+						
+						{231, 0.5, 0, 100, 'skewx', 'len', outBounce},
+						{231.5, 0.5, 100, 0, 'skewx', 'len', outBounce},
+						{235, 0.5, 0, -100, 'skewx', 'len', outBounce},
+						{235.5, 0.5, -100, 0, 'skewx', 'len', outBounce},
+						{239, 0.5, 0, 100, 'skewx', 'len', outBounce},
+						{239.5, 0.5, 100, 0, 'skewx', 'len', outBounce},
+						{243, 0.5, 0, -100, 'skewx', 'len', outBounce},
+						{243.5, 0.5, -100, 0, 'skewx', 'len', outBounce},
+						
+						{247, 0.5, 0, 50, 'skewy', 'len', outBounce},
+						{247.5, 0.5, 50, 0, 'skewy', 'len', outBounce},
+						{251, 0.5, 0, -50, 'skewy', 'len', outBounce},
+						{251.5, 0.5, -50, 0, 'skewy', 'len', outBounce},
+						{255, 0.5, 0, 50, 'skewy', 'len', outBounce},
+						{255.5, 0.5, 50, 0, 'skewy', 'len', outBounce},
+						{259, 0.5, 0, -50, 'skewy', 'len', outBounce},
+						{259.5, 0.5, -50, 0, 'skewy', 'len', outBounce},
+						
+						{263, 0.5, 0, 100, 'skewx', 'len', outBounce},
+						{263.5, 0.5, 100, 0, 'skewx', 'len', outBounce},
+						{267, 0.5, 0, -100, 'skewx', 'len', outBounce},
+						{267.5, 0.5, -100, 0, 'skewx', 'len', outBounce},
+						{271, 0.5, 0, 100, 'skewx', 'len', outBounce},
+						{271.5, 0.5, 100, 0, 'skewx', 'len', outBounce},
+						{275, 0.5, 0, -100, 'skewx', 'len', outBounce},
+						{275.5, 0.5, -100, 0, 'skewx', 'len', outBounce},
+						
+						{292, 17, 0, 100, 'drunk', 'len', outBounce, 1},
+						{309, 15, 100, 100, 'drunk', 'len', outBounce, 1},
+						{292, 17, 0, -100, 'drunk', 'len', outBounce, 2},
+						{309, 15, -100, -100, 'drunk', 'len', outBounce, 2},
+						
+						{324, 8, 50, 50, 'flip', 'len', inCirc},
+						{324, 8, 200, 200, 'movey', 'len', inCirc},
+						{324, 8, 400, 400, 'zoomx', 'len', inCirc},
+						{324, 8, 300, 300, 'zoomy', 'len', inCirc},
+						
+						
+						
+				-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+				--{0, 4, 360, 0, 'rotationz', 'len', inOutBack},
+				
+				-- EXAMPLE TWEEN: from beat 4 to 8, rotate topscreen from 360 to 0 with the outBack tween
+				--{4, 4, 360, 0, function(a) SCREENMAN:GetTopScreen():rotationz(a) end, 'len', outBack},
+			}
+			
+
+-- Thank you Halcyoniix for providing this code (and I think Condor for making it?)--
+condor = {}
+condor.const1 = math.sqrt(math.pow(SCREEN_WIDTH/2,2)+math.pow(SCREEN_HEIGHT/2,2))
+condor.const2 = 180+math.deg(math.atan(SCREEN_HEIGHT/SCREEN_WIDTH))
+condor.zoom = function(amt)
+    return
+    {
+        x = SCREEN_WIDTH/2 + (condor.const1 * amt * math.cos( (condor.const2) / 180 * math.pi )),
+        y = SCREEN_HEIGHT/2 + (condor.const1 * amt * math.sin( (condor.const2) / 180 * math.pi )),
+        zoom = amt
+    }
+end
+condor.rotation = function(ang)
+    return
+    {
+        x = SCREEN_WIDTH/2 + (condor.const1 * math.cos( (ang+condor.const2) / 180 * math.pi)),
+        y = SCREEN_HEIGHT/2 + (condor.const1 * math.sin( (ang+condor.const2) / 180 * math.pi)),
+        rot = ang
+    }
+end
+----------------------------------------------------------------
+			
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+			}
+			
+			-- you can now write perframe stuff without having to scroll down!
+			-- {beat_start,beat_end,function(beat,deltatime)}
+			mod_perframes = {
+			--{68, 96, function(beat,deltatime)
+				--	if perframe(68, 96) then
+				--	GAMESTATE:ApplyGameCommand('mod,*-1 '.. -math.abs(math.sin(beat * math.pi)) * 100 .. ' movey');
+				--	end
+				
+				--if perframe(68, 96) then
+					--GAMESTATE:ApplyGameCommand('mod,*2 '.. (beat - 68) * 200 .. ' centered2');
+				--end
+					
+				--if beat < 100 then
+					--local pos = (beat - 68) * -128
+					--GAMESTATE:ApplyGameCommand('mod,*1.28 '.. pos .. ' y');
+				--end
+			--end},
+			
+				--{18,24,function(beat,deltatime)
+					--do stuff every frame from beat 18-24
+					--print(beat,deltatime)
+				--end},
+			}
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 0
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {
+				{0,'GetProxy',true},
+				--{5, function()
+				--	prefix_shiningArtist:diffusealpha(0.8)
+				--	prefix_shiningTitle:diffusealpha(0.8)
+				--	prefix_shiningCredit:diffusealpha(0.8)
+				--end, true}
+		
+				{0,function()
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:GetChild('Judgment'):hidden(1)
+							a:GetChild('Combo'):hidden(1)
+							a:SetFarDist(10000)
+						end
+					end
+					
+					for pn=1,2 do
+						local d = 0.25; if pn == 2 then d = 0.75 end
+						local b = _G['jud'..pn..'p']
+						if b then
+							b:hidden(0);
+							b:basezoomx(0.75);
+							b:basezoomy(0.75);
+							b:x(SCREEN_WIDTH*d)
+							b:y(SCREEN_HEIGHT*0.5)
+						end
+						local c = _G['com'..pn..'p']
+						if c then
+							c:hidden(0);
+							c:basezoomx(0.75);
+							c:basezoomy(0.75);
+							c:x(SCREEN_WIDTH*d)
+							c:y(SCREEN_HEIGHT*0.5)
+						end
+					end
+				end,true},
+			}
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			self:luaeffect('Update')
+		end"
+		
+		UpdateCommand="%function(self)
+			local beat = GAMESTATE:GetSongBeat()
+			
+			if beat>=0 and not checked then
+					local ThingsToGrab = {'BPMDisplay','LifeFrame','ScoreFrame','Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+					local ThingsToHide = {'BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+					for pn=1,2 do
+						_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+						if _G['P'..pn] then
+							table.insert(mod_plr, _G['P'..pn])
+							_G['P'..pn]:x(SCREEN_CENTER_X)
+							_G['jud'..pn]=_G['P'..pn]:GetChild('Judgment');
+							_G['com'..pn]=_G['P'..pn]:GetChild('Combo');
+							_G['jud'..pn]:hidden(1)
+							_G['com'..pn]:hidden(1)
+						end
+						table.insert(ThingsToGrab,'LifeP'..pn); table.insert(ThingsToGrab,'ScoreP'..pn);
+						table.insert(ThingsToHide,'LifeP'..pn); table.insert(ThingsToHide,'ScoreP'..pn);
+					end	
+					for i,v in ipairs(ThingsToGrab) do _G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil end	
+					for i,v in ipairs(ThingsToHide) do if _G[v] then _G[v]:hidden(1) end end
+				checked = true;
+			end
+			mod_curtime = GAMESTATE:GetSongTime()
+			local deltatime = mod_curtime - mod_lasttime
+			mod_lasttime = mod_curtime
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and checked then
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					-----------------------
+					-- Player mod resets --
+					-----------------------
+					for i=1,2 do
+						GAMESTATE:ApplyModifiers('clearall',i)
+						if _G['init_modsp'..i] then 
+							GAMESTATE:ApplyModifiers(_G['init_modsp'..i],i)
+						end
+					end
+				
+					------------------------------------------------------------------------------
+					-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+					------------------------------------------------------------------------------
+					for i,v in pairs(mods) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if beat >=v[1] then
+								if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+									if table.getn(v) == 5 then
+										GAMESTATE:ApplyModifiers(v[3],v[5]);
+									else
+										GAMESTATE:ApplyModifiers(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = '';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+						end
+					end
+				
+					-----------------------------------------------------------------------------------------------------
+					-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+					-----------------------------------------------------------------------------------------------------
+					for i,v in pairs(mods2) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if mod_time >=v[1] then
+								if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+									if table.getn(v) == 5 then
+										GAMESTATE:ApplyModifiers(v[3],v[5]);
+									else
+										GAMESTATE:ApplyModifiers(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = 'error';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+						end
+					end
+				
+					---------------------------------------
+					-- Ease table (includes func_ease) --
+					---------------------------------------
+					for i,v in pairs(mods_ease) do
+						if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+							if beat >=v[1] then
+								if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+									local strength = v[7](beat - v[1], v[3], v[4] - v[3], v[6] == 'end' and v[2] - v[1] or v[2], v[10], v[11])
+									if type(v[5]) == 'string' then
+										local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+										GAMESTATE:ApplyModifiers('*9999 '..modstr,v[8]);
+									elseif type(v[5]) == 'function' then
+										v[5](strength)
+									end
+								elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+									if type(v[5]) == 'string' then
+										local modstr = v[5] == 'xmod' and v[4]..'x' or (v[5] == 'cmod' and 'C'..v[4] or v[4]..' '..v[5])
+										GAMESTATE:ApplyModifiers('*9999 '..modstr,v[8]);
+									elseif type(v[5]) == 'function' then
+										v[5](v[4])
+									end
+								end
+							end
+						else
+							SCREENMAN:SystemMessage('Ease Error! (line '..i..' | beat: '.. v[1] .. ' | mod: '.. v[5] ..')');
+						end
+					end
+				
+					---------------------
+					-- Perframe reader --
+					---------------------
+					if table.getn(mod_perframes)>0 then
+						for i=1,table.getn(mod_perframes) do
+							local a = mod_perframes[i]
+							if beat > a[1] and beat < a[2] then
+								a[3](beat,deltatime);
+							end
+						end
+					end
+				
+					---------------------------------------
+					-- Actions table --
+					---------------------------------------
+					while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+						if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+							if type(mod_actions[curaction][2]) == 'function' then
+								mod_actions[curaction][2]()
+							elseif type(mod_actions[curaction][2]) == 'string' then
+								MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+							end
+						end
+						curaction = curaction+1;
+					end
+				end
+			end
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	
+	<ZZLAER Type="ActorFrame" InitCommand="%function(self) judc = self end"><children>
+	<LAER Type="ActorProxy" InitCommand="%function(self) jud1p = self end"
+	GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1:GetChild('Judgment')) end end"/>
+	<LAER Type="ActorProxy" InitCommand="%function(self) jud2p = self end"
+	GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2:GetChild('Judgment')) end end"/>
+	</children></ZZLAER>
+	<ZZLAER Type="ActorFrame" InitCommand="%function(self) comc = self end"><children>
+	<LAER Type="ActorProxy" InitCommand="%function(self) com1p = self end"
+	GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1:GetChild('Combo')) end end"/>
+	<LAER Type="ActorProxy" InitCommand="%function(self) com2p = self end"
+	GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2:GetChild('Combo')) end end"/>
+	</children></ZZLAER>
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+</children></ActorFrame></children></ActorFrame>

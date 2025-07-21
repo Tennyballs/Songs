@@ -1,0 +1,212 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+	-- your code goes here here:
+
+	setdefault {2, 'xmod', 100, 'overhead', 100, 'dizzyholds', 100, 'modtimer'}
+	set {4, 200, 'beat'}
+	local p1DefaultX = P1:GetX()
+    local p2DefaultX = P2:GetX()
+    local defaultZ = P1:GetZ()
+    definemod { 'centerPlayfields', function(percent) 
+        local scale = percent / 100
+        P1:x((scale*scx) + ((1-scale)*p1DefaultX))
+        P2:x((scale*scx) + ((1-scale)*p2DefaultX))
+    end }
+    ease {19, 1, outBack, 100, 'centerPlayfields'}
+    set {20, 100, 'Dark', plr = 1}
+    set {20, 100, 'Stealth', plr = 2}
+    ease {20, 0.5, outQuint, 75, 'Brake', plr = 1}
+    ease {21, 1, pop, 75, 'tipsy', plr = 2}
+	ease {23, 1, pop, 75, 'tipsy', plr = 2}
+	ease {25, 1, pop, 75, 'tipsy', plr = 2}
+	ease {27, 1, pop, 75, 'tipsy', plr = 2}
+	ease {29, 1, pop, 75, 'tipsy', plr = 2}
+	ease {31, 1, pop, 75, 'tipsy', plr = 2}
+	reset {32, exclude = {'centerPlayfields'}}
+	ease {32, 3, bell, 100, 'drunk'}
+	ease {32, 3, bell, 100, 'drunky'}
+	ease {32, 3, bell, 100, 'drunkz'}
+	set {100, 50, 'flip'}
+	ease {100, 8, tap, 400, 'rotationy'}
+	ease {117, 1, pop, 75, 'tipsy'}
+	ease {119, 1, pop, 75, 'tipsy'}
+	ease {121, 1, pop, 75, 'tipsy'}
+	ease {123, 1, pop, 75, 'tipsy'}
+	ease {125, 1, pop, 75, 'tipsy'}
+	ease {127, 1, pop, 75, 'tipsy'}
+	ease {115, 1, linear, 200, 'centered2'}
+	ease {115, 1, linear, 0, 'flip'}
+	set {116, 0, 'flip', plr = 1}
+	set {116, 100, 'flip', plr = 2}
+	set {116, 314.16, 'confusionoffset', plr = 2}
+	set {116, 180, 'rotationz', plr = 2}
+	ease {116, 0.5, inOutCirc, 0, 'Stealth', plr = 1}
+	ease {120, 0.5, inOutCirc, 0, 'Stealth', plr = 2}
+	ease {124, 0.5, inOutCirc, 0, 'Stealth', plr = 1}
+	ease {128, 0.5, inOutCirc, 0, 'Stealth', plr = 2}
+	ease {116, 0.5, inOutCirc, 100, 'Stealth', plr = 2}
+	ease {120, 0.5, inOutCirc, 100, 'Stealth', plr = 1}
+	ease {124, 0.5, inOutCirc, 100, 'Stealth', plr = 2}
+	ease {128, 0.5, inOutCirc, 100, 'Stealth', plr = 1}
+	ease {132, 0.5, inOutCirc, 0, 'Stealth', plr = 1}
+	ease {136, 0.5, inOutCirc, 0, 'Stealth', plr = 2}
+	ease {140, 0.5, inOutCirc, 0, 'Stealth', plr = 1}
+	ease {144, 0.5, inOutCirc, 0, 'Stealth', plr = 2}
+	ease {132, 0.5, inOutCirc, 100, 'Stealth', plr = 2}
+	ease {136, 0.5, inOutCirc, 100, 'Stealth', plr = 1}
+	ease {140, 0.5, inOutCirc, 100, 'Stealth', plr = 2}
+	ease {144, 0.5, inOutCirc, 100, 'Stealth', plr = 1}
+	ease {148, 0.5, inOutCirc, 0, 'Stealth', plr = 1}
+	ease {152, 0.5, inOutCirc, 0, 'Stealth', plr = 2}
+	ease {156, 0.5, inOutCirc, 0, 'Stealth', plr = 1}
+	ease {160, 0.5, inOutCirc, 0, 'Stealth', plr = 2}
+	ease {148, 0.5, inOutCirc, 100, 'Stealth', plr = 2}
+	ease {152, 0.5, inOutCirc, 100, 'Stealth', plr = 1}
+	ease {156, 0.5, inOutCirc, 100, 'Stealth', plr = 2}
+	ease {160, 0.5, inOutCirc, 100, 'Stealth', plr = 1}
+	ease {
+			131, 1, linear,
+			0, 'tipsy',
+			200, 'drunk',
+	}
+	ease {156, 4, linear, 0, 'centered2'}
+	set {
+		160,
+		0, 'confusionoffset',
+		0, 'rotationz',
+		0, 'flip',
+		0, 'drunk'
+	}
+	for i = 164, 224, 0.5 do
+		ease {i, 0.25, outCubic, 10, 'movey'}
+		ease {i+0.25, 0.25, outCubic, -10, 'movey'}
+	end
+	ease {164, 4, outExpo, -100, 'movex'}
+	for i = 164, 216, 8 do
+		ease {i, 4, outExpo, 200, 'movex'}
+		ease {i+4, 4, outExpo, -200, 'movex'}
+	end
+	ease {224, 4, outExpo, 0, 'movex'}
+	ease {224, 2, outElastic, 0, 'centerPlayfields'}
+	set {116, 150, 'parabolax'}
+	set {164, 0, 'parabolax'}
+	set {196, 150, 'parabolaz'}
+	set {
+		224, 
+		0, 'parabolaz',
+		0, 'Stealth',
+	}
+	func {0, function()
+			NightSky:diffusealpha(0)
+			NightSky:xywh(scx,scy,sw,sh)
+	end}
+	func {224, 4, linear, 1, 'NightSky:diffusealpha'}
+	for i = 228, 288, 4 do
+		ease {i, 2, bounce, 50, 'movey', plr = 1}
+		ease {i, 2, bounce, -50, 'movey', plr = 2}
+		ease {i+2, 2, bounce, -50, 'movey', plr = 1}
+		ease {i+2, 2, bounce, 50, 'movey', plr = 2}
+	end
+	definemod {'dropaccent', function(p)
+			P1:SetXSpline(
+					1,
+					-1,
+					p,
+					16,
+					-1
+			)	
+			P2:SetXSpline(
+					1,
+					-1,
+					p,
+					16,
+					-1
+			)	
+	end}
+	set {292, 200, 'beat'}
+	set {308, 0, 'beat'}
+	for i = 260, 290, 2 do
+		ease {i, 1, bounce, -25, 'flip'}
+		ease {i+1, 1, bounce, 25, 'flip'}
+	end
+	aux 'freezeframe'
+	set {35, 1, 'freezeframe'}
+	set {39, 1, 'freezeframe'}
+	set {51, 1, 'freezeframe'}
+	set {55, 1, 'freezeframe'}
+	set {67, 1, 'freezeframe'}
+	set {71, 1, 'freezeframe'}
+	set {83, 1, 'freezeframe'}
+	set {87, 1, 'freezeframe'}
+	ease {35, 1, linear, 50, 'invert'}
+	for i = 36, 98, 2 do
+		add {i, 1, bounce, 50, 'invert'}
+		add {i+1, 1, bounce, -50, 'invert'}
+	end
+	ease {99, 1, linear, 0, 'invert'}
+	for i = 68, 98, 2 do
+		ease {i, 1, bounce, -20, 'rotationz'}
+		ease {i+1, 1, bounce, 20, 'rotationz'}
+	end
+	for i = 228, 288, 16 do
+		set {i+0.5, 100, 'dropaccent'}
+		ease {i+0.5, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+1.25, -100, 'dropaccent'}
+		ease {i+1.25, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+2, 100, 'dropaccent'}
+		ease {i+2, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+2.75, -100, 'dropaccent'}
+		ease {i+2.75, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+3.5, 100, 'dropaccent'}
+		ease {i+3.5, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+4.25, -100, 'dropaccent'}
+		ease {i+4.25, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+5, 100, 'dropaccent'}
+		ease {i+5, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+5.75, -100, 'dropaccent'}
+		ease {i+5.75, 0.5, outExpo, 0, 'dropaccent'}
+		ease {i+6.5, 1, tri, 100, 'invert'} -- quick invert
+		set {i+8.5, 100, 'dropaccent'}
+		ease {i+8.5, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+9.25, -100, 'dropaccent'}
+		ease {i+9.25, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+10, 100, 'dropaccent'}
+		ease {i+10, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+10.75, -100, 'dropaccent'}
+		ease {i+10.75, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+11.5, 100, 'dropaccent'}
+		ease {i+11.5, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+12.25, -100, 'dropaccent'}
+		ease {i+12.25, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+13, 100, 'dropaccent'}
+		ease {i+13, 0.5, outExpo, 0, 'dropaccent'}
+		set {i+13.75, -100, 'dropaccent'}
+		ease {i+13.75, 0.5, outExpo, 0, 'dropaccent'}
+		ease {i+14.5, 1, tri, -100, 'invert'} -- quick invert
+	end
+
+end)"
+Type = "ActorFrame"
+><children>
+	<Layer File="bg2.png" Name="NightSky"/>
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+</children></Mods>

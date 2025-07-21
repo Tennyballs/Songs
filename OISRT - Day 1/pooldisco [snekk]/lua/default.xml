@@ -1,0 +1,1302 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	mod_globaloffset = PREFSMAN:GetPreference('GlobalOffsetSeconds');
+	
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT --shortcuts
+	
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+	function GetJud(pn)
+		return _G['jud'..pn]
+	end
+	function GetCom(pn)
+		return _G['com'..pn]
+	end
+	function GetProx(pn, prox)
+		return _G['pd_P'..pn..'ap'..prox]
+	end
+	function mod_do(str,pn)
+		if pn then
+			GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+		else
+			GAMESTATE:ApplyGameCommand('mod,'..str)
+		end
+	end
+	
+	function taro_Sound(str)
+		local met = GAMESTATE:GetCurrentSong():GetSongDir();
+		SOUND:PlayOnce(met..'lua/'..str..'.ogg');
+	end
+	
+end"
+><children>
+	-- shamelessly stolen from an mbc3 file iirc
+	<Layer
+    OnCommand="%function(self)
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local spellcards = {
+                {16,46,'lets get this party started',2,{0.7,0.5,1.0,1}},
+                {48,110.9,'going down',4,{0.4,0.3,0.6,1}},
+                {111,174,'disco',3,{0.7,0.5,1.0,1}},
+                {176,203,'party\'s over, go home',1,{0.3,0.2,0.4,1}},
+			}
+			
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(spellcards))
+                for i=1,table.getn(spellcards) do
+                    local a = spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+	-- end stolen code
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers.xml" />
+	<Layer File="easing.xml" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			checked = false;
+		
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_shader(beat,key,which)
+				--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+				
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_onebeat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--use a variable called 'switcheroo_width' to change how much space is between each column
+			--e.g. switcheroo_width = 2 for ayakashi
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+				
+			--function doSpline(spd, axis, path, col)
+				--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+				
+			--function doSplineAll(spd, axis, path)
+				--same as above, but for all columns
+				--(faster performance than using doSpline 4 times due to more efficient concat)
+			
+			--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+				--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+			
+			
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local m = mod_insert
+			local m2 = mod_message
+			local me = mod_ease
+			
+			
+			local l = 'len'
+			local e = 'end'
+			
+			
+			
+			
+			
+			
+			
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+			
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*2 2.5x, *1000 no beat, *10000 -99999 cover','end'},
+			}
+			
+			--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+			
+			
+			
+			
+			
+			
+			
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+				
+			}
+			
+			
+			
+			
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 32
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {
+			
+			
+				
+			}
+			
+			
+			
+			
+			
+			
+			--beat-based ease mods
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--valid ease types are:
+				--linear
+				--inQuad    outQuad    inOutQuad    outInQuad
+				--inCubic   outCubic   inOutCubic   outInCubic
+				--inQuart   outQuart   inOutQuart   outInQuart
+				--inQuint   outQuint   inOutQuint   outInQuint
+				--inSine    outSine    inOutSine    outInSine
+				--inExpo    outExpo    inOutExpo    outInExpo
+				--inCirc    outCirc    inOutCirc    outInCirc
+				--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+				--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+				--inBounce  outBounce  inOutBounce  outInBounce
+				
+			mods_ease = {
+				-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+				--{0,4,360,0,'rotationz','end',inOutBack},
+			}
+			
+			-- BEATS 0 - 16: SETUP, INTRO
+			
+			local hiddenRegionsP1 = {{25.9, 39.9}, {41.9, 47}, {121.9, 135.9}, {137.9, 141.9}, {143.9, 149}}
+			local hiddenRegionsP2 = {{23.9, 25.9}, {39.9, 41.9}, {119.9, 121.9}, {135.9, 137.9}, {141.9, 143.9}}
+			m2(1, function()
+				Plr(1):SetHiddenRegions(hiddenRegionsP1)
+				Plr(2):SetHiddenRegions(hiddenRegionsP2)
+				for i=1,2 do
+					for j=1,2 do
+						local prox = GetProx(i, j)
+						prox:x(0)
+						prox:y(0)
+						prox:hidden(j-1)
+					end
+					Plr(i):hidden(1)
+				end
+			end, true)
+			me(16, 2, 50, 0, 'stealth', l, outSine)
+			m(15.5, 46.5, '*-1 beat, *3 no invert', e)
+			m(0, 4, '*-1 200 mini', e)
+			me(4, 14, 200, 50, 'mini', e, outQuad)
+			me(13.8, 0.2, 50, -100, 'mini', l, outSine)
+			m(14, 1, '*-1 -100 mini', l)
+			me(15, 0.5, -100, 0, 'mini', l, outSine)
+			m2(15, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:decelerate(0.3 * 60 / 128)
+					p:x(sw/2)
+					local j = GetJud(i)
+					local c = GetCom(i)
+					j:x(160 * ((i*2)-3))
+					c:x(160 * ((i*2)-3))
+				end
+			end, true)
+			
+			-- BEATS 16 - 46: DO SOME THINGS
+			
+			--flip/invert/skew accents
+			local modtable1 = {16, 17.5, 20, 21.5, 32, 33.5, 36, 37.5}
+			local modtable2 = {16.5, 16.75, 17, 18, 18.5, 18.75, 19.25, 19.5, 20.5, 20.75, 21, 22, 22.5, 22.75, 23.25, 23.5, 26, 26.5, 27, 27.5, 28, 28.5, 29, 29.5, 30, 30.5}
+			for i,v in ipairs(modtable1) do
+				me(v, 0.25, 0, -50, 'flip', l, outSine)
+				me(v + 0.25, 0.25, -50, 0, 'flip', l, outSine)
+			end
+			for i,v in ipairs(modtable2) do
+				me(v, 0.1, 0, (((i%2)*2)-1)*-20, 'invert', l, outSine)
+				me(v, 0.25, (((i%2)*2)-1)*-40, 0, 'noteskew', l, outSine)
+				m(v + 0.1, 0.5, '*-1 ' .. (((i%2)*2)-1)*-20 .. ' invert', l)
+				if v < 30 then
+					me(v + 16, 0.1, 0, (((i%2)*2)-1)*-20, 'invert', l, outSine)
+					me(v + 16, 0.25, (((i%2)*2)-1)*-40, 0, 'noteskew', l, outSine)
+					m(v + 16 + 0.1, 0.5, '*-1 ' .. (((i%2)*2)-1)*-20 .. ' invert', l)
+				end
+			end
+			m(24, 1, '*5 no invert', l)
+			m(40, 1, '*5 no invert', l)
+			
+			
+			--playfield movement
+			m2(16, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:decelerate(4 * 60 / 128)
+					p:x(sw/3)
+				end
+			end)
+			me(16, 2, 0, 20, 'skewx', l, outSine)
+			me(18, 2, 20, 0, 'skewx', l, inSine)
+			me(20, 2, 0, -20, 'skewx', l, outSine)
+			me(22, 2, -20, 0, 'skewx', l, inSine)
+			m2(20, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:accelerate(2 * 60 / 128)
+					p:x(5*sw/12)
+					p:decelerate(2 * 60 / 128)
+					p:x(sw/2)
+				end
+			end)
+			m2(32, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:decelerate(4 * 60 / 128)
+					p:x(2*sw/3)
+				end
+			end)
+			me(32, 2, 0, -20, 'skewx', l, outSine)
+			me(34, 2, -20, 0, 'skewx', l, inSine)
+			me(36, 2, 0, 20, 'skewx', l, outSine)
+			me(38, 2, 20, 0, 'skewx', l, inSine)
+			m2(36, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:accelerate(2 * 60 / 128)
+					p:x(7*sw/12)
+					p:decelerate(2 * 60 / 128)
+					p:x(sw/2)
+				end
+			end)
+			
+			--the hiddenregion section and co
+			for heck=0,16,16 do
+				m(23.5 + heck, 3, '*-1 dark, *-1 hidenoteflash', l, 2)
+				me(24 + heck, 0.5, 0, 100, 'skewx', l, outSine, 1)
+				me(24.5 + heck, 0.5, 100, 0, 'skewx', l, inSine, 1)
+				me(25 + heck, 0.5, 0, -100, 'skewx', l, outSine, 1)
+				me(25.5 + heck, 0.5, -100, 0, 'skewx', l, inSine, 1)
+				me(26 + heck, 2, 0, 200, 'centered2', l, linear)
+				me(28 + heck, 0.5, 200, 0, 'centered2', l, outSine)
+				for i=0,5 do
+					m(28 + heck + i * 0.5, 0.5, '*5 ' .. (((i%2)*2)-1)*-50 .. ' tipsy', l)
+				end
+			end
+			
+			--reverse reverse
+			me(31, 0.5, 0, 100, 'reverse0', l, inOutSine)
+			me(31.25, 0.5, 0, 100, 'reverse1', l, inOutSine)
+			me(31.5, 0.5, 0, 100, 'reverse2', l, inOutSine)
+			me(31.75, 0.5, 0, 100, 'reverse3', l, inOutSine)
+			m(31.5, 47.75, '*-1 100 reverse0', e)
+			m(31.75, 47.5, '*-1 100 reverse1', e)
+			m(32, 47.25, '*-1 100 reverse2', e)
+			m(32.25, 47, '*-1 100 reverse3', e)
+			me(47.75, 0.5, 100, 0, 'reverse0', l, inOutSine)
+			me(47.5, 0.5, 100, 0, 'reverse1', l, inOutSine)
+			me(47.25, 0.5, 100, 0, 'reverse2', l, inOutSine)
+			me(47, 0.5, 100, 0, 'reverse3', l, inOutSine)
+			
+			--BEATS 46 - 48: TRANSITION TO FALLING DOWN
+			m2(46, function()
+				local p = Plr(1)
+				local j = GetJud(1)
+				local c = GetCom(1)
+				p:addx(-sw)
+				j:addx(sw)
+				c:addx(sw)
+				j:accelerate(1.5 * 60/128)
+				c:accelerate(1.5 * 60/128)
+				j:x(0)
+				c:x(0)
+				p:sleep(1.5 * 60/128)
+				p:x(sw/2 - 120)
+				p:y(-sh)
+				
+				p = Plr(2)
+				j = GetJud(2)
+				c = GetCom(2)
+				j:decelerate(1 * 60/128)
+				c:decelerate(1 * 60/128)
+				p:decelerate(1 * 60/128)
+				p:x(sw/2 + 120)
+				j:x(0)
+				c:x(0)
+				
+				for i=1,2 do
+					local p = Plr(i)
+					p:hidden(1) -- not really necessary, did this before adding the bg
+					for j=1,2 do
+						GetProx(i, j):hidden(0)
+					end
+				end
+			end)
+			
+			
+			--BEATS 48 - 110: FALLING DOWN
+			
+			--misc mods
+			me(48, 4, 50, 0, 'stealth', l, outSine)
+			me(47, 1, 100, 50, 'mini', l, outSine)
+			me(47, 1, -20, -10, 'flip', l, outSine)
+			me(47, 1, 200, 75, 'suddenoffset', l, outSine)
+			me(47, 1, 100, 75, 'scrollspeedmult', l, outSine)
+			me(47, 1, 0, 50, 'drunk', l, outSine)
+			me(47, 1, 0, 10, 'tipsy', l, outSine)
+			m(48, 110, '*-1 75 suddenoffset, *5 sudden, *-1 50 mini, *-1 80 scrollspeedmult, *-1 50 drunk, *-1 -10 flip, *-1 10 tipsy, *4 no invert', e)
+			
+			--set up the playfields staggered by sh/2 (p1prox1 @ -3*sh/2, p2prox1 @ -sh, p1prox2 @ -sh/2. p2prox2 @ 0
+			m2(48, function()
+				local p = Plr(1)
+				p:decelerate(2 * 60/128)
+				p:y(sh/2)
+				
+				for i=1,2 do
+					for j=1,2 do
+						--i: player num
+						--j: prox num
+						local proxy = GetProx(i, j)
+						local pos = ((2 - i) * -sh/2) + ((2 - j) * -sh)
+						proxy:y(pos)
+						proxy:accelerate(1 * 60/128)
+						proxy:addy(sh/16)
+					end
+				end
+			end)
+			-- every beat after 48, move the playfields down some amount (likely ~sh/6?) and if they're below screenheight*3/2 subtract screenheight*2 to put them back up.
+			function movedown(b)
+				return function()
+					for i=1,2 do
+						for j=1,2 do
+							--i: player num
+							--j: prox num
+							local proxy = GetProx(i, j)
+							if proxy:GetY() > sh then
+								--print(i .. ' ' .. j .. ' ' .. proxy:GetY() .. ' ' .. b)
+								proxy:linear(0)
+								proxy:addy(-2*sh + sh/8)
+							else
+								proxy:linear(1 * 60/128)
+								proxy:addy(sh/8)
+							end
+						end
+					end
+				end
+			end
+			for b=49,78 do
+				m2(b, movedown(b))
+			end
+			m2(79, function()
+				for i=1,2 do
+					for j=1,2 do
+						--i: player num
+						--j: prox num
+						local proxy = GetProx(i, j)
+						proxy:finishtweening()
+						proxy:decelerate(1 * 60/128)
+						proxy:addy(sh/16)
+					end
+				end
+			end)
+			me(78.75, 0.5, 0, 100, 'reverse0', l, inOutSine)
+			me(79, 0.5, 0, 100, 'reverse1', l, inOutSine)
+			me(79.25, 0.5, 0, 100, 'reverse2', l, inOutSine)
+			me(79.5, 0.5, 0, 100, 'reverse3', l, inOutSine)
+			m(79.25, 112, '*-1 100 reverse0', e)
+			m(79.5, 112, '*-1 100 reverse1', e)
+			m(79.75, 112, '*-1 100 reverse2', e)
+			m(80, 112, '*-1 100 reverse3', e)
+			m2(80, function()
+				for i=1,2 do
+					for j=1,2 do
+						--i: player num
+						--j: prox num
+						local proxy = GetProx(i, j)
+						proxy:accelerate(1 * 60/128)
+						proxy:addy(-sh/16)
+					end
+				end
+			end)
+			-- i have now decided they are going up at this point
+			function moveup(b)
+				return function()
+					for i=1,2 do
+						for j=1,2 do
+							--i: player num
+							--j: prox num
+							local proxy = GetProx(i, j)
+							if proxy:GetY() < -sh then
+								--print(i .. ' ' .. j .. ' ' .. proxy:GetY() .. ' ' .. b)
+								proxy:linear(0)
+								proxy:y(proxy:GetY() + 2*sh - sh/8)
+							else
+								proxy:linear(1 * 60/128)
+								proxy:addy(-sh/8)
+							end
+						end
+					end
+				end
+			end
+			for b=81,108 do
+				m2(b, moveup(b))
+			end
+			-- now, for accents
+			local modtable3 = {6, 6.5, 7, 7.5, 12, 13, 14, 15, 21.5, 22.5, 23.5, 24.5, 25, 25.5, 28, 29, 30, 31}
+			for i,v in ipairs(modtable3) do
+				me(48 + v, 0.1, 0, (((i%2)*2)-1)*-30, 'invert', l, outSine)
+				me(48 + v, 0.25, (((i%2)*2)-1)*-40, 0, 'noteskew', l, outSine)
+				m(48 + v, 0.5, '*-1 ' .. (((i%2)*2)-1)*-30 .. ' invert', l)
+				me(48 + v + 32, 0.1, 0, (((i%2)*2)-1)*-30, 'invert', l, outSine)
+				me(48 + v + 32, 0.25, (((i%2)*2)-1)*-40, 0, 'noteskew', l, outSine)
+				m(48 + v + 32, 0.5, '*-1 ' .. (((i%2)*2)-1)*-30 .. ' invert', l)
+			end
+			--[[local modtable4 = {-1, 15, 31}
+			for i,v in ipairs(modtable4) do
+				me(48 + v, 1, 314, 0, 'confusionoffset', l, outSine)
+			end]]
+			me(48.5, 0.5, 0, 150, 'parabolax', l, outSine)
+			for i=0,56,8 do
+				local strength = 150
+				if i ~= 0 then
+					me(48 + i + 0.5, 0.5, -strength, strength, 'parabolax', l, outSine)
+				end
+				m(48 + i + 1, 2, '*-1 ' .. strength .. ' parabolax', l)
+				me(48 + i + 1.75, 0.5, strength, -strength, 'parabolax', l, outSine)
+				m(48 + i + 2.25, 2, '*-1 -' .. strength .. ' parabolax', l)
+				me(48 + i + 2.5, 0.5, -strength, strength, 'parabolax', l, outSine)
+				m(48 + i + 3, 2, '*-1 ' .. strength .. ' parabolax', l)
+				me(48 + i + 4.5, 0.5, strength, -strength, 'parabolax', l, outSine)
+				m(48 + i + 5, 2, '*-1 -' .. strength .. ' parabolax', l)
+				me(48 + i + 5.75, 0.5, -strength, strength, 'parabolax', l, outSine)
+				m(48 + i + 6.25, 2, '*-1 ' .. strength .. ' parabolax', l)
+				me(48 + i + 6.5, 0.5, strength, -strength, 'parabolax', l, outSine)
+				m(48 + i + 7, 2, '*-1 -' .. strength .. ' parabolax', l)
+			end
+			--BEATS 110 - 112: TRANSITION TO DISCO
+			
+			m2(109, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:decelerate(1 * 60/128)
+					p:x(sw/2)
+					p:y(sh/2)
+					local juj = GetJud(i)
+					local c = GetCom(i)
+					juj:x(160 * ((i*2)-3))
+					c:x(160 * ((i*2)-3))
+					p:sleep(1 * 60/128)
+					for j=1,2 do
+						local proxy = GetProx(i, j)
+						proxy:decelerate(1 * 60/128)
+						proxy:y(0)
+					end
+					p:decelerate(1 * 60/128)
+					p:rotationz(360)
+				end
+			end)
+			m2(111, function()
+				for i=1,2 do
+					local p = Plr(i)
+					--p:hidden(0)
+					p:x(sw/2)
+					p:y(sh/2)
+					GetProx(i, 2):hidden(1)
+				end
+			end, true)
+			--BEATS 112 - 174?: BASICALLY MORE FLESHED OUT FIRST SECTION
+			m(112, 127, '*-1 reverse0', e)
+			m(112, 127.25, '*-1 reverse1', e)
+			m(112, 127.5, '*-1 reverse2', e)
+			m(112, 127.75, '*-1 reverse3', e)
+			
+			--copy paste time!
+			me(16 + 96, 2, 50, 0, 'stealth', l, outSine)
+			m(15.5 + 96, 46.5 + 96 + 32, '*-1 beat, *4 no invert', e)
+			--flip/invert/skew accents
+			--local modtable1 = {16, 17.5, 20, 21.5, 32, 33.5, 36, 37.5}
+			--local modtable2 = {16.5, 16.75, 17, 18, 18.5, 18.75, 19.25, 19.5, 20.5, 20.75, 21, 22, 22.5, 22.75, 23.25, 23.5, 26, 26.5, 27, 27.5, 28, 28.5, 29, 29.5, 30, 30.5}
+			-- no need to redefine these. haha look at how good of a programmer i am with these minor optimizations (quickly looks away from Virtual's drawfunctions)
+			for i,v in ipairs(modtable1) do
+				me(v + 96, 0.25, 0, -60, 'flip', l, outSine)
+				me(v + 96 + 0.25, 0.25, -60, 0, 'flip', l, outSine)
+			end
+			for i,v in ipairs(modtable2) do
+				me(v + 96, 0.1, 0, (((i%2)*2)-1)*-30, 'invert', l, outSine)
+				me(v + 96, 0.25, (((i%2)*2)-1)*-40, 0, 'noteskew', l, outSine)
+				m(v + 96 + 0.1, 0.5, '*-1 ' .. (((i%2)*2)-1)*-30 .. ' invert', l)
+				if v < 30 then
+					me(v + 16 + 96, 0.1, 0, (((i%2)*2)-1)*-30, 'invert', l, outSine)
+					me(v + 16 + 96, 0.25, (((i%2)*2)-1)*-40, 0, 'noteskew', l, outSine)
+					m(v + 16 + 96 + 0.1, 0.5, '*-1 ' .. (((i%2)*2)-1)*-30 .. ' invert', l)
+				end
+			end
+			m(24 + 96, 1, '*5 no invert', l)
+			m(40 + 96, 1, '*5 no invert', l)
+			
+			
+			--playfield movement
+			m2(16 + 96, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:decelerate(4 * 60 / 128)
+					p:x(sw/3)
+				end
+			end)
+			me(16, 2, 0, 20, 'skewx', l, outSine)
+			me(18, 2, 20, 0, 'skewx', l, inSine)
+			me(20, 2, 0, -20, 'skewx', l, outSine)
+			me(22, 2, -20, 0, 'skewx', l, inSine)
+			m2(20 + 96, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:accelerate(2 * 60 / 128)
+					p:x(5*sw/12)
+					p:decelerate(2 * 60 / 128)
+					p:x(sw/2)
+				end
+			end)
+			m2(32 + 96, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:decelerate(4 * 60 / 128)
+					p:x(2*sw/3)
+				end
+			end)
+			me(32 + 96, 2, 0, -20, 'skewx', l, outSine)
+			me(34 + 96, 2, -20, 0, 'skewx', l, inSine)
+			me(36 + 96, 2, 0, 20, 'skewx', l, outSine)
+			me(38 + 96, 2, 20, 0, 'skewx', l, inSine)
+			m2(36 + 96, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:accelerate(2 * 60 / 128)
+					p:x(7*sw/12)
+					p:decelerate(2 * 60 / 128)
+					p:x(sw/2)
+				end
+			end)
+			
+			--the hiddenregion section and co
+			for heck=0,16,16 do
+				m(23.5 + 96 + heck, 2.5, '*-1 dark, *-1 hidenoteflash', l, 2)
+				me(24 + 96 + heck, 0.5, 0, 100, 'skewx', l, outSine, 1)
+				me(24.5 + 96 + heck, 0.5, 100, 0, 'skewx', l, inSine, 1)
+				me(25 + 96 + heck, 0.5, 0, -100, 'skewx', l, outSine, 1)
+				me(25.5 + 96 + heck, 0.5, -100, 0, 'skewx', l, inSine, 1)
+				me(26 + 96 + heck, 2, 0, 200, 'centered2', l, linear)
+				me(28 + 96 + heck, 0.5, 200, 0, 'centered2', l, outSine)
+				for i=0,5 do
+					m(28 + 96 + heck + i * 0.5, 0.5, '*5 ' .. (((i%2)*2)-1)*-50 .. ' tipsy', l)
+				end
+			end
+			
+			--reverse reverse
+			me(31 + 96, 0.5, 100, 0, 'reverse0', l, inOutSine)
+			me(31.25 + 96, 0.5, 100, 0, 'reverse1', l, inOutSine)
+			me(31.5 + 96, 0.5, 100, 0, 'reverse2', l, inOutSine)
+			me(31.75 + 96, 0.5, 100, 0, 'reverse3', l, inOutSine)
+			--m(31.5, 46, '*-1 100 reverse0', e)
+			--m(31.75, 46, '*-1 100 reverse1', e)
+			--m(32, 46, '*-1 100 reverse2', e)
+			--m(32.25, 46, '*-1 100 reverse3', e)
+			--me(46, 0.5, 100, 0, 'reverse0', l, outSine)
+			--me(46, 0.5, 100, 0, 'reverse1', l, outSine)
+			--me(46, 0.5, 100, 0, 'reverse2', l, outSine)
+			--me(46, 0.5, 100, 0, 'reverse3', l, outSine)
+			
+			-- new stuff for this section starts here
+			
+			m(139, 142, '*-1 dark, *-1 hidenoteflash', e, 1)
+			m(139, 143.5, '*-1 -20 flip, *-1 50 stealth, *-1 -50 mini', e, 1)
+			m(141.5, 143.5, '*4 90 dark', e, 1)
+			me(143.5, 0.5, -50, 0, 'flip', l, outSine, 1)
+			me(143.5, 0.5, -50, 0, 'mini', l, outSine, 1)
+			me(143.5, 0.5, 50, 0, 'stealth', l, outSine, 1)
+			me(143.5, 0.5, 50, 0, 'dark', l, outSine, 1)
+			
+			-- invert/flip/skew again!
+			local modtable5 = {0.5, 2, 4, 5.5, 8.5, 10, 16.5, 18, 20.5, 22, 24.5, 26}
+			local modtable6 = {0, 1, 1.5, 2.5, 2.75, 3, 3.25, 3.5, 4.5, 4.75, 5, 6, 6.5, 6.75, 7, 7.5, 8, 9, 9.5, 10.5, 10.75, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5}
+			for i,v in ipairs(modtable5) do
+				me(v + 144, 0.25, 0, -60, 'flip', l, outSine)
+				me(v + 144 + 0.25, 0.25, -60, 0, 'flip', l, outSine)
+			end
+			
+			for i,v in ipairs(modtable6) do
+				me(v + 144, 0.1, 0, (((i%2)*2)-1)*-40, 'invert', l, outSine)
+				me(v + 144, 0.25, (((i%2)*2)-1)*-40, 0, 'noteskew', l, outSine)
+				m(v + 144 + 0.1, 0.5, '*-1 ' .. (((i%2)*2)-1)*-40 .. ' invert', l)
+				if v < 14 then
+					me(v + 16 + 144, 0.1, 0, (((i%2)*2)-1)*-40, 'invert', l, outSine)
+					me(v + 16 + 144, 0.25, (((i%2)*2)-1)*-40, 0, 'noteskew', l, outSine)
+					m(v + 16 + 144 + 0.1, 0.5, '*-1 ' .. (((i%2)*2)-1)*-40 .. ' invert', l)
+				end
+			end
+			
+			-- and uhh some other stuff i am too lazy to label
+			me(31 + 96 + 32, 0.5, 0, 100, 'reverse0', l, inOutSine)
+			me(31.25 + 96 + 32, 0.5, 0, 100, 'reverse1', l, inOutSine)
+			me(31.5 + 96 + 32, 0.5, 0, 100, 'reverse2', l, inOutSine)
+			me(31.75 + 96 + 32, 0.5, 0, 100, 'reverse3', l, inOutSine)
+			m(31.5 + 96 + 32, 47.75 + 96 + 32, '*-1 100 reverse0', e)
+			m(31.75 + 96 + 32, 47.5 + 96 + 32, '*-1 100 reverse1', e)
+			m(32 + 96 + 32, 47.25 + 96 + 32, '*-1 100 reverse2', e)
+			m(32.25 + 96 + 32, 47 + 96 + 32, '*-1 100 reverse3', e)
+			me(47.75 + 96 + 32, 0.5, 100, 0, 'reverse0', l, inOutSine)
+			me(47.5 + 96 + 32, 0.5, 100, 0, 'reverse1', l, inOutSine)
+			me(47.25 + 96 + 32, 0.5, 100, 0, 'reverse2', l, inOutSine)
+			me(47 + 96 + 32, 0.5, 100, 0, 'reverse3', l, inOutSine)
+			
+			-- (who's gonna read this anyways?)
+			m2(144, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:accelerate(2 * 60 / 128)
+					p:x(5 * sw/12)
+					p:decelerate(2 * 60 / 128)
+					p:x(sw/3)
+					p:accelerate(3 * 60 / 128)
+					p:x(sw/2)
+					p:decelerate(3 * 60 / 128)
+					p:x(2*sw/3)
+					p:accelerate(2 * 60 / 128)
+					p:x(7 * sw/12)
+					p:decelerate(2 * 60 / 128)
+					p:x(sw/2)
+				end
+			end)
+			me(144, 2, 0, 20, 'skewx', l, outSine)
+			me(146, 2, 20, 0, 'skewx', l, inSine)
+			me(148, 3, 0, -20, 'skewx', l, outSine)
+			me(151, 3, -20, 0, 'skewx', l, inSine)
+			me(154, 2, 0, 20, 'skewx', l, outSine)
+			me(156, 2, 20, 0, 'skewx', l, inSine)
+			m2(144 + 16, function()
+				for i=1,2 do
+					local p = Plr(i)
+					p:accelerate(2 * 60 / 128)
+					p:x(7 * sw/12)
+					p:decelerate(2 * 60 / 128)
+					p:x(2*sw/3)
+					p:accelerate(3 * 60 / 128)
+					p:x(sw/2)
+					p:decelerate(3 * 60 / 128)
+					p:x(sw/3)
+					p:accelerate(2 * 60 / 128)
+					p:x(5 * sw/12)
+					p:decelerate(2 * 60 / 128)
+					p:x(sw/2)
+				end
+			end)
+			me(144 + 16, 2, 0, -20, 'skewx', l, outSine)
+			me(146 + 16, 2, -20, 0, 'skewx', l, inSine)
+			me(148 + 16, 3, 0, 20, 'skewx', l, outSine)
+			me(151 + 16, 3, 20, 0, 'skewx', l, inSine)
+			me(154 + 16, 2, 0, -20, 'skewx', l, outSine)
+			me(156 + 16, 2, -20, 0, 'skewx', l, inSine)
+			
+			--THEN OUTRO
+			
+			--most of this is delt with in a perframe below
+			me(176, 200, 0, 50, 'flip', e, linear)
+			me(176, 200, 0, 40, 'stealth', e, inSine)
+			m(200, 10, '*-1 50 flip, *-1 40 stealth', l)
+			for i=176,200,4 do
+				me(i + 0.5, 0.5, -90, 0, 'tiny', l, inSine)
+				me(i + 1.75, 0.5, -90, 0, 'tiny', l, inSine)
+				me(i + 2.5, 0.5, -90, 0, 'tiny', l, inSine)
+			end
+			
+			-------------------MODS COMPLETE--------------------------------------------------------------
+			-----------------time for graphic!------------------------------------------------------------
+			function bglight()
+				return function()
+					pd_bgquad:diffusebottomedge(0.4, 0, 0.4, 1)
+					pd_bgquad:accelerate(2 * 60/128)
+					pd_bgquad:diffusebottomedge(0.2, 0, 0.2, 1)
+				end
+			end
+			
+			m2(0, function()
+				pd_bgquad:decelerate(4 * 60/128)
+				pd_bgquad:diffuse(0.1, 0, 0.1, 1)
+			end)
+			m2(7.5, bglight())
+			--[[ scrapped idea of having the Funny Vaporwave Sun in the bg
+			m2(7.5, function()
+				pd_funnysun:zoom(0.6)
+				--pd_funnysun:hidden(0)
+				pd_funnysun:glow(1, 1, 1, 0.9)
+				pd_funnysun:decelerate(7 * 60/128)
+				pd_funnysun:glow(1, 1, 1, 0)
+				pd_funnysun:y(sh/4)
+			end, true)
+			
+			function sunthing(h)
+				return function()
+					pd_funnysun:glow(1, 1, 1, 0.4)
+					pd_funnysun:zoom(0.7)
+					pd_funnysun:linear(1 * 60/128)
+					pd_funnysun:glow(1, 1, 1, 0)
+					pd_funnysun:zoom(0.6)
+					pd_funnysun:x(math.sin(((h) % 16) * math.pi / 8) * sw/4 + sw/2)
+					--print(math.sin((h % 8) * math.pi / 4) * sw/4 + sw/2)
+				end
+			end
+			for i=16,176 do
+				m2(i, sunthing(i))
+			end
+			]]
+			
+			m2(14, function()
+				pd_buildings1:decelerate(1 * 60/128)
+				pd_buildings1:y(sh - 240)
+				pd_bgquad:diffuse(0.1, 0, 0.1, 1)
+				pd_bgquad:diffusebottomedge(0.2, 0, 0.2, 1)
+			end, true)
+			--beat 16: accelerate texcoordvelocity (in perframe)
+			m2(16, bglight())
+			m2(47, function()
+				pd_buildings1:accelerate(1 * 60/128)
+				pd_buildings1:y(sh + 240)
+			end)
+			for i=16,48 do
+				m2(i, function()
+					pd_buildings1:diffuse(0.35, 0.05, 0.35, 1)
+					pd_buildings1:decelerate(1 * 60/128)
+					pd_buildings1:diffuse(0.3, 0.0, 0.3, 1)
+				end)
+			end
+			m2(48, bglight())
+			m2(48, function()
+				pd_buildings1:hidden(1)
+				pd_buildings2:hidden(1)
+				pd_gridsprite:y(sh*2.5)
+				pd_gridsprite:hidden(0)
+				pd_gridsprite:decelerate(4 * 60/128)
+				pd_gridsprite:y(sh * 4/5)
+				
+				pd_gridsprite2:y(sh*-1.5)
+				pd_gridsprite2:hidden(0)
+				pd_gridsprite2:decelerate(4 * 60/128)
+				pd_gridsprite2:y(sh * 1/5)
+			end)
+			
+			m2(110, function()
+				pd_gridsprite:decelerate(1 * 60/128)
+				pd_gridsprite:y(sh * 2.5)
+				pd_gridsprite2:decelerate(1 * 60/128)
+				pd_gridsprite2:y(sh * -1.5)
+				pd_buildings2:texcoordvelocity(0.1, 0)
+			end)
+			m2(111, function() -- this was initially gonna happen on falling down, but i moved it
+				pd_gridsprite:hidden(1)
+				
+				pd_buildings1:rotationz(90)
+				pd_buildings1:x(-240)
+				pd_buildings1:y(sh/2)
+				pd_buildings1:zoomx(1.5)
+				pd_buildings1:zoomy(1)
+				pd_buildings1:hidden(0)
+				
+				pd_buildings2:rotationz(-90)
+				pd_buildings2:x(sw + 240)
+				pd_buildings2:y(sh/2)
+				pd_buildings2:zoomx(1.5)
+				pd_buildings2:zoomy(1)
+				pd_buildings2:hidden(0)
+				
+				pd_buildings1:decelerate(1 * 60/128)
+				pd_buildings1:x(240)
+				pd_buildings1:texcoordvelocity(-0.06, 0)
+				
+				pd_buildings2:decelerate(1 * 60/128)
+				pd_buildings2:x(sw - 240)
+				pd_buildings2:texcoordvelocity(0.06, 0)
+			end, true)
+			for i=112,176 do
+				m2(i, function()
+					pd_buildings1:diffuse(0.35, 0.05, 0.35, 1)
+					pd_buildings1:decelerate(1 * 60/128)
+					pd_buildings1:diffuse(0.3, 0.0, 0.3, 1)
+					
+					pd_buildings2:diffuse(0.35, 0.05, 0.35, 1)
+					pd_buildings2:decelerate(1 * 60/128)
+					pd_buildings2:diffuse(0.3, 0.0, 0.3, 1)
+				end)
+			end
+			m2(112, bglight())
+			m2(144, bglight())
+			m2(176, bglight())
+			m2(176, function()
+				pd_buildings1:accelerate(38 * 60/128)
+				pd_buildings1:x(-240)
+				
+				pd_buildings2:accelerate(38 * 60/128)
+				pd_buildings2:x(sw + 240)
+			end)
+			
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			self:queuecommand('Update');
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				
+				--name players, judgment and combo
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				checked = true; --let this only run once
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i=1,2 do
+						mod_do('clearall',i)
+					end
+				end
+				
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if beat >=v[1] then
+								if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = '';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+						end
+					end
+				end
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods2) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if mod_time >=v[1] then
+								if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = 'error';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+						end
+					end
+				end
+				
+				--------------------------------------------------------------------------------------
+				-- i dont know who this reader is but he looks like he is made out of EASE HAHAHAHA --
+				-- original code by exschwasion, bastardized by taro for cmod support and less 'if' --
+				--------------------------------------------------------------------------------------
+				for i,v in pairs(mods_ease) do
+					if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+						if beat >=v[1] then
+							if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+								
+								local duration = v[2];
+								if v[6] == 'end' then duration = v[2] - v[1] end
+								local curtime = beat - v[1]
+								local diff = v[4] - v[3]
+								local startstrength = v[3]
+								local curve = v[7]
+								local mod = v[5]
+								
+								local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+							
+								local strength = v[4]
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							end
+						end
+					else
+						SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+					end
+				end
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				if beat > 176 and beat < 208 then
+					local a = (beat - 176) / 8
+					for plr=1,2 do
+						local p = Plr(plr)
+						for i=0,10 do
+							local effect = (i/5) / (1 + (i/5))
+							for arrow=0,3 do
+								p:SetXSpline(i, arrow, effect * a * 100 * ((2 * arrow/3) - 1), i*60, -1)
+							end
+						end
+					end
+				end
+				
+				if beat > 16 and beat < 17 then
+					a = (beat - 16) * 0.04
+					pd_buildings1:texcoordvelocity(a, 0)
+				end
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+						if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+							if type(mod_actions[curaction][2]) == 'function' then
+								mod_actions[curaction][2]()
+							elseif type(mod_actions[curaction][2]) == 'string' then
+								MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+							end
+						end
+						curaction = curaction+1;
+					end
+				end
+				
+			end
+			
+			self:sleep(0.02);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	<!--Handling messages here is still fun and profitable-->
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) rb_aux = self end"
+	/>
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = mod_globaloffset+tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+
+	<Layer Type="ActorFrame" 
+		FOV=110
+		InitCommand="%function(self) 
+			pd_bgframe = self
+		end">
+	<children>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="%function(self)
+			self:hidden(0)
+			self:SetWidth(SCREEN_WIDTH)
+            self:SetHeight(SCREEN_HEIGHT)
+			self:x(SCREEN_CENTER_X)
+            self:y(SCREEN_CENTER_Y)
+			self:diffuse(0.0, 0.0, 0.0, 0)
+			pd_bgquad = self
+		end"
+	/>
+	<Layer
+        Type="Sprite"
+		Texture="funnysun.png"
+        InitCommand="%function(self)
+			-- the sun do be funny tho
+			self:x(SCREEN_CENTER_X)
+            self:y(SCREEN_CENTER_Y)
+			self:hidden(1)
+			pd_funnysun = self
+        end"
+    />
+	<Layer
+        Type="Sprite"
+		Texture="gridtile.png"
+        InitCommand="%function(self)
+            self:x(SCREEN_CENTER_X)
+            self:y(sh * 4/5)
+			self:z(-140)
+			self:customtexturerect(0, 0, 24, 8)
+			self:SetWidth(sw*3)
+			self:SetHeight(sw)
+			self:rotationx(-80)
+			self:hidden(1) -- probably gonna have this pop in during falling down
+			self:texcoordvelocity(0.2, -0.05)
+			self:diffuse(0.4, 0.0, 0.4, 1)
+			self:diffusebottomedge(0.6, 0.2, 0.6, 1)
+			pd_gridsprite = self
+        end"
+    />
+	<Layer
+        Type="Sprite"
+		Texture="gridtile.png"
+        InitCommand="%function(self)
+            self:x(SCREEN_CENTER_X)
+            self:y(sh * 1/5)
+			self:z(-140)
+			self:customtexturerect(0, 0, 24, 8)
+			self:SetWidth(sw*3)
+			self:SetHeight(sw)
+			self:rotationx(80)
+			self:hidden(1) -- probably gonna have this pop in during falling down
+			self:texcoordvelocity(0.2, -0.05)
+			self:diffuse(0.4, 0.0, 0.4, 1)
+			self:diffusetopedge(0.6, 0.2, 0.6, 1)
+			pd_gridsprite2 = self
+        end"
+    />
+	<Layer
+        Type="Sprite"
+		Texture="buildings.png"
+        InitCommand="%function(self)
+			self:x(SCREEN_CENTER_X)
+            self:y(sh + 240)
+			self:zoomy(1.5)
+			self:texturewrapping(1)
+			self:hidden(0)
+			self:diffuse(0.3, 0.0, 0.3, 1)
+			pd_buildings1 = self
+        end"
+    />
+	<Layer
+        Type="Sprite"
+		Texture="buildings.png"
+        InitCommand="%function(self)
+			--just gonna set it up identically to buildings1
+			self:x(SCREEN_CENTER_X)
+            self:y(sh + 240)
+			self:zoomy(1.5)
+			self:texturewrapping(1)
+			self:hidden(0)
+			self:diffuse(0.3, 0.0, 0.3, 1)
+			pd_buildings2 = self
+        end"
+    />
+	
+	
+	</children>
+	</Layer>
+	
+	<Layer
+		Type = "ActorProxy"
+		OnCommand="queuecommand,Ready"
+		ReadyCommand="%function(self)
+			pd_P1ap1 = self;
+			self:hidden(1)
+			if P1 then
+				self:SetTarget(Plr(1))
+			end
+		end"
+	/>
+	<Layer
+		Type = "ActorProxy"
+		OnCommand="queuecommand,Ready"
+		ReadyCommand="%function(self)
+			pd_P2ap1 = self;
+			self:hidden(1)
+			if P2 then
+				self:SetTarget(Plr(2))
+			end
+		end"
+	/>
+	<Layer
+		Type = "ActorProxy"
+		OnCommand="queuecommand,Ready"
+		ReadyCommand="%function(self)
+			pd_P1ap2 = self
+			self:hidden(1)
+			if P1 then
+				self:SetTarget(Plr(1))
+			end
+		end"
+	/>
+	<Layer
+		Type = "ActorProxy"
+		OnCommand="queuecommand,Ready"
+		ReadyCommand="%function(self)
+			pd_P2ap2 = self
+			self:hidden(1)
+			if P2 then
+				self:SetTarget(Plr(2))
+			end
+		end"
+	/>
+	
+	
+	<Layer
+        Type="ActorFrameTexture"
+        InitCommand="%function(self)
+            self:SetWidth(1*DISPLAY:GetDisplayWidth())
+            self:SetHeight(1*DISPLAY:GetDisplayHeight())
+            self:EnableDepthBuffer(false)
+            self:EnableAlphaBuffer(false)
+            self:EnableFloat(false)
+            self:EnablePreserveTexture(true)
+            self:Create()
+			
+			pd_aft = self
+        end"
+    />
+	
+	<Layer
+        Type="Sprite"
+        InitCommand="%function(self)
+            self:basezoomx(1*(SCREEN_WIDTH/DISPLAY:GetDisplayWidth()))
+            self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()))
+            self:x(SCREEN_CENTER_X)
+            self:y(SCREEN_CENTER_Y)
+			self:SetTexture(pd_aft:GetTexture())
+			self:hidden(1)
+			
+			pd_aftSprite = self
+        end"
+    />
+	
+</children></ActorFrame>

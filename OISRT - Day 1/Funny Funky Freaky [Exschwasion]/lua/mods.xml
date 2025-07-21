@@ -1,0 +1,810 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	math.randomseed(54351829230)
+	card {0, 36, 'funny', 6, {.5,.5,.9}}
+	card {36, 100, 'funky', 6, {.7,.9,.4}}
+	card {100, 132, 'freaky', 6, {.9,.4,.7}}
+	card {132, 148, 'funky', 6, {.7,.9,.4}}
+	card {148, 180, 'funny', 6, {.5,.5,.9}}
+	card {180, 212, 'bogos binted?', 6, {.7,.9,.4}}
+	card {212, 244, 'freaky', 6, {.9,.4,.7}}
+	card {244, 261, 'funky', 6, {.7,.9,.4}}
+	
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+		P[pn]:GetChild('Judgment'):GetChild(''):Load(GAMESTATE:GetCurrentSong():GetSongDir()..'lua/img/funny 2x6.png')
+		PJ[pn]:zoom(.6)
+		PC[pn]:zoom(.8)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+	-- your code goes here here here here here here here here here here here here here here here here here here here here here here here here here here here here here here here here here here here:
+	
+	citybg:SetTexture(city_bg_tex:GetTexture())
+	frame_sprite:SetTexture(frame_tex:GetTexture())
+	frame_sprite:xy(0, 0)
+	for i, v in ipairs(photo) do
+		v:zoom(.6)
+		local sprite = v:GetChildAt(1)
+		sprite:SetTexture(photo_tex:GetTexture())
+		sprite:xy(0, 0)
+	end
+	
+	setdefault {2.5, 'xmod', 100, 'dizzyholds', 100, 'stealthtype', 100, 'stealthpastreceptors', 100, 'approachtype', 100, 'modtimer', 100, 'halgun', 300, 'arrowpathgirth', 100, 'hidemines', 100, 'disablemines'}
+	set{0, 200, 'tiny0', 200, 'tiny1', 200, 'tiny2', 200, 'tiny3'}
+	set{0, -SCREEN_WIDTH * .25, 'realx', plr = 1}
+	set{0, SCREEN_WIDTH * .25, 'realx', plr = 2}
+	
+	set {0, 100, 'orient', 50, 'drawsize', 50, 'gayholds'}
+	
+	definemod {'alternut', function(p)
+		return p, -p, p, -p
+	end, 'movey0', 'movey1', 'movey2', 'movey3'}
+	definemod {'alternutz', function(p)
+		return p, -p, p, -p
+	end, 'movez0', 'movez1', 'movez2', 'movez3'}
+	
+	local kickmult = 1
+	local snaremult = 1
+	local cymbalmult = 1
+	for i, v in ipairs({{4.000,0,1},{4.500,0,1},{5.000,1,1},{5.750,2,1},{6.500,0,1},{7.000,1,1},{7.500,3,1},{8.000,0,1},{8.500,0,1},{8.500,3,1},{9.000,1,1},{9.750,2,1},{10.250,2,1},{10.500,0,1},{10.750,0,1},{11.000,1,1},{11.000,2,1},{11.250,0,1},{11.750,2,1},{12.000,0,1},{12.500,0,1},{12.500,3,1},{13.000,1,1},{13.750,2,1},{14.500,0,1},{15.000,1,1},{15.500,3,1},{16.000,0,1},{16.500,0,1},{16.500,3,1},{17.000,1,1},{17.750,0,1},{18.250,1,1},{18.500,1,1},{18.750,1,1},{19.000,1,1},{20.000,0,1},{20.500,0,1},{21.000,1,1},{21.750,2,1},{22.500,0,1},{23.000,1,1},{23.500,3,1},{24.000,0,1},{24.500,0,1},{24.500,3,1},{25.000,1,1},{25.750,2,1},{26.250,2,1},{26.500,0,1},{26.750,0,1},{27.000,1,1},{27.000,2,1},{27.250,0,1},{27.750,2,1},{28.000,0,1},{28.500,0,1},{29.000,1,1},{29.750,2,1},{30.500,0,1},{31.000,1,1},{31.500,3,1},{32.000,0,1},{32.500,0,1},{32.500,3,1},{33.000,1,1},{33.750,0,1},{180.000,0,1},{180.500,0,1},{181.000,1,1},{181.750,2,1},{182.500,0,1},{183.000,1,1},{183.500,3,1},{184.000,0,1},{184.500,0,1},{184.500,3,1},{185.000,1,1},{185.750,2,1},{186.250,2,1},{186.500,0,1},{186.750,0,1},{187.000,1,1},{187.000,2,1},{187.250,0,1},{187.750,2,1},{188.000,0,1},{188.500,0,1},{188.500,3,1},{189.000,1,1},{189.750,2,1},{190.500,0,1},{191.000,1,1},{191.500,3,1},{192.000,0,1},{192.500,0,1},{192.500,3,1},{193.000,1,1},{193.750,0,1},{194.250,1,1},{194.500,1,1},{194.750,1,1},{195.000,1,1},{196.000,0,1},{196.500,0,1},{197.000,1,1},{197.750,2,1},{198.500,0,1},{199.000,1,1},{199.500,3,1},{200.000,0,1},{200.500,0,1},{200.500,3,1},{201.000,1,1},{201.750,2,1},{202.250,2,1},{202.500,0,1},{202.750,0,1},{203.000,1,1},{203.000,2,1},{203.250,0,1},{203.750,2,1},{204.000,0,1},{204.500,0,1},{205.000,1,1},{205.750,2,1},{206.500,0,1},{207.000,1,1}}) do
+		local beat = v[1]
+		local col = v[2]
+		if col == 0 then
+			add {beat, .1, outExpo, 10, 'flip'}
+			ease {beat+.1, .9, linear, 0, 'flip'}
+			kickmult = -kickmult
+		elseif col == 1 then
+			set {beat, -100, 'tiny'}
+			ease {beat, 1, outQuad, 0, 'tiny'}
+		elseif col == 2 then
+			set {beat, 15 * snaremult, 'alternut'}
+			ease {beat, 1, outQuad, 0, 'alternut'}
+			snaremult = -snaremult
+		else
+			ease {beat, 1, pop, 50 * cymbalmult, 'noteskew'}
+			cymbalmult = -cymbalmult
+		end
+	end
+	
+	set {2.75, -200, 'tiny0'}
+	ease {2.75, 1, outQuad, 0, 'tiny0'}
+	set {3, -200, 'tiny3'}
+	ease {3, 1, outQuad, 0, 'tiny3'}
+	set {3.5, 0, 'tiny1', 0, 'tiny2', -200, 'movey1', -200, 'movey2'}
+	ease {3.5, 1, outBack, 0, 'movey1', 0, 'movey2'}
+	set {4, -300, 'tiny0', -300, 'tiny1', -300, 'tiny2', -300, 'tiny3'}
+	ease {4, 2, outQuad, 0, 'tiny0', 0, 'tiny1', 0, 'tiny2', 0, 'tiny3'}
+	
+	func {2.75, 1, outCirc, 1, 0, function(p) bg_orbs:croptop(p) end}
+	func {34, 2, outCirc, 1, 0, function(p) bg_stripe:croptop(p) end}
+	
+	ease {21.75, 1.75, outCirc, 300, 'parabolax'}
+	ease {29.75, 1.75, outCirc, -300, 'parabolax'}
+	ease {33.75, 1.75, outCirc, 0, 'parabolax'}
+	for i = 0, 3 do
+		ease {20 + 4 * i, 1.75, bounce, 50, 'brake'}
+		ease {20 + 4 * i, 3.5, inOutExpo, 50 - 50 * (i%2*2-1), 'reverse'}
+		ease {21.75 + 4 * i, 1.75, outExpo, 100 * (i%2*2-1), 'tipsy'}
+		ease {23.5 + 4 * i, 0.5, inSine, 0, 'tipsy'}
+	end
+	
+	definemod{'realx', function(p, pn)
+		local a = P[pn]
+		if a then a:x(SCREEN_CENTER_X + p) end
+	end}
+	
+	ease {34.25, 1.75, inSine, 0, 'realx', -50, 'movex', 20, 'wave', plr = 1}
+	ease {34.25, 1.75, inSine, 0, 'realx', 50, 'movex', -20, 'wave', plr = 2}
+	ease {34.25, 1.75, inSine, -50, 'flip', 100, 'bouncez'}
+	
+	local function slapit(beat)
+		for i = 0, 3 do
+			set {beat + .25 * i, -200, 'tiny'..i}
+			ease {beat + .25 * i, 0.75, outSine, 0, 'tiny'..i}
+		end
+	end
+	slapit(18.25)
+	slapit(34.25)
+	slapit(50.25)
+	slapit(66.25)
+	slapit(82.25)
+	slapit(98.25)
+	
+	ease {52, 14, bounce, 314, 'dizzy'}
+	ease {98, 2, outQuad, 0, 'wave', 0, 'flip', 0, 'movex'}
+	ease {52, 12, inSine, -20, 'rotationx', -10, 'reverse'}
+	ease {66.25, .75, outSine, 0, 'rotationx', 0, 'reverse'}
+	
+	for i = 0, 7 do
+		for pn = 1, 2 do
+			local mult = (pn * 2 - 3) * (i%2*2-1)
+			ease {36 + 4 * i, .5, outExpo, 25 * mult, 'movey', plr = pn}
+			ease {36.5 + 4 * i, .5, outExpo, 0, 'movey', plr = pn}
+			ease {37 + 4 * i, .5, outExpo, -25 * mult, 'movey', plr = pn}
+			if i%4 == 3 then
+				ease {37.5 + 4 * i, .25, outExpo, 12 * mult, 'movey', plr = pn}
+				ease {37.75 + 4 * i, .25, outExpo, 0, 'movey', plr = pn}
+			else
+				ease {37.5 + 4 * i, .5, outExpo, 0, 'movey', plr = pn}
+				ease {38 + 4 * i, 0.75, outExpo, 50 * mult, 'movey', plr = pn}
+				ease {38.75 + 4 * i, 0.75, outCirc, 50 * mult, 'movex', plr = pn}
+				ease {39.5 + 4 * i, .5, outExpo, 0, 'movey', plr = pn}
+			end
+		end
+	end
+	
+	ease {34.25, 1.75, inSine, 30, 'mini'}
+	ease {36, 1, outSine, 200, 'zoomz'}
+	--set {36, 200, 'tiny1', 200, 'tiny3', plr = 1}
+	--set {36, 200, 'tiny0', 200, 'tiny2', plr = 2}
+	
+	definemod {'zorder', function(p)
+		for pn = 1, #PP do
+			PP[pn]:z(p * (pn%2*2-1))
+		end
+	end}
+	
+	
+	local function stripme(beat, num, l)
+		func {beat, 1, outCirc, 1, 0, function(p)
+			strip[num]:cropright(p)
+			strip[num]:cropleft(0)
+			strip_d[num]:cropright(p)
+			strip_d[num]:cropleft(0)
+		end}
+		func {beat + (l or 3), 1, inCirc, 0, 1, function(p)
+			strip[num]:cropright(0)
+			strip[num]:cropleft(p)
+			strip_d[num]:cropright(0)
+			strip_d[num]:cropleft(p)
+		end}
+	end
+
+	--[[local function swipe(beat, obj, flip, l)
+		l = l or 3
+		func {beat, function(p) obj:rotationz(0) obj:y(SCREEN_CENTER_Y) obj:rotationy(flip and 180 or 0) end}
+		func {beat, 1, outCirc, -400, 0, function(p) obj:x(SCREEN_CENTER_X + p) obj:hidden(0) end}
+		func {beat + l, 1, inCirc, 0, 400, function(p) obj:x(SCREEN_CENTER_X + p) end}
+		func {beat + l + 1, function(p) obj:hidden(1) end}
+		for i = beat, beat + l, .5 do
+			local i, obj = i, obj
+			func {i, function()
+				local dir = i%2*2-1
+				local rotx,roty,rotz = obj:getrotation()
+				obj:addx(math.random() * 3 * dir)
+				obj:addy(math.random() * 3 * dir)
+				obj:rotationz(math.random() * dir + rotz)
+			end}
+		end
+	end
+	for i = 0, 3 do
+		local flip = i%2==1
+		swipe(16 * i + 36, exschwasion, flip)
+		swipe(16 * i + 40, mars, flip)
+		swipe(16 * i + 44, kaede, flip)
+		if i ~= 3 then
+			swipe(16 * i + 48, holly, flip)
+		end
+	end
+	swipe(132, holly)
+	swipe(136, kaede)
+	swipe(140, kaelly)
+	swipe(244, mars)
+	swipe(248, exschwasion)
+	swipe(252, marswasion)]]
+	--[[local function peek(beat, obj, flip, l)
+		l = l or 3
+		local mult = flip and -1 or 1
+		func {beat, function(p) obj:rotationz(0) obj:y(SCREEN_CENTER_Y) obj:rotationy(flip and 180 or 0) end}
+		func {beat, 1, outCirc, -400 * mult, -150 * mult, function(p) obj:x(SCREEN_CENTER_X + p) obj:hidden(0) end}
+		func {beat + l, 1, inCirc, -150 * mult, -400 * mult, function(p) obj:x(SCREEN_CENTER_X + p) end}
+		func {beat + l + 1, function(p) obj:hidden(1) end}
+		for i = beat, beat + l, .5 do
+			local i, obj = i, obj
+			func {i, function()
+				local dir = i%2*2-1
+				local rotx,roty,rotz = obj:getrotation()
+				obj:addx(math.random() * 3 * dir)
+				obj:addy(math.random() * 3 * dir)
+				obj:rotationz(math.random() * dir + rotz)
+			end}
+		end
+	end
+	peek(152, exschwasion, true)
+	peek(156, mars)
+	peek(160, holly, true)
+	peek(164, kaede)
+	peek(168, marswasion, true)
+	peek(172, kaelly)]]
+	
+	for i = 0, 15 do
+		set {36 + 4 * i, i%2*2-1, 'zorder'}
+		stripme(36 + 4 * i, i%2+1, i == 15 and 1 or 3)
+	end
+	ease {51.5, .5, bounce, 100, 'drunkz'}
+	ease {52, 2, bounce, -100, 'drunkz'}
+	
+	
+	for i = 0, 7 do
+		ease {68 + 4 * i, 1.75, bounce, 50, 'brake'}
+		ease {68 + 4 * i, 3.5, inOutExpo, 50 - 50 * (i%2*2-1), 'reverse'}
+		ease {69.75 + 4 * i, 1.75, outExpo, 100 * (i%2*2-1), 'tipsy'}
+		ease {71.5 + 4 * i, 0.5, inSine, 0, 'tipsy'}
+	end
+	
+	for i = 0, 119 do
+		if not (i > 55 and i < 64) then
+			local pn = i%2+1
+			local col = math.floor(i/2)%4
+			set {68 + .25 * i, 20, 'arrowpath'..col, plr = pn}
+			ease {68 + .25 * i, .5, linear, 0, 'arrowpath'..col, plr = pn}
+			set {68 + .25 * i, 628 * (i%2*2-1), 'confusionoffset'..col, plr = pn}
+			ease {68 + .25 * i, 2, outCirc, 0, 'confusionoffset'..col, plr = pn}
+			set {68 + .25 * i, -70, 'tiny'..col, plr = pn}
+			ease {68 + .25 * i, 1, outQuad, 0, 'tiny'..col, plr = pn}
+			set {68 + .25 * i, 20, 'stealth'..col, plr = pn}
+			ease {68 + .25 * i, 1, outQuad, 0, 'stealth'..col, plr = pn}
+		end
+	end
+	
+	local function whistle(beat)
+		ease {beat, .5, outCirc, 80, 'tinyx', -80, 'tinyy'}
+		ease {beat + .5, .5, outCirc, -80, 'tinyx', 80, 'tinyy'}
+		ease {beat + 1, .5, inQuad, 0, 'tinyx', 0, 'tinyy'}
+	end
+	whistle(34.5)
+	whistle(66.5)
+	whistle(98.5)
+	whistle(146.5)
+	whistle(178.5)
+	whistle(210.5)
+	set {180, 50, 'stealth', -600, 'tinyz'}
+	ease {180, 4, linear, 0, 'stealth', 0, 'tinyz'}
+	
+	for i = 0, 7 do
+		set {36 + 4 * i, -100, 'tiny'}
+		ease {36 + 4 * i, 1, outSine, 0, 'tiny'}
+		set {36.5 + 4 * i, -100, 'tiny'}
+		ease {36.5 + 4 * i, 1, outSine, 0, 'tiny'}
+	end
+	
+	ease {96, 2, outQuad, 0, 'bouncez'}
+	
+	definemod {'citybg_diag', function(p)
+		citybg:GetShader():uniform1f('dist', 4.2 * (1 - p/100))
+	end}
+	
+	func {99, 2, inOutCirc, 1, 0, function(p) strip[3]:croptop(p) strip_d[3]:croptop(p) end}
+	func {126, 2, inCirc, 0, 1, function(p) strip[3]:croptop(p) strip_d[3]:croptop(p) end}
+	func {99, 29, linear, 0, 1, function(p)
+		cityback:x(350 * (p - .5))
+		cityfront:x(500 * (p - .5))
+	end}
+	ease {99, 2, inOutCirc, 100, 'citybg_diag'}
+	ease {126, 2, inOutCirc, 0, 'citybg_diag'}
+		
+		
+	func {211, 2, inOutCirc, 1, 0, function(p) strip[3]:croptop(p) strip_d[3]:croptop(p) end}
+	func {238, 2, inCirc, 0, 1, function(p) strip[3]:croptop(p) strip_d[3]:croptop(p) end}
+	func {211, 29, linear, 0, 1, function(p)
+		cityback:x(350 * (.5 - p))
+		cityfront:x(500 * (.5 - p))
+	end}
+	ease {211, 2, inOutCirc, 100, 'citybg_diag'}
+	ease {238, 2, inOutCirc, 0, 'citybg_diag'}
+	
+	definemod {'circradius', 'circangle', function(r, a, pn)
+		local x, z = math.sin(a * math.pi / 180) * r, math.cos(a * math.pi / 180) * r
+		if PP[pn] then
+			PP[pn]:x(x)
+			PP[pn]:z(z)
+			PP[pn]:rotationy(x*.1)
+		end
+		return x * .3, x * .7
+	end, 'bumpyx', 'parabolax'}
+	ease {98, 2, inOutSine, 180, 'circradius'}
+	ease {98, 2, inOutSine, 50, 'mini'}
+	set {98, 600, 'bumpyxperiod'}
+	set {98, 90, 'circangle', plr = 1}
+	set {98, 270, 'circangle', plr = 2}
+	ease {100, 28, linear, 360 * 2 + 90, 'circangle', plr = 1}
+	ease {100, 28, linear, 360 * 2 + 180 + 90, 'circangle', plr = 2}
+	
+	local colpairs = {{2, 3}, {0, 1}}
+	for i = 0, 2 do
+		local mult = 1-i%2*2
+		for j, v in colpairs do
+			for k, col in v do
+				ease {2*(j-1) + 100 + 8 * i, .75, bounce, -50*mult, 'movey'..col}
+				ease {2*(j-1) + 100 + 8 * i, .75, inCirc, 50, 'reverse'..col}
+				ease {2*(j-1) + 100.75 + 8 * i, .75, outCirc, 50+50*mult, 'reverse'..col}
+				ease {2*(j-1) + 100 + 8 * i, 1.5, bounce, -150, 'tiny'..col}
+			end
+		end
+		
+		if i < 2 then
+			ease {103.5 + 8 * i, 1, inOutCubic, -25, 'invert',  50, 'brake', 33, 'tiny'}
+			ease {104.5 + 8 * i, 1, inOutCubic, 25, 'invert', -50, 'brake', -50, 'tiny'}
+			ease {105.25 + 8 * i, 1, inOutCubic, 0, 'invert', 0, 'brake', 0, 'tiny'}
+		end
+	end
+	
+	for i = 0, 13 do
+		set {101 + 2 * i, (i%2*2-1)*50, 'noteskew'}
+		ease {101 + 2 * i, 1.5, linear, 0, 'noteskew'}
+	end
+	set {127.333, -50, 'noteskew'}
+	ease {127.333, .66, outSine, 0, 'noteskew'}
+	set {127.667, 50, 'noteskew'}
+	ease {127.667, .66, outSine, 0, 'noteskew'}
+	
+
+	ease {119.5, 1, inOutCubic, -33, 'invert', -50, 'brake', 33, 'tiny'}
+	ease {120.5, 1, inOutCubic, 33, 'invert', 0, 'brake', -50, 'tiny'}
+	ease {121.5, 1, inOutCubic, -50, 'invert', 50, 'brake', 33, 'tiny'}
+	ease {122.5, 1, inOutCubic, 50, 'invert', 0, 'brake', -50, 'tiny'}
+	ease {123.5, 1, inOutCubic, 0, 'invert', -50, 'brake', 33, 'tiny'}
+	ease {124.5, 2.5, linear, 0, 'brake', -50, 'tiny'}
+	ease {124, 4, bounce, 50, 'tornado', 20, 'orient'}
+	
+	for i = 0, 1 do
+		ease {112*i+128.5, .75, outExpo, 120, 'circradius', 0, 'mini'}
+		ease {112*i+129.25, .5, outExpo, 60, 'circradius'}
+		ease {112*i+129.75, .5, outExpo, 0, 'circradius'}
+		set {112*i+128.5, 50, 'brake'}
+		ease {112*i+128.5, .75, linear, 0, 'brake'}
+		set {112*i+129.25, 50, 'brake'}
+		ease {112*i+129.25, .5, linear, 0, 'brake'}
+		set {112*i+129.75, 50, 'brake'}
+		ease {112*i+129.75, .5, linear, 0, 'brake'}
+		set {112*i+128.5, -100, 'tiny'}
+		ease {112*i+128.5, .75, linear, 0, 'tiny'}
+		set {112*i+129.25, -100, 'tiny'}
+		ease {112*i+129.25, .5, linear, 0, 'tiny'}
+		set {112*i+129.75, -100, 'tiny'}
+		ease {112*i+129.75, .5, linear, 0, 'tiny'}
+		ease {112*i + 114.5, 1, bounce, 100, 'movez3'}
+		ease {112*i + 115, 1, bounce, 100, 'movez1'}
+		ease {112*i + 115.5, 1, bounce, 100, 'movez2'}
+		ease {112*i + 116, 1, bounce, 100, 'movez0'}
+	end
+	
+	local colpairs2 = {{0, 1}, {2, 3}}
+	for i = 0, 1 do
+		local mult = 1-i%2*2
+		for j, v in colpairs2 do
+			for k, col in v do
+				ease {2*(j-1) + 212 + 8 * i, .75, bounce, -50*mult, 'movey'..col}
+				ease {2*(j-1) + 212 + 8 * i, .75, inCirc, 50, 'reverse'..col}
+				ease {2*(j-1) + 212.75 + 8 * i, .75, outCirc, 50+50*mult, 'reverse'..col}
+				if i ~= 0 then
+					ease {2*(j-1) + 212 + 8 * i, 1.5, bounce, -150, 'tiny'..col}
+				end
+			end
+		end
+		
+		if i < 2 then
+			ease {215.5 + 8 * i, 1, inOutCubic, -25, 'invert',  50, 'brake', 33, 'tiny'}
+			ease {216.5 + 8 * i, 1, inOutCubic, 25, 'invert', -50, 'brake', -50, 'tiny'}
+			ease {217.25 + 8 * i, 1, inOutCubic, 0, 'invert', 0, 'brake', 0, 'tiny'}
+		end
+	end
+	
+	
+	for i = 0, 5 do
+		set {217 + 2 * i, (i%2*2-1)*50, 'noteskew'}
+		ease {217 + 2 * i, 1.5, linear, 0, 'noteskew'}
+	end
+	ease {210.5, .5, outCirc, 90, 'circradius', 25, 'mini'}
+	ease {211, 1, outCirc, 180, 'circradius', 50, 'mini'}
+	set {210, 600, 'bumpyxperiod'}
+	set {210, -90, 'circangle', plr = 1}
+	set {210, -270, 'circangle', plr = 2}
+	ease {212, 20, linear, -360 - 90, 'circangle', plr = 1}
+	ease {212, 20, linear, -360 - 180 - 90, 'circangle', plr = 2}
+	ease {228, 4, linear, 60, 'brake'}
+	ease {228, 4, bounce, 157, 'dizzy'}
+	set {220.75, 25, 'stealth'}
+	set {222.75, 25, 'stealth'}
+	ease {220.75, 2, outQuad, 628, 'confusionoffset', 0, 'stealth'}
+	ease {222.75, 2, outQuad, 0, 'confusionoffset', 0, 'stealth'}
+	for i = 0, 15 do
+		set {228 + .25 * i, -50 - i * 10, 'tiny'}
+		ease {228 + .25 * i, .4, linear, 0, 'tiny'}
+	end
+	for i = 0, 4 do
+		set {232.333 + .333*i, -100, 'tiny'}
+		ease {232.333 + .333*i, .5, linear, 0, 'tiny'}
+		add {232.333 + .333*i - .167, .333, inOutQuad, -180/5, 'circangle'}
+	end
+	set {234, -300, 'tiny'}
+	set {234.667, -300, 'tiny'}
+	set {235.333, -300, 'tiny'}
+	ease {234, 1, outQuad, 0, 'tiny'}
+	ease {234.667, 1, outQuad, 0, 'tiny'}
+	ease {235.333, 1, outQuad, 0, 'tiny'}
+	ease {232.333, 1.667, inOutSine, 0, 'brake'}
+	add {233.667, .667, inOutCirc, -60, 'circangle'}
+	add {234.333, .667, inOutCirc, -60, 'circangle'}
+	add {235, .667, inOutCirc, -60, 'circangle'}
+	ease {235.667, 4.333, inOutSine, -360 * 2.5 - 90, 'circangle', plr = 1}
+	ease {235.667, 4.333, inOutSine, -360 * 2.5 - 270, 'circangle', plr = 2}
+	ease {236, 4, bounce, 50, 'tornado', 20, 'orient'}
+	
+	--local nutz = {0, 0.25, 0.75, 1, 1.5, 1.75, 2.25, 2.5, 3, 3.5}
+	local nutz = {0, 0.75, 1.5, 2.25, 3, 3.5}
+	for j, v in ipairs(nutz) do
+		for i = 0, 6 do
+			ease {100 + 4 * i + v, .75, outExpo, 12 * (j%2*2-1), 'alternut'}
+			if i ~= 4 and i ~= 6 then
+				ease {216 + 4 * i + v, .75, outExpo, 12 * (j%2*2-1), 'alternut'}
+			end
+		end
+	end
+	ease {127.5, .5, outExpo, 0, 'alternut'}
+	ease {231.5, .5, outExpo, 0, 'alternut'}
+	ease {239.5, .5, outExpo, 0, 'alternut'}
+	ease {130.25, 1, inOutSine, 15, 'mini'}
+	set {130.25, 0, 'reverse', 100, 'reverse0', 100, 'reverse1', 100, 'reverse2', 100, 'reverse3'}
+	for col = 0, 3 do
+		ease {130.25 + .25 * col, .75, outQuad, 0, 'reverse'..col}
+		ease {242.25 + .25 * col, .75, outQuad, 100, 'reverse'..col}
+		
+	end
+	
+	
+	ease {130.5, 1.5, inOutSine, 0, 'realx', -50, 'movex', 30, 'wave', plr = 1}
+	ease {130.5, 1.5, inOutSine, 0, 'realx', 50, 'movex', -30, 'wave', plr = 2}
+	ease {130.5, 1.5, inOutSine, -50, 'flip', 150, 'bouncez'}
+	ease {146.25, 1.75, outQuad, 0, 'wave', 0, 'flip', 0, 'movex', 0, 'bouncez'}
+	slapit(146.25)
+	
+	for i = 0, 3 do
+		for pn = 1, 2 do
+			local mult = (pn * 2 - 3) * (i%2*2-1)
+			ease {132 + 4 * i, .5, outExpo, 25 * mult, 'movey', plr = pn}
+			ease {132.5 + 4 * i, .5, outExpo, 0, 'movey', plr = pn}
+			ease {133 + 4 * i, .5, outExpo, -25 * mult, 'movey', plr = pn}
+			if i%4 == 3 then
+				ease {133.5 + 4 * i, .25, outExpo, 12 * mult, 'movey', plr = pn}
+				ease {133.75 + 4 * i, .25, outExpo, 0, 'movey', plr = pn}
+			else
+				ease {133.5 + 4 * i, .5, outExpo, 0, 'movey', plr = pn}
+				ease {134 + 4 * i, 0.75, outExpo, 50 * mult, 'movey', plr = pn}
+				ease {134.75 + 4 * i, 0.75, outCirc, 50 * mult, 'movex', plr = pn}
+				ease {135.5 + 4 * i, .5, outExpo, 0, 'movey', plr = pn}
+			end
+		end
+		set {132 + 4 * i, i%2*2-1, 'zorder'}	
+		stripme(132 + 4 * i, i%2+1, i == 3 and 1 or 3)
+	end
+	for i = 0, 3 do
+		set {132 + 4 * i, -100, 'tiny'}
+		ease {132 + 4 * i, 1, outSine, 0, 'tiny'}
+		set {132.5 + 4 * i, -100, 'tiny'}
+		ease {132.5 + 4 * i, 1, outSine, 0, 'tiny'}
+	end
+	for i = 0, 5 do
+		set {141.5 + .5 * i, -100, 'tiny'}
+		ease {141.5 + .5 * i, 1, outSine, 0, 'tiny'}
+	end
+	
+	local colors = {
+		{1, .5, .8},
+		{.5, 1, .5},
+		{1, .95, .3},
+		{.5, .8, 1},
+	}
+	local color_step = 0
+	local function strippiano(beat, dir, x, l)
+		local color = colors[color_step % #colors + 1]
+		color_step = color_step + 1
+		func {beat, function()
+			strip_orb_d:x(x)
+			strip_orb:x(x)
+			strip_orb_d:diffuse(color[1]*.5, color[2]*.5, color[3]*.5, 1)
+			strip_orb:diffuse(color[1], color[2], color[3], 1)
+		end}
+		func {beat, 1, outCirc, 1, 0, function(p) for i, v in ipairs({strip_orb, strip_orb_d}) do
+			if dir > 0 then v:croptop(p) v:cropbottom(0)
+			else v:croptop(0) v:cropbottom(p) end
+		end end}
+		func {beat + (l or 3), 1, inQuad, 0, 1, function(p) for i, v in ipairs({strip_orb, strip_orb_d}) do
+			if dir > 0 then v:croptop(0) v:cropbottom(p)
+			else v:croptop(p) v:cropbottom(0) end
+		end end}
+	end
+	
+	strippiano(148, 1, SCREEN_CENTER_X)
+	strippiano(152, -1, SCREEN_CENTER_X - 100)
+	strippiano(156, 1, SCREEN_CENTER_X + 100)
+	strippiano(160, -1, SCREEN_CENTER_X - 120)
+	strippiano(164, 1, SCREEN_CENTER_X + 120)
+	strippiano(168, -1, SCREEN_CENTER_X - 100)
+	strippiano(172, 1, SCREEN_CENTER_X + 100)
+	strippiano(176, -1, SCREEN_CENTER_X, 1)
+	
+	func {146, 2, inOutSine, 0, 1, function(p) bg_stripe:cropbottom(p) bg_stripe:croptop(0) end}
+	ease {147, 1, linear, 1.5, 'xmod', -100, 'drawsizeback'}
+	for i = 0, 7 do
+		local mult = i%2*2-1
+		ease {148 + 4 * i, 1.75, bounce, 50, 'brake'}
+		ease {148 + 4 * i, 3.5, bounce, 2, 'xmod'}
+		ease {148 + 4 * i, 3.5, bounce, 50 * mult, 'drunk'}
+		ease {148 + 4 * i, 3.5, inOutExpo, 50 - 50 * mult, 'reverse'}
+		ease {149.75 + 4 * i, 1.75, outExpo, 100 * mult, 'tipsy'}
+		ease {151.5 + 4 * i, 0.5, inSine, 0, 'tipsy'}
+		
+		if i ~= 0 then
+			set {148 + 4 * i, -400 * mult, 'y'}
+		end
+		ease {148 + 4 * i, 2, outCirc, 0, 'y'}
+		if i ~= 7 then
+			ease {150 + 4 * i, 2, inQuad, 400 * mult, 'y'}
+		end
+	end
+	set {152, -100, 'x', -10, 'rotationy'}
+	set {156, 100, 'x', 10, 'rotationy'}
+	set {160, -120, 'x', -10, 'rotationy', 10, 'rotationx'}
+	set {164, 120, 'x', 10, 'rotationy', 10, 'rotationx'}
+	set {168, -100, 'x', -15, 'rotationz', 0, 'rotationx', 0, 'rotationy'}
+	set {172, 100, 'x', 15, 'rotationz', 0, 'rotationx', 0, 'rotationy'}
+	set {176, 0, 'x', 0, 'rotationz'}
+	slapit(178.25)
+	
+	set {147, 200, 'suddenoffset'}
+	ease {147, 1, linear, 100, 'sudden'}
+	ease {178, 2, inOutSine, 0, 'drawsizeback', 1.5, 'xmod', 0, 'mini'}
+	
+	func {179, 1, inOutSine, .5, 0, function(p)
+		bg_orbs:texcoordvelocity(-p, p)
+	end}
+	func {176, function()
+		photos:hidden(0)
+		for i = 2, #photo do
+			photo[i]:y(400)
+		end
+	end}
+	func {176, 4, inOutSine, 1, .5, function(p)
+		if photo[1] then photo[1]:zoom(p) end
+	end}
+	func {180, 6, inSine, 0, -400, function(p)
+		if photo[1] then photo[1]:y(p) end
+	end}
+	func {202, 6, outSine, 400, 0, function(p)
+		if photo[1] then photo[1]:y(p) end
+	end}
+	func {208, 4, inOutSine, .5, 1, function(p)
+		if photo[1] then photo[1]:zoom(p) end
+	end}
+	func {212, function()
+		photos:hidden(1)
+	end}
+	
+	func {176, 4, linear, 0, 1, function(p)
+		frame_sprite:GetShader():uniform1f('opacity', p)
+		frame_sprite:GetShader():uniform1f('sepiaAmount', p * .75)
+	end}
+	func {208, 4, linear, 1, 0, function(p)
+		frame_sprite:GetShader():uniform1f('opacity', p)
+		frame_sprite:GetShader():uniform1f('sepiaAmount', p * .75)
+	end}
+
+
+	for i = 0, 9 do
+		local which = i%8 + 2
+		local side = i%2*2-1
+		func {180 + 2 * i, function()
+			local p = photo[which]
+			if p then
+				p:zoom(.35 + .2 * math.random())
+				p:x(math.random(78, 230) * side)
+				p:rotationz(math.random(-5, 5))
+			end
+		end}
+		local offset = math.random(0, 100)
+		func {180 + 2 * i, 12, linear, 400 + offset, -400, function(y)
+			local p = photo[which]
+			if p then
+				p:y(y)
+			end
+		end}
+	end
+	for i = 0, 63 do
+		local i = i
+		func {176 + .5 * i, function()
+			for j, v in ipairs(photo) do
+				if j ~= 1 then
+					local dir = (i%2*2-1)*(j%2*2-1)
+					local rotx,roty,rotz = v:getrotation()
+					v:addx(math.random() * 3 * dir)
+					v:addy(math.random() * 3 * dir)
+					v:rotationz(math.random() * dir + rotz)
+				end
+			end
+		end}
+	end
+	local sprites = {exschwasion, mars, kaede, holly, marswasion, kaelly}
+	local xpos = {120, -220, 220, -100, 50, -200}
+	for i, v in ipairs(sprites) do
+		local side = i%2*2-1
+		local i, v = i, v
+		func {176 + 3 * i, function()
+			v:x(xpos[i])
+			v:y(400)
+			v:rotationz(math.random(-5, 5))
+			v:hidden(0)
+		end}
+		func {176 + 3.5 * i, 12, linear, 400, -400, function(y)
+			v:y(y)
+		end}
+		for j = 0, 63 do
+			local j = j
+			func {176 + .5 * j, function()
+				local dir = (i%2*2-1)*(j%2*2-1)
+				local rotx,roty,rotz = v:getrotation()
+				v:addx(math.random() * 3 * dir)
+				v:addy(math.random() * 3 * dir)
+				v:rotationz(math.random() * dir + rotz)
+			end}
+		end
+	end
+	
+	set {178, -50, 'drunkzspeed', 200, 'drunkzspacing'}
+	ease {178, 2, inOutSine, 80, 'wave', 160, 'drunkz'}
+	ease {206, 2, inOutSine, 0, 'wave', 0, 'drunkz'}
+	ease {178, 20, linear, 40, 'drunk'}
+	ease {198, 8, linear, 0, 'drunk'}
+	
+	for col = 0, 3 do
+		ease {195.25 + .25 * col - .5, 1, inOutExpo, 100, 'reverse'..col}
+		ease {208, 4, inOutQuad, 0, 'reverse'..col}
+	end
+	set {196, -80, 'mini'}
+	set {196.5, -80, 'mini'}
+	ease {196, 1, outQuad, 0, 'mini'}
+	ease {196.5, 1, outQuad, 0, 'mini'}
+	
+	set {208, -628, 'confusionoffset'}
+	ease {208, 4, inOutQuad, 0, 'confusionoffset', 2.5, 'xmod'}
+	
+	func {236, function() bg_stripe:cropbottom(0) bg_stripe:croptop(0) end}
+	ease {242.5, 1.5, inOutSine, 0, 'realx', -50, 'movex', 50, 'wave', plr = 1}
+	ease {242.5, 1.5, inOutSine, 0, 'realx', 50, 'movex', -50, 'wave', plr = 2}
+	ease {242.5, 1.5, inOutSine, -50, 'flip', 200, 'bouncez'}
+	for i = 0, 3 do
+		for pn = 1, 2 do
+			local mult = (pn * 2 - 3) * (i%2*2-1)
+			ease {244 + 4 * i, .5, outExpo, 25 * mult, 'movey', plr = pn}
+			ease {244.5 + 4 * i, .5, outExpo, 0, 'movey', plr = pn}
+			ease {245 + 4 * i, .5, outExpo, -25 * mult, 'movey', plr = pn}
+			if i%4 == 3 then
+				ease {245.5 + 4 * i, .25, outExpo, 12 * mult, 'movey', plr = pn}
+				ease {245.75 + 4 * i, .25, outExpo, 0, 'movey', plr = pn}
+			else
+				ease {245.5 + 4 * i, .5, outExpo, 0, 'movey', plr = pn}
+				ease {246 + 4 * i, 0.75, outExpo, 50 * mult, 'movey', plr = pn}
+				ease {246.75 + 4 * i, 0.75, outCirc, 50 * mult, 'movex', plr = pn}
+				ease {247.5 + 4 * i, .5, outExpo, 0, 'movey', plr = pn}
+			end
+		end
+		stripme(244 + 4 * i, i%2+1, i == 3 and 1 or 3)
+		set {244 + 4 * i, i%2*2-1, 'zorder'}
+	end
+	for i = 0, 3 do
+		set {244 + 4 * i, -100, 'tiny'}
+		ease {244 + 4 * i, 1, outSine, 0, 'tiny'}
+		set {244.5 + 4 * i, -100, 'tiny'}
+		ease {244.5 + 4 * i, 1, outSine, 0, 'tiny'}
+	end
+	for i = 0, 5 do
+		set {253.5 + .5 * i, -100, 'tiny'}
+		ease {253.5 + .5 * i, 1, outSine, 0, 'tiny'}
+	end
+	
+	for i = 0, 7 do
+		ease {148 + 4 * i, 1.75, bounce, 50, 'brake'}
+		ease {148 + 4 * i, 3.5, inOutExpo, 50 - 50 * (i%2*2-1), 'reverse'}
+		ease {149.75 + 4 * i, 1.75, outExpo, 100 * (i%2*2-1), 'tipsy'}
+		ease {151.5 + 4 * i, 0.5, inSine, 0, 'tipsy'}
+	end
+	
+	for col = 3, 0, -1 do
+		set {258.25 + .25 * col, -400, 'tiny'..col}
+		ease {258.25 + .25 * col, 1.5, outCirc, 0, 'tiny'..col}
+		ease {258.25 + .25 * col, .75, outCirc, 0, 'reverse'..col}
+	end
+end)"
+Type = "ActorFrame"
+><children>
+<Layer Type="Quad" OnCommand="%xero(function(self) self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT) self:diffuse(0, 0, 0, 1) self:clearzbuffer(1) end)" />
+	
+	<!-- city shit -->
+	<Layer File="img/sparkle" Name="bg_sparkle" OnCommand="%xero(function(self)
+		self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+		self:customtexturerect(0,0, SCREEN_WIDTH/SCREEN_HEIGHT * 5, 5)
+		self:texcoordvelocity(-.1, 0)
+		self:diffuse(.3, .8, 1, 1)
+	end)" />
+	<Layer Type="ActorFrame" Oncommand="%xero(function(self) self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y) end)" Name="cityscape"><children>
+		<Layer Name="cityback" File="img/cityback" OnCommand="%xero(function(self) self:zoom(.37) end)" />
+		<Layer Name="cityfront" File="img/city" OnCommand="%xero(function(self) self:zoom(.37) end)" />
+	</children></Layer>
+	<Layer Type="ActorFrameTexture" Name="city_bg_tex" InitCommand="%xero.aft" />
+	<Layer Type="Quad" OnCommand="%xero(function(self) self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT) self:diffuse(0, 0, 0, 1) self:clearzbuffer(1) end)" />
+	
+	<!-- scrolling bgs -->
+	<Layer File="img/orbs" Name="bg_orbs" OnCommand="%xero(function(self)
+		self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+		self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 5, 5)
+		self:texcoordvelocity(-.5, .5)
+		self:diffuse(.3, .7, .9, 1)
+		self:croptop(1)
+	end)" />
+	<Layer File="img/orbs" Name="strip_orb_d" OnCommand="%xero(function(self) self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 5,5) self:texcoordvelocity(-.5, .5) self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) self:diffuse(.5, 0.25, .4, 1) self:cropright(0.33) self:cropleft(0.33) self:croptop(1) self:clearzbuffer(1) end)" />
+	<Layer File="img/orbs" Name="strip_orb" OnCommand="%xero(function(self) self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 5,5) self:texcoordvelocity(-.5, .5) self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) self:diffuse(1, 0.5, .8, 1) self:cropright(0.35) self:cropleft(0.35) self:croptop(1) self:clearzbuffer(1) end)" />
+	<Layer Type="Quad" OnCommand="%xero(function(self) self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT) self:diffuse(0, 0, 0, .25) self:clearzbuffer(1) end)" />
+	<Layer File="img/stripe" Name="bg_stripe" OnCommand="%xero(function(self)
+		self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+		self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 10,10)
+		self:texcoordvelocity(0, -0.5)
+		self:diffuse(96/255,164/255,56/255, 1)
+		self:croptop(1)
+	end)" />
+	<Layer Type="Sprite" Name="citybg" OnCommand="%xero.sprite" Frag="shaders/diag.frag"/>
+	<Layer Type="ActorFrame" OnCommand="%xero(function(self) self:SetDrawByZPosition(true) end)"><children>
+		<Layer Type = "ActorProxy" Name = "PP[1]" />
+		<Layer Type = "ActorProxy" Name = "PP[2]" />
+		<Layer File="img/stripe" Name="strip_d[1]" OnCommand="%xero(function(self) self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 10,10) self:texcoordvelocity(0, -0.5) self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) self:diffuse(0.15, 0.3, .5, 1) self:croptop(0.28) self:cropbottom(0.28) self:cropright(1) self:cropleft(1) self:clearzbuffer(1) end)" />
+		<Layer File="img/stripe" Name="strip[1]" OnCommand="%xero(function(self) self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 10,10) self:texcoordvelocity(0, -0.5) self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) self:diffuse(0.3, 0.6, 1, 1) self:croptop(0.3) self:cropbottom(0.3) self:cropright(1) self:cropleft(1) self:clearzbuffer(1) end)" />
+		<Layer File="img/stripe" Name="strip_d[2]" OnCommand="%xero(function(self) self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 10,10) self:texcoordvelocity(0, -0.5) self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) self:diffuse(240/510,197/510,33/510, 1) self:croptop(0.28) self:cropbottom(0.28) self:cropleft(1) self:cropright(1) self:clearzbuffer(1) end)" />
+		<Layer File="img/stripe" Name="strip[2]" OnCommand="%xero(function(self) self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 10,10) self:texcoordvelocity(0, -0.5) self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) self:diffuse(240/255,197/255,33/255, 1) self:croptop(0.3) self:cropbottom(0.3) self:cropleft(1) self:cropright(1) self:clearzbuffer(1) end)" />
+		
+		<Layer File="img/stripe" Name="strip_d[3]" OnCommand="%xero(function(self) self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 10,10) self:texcoordvelocity(0, -0.5) self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) self:diffuse(.15, 0.3, .5, 1) self:cropright(0.38) self:cropleft(0.38) self:croptop(1) self:clearzbuffer(1) end)" />
+		<Layer File="img/stripe" Name="strip[3]" OnCommand="%xero(function(self) self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 10,10) self:texcoordvelocity(0, -0.5) self:stretchto(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) self:diffuse(.3, 0.6, 1, 1) self:cropright(0.4) self:cropleft(0.4) self:croptop(1) self:clearzbuffer(1) end)" />
+	</children></Layer>
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+
+	<Layer Type="ActorFrame" Name="photos" OnCommand="%xero(function(self) self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y) self:hidden(1) end)"><children>
+		<Layer Type="ActorFrameTexture" Name="frame_tex" InitCommand="%xero.aft" />	
+		<Layer Type="Quad" OnCommand="%xero(function(self) self:stretchto(-SCREEN_WIDTH,-SCREEN_HEIGHT,SCREEN_WIDTH,SCREEN_HEIGHT) self:diffuse(0, 0, 0, 1) self:clearzbuffer(1) end)" />
+		<Layer Type="Sprite" OnCommand="%xero.sprite" Name="frame_sprite" Frag="shaders/sepia.frag"/>
+		<Layer Type="ActorFrameTexture" Name="photo_tex" InitCommand="%xero.aft" />	
+		<Layer File="img/orbs" Name="bg_photos" OnCommand="%xero(function(self)
+			self:stretchto(-SCREEN_WIDTH * .5, -SCREEN_HEIGHT * .5, SCREEN_WIDTH * .5, SCREEN_HEIGHT * .5)
+			self:customtexturerect(0,0,SCREEN_WIDTH/SCREEN_HEIGHT * 5, 5)
+			self:texcoordvelocity(.5, -.5)
+			self:diffuse(.9, .7, .3, 1)
+		end)" />
+		<Layer Type="ActorFrame" Name="photo[1]"><children><Layer File="img/frame" OnCommand="%xero(function(self) self:xy(8, 8) self:zoom(.5) end)" /><Layer Type="Sprite" OnCommand="%xero.sprite"/></children></Layer>
+		<Layer Type="ActorFrame" Name="photo[2]"><children><Layer File="img/frame" OnCommand="%xero(function(self) self:xy(8, 8) self:zoom(.5) end)" /><Layer Type="Sprite" OnCommand="%xero.sprite"/></children></Layer>
+		<Layer Type="ActorFrame" Name="photo[3]"><children><Layer File="img/frame" OnCommand="%xero(function(self) self:xy(8, 8) self:zoom(.5) end)" /><Layer Type="Sprite" OnCommand="%xero.sprite"/></children></Layer>
+		<Layer Type="ActorFrame" Name="photo[4]"><children><Layer File="img/frame" OnCommand="%xero(function(self) self:xy(8, 8) self:zoom(.5) end)" /><Layer Type="Sprite" OnCommand="%xero.sprite"/></children></Layer>
+		<Layer Type="ActorFrame" Name="photo[5]"><children><Layer File="img/frame" OnCommand="%xero(function(self) self:xy(8, 8) self:zoom(.5) end)" /><Layer Type="Sprite" OnCommand="%xero.sprite"/></children></Layer>
+		<Layer Type="ActorFrame" Name="photo[6]"><children><Layer File="img/frame" OnCommand="%xero(function(self) self:xy(8, 8) self:zoom(.5) end)" /><Layer Type="Sprite" OnCommand="%xero.sprite"/></children></Layer>
+		<Layer Type="ActorFrame" Name="photo[7]"><children><Layer File="img/frame" OnCommand="%xero(function(self) self:xy(8, 8) self:zoom(.5) end)" /><Layer Type="Sprite" OnCommand="%xero.sprite"/></children></Layer>
+		<Layer Type="ActorFrame" Name="photo[8]"><children><Layer File="img/frame" OnCommand="%xero(function(self) self:xy(8, 8) self:zoom(.5) end)" /><Layer Type="Sprite" OnCommand="%xero.sprite"/></children></Layer>
+		<Layer Type="ActorFrame" Name="photo[9]"><children><Layer File="img/frame" OnCommand="%xero(function(self) self:xy(8, 8) self:zoom(.5) end)" /><Layer Type="Sprite" OnCommand="%xero.sprite"/></children></Layer>
+		
+		<Layer File="img/kaelly" Name="kaelly" OnCommand="%xero(function(self) self:hidden(1) self:xy(SCREEN_CENTER_X - 999, SCREEN_CENTER_Y) self:zoom(.33) end)"/>
+		<Layer File="img/marswashion" Name="marswasion" OnCommand="%xero(function(self) self:hidden(1) self:xy(SCREEN_CENTER_X - 999, SCREEN_CENTER_Y) self:zoom(.33) end)"/>
+		<Layer File="img/exschwasion" Name="exschwasion" OnCommand="%xero(function(self) self:hidden(1) self:xy(SCREEN_CENTER_X - 999, SCREEN_CENTER_Y) self:zoom(.28) end)"/>
+		<Layer File="img/holly" Name="holly" OnCommand="%xero(function(self) self:hidden(1) self:xy(SCREEN_CENTER_X - 999, SCREEN_CENTER_Y) self:zoom(.33) end)"/>
+		<Layer File="img/kaede" Name="kaede" OnCommand="%xero(function(self) self:hidden(1) self:xy(SCREEN_CENTER_X - 999, SCREEN_CENTER_Y) self:zoom(.33) end)"/>
+		<Layer File="img/mars" Name="mars" OnCommand="%xero(function(self) self:hidden(1) self:xy(SCREEN_CENTER_X - 999, SCREEN_CENTER_Y) self:zoom(.33) end)"/>
+	</children></Layer>
+	<Layer File="perc"/>
+</children></Mods>

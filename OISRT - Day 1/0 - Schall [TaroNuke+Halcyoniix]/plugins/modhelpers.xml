@@ -1,0 +1,195 @@
+<Plugin OnCommand = "%xero(function(self)
+	
+	math = setmetatable({}, {__index = _G.math})
+
+	math.mod = function(a, b)  return a - math.floor(a/b)*b end
+
+	math.clamp = function(val, min, max)
+		return math.min( math.max(val, min), max)
+	end
+
+	math.scale = function(val, in_min, in_max, out_min, out_max)
+		return out_min + (val-in_min)*(out_max-out_min)/(in_max-in_min)
+	end
+
+	math.dist = function(x1, x2, y1, y2)
+		local xd = x2 - x1
+		local yd = y2 - y1
+		return math.sqrt( xd * xd + yd * yd )
+	end
+
+	math.round = function(x)
+		return math.floor(x + 0.5)
+	end
+
+	spb = function(beat) return (1 / GAMESTATE:GetCurBPS()) * beat end
+	Plr = function(pn) if P[pn] then return P[pn] end end
+	realFov = function(fov) return 360 / math.pi * math.atan(math.tan(math.pi * fov / 360) * DISPLAY:GetDisplayWidth() / DISPLAY:GetDisplayHeight() * 0.75) end
+	randomxd = function(t) if t == 0 then return 0.5 else return (math.sin(t * 3229.3) * 43758.5453)%1 end end
+	ease2 = function(t)
+		local beat, len, curve, from, to, mod = t[1], t[2], t[3], t[4], t[5], t[6]
+		set {beat, from, mod, plr = t.	plr}
+		ease {beat, len, curve, to, mod, plr = t.plr}
+	end
+
+	--------------------------
+
+	hal = {}
+	hal.fluct = function(i) return math.mod(i,2)*2-1 end
+	hal.swap = function(t)
+		local beat, len, curve, which = t[1], t[2], t[3], t[4]
+		t.width = t.width or 1
+		local s = {
+			normal = {0,0},
+			invert = {0,100},
+			flip = {100,0},
+			ludr = {25,-75},
+			drlu = {25,125},
+			rdul = {75,75},
+			ulrd = {75,-125},
+			urld = {100,-100},
+		}
+		ease {beat, len, curve,
+			(s[tostring(which)][1]*t.width) + (50 - t.width * 50), 'flip',
+			(s[tostring(which)][2]*t.width), 'invert'
+		, plr = t.plr}
+	end
+	hal.rgba = function(t)
+		local r,g,b,a = t[1], t[2], t[3], t[4] or 255
+		return r/255, g/255, b/255, a/255
+	end
+	hal.msg = function(t)
+		MESSAGEMAN:Broadcast(t[1])
+		print(string.format('-> %s', t[1]))
+	end
+
+	hal.qcmd = function(t)
+		local obj, c = t[1], t[2]
+		if obj then
+			obj:queuecommand(c)
+		end
+	end
+
+	hal.between = function(t)
+		local a, b, c = t[1], t[2], t[3]
+		if a >= b and a <= c then return true end return false 
+	end
+
+	--------------------------
+
+	condor = {}
+	condor.const1 = math.sqrt(math.pow(SCREEN_WIDTH/2,2)+math.pow(SCREEN_HEIGHT/2,2))
+	condor.const2 = 180+math.deg(math.atan(SCREEN_HEIGHT/SCREEN_WIDTH))
+	condor.zoom = function(amt)
+		return
+		{
+			x = SCREEN_WIDTH/2 + (condor.const1 * amt * math.cos( (condor.const2) / 180 * math.pi )),
+			y = SCREEN_HEIGHT/2 + (condor.const1 * amt * math.sin( (condor.const2) / 180 * math.pi )),
+			zoom = amt
+		}
+	end
+	condor.rotation = function(ang)
+		return
+		{
+			x = SCREEN_WIDTH/2 + (condor.const1 * math.cos( (ang+condor.const2) / 180 * math.pi)),
+			y = SCREEN_HEIGHT/2 + (condor.const1 * math.sin( (ang+condor.const2) / 180 * math.pi)),
+			rot = ang
+		}
+	end
+	
+	--------------------------
+
+	oat = {}
+	oat.mix = function(t)
+		local curve_in, curve_out, p = t[1], t[2], t[3] or 0.5
+		return function(a)
+			if a < p then
+				return curve_in(a / p) * p
+			else
+				return curve_out((a - p) / (1 - p)) * (1 - p) + p
+			end
+		end
+	end
+
+	--------------------------
+
+	mojo = {}
+	mojo.reverse_rotation = function(angleX, angleY, angleZ)
+		local sinX,cosX,sinY,cosY,sinZ,cosZ = math.sin(angleX),math.cos(angleX),math.sin(angleY),math.cos(angleY),math.sin(angleZ),math.cos(angleZ)
+		return { math.atan2(-cosX*sinY*sinZ-sinX*cosZ,cosX*cosY), math.asin(-cosX*sinY*cosZ+sinX*sinZ), math.atan2(-sinX*sinY*cosZ-cosX*sinZ,cosY*cosZ) }
+	end
+
+	mojo.rotate_and_counter = function(xDegrees, yDegrees, zDegrees, player_or_object)
+		local DEG_TO_RAD = math.pi / 180
+		local angles = mojo.reverse_rotation(xDegrees * DEG_TO_RAD, yDegrees * DEG_TO_RAD, zDegrees * DEG_TO_RAD)
+		local str = ''
+		if type(player_or_object) == 'number' then
+			str = '*-1 '..xDegrees..' rotationx, *-1 '..
+			yDegrees..' rotationy, *-1 '..
+			zDegrees..' rotationz, '
+		else
+			if player_or_object then
+				player_or_object:rotationx(xDegrees)
+				player_or_object:rotationy(yDegrees)
+				player_or_object:rotationz(zDegrees)
+			end
+		end
+		str = str..'*-1 '..(angles[1]*100)..' confusionxoffset, *-1 '..
+		(angles[2]*100)..' confusionyoffset, *-1 '..
+		(angles[3]*100)..' confusionzoffset'
+
+		return str
+	end
+
+	mojo.getCounterRotation = function(xDegrees, yDegrees, zDegrees)
+		local DEG_TO_RAD = math.pi / 180
+		local angles = mojo.reverse_rotation(xDegrees * DEG_TO_RAD, yDegrees * DEG_TO_RAD, zDegrees * DEG_TO_RAD)
+		return {angles[1]*100, angles[2]*100, angles[3]*100}
+	end
+
+	mojo.axisRot = function(x,y,z,rad)
+		local st = math.sin(rad*.5)
+		local qx = x * st
+		local qy = y * st
+		local qz = z * st
+		local qw = math.cos(rad*.5)
+		local r2d = 180/math.pi
+		
+		return math.atan2(2 * (qy*qz + qw*qx), qw*qw - qx*qx - qy*qy + qz*qz) * r2d,
+			   math.asin(-2*(qx*qz - qw*qy)) * r2d,
+			   math.atan2(2*(qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz) * r2d
+	end
+	
+	--------------------------
+
+	taro = {}
+	taro.wiggle = function(t)
+		local beat, len, num, curve, amt1, amt2, mod, persist, sus, plr = t[1], t[2], t[3], t[4], type(t[5]) == 'table' and t[5][1] or t[5], type(t[5]) == 'table' and (t[5][2] or -t[5][1]) or -t[5], t[6]
+		local persist, sus, plr = t.persist, t.sus and len*(t.sus)/len or len, t.plr
+		for i = 0,num-1 do
+			local val = (i == 0 and amt1) or (math.mod(i,2) == 0 and (amt1-amt2) or (amt2-amt1))
+			add {beat+i*sus, len, curve, val, mod, plr = t.plr}
+		end
+		if not persist then
+			local val = math.mod(num,2) == 1 and -amt1 or -amt2
+			add {beat+num*sus, len, curve, val, mod, plr = t.plr}
+		end
+	end
+
+	taro.bounce = function(t)
+		local beat, len, curve_in, curve_out, amt, mod = t[1], t[2], t[3], t[4], t[5], t[6]
+		if type(mod) == 'function' then
+			func {beat, (len/2), curve_in, amt, mod}
+			func {beat+(len/2), len/2, curve_out, t.mirror and -amt or amt, 0, mod}
+		else
+			add {beat, len/2, curve_in, amt, mod, plr = t.plr}
+			if t.mirror then set {beat+(len/2), -amt, mod, plr = t.plr} end
+			add {beat+(len/2), len/2, curve_out, t.mirror and amt or -amt, mod, plr = t.plr}
+		end
+	end
+
+
+
+
+	
+end)" />

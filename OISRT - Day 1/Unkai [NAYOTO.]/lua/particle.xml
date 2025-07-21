@@ -1,0 +1,68 @@
+<ActorFrame><children>
+	<ActorFrame FOV="135" InitCommand="%function(self)
+		local function lerp(x,l,h) return x * (h - l) + l; end
+		local function minstd_rand(seed) local a,m = 48271,2147483647; return seed * a % m; end
+		local obj = {};
+		for i = 1,32 do
+			math.randomseed(minstd_rand((i-1)*7));
+			local t = {
+				-- x
+				lerp(math.random(),-SCREEN_WIDTH/2,SCREEN_WIDTH/2),
+				-- y
+				lerp(math.random(),-SCREEN_WIDTH/2,SCREEN_WIDTH/2),
+				-- z
+				lerp(math.random(),-SCREEN_WIDTH/2,SCREEN_WIDTH/2),
+				-- rotationx
+				lerp(math.random(),0,360),
+				-- rotationy
+				lerp(math.random(),0,360),
+				-- rotationz
+				lerp(math.random(),0,360),
+				-- diffusealpha
+				lerp(math.random(),0.25,0.75),
+			};
+			table.insert(obj,t);
+		end
+		local function Update(self,delta)
+			self:addrotationy(delta*6);
+			self:addrotationz(delta*8);
+		end
+		local function Draw(self)
+			local Triangle = self:GetChild('Triangle');
+			if Triangle then
+				for i,v in obj do
+					Triangle:x(v[1]);
+					Triangle:y(v[2]);
+					Triangle:z(v[3]);
+					Triangle:rotationx(v[4]);
+					Triangle:rotationy(v[5]);
+					Triangle:rotationz(v[6]);
+					Triangle:diffusealpha(v[7]);
+					Triangle:Draw();
+				end
+			end
+		end
+		self:SetUpdateFunction(Update);
+		self:SetDrawFunction(Draw);
+	end"><children>
+
+		<Layer
+			Type="Polygon"
+			Name="Triangle"
+			DrawMode="Triangles"
+			InitCommand="%function(self)
+				local unpack = unpack or table.unpack;
+				local t = {
+					{ -64,  64, 0 },
+					{  64,  64, 0 },
+					{   0, -64, 0 },
+				};
+				self:SetNumVertices(3);
+				for i,v in pairs(t) do
+					self:SetVertexPosition(i-1,unpack(v));
+				end
+			end"
+		/>
+
+	</children></ActorFrame>
+</children></ActorFrame>

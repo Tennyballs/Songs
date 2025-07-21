@@ -1,0 +1,1301 @@
+<!--shouting within the flow of time-->
+<Mods LoadCommand = "%xero(function(self)
+--SETUP========================================================================
+
+    if not P1 or not P2 then
+        backToSongWheel('Two Player Mode Required')
+        return
+    end
+
+    for pn = 1, #PP do
+        setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+        setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+        PP[pn]:SetTarget(P[pn])
+        P[pn]:SetFarDist(9999)
+        P[pn]:hidden(1)
+        PC[pn]:hidden(1)
+        PJ[pn]:hidden(1)
+    end
+
+    af:fov(30)
+    P[3]:SetInputPlayer(0)
+    P[4]:SetInputPlayer(1)
+
+--SHORTCUTS====================================================================
+
+    lin = linear
+    sinei, sineo, sines     = inSine, outSine, inOutSine
+    quadi, quado, quads     = inQuad, outQuad, inOutQuad
+    cubei, cubeo, cubes     = inCubic, outCubic, inOutCubic
+    quarti, quarto, quarts  = inQuart, outQuart, inOutQuart
+    quinti, quinto, quints  = inQuint, outQuint, inOutQuint
+    expoi, expoo, expos     = inExpo, outExpo, inOutExpo
+    circi, circo, circs     = inCirc, outCirc, inOutCirc
+    backi, backo, backs     = inBack, outBack, inOutBack
+    elasti, elasto, elasts  = inElastic, outElastic, inOutElastic
+
+    abs, asin, atan, atan2 = math.abs, math.asin, math.atan, math.atan2
+    cos, exp, floor, pow, sin = math.cos, math.exp, math.floor, math.pow, math.sin
+    rand = math.random
+    pi = math.pi
+    ph = math.pi*100
+    pd = ph/-180
+    scx, scy = SCREEN_CENTER_X, SCREEN_CENTER_Y
+    sw, sh = SCREEN_WIDTH, SCREEN_HEIGHT
+    top = SCREENMAN:GetTopScreen()
+
+--HELPERS======================================================================
+
+    function modulo(a, b)   return a - floor(a / b) * b end
+    function alt(n, mult)   return modulo(n, mult*2) * (2/mult) - 1 end
+    function altPn(pn)      return modulo(pn, 2) * 2 - 1 end
+
+    function stack(a, b)
+        return function(x) return b(a(x)) end
+    end
+
+    --oat's mixEase
+    function mix(e1, e2, p)
+        if not p then p = 0.5 end
+        return function(a)
+            if a < p then
+                return e1(a / p) * p
+            else
+                return e2((a - p) / (1 - p)) * (1 - p) + p
+            end
+        end
+    end
+
+    function hidecol(start, len, col, pn)
+        if type(col)=='number' then
+            acc{start, 100, 'stealth'..col, 100, 'dark'..col, 100, 'hidenoteflash'..col, plr=pn}
+            acc{start+len, -100, 'stealth'..col, -100, 'dark'..col, -100, 'hidenoteflash'..col, plr=pn}
+        else 
+            for i,v in ipairs(col) do
+                acc{start, 100, 'stealth'..v, 100, 'dark'..v, 100, 'hidenoteflash'..v, plr=pn}
+                acc{start+len, -100, 'stealth'..v, -100, 'dark'..v, -100, 'hidenoteflash'..v, plr=pn}
+            end
+        end
+    end
+
+    function flickerAlt(start, len, pn)
+        ease{start, len/2, instant, 80, 'stealth', 0, 'dark', 0, 'hidenoteflash'}
+        ease{start+len/2, len/2, instant, 100, 'stealth', 100, 'dark', 100, 'hidenoteflash'}
+    end
+
+    function textoggle(start, len, which)
+        func{start, function() which:hidden(0) end}
+        {start+len, function() which:hidden(1) end}
+    end
+
+    function shatoggle(start, len, which)
+        func{start, function()
+            xero[which..'Aft']:hidden(0)
+            xero[which..'Cov']:hidden(0)
+            xero[which]:hidden(0)
+        end}
+        {start+len, function()
+            xero[which..'Aft']:hidden(1)
+            xero[which..'Cov']:hidden(1)
+            xero[which]:hidden(1)
+        end}
+    end
+
+    function setshader(which)
+        xero[which..'Aft']:hidden(1)
+        xero[which..'Cov']:diffuse(0,0,0,1)
+        xero[which..'Cov']:xywh(scx,scy,sw,sh)
+        xero[which..'Cov']:hidden(1)
+        xero[which]:SetTexture(xero[which..'Aft']:GetTexture())
+        xero[which]:hidden(1)
+    end
+
+    function tweenshader(beat, len, ease, start_percent, target_percent, which, type)
+        func{beat, len, ease, start_percent, target_percent, function(p)
+            xero[which]:GetShader():uniform1f(type, p)
+        end}
+    end
+
+--INTRO========================================================================
+
+    setdefault{
+        330,'cmod', 100,'overhead', 100,'approachtype', 100,'dizzyholds',
+        100,'modtimer', 100,'stealthpastreceptors', 0,'mini', 100,'disablemines',
+        100,'hidemines', 100,'halgun', 100,'zbuffer'
+    }
+
+    PP[3]:hidden(1)
+    PP[4]:hidden(1)
+
+    black:stretchto(0,0,sw,sh)
+    black:diffuse(0,0,0,1)
+    black:hidden(0)
+
+    func{0,function() P[1]:x(scx) P[2]:x(scx) end}
+
+    --dpad. it's back babey. and it's also NOT fake
+    definemod{'dpad', function(n)
+        dir={{-1,0},{0,1},{0,-1},{1,0}}
+        for pn = 1,2 do
+            for c=0,3 do
+                P[pn]:SetXSpline(0, c, n*dir[c+1][1], 0, -1)
+                P[pn]:SetYSpline(0, c, n*dir[c+1][2], 0, -1)
+                P[pn]:SetXSpline(1, c, 0, 700, -1)
+                P[pn]:SetYSpline(1, c, 0, 700, -1)
+            end
+        end
+    end}
+
+    set{0, 50, 'reverse', 50, 'flip', 50, 'drawsize', 101, 'spiralholds', 460, 'z'}
+
+    ease{0, 12, stack(quadi,expoo), 0, 'z', -sh*0.015, 'y'}
+
+    ease{0, 16, sines, 220, 'dpad'}
+    add{0, 12, pop, 50, 'dpad'}
+    add{8, 8, sines, 50, 'dpad'}
+
+    set{0, 200, 'mini'}
+    ease{0, 2, expoo, 0, 'mini'}
+    set{0, 50, 'tiny'}
+    add{0, 12, pop, -50, 'tiny'}
+    ease{8, 8, sines, 50, 'tiny'}
+
+    for i=0,15 do
+        add{i, 0.75, elasto.params(1.3,0.7), 45/2, 'rotationz', plr=1}
+    end
+
+    set{0, 100, 'dark', plr=2}
+    ease{12, 4, lin, 100, 'dark', plr=1}
+
+    set{0, 100, 'stealth'}
+    ease{12, 4, lin, 0, 'stealth', plr=2}
+    ease{12, 4, tap, 410, 'cmod'}
+    for i=12,15 do
+        a = alt(i,1)
+        flicker{i, 0.65, 80, 20, 'stealth', fps=30, plr=2}
+        flicker{i, 0.65, a*20, -a*20, 'noteskewx', fps=25, plr=2}
+        flicker{i, 0.65, 0, -20, 'tiny', fps=20, plr=2}
+        flicker{i, 0.65, 410, 370, 'cmod', fps=60, plr=2}
+        flicker{i, 0.65, 0, 50, 'arrowpath2', fps=25, plr=1}
+        flicker{i, 0.65, 0, 500, 'arrowpathgirth', fps=25, plr=1}
+        ease{i, 1, pop, -a*ph/8, 'twirl', plr=2}
+        ease{i, 1, pop, -a*ph/16, 'dizzy', plr=2}
+    end
+
+    set{0, 100, 'boost', 100, 'sudden', 150, 'suddenoffset',}
+
+--CLOCK========================================================================
+
+    dynaclock = P1:GetNoteData(16,47.5)
+
+    hidecol(16, 60, {0,1,3}, 1)
+
+    set{16, 500, 'drunkperiod', 500, 'drunkyperiod'}
+    ease{16, 4, circo, -1000, 'parabolaz'}
+    for i,v in ipairs(dynaclock) do
+        a = alt(i,1)
+        add{v[1], 6, popElastic.params(1.5,2), a*ph/5, 'confusionzoffset'..v[2],plr=2}
+        add{v[1], 4, popElastic.params(1.5,2),
+            a*ph/9, 'confusionxoffset'..v[2],
+            a*ph/9, 'confusionyoffset'..v[2],
+            -300, 'tiny'..v[2],
+            20, 'drunkperiod'..v[2],
+            20, 'drunkyperiod'..v[2],
+        plr=2}
+        if ( v[2]==1 or v[2]==2 ) then
+            add{v[1], 4, popElastic.params(1.5,2), -100, 'drunk'..v[2], plr=2}
+        else
+            add{v[1], 4, popElastic.params(1.5,2), -100, 'drunky'..v[2], plr=2}
+        end
+        dir={{-1,0},{0,1},{0,-1},{1,0}}
+        add{v[1], 4, popElastic.params(1.5,2), dir[v[2]+1][1]*50, 'movex'..v[2], plr=2}
+        add{v[1], 4, popElastic.params(1.5,2), dir[v[2]+1][2]*50, 'movey'..v[2], plr=2}
+    end
+
+    func{16, 32, function(b)
+        for c=0,3 do
+            P[1]:SetXSpline(0, c, 0, 0, -1)
+            P[1]:SetYSpline(0, c, -270, 0, -1)
+            P[1]:SetXSpline(1, c, 0, 700, -1)
+            P[1]:SetYSpline(1, c, 0, 700, -1)
+            P[1]:SetXSpline(2, c, 0, 1400, -1)
+            P[1]:SetYSpline(2, c, 270, 1400, -1)
+        end
+    end}
+    set{12, 30, 'arrowpathdrawsize', plr=1}
+    set{16, 50, 'arrowpath2', 100, 'hidenoteflash', 500, 'arrowpathgirth', 100, 'stealth', 50, 'dark', plr=1}
+    ease{74, 2, lin, 0, 'arrowpath2', plr=1}
+
+    for i=16,75 do
+        add{i, 0.75, elasto.params(1.3,0.7), 45/4, 'rotationz', plr=1}
+    end
+    for i=16,47 do
+        func{i, 0.75, popElastic.params(1.3,0.7), 0, 100, 'top:z'}
+    end
+
+--BUILD========================================================================
+
+    set{48, 300, 'arrowcull', plr=2}
+
+    func{41, function() P[3]:SetAwake(true) end}
+    func{42, function() PP[3]:hidden(0) end}
+
+    hide{41, 7, plr=3}
+    set{41, 530, 'movez', 100, 'hidenoteflash', 100, 'dark', plr=3}
+    set{47, 0, 'hidenoteflash', plr=3}
+    ease{44, 8, expos, 0, 'movez', 50, 'dark',plr=3}
+
+    for i=48,62,2 do
+        a = alt(i,2)
+        ease{i, 2, impulse, 20, 'mini', plr=3}
+        ease{i, 3.4, impulse.params(1), 60, 'brake', plr=3}
+        ease{i, 2, impulse.params(1), a*30, 'dizzy', plr=3}
+        add{i-1, 2, cubes, a*12, 'movey', plr=3}
+    end
+
+    for i=64,71.5,1 do
+        a = alt(i,1)
+        add{i, 1, impulse, 30, 'mini', plr=3}
+        ease{i, 3, impulse.params(1), 30, 'brake', plr=3}
+        ease{i, 2, impulse.params(1), a*30, 'dizzy', plr=3}
+        add{i+0.5, 1, expoo, -15, 'brake', plr=3}
+        add{i-0.5, 1, cubes, a*6*(i-63), 'movey', plr=3}
+    end
+
+    for i=64,71.5,0.5 do
+        add{i, 0.8, pop, 3*(i-63), 'mini', plr=3}
+    end
+
+    set{72, 0, 'brake', plr=3}
+    for i=72,75.75,0.25 do
+        a = alt(i,0.25)
+        add{i, 0.5, pop, 4*(i-63), 'mini', plr=3}
+        add{i-0.125, 0.25, sines, a*5.5*(i-63), 'movey', plr=3}
+    end
+
+    add{70, 6, backi, -300, 'movey', plr=3}
+    ease{70, 6, lin, 200, 'tornado', plr=3}
+    set{72, 10000, 'longholds', plr=3}
+    add{70, 6, quadi, 720, 'trueroty', plr=3}
+    hide{76, 16, plr=3}
+    func{76, function() PP[3]:hidden(1) end}
+    func{80, function() P[3]:SetAwake(false) end}
+
+    --definemod version of brothermojo's counterrotation function
+    definemod{'truerotx','trueroty','truerotz', function(x, y, z)
+        deg2rad = pi/180
+        ax, ay, az = deg2rad*x, deg2rad*y, deg2rad*z
+        sinX, cosX = sin(ax), cos(ax)
+        sinY, cosY = sin(ay), cos(ay)
+        sinZ, cosZ = sin(az), cos(az)
+        confusionxoffset = 100 * atan2(-cosX*sinY*sinZ-sinX*cosZ,cosX*cosY)
+        confusionyoffset = 100 * asin(-cosX*sinY*cosZ+sinX*sinZ)
+        confusionzoffset = 100 * atan2(-sinX*sinY*cosZ-cosX*sinZ,cosY*cosZ)
+        return x, y, z, confusionxoffset, confusionyoffset, confusionzoffset
+    end,
+    'rotationx', 'rotationy', 'rotationz',
+    'confusionxoffset', 'confusionyoffset', 'confusionzoffset'}
+
+    ease{48, 0.4, expoo, 0, 'parabolaz'}
+
+    add{40, 16, expos, -400, 'z'}
+    add{40, 8, expoi, 85, 'stealth', 35, 'dark'}
+
+    add{48, 28, lin, 100, 'cmod'}
+    add{48, 28, lin, 200, 'zoomz'}
+
+    ease{48, 28, bounce, -75, 'flip', plr=3}
+    ease{48, 28, bounce, 75, 'invert', plr=3}
+    ease{48, 28, bounce, -100, 'attenuatex', plr=3}
+
+    add{48, 8, circo, -40, 'rotationx'}
+    add{48, 8, circo, -20, 'rotationy'}
+    add{52, 24, sinei, -500, 'rotationx'}
+    add{48, 28, sinei, 20, 'rotationy'}
+    add{48, 28, expoi, 4*360, 'rotationz'}
+    add{74, 2, expoi, 2*360, 'rotationz', -1000, 'dpad', 1000, 'tipsy', 1000, 'drunkz'}
+
+    add{74, 2, cubei, 900, 'z', plr={1,2,3}}
+
+    reset{76, 1, instant, plr={1,2,3}, exclude={'bgspeedx', 'bgy', 'bgytop'}}
+
+    swap{78, 1, instant, 'rldu'}
+    swap{78+1/6, 1, instant, 'lrdu'}
+    swap{78+2/6, 1, instant, 'ldru'}
+    swap{78+3/6, 1, instant, 'ldur'}
+
+    set{76, 80, 'stealth', 200, 'brake', 600, 'z'}
+    ease{76, 4, sineo, 0, 'brake'}
+    ease{76, 2, expoo, 0, 'z'}
+
+    ease{77, 2, instant, 100, 'reverse', plr=1}
+    ease{79, 1/2, instant, 0, 'reverse', plr=1}
+    ease{78, 1, instant, 100, 'alternate'}
+    ease{79, 1, instant, 0, 'alternate'}
+
+    flickerAlt(77, 1)
+    flickerAlt(78, 1/6)
+    flickerAlt(78+1/6, 1/6)
+    flickerAlt(78+2/6, 1/6)
+    flickerAlt(78+3/6, 0.5)
+    set{79, 0, 'stealth', 0, 'dark', 0, 'hidenoteflash'}
+
+    set{76, -250, 'movex', plr=1}
+    set{76, 250, 'movex', plr=2}
+    ease{79, 2, expos, 0, 'movex', plr=1}
+    ease{79, 2, expos, 0, 'movex', plr=2}
+
+--VERSE1=======================================================================
+
+    vrs1 = P1:GetNoteData(80,139)
+
+    for i,v in ipairs(vrs1) do
+        a = alt(i,1)
+        ease{v[1], 4, impulse.params(1.3), a*70, 'drunk'}
+        ease{v[1]-2, 4, pulse, -a*25, 'drunk'}
+        ease{v[1], 4, impulse.params(1.3), a*50, 'tipsy'}
+        ease{v[1]-2, 4, pulse, -a*20, 'tipsy'}
+    end
+
+    supc2l = {139,139.5,140,141,141.5,142,142.5,143,144}
+    for i,v in ipairs(supc2l) do
+        if i~=#supc2l then
+            len = supc2l[i+1] - v
+            a = alt(i,1)
+            ease{v-len/2, len, sines, -a*60, 'drunk'}
+            ease{v-len/2, len, sines, -a*40, 'tipsy'}
+        else
+            ease{v-1, 2, sines, 0, 'drunk'}
+            ease{v-1, 2, sines, 0, 'tipsy'}
+        end
+    end
+
+    for i=80,140,4 do
+        a = alt(i-80,4)
+        add{i, 4, bounce, a*60, 'orient'}
+    end
+    add{92, 2, sines, 300, 'orient'}{92+2, 2, sines, -300, 'orient'}
+    add{108, 2, sines, 250, 'orient'}{108+2, 2, sines, -250, 'orient'}
+    add{124, 2, sines, 300, 'orient'}{124+2, 2, sines, -300, 'orient'}
+    ease{140, 4, sines, 100, 'orient'}{144, 4, sines, 0, 'orient'}
+
+    set{79, -300, 'tiny'}
+    ease{79, 1, circo, 0, 'tiny'}
+
+    ease{79, 2, expos, sw*0.2, 'x', 50, 'mini'}
+
+    ease{79, 2, sines, 30, 'rotationy'}
+    add{80, 8, quads, -60, 'rotationy'}{88, 4, quads, 60, 'rotationy'}{92, 4, quads, -60, 'rotationy'}
+    add{80+16, 8, quads, 60, 'rotationy'}{88+16, 4, quads, -60, 'rotationy'}{92+16, 4, quads, 60, 'rotationy'}
+    add{80+32, 8, quads, 60, 'rotationy'}{88+32, 4, quads, -60, 'rotationy'}{92+32, 4, quads, 60, 'rotationy'}
+
+    add{90+16, 8, expos, 180, 'truerotx', -60, 'rotationy'}
+
+    add{86, 6, sines, 360, 'trueroty'}
+    {86+16, 6, sines, -360, 'trueroty'}
+    {86+32, 6, sines, -360, 'trueroty'}
+    
+    add{126, 15, sines, 180*3, 'truerotx', -30, 'rotationy', sw*0.2, 'x', -50, 'mini'}
+
+    add{92, 2, quarti, 50, 'zoomx'}{92+2, 2, quarto, -50, 'zoomx'}
+    {92+16, 2, quarti, 50, 'zoomx'}{92+2+16, 2, quarto, -50, 'zoomx'}
+    {92+32, 2, quarti, 50, 'zoomx'}{92+2+32, 2, quarto, -50, 'zoomx'}
+
+    add{80, 8, quads, sw*-0.4, 'x'}{88, 4, quads, sw*0.4, 'x'}{92, 4, expos, sw*-0.4, 'x'}
+    {80+16, 8, quads, sw*0.4, 'x'}{88+16, 4, quads, sw*-0.4, 'x'}{92+16, 4, expos, sw*0.4, 'x'}
+    {80+32, 8, quads, sw*-0.4, 'x'}{88+32, 4, quads, sw*0.4, 'x'}{92+32, 4, expos, sw*-0.4, 'x'}
+
+    func{79, 2, impulse, 0, 100, 'top:z'}
+
+    for i=81,143,2 do
+        set{i, -150, 'tiny'}
+        ease{i, 2, expoo, 0, 'tiny'}
+        func{i, 1.5, popElastic.params(1.3,0.7), 0, 100, 'top:z'}
+    end
+    for i=80,143,1 do
+        ease{i, 1, bounce, -8, 'y'}
+    end
+
+    acc{112, -300, 'tiny'}
+    add{112, 1, circo, 300, 'tiny'}
+
+--BUILD2=======================================================================
+
+    acc{144, -200, 'tiny'}
+    add{144, 1.5, expoo, 200, 'tiny'}
+    func{144, 2, popElastic.params(1.3,0.7), 0, 150, 'top:z'}
+
+    for i=144,155,1 do
+        a = alt(i,1)
+        add{i, 1, impulse, 30, 'mini'}
+        ease{i, 3, impulse.params(1), 30, 'brake'}
+        ease{i, 2, impulse.params(1), a*30, 'dizzy'}
+        add{i+0.5, 1, expoo, -15, 'brake'}
+        add{i-0.5, 1, cubes, a*6*(i-143), 'movey'}
+        add{i, 3, elasto.params(1,1.5), a*-35, 'skewx'}
+        ease{i, 2, popElastic.params(1,1.5), a*50, 'skewy'}
+    end
+
+    for i=144,155.5,0.5 do
+        add{i, 0.8, pop, 3*(i-143), 'mini'}
+    end
+
+    set{156, 0, 'brake'}
+    for i=156,158.75,0.25 do
+        a = alt(i,0.25)
+        add{i, 0.5, pop, 4*(i-144), 'mini'}
+        add{i-0.125, 0.25, sines, a*5.5*(i-144), 'movey'}
+    end
+
+    add{152, 6, cubes, 150, 'tornado'}{156, 4, sineo, -150, 'tornado'}
+    add{153, 7, cubes, 720, 'trueroty'}
+    add{144, 16, sines, scx*0.44, 'x'}
+
+    acc{159, -100, 'tiny'}
+    add{159, 1.5, expoo, 100, 'tiny'}
+    func{159, 2, popElastic.params(1.3,0.7), 0, 150, 'top:z'}
+    add{152, 8, sines, -140, 'movey', 50, 'mini'}
+    ease{152, 8, sines, 172, 'cmod'}
+
+--VERSE2=======================================================================
+
+    set{160, -90, 'drunkspeed', plr={1,2,3,4}}
+    for i=162,199,4 do
+        a = alt(i-162,4)
+        func{i, 2, popElastic.params(1.3,0.7), 0, 150, 'top:z'}
+        acc{i, -100, 'tiny', plr={1,2,3,4}}
+        add{i, 1.5, circo, 100, 'tiny', plr={1,2,3,4}}
+        add{i, 3, pop, a*50, 'drunk', plr={1,2,3,4}}
+        if i<=187 then add{i, 3, pop, 200, 'orient', plr={1,2,3,4}} end
+    end
+
+    ease{160, 12, lin, 100*12*(172/185), 'centered2', 100, 'cubicz', plr=1}
+
+    set{160, 100*-6*(172/185), 'centered2', scx*-0.16, 'x', 100, 'reverse', -140, 'movey', plr=2}
+        {160, 100, 'stealth', 100, 'dark', plr=2}
+    ease{160, 16, lin, 100*10*(172/185), 'centered2', 500, 'cubicz', plr=2}
+    ease{160, 4, sines, 0, 'stealth', 50, 'dark', plr=2}
+
+    func{162, function() P[3]:SetAwake(true) end}
+    func{164, function() PP[3]:hidden(0) end}
+
+    set{162, 100*-6*(172/185), 'centered2', scx*3.22, 'x', 140, 'movey', 50, 'mini', 172, 'cmod', plr=3}
+        {162, 100, 'stealth', 100, 'dark', plr=3}
+    ease{164, 14, lin, 100*8*(172/185), 'centered2', 300, 'cubicz', plr=3}
+    ease{164, 4, sines, 0, 'stealth', 50, 'dark', plr=3}
+
+    func{166, function() P[4]:SetAwake(true) end}
+    func{168, function() PP[4]:hidden(0) end}
+
+    set{166, 100*-6*(172/185), 'centered2', scx*2.60, 'x', 100, 'reverse', -140, 'movey', 50, 'mini', 172, 'cmod', plr=4}
+        {166, 100, 'stealth', 100, 'dark', plr=4}
+    ease{168, 14, lin, 100*8*(172/185), 'centered2', 300, 'cubicz', plr=4}
+    ease{168, 4, sines, 0, 'stealth', 50, 'dark', plr=4}
+
+    set{172, 100*-6*(172/185), 'centered2', scx*1.98, 'x', 140, 'movey', plr=1}
+        {172, 100, 'stealth', 100, 'dark', plr=1}
+    ease{172, 14, lin, 100*8*(172/185), 'centered2', 300, 'cubicz', plr=1}
+    ease{172, 4, sines, 0, 'stealth', 50, 'dark', plr=1}
+
+    set{176, 100*-6*(172/185), 'centered2', scx*1.36, 'x', 100, 'reverse', -140, 'movey', plr=2}
+        {176, 100, 'stealth', 100, 'dark', 0, 'cubicz', plr=2}
+    ease{176, 14, lin, 100*8*(172/185), 'centered2', 300, 'cubicz', plr=2}
+    ease{176, 4, sines, 0, 'stealth', 50, 'dark', plr=2}
+
+    add{160, 36, sines, 4*scx, 'x', plr={1,2,3,4}}
+    add{160, 36, sineo, 40, 'tipsy', plr={1,2,3,4}}
+
+    func{184, function() PP[4]:hidden(1) end}
+    reset{185, plr=4}
+    func{188, function() P[4]:SetAwake(false) end}
+
+    reset{179, plr=3}
+    set{180, 30, 'mini', plr=3}
+    add{180, 6, expoo, 0.5*scx, 'x', plr=3}
+    add{184, 12, sines, -0.5*scx, 'x', plr=3}
+    
+    add{181, 2, pop, -100, 'tipsy', plr=3}
+    add{182, 2, pop, 60, 'tipsy', plr=3}
+    add{183, 2, pop, -80, 'tipsy', plr=3}
+    add{184, 10, pop, 80, 'tipsy', plr=3}
+    ease{180, 5, sines, 360, 'trueroty', plr=3}
+
+    acc{184, -100, 'tiny', plr=3}
+    add{184, 1.5, circo, 100, 'tiny', plr=3}
+    ease{184, 7, pop, -50, 'truerotx', -20, 'truerotz',plr=3}
+
+    vrs2 = {187,188,189,190,191,193,195,196,197,198,199}
+    for i,v in ipairs(vrs2) do
+        a = alt(i,1)
+        add{v, 6, impulse.params(1.3), a*-200, 'drunkz', plr=3}
+        add{v-3, 6, pulse, a*50, 'drunkz', plr=3}
+        add{v, 6, impulse.params(1.3), a*-10, 'truerotz', a*-30, 'trueroty', plr=3}
+        add{v-3, 6, pulse, a*4, 'truerotz', a*8, 'trueroty', plr=3}
+    end
+
+    add{190, 3, sines, -360, 'trueroty', plr=3}
+    swap{190, 1.5, sines, 'ludr', plr=3}
+    swap{191.5, 1.5, sines, 'ldur', plr=3}
+
+    add{193, 11, bounce, 100, 'drunk', -70, 'tipsy', 20, 'orient', plr=3}
+
+    for i=200,203.5,0.5 do
+        add{i, 0.8, pop, -20*(i-199), 'z', plr=3}
+    end
+
+    add{199, 5, sinei, 40, 'truerotx', plr=3}
+    add{194, 10, backi, 1000, 'movex', -500, 'movey', plr=3}
+    add{196, 8, quadi, -2000, 'parabolax', 400, 'boost', 20, 'rotationz',plr=3}
+    hide{208, 4, plr=3}
+
+    func{203.9, function() PP[3]:hidden(1) end}
+    reset{204, 1, instant, exclude={'bgy', 'bgytop', 'movey', 'hidenoteflash', 'drawsizeback'}, plr={1,2,3}}
+    func{206, function() P[3]:SetAwake(false) end}
+
+--MAIN=========================================================================
+
+	func{200,function()
+        for pn=1,2 do
+            for col=0,3 do
+                P[pn]:SetNumStealthGradientPoints(col,1)
+                P[pn]:SetStealthGradientPoint(0,col,0)
+                P[pn]:SetStealthGradientColor(0,col,1,171/255,87/255,1)
+            end
+        end
+	end}
+
+    set{203, 600, 'movey', 100, 'hidenoteflash'}{207, 0, 'hidenoteflash'}
+    {204, 50, 'mini', 50, 'stealth', 80, 'dark'}
+    {204, -scx/1.7, 'x', plr=1}{204, scx/1.7, 'x', plr=2}
+    ease{204, 2, expoo, 0, 'movey'}{206, 4, expos, 0, 'stealth', 0, 'dark'}
+
+    set{204, 100, 'brake'}
+    ease{205, 3, sines, 0, 'brake'}
+
+    definemod{'circular', function(n, pn)
+        a = -altPn(pn)
+        xpos = a*cos(n*pi/180)*(scx/1.7)-a*(scx/1.7)
+        zz = a*sin(n*pi/180)
+        zpos = zz*200
+        if n==0 then xpos=0; zz=0; end
+        if pn<=2 then PP[pn]:z(zz+1.5) end
+        return xpos, zpos
+    end, 'x', 'z'}
+
+    ease{204, 4, expoi, 90, 'circular', plr={1,2}}
+    add{208, 4, expoo, 90, 'circular', plr={1,2}}{208, 56, lin, 360*(56/16), 'circular', plr={1,2}}
+    {260, 8, expos, -180, 'circular', plr={1,2}}{264, 48, lin, -360*(48/16), 'circular', plr={1,2}}
+    {312, 14, quado, -360*(8/16), 'circular', plr={1,2}}
+    ease{312, 12, sines, 0, 'x', plr=2}
+    ease{310, 16, cubes, sh*1.4, 'y', 80, 'mini', plr=1}{316, 10, quads, 0, 'mini', plr=2}
+
+    --don't worry. this was generated
+    mainc2l = {208,211,212,213,214,215,216,217.5,218,219.5,220,220.5,221,223,224,225,226,227,229,230,231,232,233.5,234,235,235.5,236,236.5,237,237.5,238,238.5,239,240,243,244,245,246,247,248,249.5,250,251,251.5,252,253,254,255,259,259.5,260,260.5,261,261.5,262,262.5,263,264,267,268,269,270,271,272,273.5,274,275.5,276,276.5,277,279,280,281,282,283,285,286,287,288,289.5,290,291,291.5,292,292.5,293,293.5,294,294.5,295,296,299,300,301,302,303,304,305.5,306,307,307.5,308,309,310,310.5,311}
+    for i,v in ipairs(mainc2l) do
+        if i~=#mainc2l then
+            len = mainc2l[i+1] - v
+        else
+            len = 1
+        end
+        a = alt(i,1)
+        ease{v-len/2, len, sines, a*70, 'drunk'}
+        ease{v-len/2, len, sines, a*50, 'tipsy'}
+    end
+
+    for i=208,311 do
+        add{i, 1, bounce, -30, 'movey'}
+    end
+    for i=209,308,2 do
+        func{i, 1, popElastic.params(1.3,0.7), 0, 50, 'top:z'}
+        add{i, 1, pop, -150, 'tiny'}
+    end
+
+    reset{326, exclude={'bgy', 'bgytop', 'bgspeedx', 'hidenoteflash'}, plr=1}
+
+--MAIN1========================================================================
+
+    --1: sakebi wa toki no nagare no naka ni
+    add{208, 4, pop, -20, 'rotationx', 600, 'zoomz', 100, 'gayholds'}
+
+    ease{212, 3, sines, 40, 'reverse', 70, 'movey', 30, 'orient'}
+        {214, 4, expos, 0, 'reverse', 0, 'movey', 0, 'orient'}
+
+    ease{216, 2, bounce, -60, 'skewy', 30, 'skewx', 200, 'orient'}
+    ease{218, 2, bounce, 60, 'skewy', -30, 'skewx', -200, 'orient'}
+    ease{220, 1, expoo, -60, 'skewy', 30, 'skewx', 200, 'orient'}
+        {221, 3, sines, 0, 'skewy', 0, 'skewx', 0, 'orient'}
+
+    --2: nomikomare
+    ease{223, 1, expoo, 170, 'zoomx', 20, 'reverse'}{224, 1, expoo, 100, 'zoomx', 0, 'reverse'}
+    main1xo = P1:GetNoteData(224,227)
+    set{224, -98, 'spiralxperiod'}
+    for i,v in ipairs(main1xo) do
+        a=-alt(i,1)
+        sk=a*(20+10*(i-1)) --talis vsgo girl??
+        rt=-a*(30+10*(i-1))
+        fof = {0.5, circi}
+        if i==4 then
+            fof = {1, sines}
+            add{v[1], 1, expoo, 20, 'zoomy'}{v[1]+1, 1, expoi, -20, 'zoomy'}
+            ease{v[1], 3, expoo, -a*360, 'trueroty'}
+        else
+            add{v[1], 0.5, circo, rt, 'rotationy', sk, 'skewx'}
+            {v[1]+0.5, 0.5, circi, -rt, 'rotationy', -sk, 'skewx'}
+        end
+        add{v[1], fof[1], circo, a*5, 'spiralx', -10, 'reverse'..v[2], -50, 'tiny'..v[2], 6, 'spiralxperiod'}
+        {v[1]+fof[1], fof[1], fof[2], -a*5, 'spiralx', 10, 'reverse'..v[2], 50, 'tiny'..v[2], -6, 'spiralxperiod'}
+    end
+    add{224, 3, tap, 10, 'flip'}
+
+    --3: hate ni todoku
+    ease{229, 2, sines, 30, 'reverse', 70, 'movey', 30, 'orient'}
+        {230, 4, expos, 0, 'reverse', 0, 'movey', 0, 'orient'}
+
+    ease{232, 2, bounce, -60, 'skewy', 30, 'skewx', -200, 'orient'}
+    ease{234, 1, expoo, 60, 'skewy', -30, 'skewx', 200, 'orient'}
+        {234, 2, sines, 0, 'skewy', 0, 'skewx', 0, 'orient'}
+
+    --4: kono koe ga kikoeru?
+    ease{234, 4, sineo, 100, 'orient', 400, 'drunkz'}{238, 4, expos, 0, 'orient', 0, 'drunkz'}
+
+    --5: kagami no mukou
+    add{32+208, 2, pop, -200, 'tiny'}
+    add{32+208, 4, pop, 20, 'rotationx', 300, 'zoomz', 150, 'tinyz', 100, 'gayholds'}
+
+    ease{32+212, 3, sines, 40, 'reverse', 70, 'movey', 30, 'orient'}
+        {32+214, 4, expos, 0, 'reverse', 0, 'movey', 0, 'orient'}
+
+    ease{32+216, 2, bounce, 60, 'skewy', -30, 'skewx', 200, 'orient'}
+    ease{32+218, 1, expoo, -60, 'skewy', 30, 'skewx', -200, 'orient'}
+        {32+218, 3, sines, 0, 'skewy', 0, 'skewx', 0, 'orient'}
+
+    --6: gawa ni furetakute
+    swap{251, 2, cubes, 'ludr'}
+    swap{252, 2, cubes, 'ulrd'}
+    swap{253, 2, cubes, 'ludr'}
+    swap{253, 4, cubes, 'ldur'}
+
+    ease{255, 3, sines, 40, 'reverse', 70, 'movey'}
+        {257, 4, sines, 0, 'reverse', 0, 'movey'}
+
+    --7: furueru te wo nobasu (blacksphere)
+    ease{259, 5, sineo, 200, 'orient', 400, 'drunkz'}{262, 4, expos, 0, 'orient', 0, 'drunkz'}
+
+--MAIN2========================================================================
+
+    --1: toozakatte yuku kioku no naka de
+    add{56+208, 4, pop, -20, 'rotationx', 600, 'zoomz', 100, 'gayholds'}
+
+    ease{56+212, 3, sines, 40, 'reverse', 70, 'movey', -30, 'orient'}
+        {56+214, 4, expos, 0, 'reverse', 0, 'movey', 0, 'orient'}
+
+    ease{56+216, 2, bounce, 60, 'skewy', -30, 'skewx', -200, 'orient'}
+    ease{56+218, 2, bounce, -60, 'skewy', 30, 'skewx', 200, 'orient'}
+    ease{56+220, 1, expoo, 60, 'skewy', -30, 'skewx', -200, 'orient'}
+        {56+221, 3, sines, 0, 'skewy', 0, 'skewx', 0, 'orient'}
+
+    --2: donna kotoba
+    ease{56+223, 1, expoo, 170, 'zoomx', 20, 'reverse'}{56+224, 1, expoo, 100, 'zoomx', 0, 'reverse'}
+    main2xo = P1:GetNoteData(280,283)
+    for i,v in ipairs(main2xo) do
+        a=-alt(i,1)
+        sk=-a*(20+10*(i-1)) --talis vsgo girl??
+        rt=a*(30+10*(i-1))
+        fof = {0.5, circi}
+        if i==4 then
+            fof = {1, sines}
+            add{v[1], 1, expoo, 20, 'zoomy'}{v[1]+1, 1, expoi, -20, 'zoomy'}
+            ease{v[1], 3, expoo, 0, 'trueroty'}
+        else
+            add{v[1], 0.5, circo, rt, 'rotationy', sk, 'skewx'}
+            {v[1]+0.5, 0.5, circi, -rt, 'rotationy', -sk, 'skewx'}
+        end
+        add{v[1], fof[1], circo, a*5, 'spiralx', -10, 'reverse'..v[2], -50, 'tiny'..v[2], 6, 'spiralxperiod'}
+        {v[1]+fof[1], fof[1], fof[2], -a*5, 'spiralx', 10, 'reverse'..v[2], 50, 'tiny'..v[2], -6, 'spiralxperiod'}
+    end
+    add{56+224, 3, tap, 10, 'flip'}
+
+    --3: yori mo ikiteita
+    ease{56+229, 2, sines, 30, 'reverse', 70, 'movey', -30, 'orient'}
+        {56+230, 4, expos, 0, 'reverse', 0, 'movey', 0, 'orient'}
+
+    ease{56+232, 2, bounce, 60, 'skewy', -30, 'skewx', 200, 'orient'}
+    ease{56+234, 1, expoo, -60, 'skewy', 30, 'skewx', -200, 'orient'}
+        {56+234, 2, sines, 0, 'skewy', 0, 'skewx', 0, 'orient'}
+
+    --4: akashi to toki wo
+    ease{56+234, 4, sineo, -100, 'orient', -400, 'drunkz'}{56+238, 4, expos, 0, 'orient', 0, 'drunkz'}
+
+    --5: fureta yubisaki
+    add{56+32+208, 2, pop, -200, 'tiny'}
+    add{56+32+208, 4, pop, 20, 'rotationx', 300, 'zoomz', 150, 'tinyz', 100, 'gayholds'}
+
+    ease{56+32+212, 3, sines, 40, 'reverse', 70, 'movey', -30, 'orient'}
+        {56+32+214, 4, expos, 0, 'reverse', 0, 'movey', 0, 'orient'}
+
+    ease{56+32+216, 2, bounce, -60, 'skewy', 30, 'skewx', -200, 'orient'}
+    ease{56+32+218, 1, expoo, 60, 'skewy', -30, 'skewx', 200, 'orient'}
+        {56+32+218, 3, sines, 0, 'skewy', 0, 'skewx', 0, 'orient'}
+
+    --6: tada kanjiteiru yo
+    swap{56+251, 2, cubes, 'dlur'}
+    swap{56+252, 2, cubes, 'ldru'}
+    swap{56+253, 2, cubes, 'ldur'}
+
+    add{309, 1, bounce, 8, 'movey'}
+    add{310, 1, bounce, 16, 'movey'}
+    add{311, 1, bounce, 24, 'movey'}
+
+    func{309, 1, popElastic.params(1.3,0.7), 0, 38, 'top:z'}
+    add{309, 1, pop, -120, 'tiny'}
+    func{310, 1, popElastic.params(1.3,0.7), 0, 24, 'top:z'}
+    add{310, 1, pop, -80, 'tiny'}
+    func{311, 1, popElastic.params(1.3,0.7), 0, 10, 'top:z'}
+    add{311, 1, pop, -40, 'tiny'}
+
+    ease{312.5, 8, sines, 0, 'drunk', 0, 'tipsy'}
+
+    for i=314,322,4 do
+        func{i, 1, popElastic.params(1.3,0.7), 0, 50, 'top:z'}
+        set{i, -200, 'tiny'}
+        ease{i, 2, circo, 0, 'tiny'}
+    end
+    for i=310,322,4 do
+        a= alt(i-310,4)
+        add{i, 2, sines, a*50, 'drunk'}{i, 2, sines, -a*30, 'tipsy'}
+        add{i+2, 2, sines, -a*50, 'drunk'}{i+2, 2, sines, a*30, 'tipsy'}
+    end
+
+    ease{314, 6, sinei, -70, 'rotationz', -500, 'movez', plr=1}
+
+    add{312, 2, sines, 20, 'rotationz', plr=2}{314, 2, sinei, -20, 'rotationz', plr=2}
+    {4+312, 2, sineo, -20, 'rotationz', plr=2}{4+314, 2, sinei, 20, 'rotationz', plr=2}
+    {8+312, 2, sineo, 20, 'rotationz', plr=2}{8+312, 4, sines, -20, 'rotationz', plr=2}
+
+    add{312, 6, circo, 60, 'brake', plr=2}{318, 6, circi, -60, 'brake', plr=2}
+
+    swap{313, 2, expos, 'udlr', plr=2}{314, 2, expos, 'ldur', plr=2}
+    {4+313, 2, expos, 'lrud', plr=2}{4+314, 2, expos, 'ldur', plr=2}
+    {8+313, 2, expos, 'ludr', plr=2}{8+314, 2, expos, 'ldur', plr=2}
+
+    --7: sekai no hate de
+    set{324, -200, 'tiny'}
+    ease{324, 2, circo, 0, 'tiny'}
+
+    lastc2l = {323,323.5,324,325,326,326.5,327,328}
+    for i,v in ipairs(lastc2l) do
+        if i~=#lastc2l then
+            len = lastc2l[i+1] - v
+            a = alt(i,1)
+            ease{v-len/2, len, sines, a*50, 'drunk', plr=2}
+            ease{v-len/2, len, sines, a*80, 'tipsy', plr=2}
+        else
+            ease{v+2, 2, sines, 0, 'drunk', plr=2}
+            ease{v+2, 2, sines, 0, 'tipsy', plr=2}
+        end
+    end
+    add{323, 8, pop, 100, 'orient', plr=2}
+
+--END==========================================================================
+
+    hidecol(326, 2, {0,1,2,3}, 1)
+
+    ease{327, 2, expos, 270, 'dpad', 50, 'reverse', 50, 'flip',
+    50, 'drawsize', 101, 'spiralholds', 50, 'tiny', -sh*0.015, 'y'}
+    ease{327, 2, expos, 50, 'arrowpath2', 500, 'arrowpathgirth', plr=1}
+
+    hidecol(328, 60, {0,1,3}, 1)
+
+    func{328, 30, function(b)
+        for c=0,3 do
+            P[1]:SetXSpline(0, c, 0, 0, -1)
+            P[1]:SetYSpline(0, c, -270, 0, -1)
+            P[1]:SetXSpline(1, c, 0, 700, -1)
+            P[1]:SetYSpline(1, c, 0, 700, -1)
+            P[1]:SetXSpline(2, c, 0, 1400, -1)
+            P[1]:SetYSpline(2, c, 270, 1400, -1)
+        end
+    end}
+    set{326.5, 30, 'arrowpathdrawsize', -100, 'arrowpathdrawsizeback', plr=1}
+    set{325, 100, 'hidenoteflash', plr=1}{327, 100, 'stealth', 50, 'dark', plr=1}
+
+    for i=328,359 do
+        add{i, 0.75, elasto.params(1.3,0.7), -45/4, 'truerotz', plr=2}
+    end
+
+    dynaclock2 = P1:GetNoteData(344,349)
+
+    set{332, 500, 'drunkperiod', 500, 'drunkyperiod'}
+    set{328, 100, 'boost', 100, 'sudden', 150, 'suddenoffset',}
+
+    for i,v in ipairs(dynaclock2) do
+        a = alt(i,1)
+        add{v[1], 6, popElastic.params(1.5,2), a*ph/5, 'confusionzoffset'..v[2],plr=2}
+        add{v[1], 4, popElastic.params(1.5,2),
+            a*ph/9, 'confusionxoffset'..v[2],
+            a*ph/9, 'confusionyoffset'..v[2],
+            -300, 'tiny'..v[2],
+            20, 'drunkperiod'..v[2],
+            20, 'drunkyperiod'..v[2],
+        plr=2}
+        if ( v[2]==1 or v[2]==2 ) then
+            add{v[1], 4, popElastic.params(1.5,2), -100, 'drunk'..v[2], plr=2}
+        else
+            add{v[1], 4, popElastic.params(1.5,2), -100, 'drunky'..v[2], plr=2}
+        end
+        dir={{-1,0},{0,1},{0,-1},{1,0}}
+        add{v[1], 4, popElastic.params(1.5,2), dir[v[2]+1][1]*50, 'movex'..v[2], plr=2}
+        add{v[1], 4, popElastic.params(1.5,2), dir[v[2]+1][2]*50, 'movey'..v[2], plr=2}
+    end
+
+    for i=328,359 do
+        add{i, 0.75, elasto.params(1.3,0.7), -45/4, 'truerotz', plr=2}
+    end
+
+    add{350, 10, cubei, -5, 'rotationx'}
+    add{350, 10, cubei, 5, 'rotationy'}
+    add{350, 10, cubei, 12, 'rotationz'}
+    add{350, 10, cubei, 500, 'zoomz'}
+    func{350, 10, cubei, 30, 120, 'af:fov'}
+
+    ease{328, 32, expoi, 200, 'mini'}
+    {328, 32, expoi, -70, 'arrowpathdrawsize', -200, 'arrowpathgirth', plr=1}
+
+--VISUALS======================================================================
+
+    setshader('sky')
+    shatoggle(0,999,'sky')
+
+    hill1:xy(scx,sh*0.8)
+    hill2:xy(scx,sh*0.9)
+    hill3:xy(scx,sh*1)
+    hill1b:xy(scx,sh*0.2)
+    hill2b:xy(scx,sh*0.1)
+    hill3b:xy(scx,0)
+
+    hill1:diffuse(0.2,0.15,0.15,1)
+    hill2:diffuse(0.4,0.3,0.3,1)
+    hill3:diffuse(0.6,0.4,0.5,1)
+    hill1b:diffuse(0.2,0.15,0.15,1)
+    hill2b:diffuse(0.4,0.3,0.3,1)
+    hill3b:diffuse(0.6,0.4,0.5,1)
+
+    for i=1,3 do
+        xero['hill'..i]:hidden(1)
+        xero['hill'..i..'b']:hidden(1)
+        xero['hill'..i]:z(i-1)
+        xero['hill'..i..'b']:z(i-1)
+        xero['hill'..i]:zoom(0.7)
+        xero['hill'..i..'b']:zoom(-0.7)
+        xero['hill'..i]:customtexturerect(0,0,1,1)
+        xero['hill'..i..'b']:customtexturerect(0,0,1,1)
+    end
+
+    func{0, function()
+        for i=1,3 do
+            xero['hill'..i]:hidden(0)
+            xero['hill'..i..'b']:hidden(0)
+        end
+    end}
+
+    --help
+    skyaux, skyvel = 0, 0
+    func{0, 999, lin, 0, 999, function(t)
+        skyaux = skyaux + skyvel/50 * pow(t,0.5)/50
+        sky:GetShader():uniform1f('velocity', skyaux/50)
+    end}
+
+    definemod{'bgspeedx', function(n)
+        hill1:texcoordvelocity(n*0.1,0)
+        hill2:texcoordvelocity(n*0.2,0)
+        hill3:texcoordvelocity(n*0.3,0)
+        hill1b:texcoordvelocity(n*-0.1,0)
+        hill2b:texcoordvelocity(n*-0.2,0)
+        hill3b:texcoordvelocity(n*-0.3,0)
+        skyvel = n
+    end}
+
+    definemod{'bgy', function(n)
+        hill1:y(sh*(0.65+n/10))
+        hill2:y(sh*(0.75+n/8))
+        hill3:y(sh*(0.85+n/6))
+        sky:GetShader():uniform1f('ypos', 0.6-n*0.1)
+    end}
+
+    definemod{'bgytop', function(n)
+        hill1b:y(sh*(0.35-n/10))
+        hill2b:y(sh*(0.25-n/8))
+        hill3b:y(sh*(0.15-n/6))
+    end}
+
+    skyCover:stretchto(0,0,sw,sh)
+    skyCover:diffuse(0,0,0,1)
+    textoggle(0,16,skyCover)
+    func{0, 16, sines, 1, 0, 'skyCover:diffusealpha'}
+
+    setshader('blur')
+    shatoggle(0,12,'blur')
+    tweenshader(0, 12, stack(stack(expoo,expoo),expoo), 1000000, 0, 'blur', 'var')
+
+    setshader('horizon')
+    shatoggle(12,4,'horizon')
+    tweenshader(12, 4, lin, 0, 4, 'horizon', 'timer')
+
+    clockout:xy(scx,scy)
+    clockout:zoom(1)
+    clockout:diffuse(1,1,1,0.8)
+    func{12, function(b) clockout:SetTexture(clockout2:GetTexture()) end}
+
+    hourWrapper:xy(scx,scy)
+    hourWrapper:zoom(0.3)
+    hourWrapper:diffuse(1,1,1,0.5)
+    hourWrapper:hidden(1)
+    hour:xy(0,-150)
+    textoggle(16, 60, hourWrapper)
+    hourNow = 0
+    for i=16,75 do
+        func{i, 1, elasto.params(1.3,0.7), (i-16)*32/30, (i-15)*32/30, function(p)
+            hourWrapper:rotationz(p)
+            hourNow = p
+        end}
+    end
+
+    lagger = {0,0}
+    func{4, 12, sines, 0.8, 0.3, function(p) lagger[1] = p end}
+    func{4, 12, circo, -360, 0, function(p) lagger[2] = p end}
+    func {4, 8, function(b)
+        clockout:zoom(lagger[1])
+        clockout:rotationz(lagger[2])
+    end}
+    for i=12,15 do
+        a= alt(i,1)
+        tweenshader(i, 0.65, sinei, a*0.05, 0, 'horizon', 'glitch')
+        func {i, function(b)
+            clockout:zoom(lagger[1])
+            clockout:rotationz(lagger[2])
+        end}
+        for j=0,0.65,0.2 do
+            func{i+j, 0.1, instant, 0.8, 'clockout:diffusealpha'}
+            func{i+j+0.1, 0.1, instant, 0, 'clockout:diffusealpha'}
+        end
+    end
+
+    textoggle(0, 76, clockout)
+    func{16, 16, instant, 0.8, 'clockout:diffusealpha'}
+    {16, 16, instant, 0.3, 'clockout:zoom'}
+    {16, 16, instant, 0, 'clockout:rotationz'}
+
+    func{44, 8, expos, 0, -450, 'clockout:z'}{44, 8, cubes, 0.8, 0.4, 'clockout:diffusealpha'}
+        {44, 8, expos, 0, -450, 'hourWrapper:z'}{44, 8, cubes, 0.5, 0.3, 'hourWrapper:diffusealpha'}
+    func{74, 2, expoi, -450, 900, 'clockout:z'}{74, 2, lin, 0.4, 0, 'clockout:diffusealpha'}
+        {74, 2, expoi, -450, 900, 'hourWrapper:z'}{74, 2, lin, 0.3, 0, 'hourWrapper:diffusealpha'}
+
+    func{16, 64, function(b, poptions)
+        clockout:rotationx(poptions[2].rotationx + poptions[2].truerotx)
+        clockout:rotationy(poptions[2].rotationy + poptions[2].trueroty)
+        clockout:rotationz(poptions[2].rotationz + poptions[2].truerotz)
+        hourWrapper:rotationx(poptions[2].rotationx + poptions[2].truerotx)
+        hourWrapper:rotationy(poptions[2].rotationy + poptions[2].trueroty)
+        hourWrapper:rotationz(poptions[2].rotationz + poptions[2].truerotz + hourNow)
+    end}
+
+    shatoggle(31,1,'horizon')
+    tweenshader(31, 1, lin, 0, 6.5, 'horizon', 'timer')
+    for i=31,31.75,0.25 do
+        a = alt(i,0.25)
+        tweenshader(i, 0.25, expoo, a*0.05, 0, 'horizon', 'glitch')
+    end
+
+    beam:y(sh*0.6)
+    beam:zoom(0.4)
+    beam:diffuse(1,1,1,0.6)
+    beam:blend('add')
+    beam:hidden(1)
+    textoggle(156,48,beam)
+    definemod{'beampos', function(pos)
+        beam:x(pos)
+    end}
+    set{155, -sw*0.8, 'beampos'}
+    add{156, 45, lin, sw*0.85, 'beampos'}
+    add{156, 6, expoo, sw*0.85, 'beampos'}
+    add{196, 8, expoi, sw*2, 'beampos'}
+
+    textoggle(203,7,skyCover)
+    func{203, 1, expoi, 0, 1, 'skyCover:diffusealpha'}
+    func{206, 4, expos, 1, 0, 'skyCover:diffusealpha'}
+
+    fallguysW:xy(scx,sh*-0.5)
+    fallguysW:zoom(0.06)
+    fallguysW:hidden(1)
+    fallguys:xy(scx,sh*-0.5)
+    fallguys:zoom(0.06)
+    fallguys:hidden(1)
+
+    fallguys2:xy(scx,sh*0.2)
+    fallguys2:zoom(1)
+    fallguys2:diffusealpha(0)
+    fallguys2:blend('add')
+    fallguys2:hidden(1)    
+
+    textoggle(204,4,fallguysW)
+    func{204, 4, expoo, sh*-0.1, sh*0.15, 'fallguysW:y'}
+    textoggle(208, 110, fallguys)
+    func{208, 110, lin, sh*0.15, sh*0.65, 'fallguys:y'}
+
+    textoggle(264, 64, fallguys2)
+    func{208, 130, lin, sh*0.1, sh*0.4, 'fallguys2:y'}
+    func{264, 8, sines, 0, 0.08, 'fallguys2:diffusealpha'}
+    func{312, 8, sines, 0.08, 0, 'fallguys2:diffusealpha'}
+
+    func{310, 12, sinei, 0, sh*1, function(b)
+        yy = fallguys:GetY()
+        fallguys:y(yy+b)
+        yy2 = fallguys2:GetY()
+        fallguys2:y(yy2+b/2)
+    end}
+
+    smackond:xy(scx,sh*0.15)
+    smackond:zoom(0)
+    smackond:hidden(1)
+
+    textoggle(208,4,smackond)
+    func{208, 4, circo, 0, 3.5, 'smackond:zoom'}
+    func{208, 4, expoo, 0.8, 0, 'smackond:diffusealpha'}
+
+    textoggle(264,4,smackond)
+    func{264, function(b) smackond:y(sh*0.38) end}
+    func{264, 4, circo, 0, 3.5, 'smackond:zoom'}
+    func{264, 4, expoo, 0.8, 0, 'smackond:diffusealpha'}
+
+    ease{0, 16, lin, 10, 'bgspeedx'}
+    ease{47, 4, cubeo, 5, 'bgspeedx'}
+    ease{64, 12, quadi, 1000, 'bgspeedx'}
+    ease{76, 2, expoo, -2, 'bgspeedx'}
+    ease{144, 12, sines, -20, 'bgspeedx'}
+    ease{156, 4, lin, -4, 'bgspeedx'}
+    ease{196, 8, expoi, -300, 'bgspeedx'}
+    ease{204, 4, circo, -4, 'bgspeedx'}
+    ease{308, 16, sines, -1, 'bgspeedx'}
+
+    set{0, 4.6, 'bgy', 4.6, 'bgytop'}
+    ease{0, 16, sines, 6, 'bgy'}
+    ease{76, 12, expoo, 1, 'bgy'}
+    ease{108, 4, expos, 5, 'bgy'}
+    ease{108, 4, expos, 1, 'bgytop'}
+    ease{128, 8, sines, 1, 'bgy'}
+    ease{128, 8, sines, 6, 'bgytop'}
+    ease{144, 16, sines, 6, 'bgy'}
+    ease{206, 4, cubes, 0.7, 'bgy'}
+    ease{308, 16, sines, 6, 'bgy'}
+
+    func{204, function(b) af:SetDrawByZPosition(true) end}
+    func{324, function(b) af:SetDrawByZPosition(false) end}
+
+    ease{326, 4, expos, 100, 'dark', plr=2}
+    textoggle(326, 34, clockout)
+    textoggle(326, 34, hourWrapper)
+    func{326, 4, expos, 0.6, 0.3, 'clockout:zoom'}{326, 4, expos, 0.6, 0.3, 'hourWrapper:zoom'}
+    func{326, 4, instant, 0, 0, 'clockout:z'}{326, 4, instant, 0, 0, 'hourWrapper:z'}
+    func{326, 4, expos, 0, 0.8, 'clockout:diffusealpha'}{326, 4, expos, 0, 0.5, 'hourWrapper:diffusealpha'}
+    func{326, 4, expos, -360, 0, 'clockout:rotationz'}{326, function(b) hourNow=330 end}
+    func{330, 30, expoi, 0.3, 0, 'clockout:zoom'}{330, 30, expoi, 0.3, 0, 'hourWrapper:zoom'}
+    func{326, 34, function(b, poptions)
+        clockout:rotationx(poptions[2].rotationx + poptions[2].truerotx)
+        clockout:rotationy(poptions[2].rotationy + poptions[2].trueroty)
+        clockout:rotationz(poptions[2].rotationz + poptions[2].truerotz)
+        hourWrapper:rotationx(poptions[2].rotationx + poptions[2].truerotx)
+        hourWrapper:rotationy(poptions[2].rotationy + poptions[2].trueroty)
+        hourWrapper:rotationz(poptions[2].rotationz + poptions[2].truerotz + hourNow)
+    end}
+    for i=328,359 do
+        func{i, 1, elasto.params(1.3,0.7), 330+(i-328)*32/30, 330+(i-327)*32/30, function(p)
+            hourNow = p
+        end}
+    end
+
+    set{327, 100, 'hidenoteflash', plr=2}
+    ease{326, 4, expos, -200, 'holdgirth'}
+    func{326, 4, expos, 1, 0, function(a)
+        for c=0,3 do
+            P[2]:SetNumArrowGradientPoints(c, 1) 
+            P[2]:SetArrowGradientPoint(0, c, 8)
+            P[2]:SetArrowGradientColor(0, c, 1,1,1,a)
+        end
+    end}
+    set{333, 0, 'hidenoteflash', plr=2}
+    func{333, function(b)
+        for c=0,3 do
+            P[2]:SetNumArrowGradientPoints(c, 1) 
+            P[2]:SetArrowGradientPoint(0, c, 8)
+            P[2]:SetArrowGradientColor(0, c, 1,1,1,1)
+        end
+    end}
+
+    shatoggle(350,10,'blur')
+    tweenshader(350, 10, stack(expoi,expoi), 0, 1000, 'blur', 'var')
+    textoggle(346,999,skyCover)
+    func{346, 16, sines, 0, 1, 'skyCover:diffusealpha'}
+
+    final:stretchto(0,0,sw,sh)
+    final:diffuse(0,0,0,0)
+    final:hidden(1)
+    textoggle(359, 999, final)
+    func{359, 1, sines, 0, 1, 'final:diffusealpha'}
+
+--TWEAKS=======================================================================
+
+    function tweencolor(start, len, rgb0, rgb)
+        tweenshader(start, len, sines, rgb0[1]/255, rgb[1]/255, 'overlay', 'r')
+        tweenshader(start, len, sines, rgb0[2]/255, rgb[2]/255, 'overlay', 'g')
+        tweenshader(start, len, sines, rgb0[3]/255, rgb[3]/255, 'overlay', 'b')
+    end
+
+    skyShades = {{96,97,114},{127.5,127.5,127.5},{138,135,112},{154,150,113}}
+
+    setshader('overlay')
+
+    shatoggle(0,76,'overlay')
+    tweencolor(48, 28, skyShades[1], skyShades[2])
+    tweencolor(200, 3, skyShades[2], skyShades[3])
+
+    shatoggle(205,999,'overlay')
+    tweencolor(308, 20, skyShades[3], skyShades[4])
+
+    set{160, 50, 'drawsize', plr={1,2,3,4}}
+    set{180, 0, 'drawsize', plr={1,2,3,4}}
+    set{203, -100, 'drawsizeback'}
+    set{208, 0, 'drawsizeback'}
+
+    func{16, function()
+        for pn=1,2 do 
+            a=altPn(pn)
+            PC[pn]:hidden(0)
+            PJ[pn]:hidden(0)
+            PC[pn]:xy(a*sw*(0.38-(pn-1)), sh*0.89)
+            PJ[pn]:xy(a*sw*(0.17-(pn-1)), sh*1.005)
+        end
+    end}
+
+    --♡ i fucking ♡
+    --♡ hate lua ♡
+    func{74, 4, expos, 1*sw*(0.38-(1-1)),   scx*(1-.5),     'PC[1]:x'}
+    func{74, 4, expos, 1*sw*(0.17-(1-1)),   scx*(1-.5),     'PJ[1]:x'}
+    func{74, 4, expos, sh*0.89,             scy*0.97,       'PC[1]:y'}
+    func{74, 4, expos, sh*1.005,            scy*1.03,       'PJ[1]:y'}
+    func{74, 4, expos, -1*sw*(0.38-(2-1)),  scx*(2-.5),     'PC[2]:x'}
+    func{74, 4, expos, -1*sw*(0.17-(2-1)),  scx*(2-.5),     'PJ[2]:x'}
+    func{74, 4, expos, sh*0.89,             scy*0.97,       'PC[2]:y'}
+    func{74, 4, expos, sh*1.005,            scy*1.03,       'PJ[2]:y'}
+
+    func{202, 4, expos, scy*0.97, scy*3.97, 'PC[1]:y'}
+    func{202, 4, expos, scy*1.03, scy*4.03, 'PJ[1]:y'}
+    func{202, 4, expos, scy*0.97, scy*3.97, 'PC[2]:y'}
+    func{202, 4, expos, scy*1.03, scy*4.03, 'PJ[2]:y'}
+
+    func{204, function()
+        for pn=1,2 do 
+            PC[pn]:hidden(1)
+            PJ[pn]:hidden(1)
+        end
+    end}
+
+    func{208, function()
+        for pn=1,2 do 
+            PC[pn]:hidden(0)
+            PJ[pn]:hidden(0)
+            PC[pn]:y(scy*0.97)
+            PJ[pn]:y(scy*1.03)
+        end
+    end}
+
+    func{312, 12, quads, scy*0.97, scy*3.97, 'PC[1]:y'}
+    func{312, 12, quads, scy*1.03, scy*4.03, 'PJ[1]:y'}
+    func{312, 12, quads, scy*0.97, scy*3.97, 'PC[2]:y'}
+    func{312, 12, quads, scy*1.03, scy*4.03, 'PJ[2]:y'}
+
+    func{324, function()
+        for pn=1,2 do 
+            PC[pn]:hidden(1)
+            PJ[pn]:hidden(1)
+        end
+    end}
+
+	func{300,function()
+        for pn=1,2 do
+            for col=0,3 do
+                P[pn]:SetNumStealthGradientPoints(col,1)
+                P[pn]:SetStealthGradientPoint(0,col,0)
+                P[pn]:SetStealthGradientColor(0,col,1,1,1,1)
+            end
+        end
+	end}
+
+--SPELLCARDS===================================================================
+
+    card{0, 48, 'Twilight, 1833 CE.', 4, '#22152d'}
+    {48, 80, 'Separated, for Good', 3, '#3a1c32'}
+    {80, 160, 'Follow Slowly', 4, '#562537'}
+    {160, 204, 'Reaching Light', 5, '#5b2836'}
+    {204, 208, 'chrono diver', 0, '#000000'}
+    {208, 312, 'How Far I\'ve Fallen', 5, '#5f3031'}
+    {312, 328, 'Swallowed by Time', 5, '#6d4130'}
+    {328, 364, 'Dawn, 2025 CE.', 4, '#905f41'}
+
+end)"Name=af Type="ActorFrame"><children>
+
+    <Layer Name=black Type="Quad"/>
+
+    <Layer Name="skyAft" Type="ActorFrameTexture" InitCommand="%xero.aft"/>
+    <Layer Name="skyCov" Type="Quad"/>
+    <Layer Name="sky" Type="Sprite" InitCommand="%xero.sprite" Frag="shaders/sky.frag"/>
+
+    <Layer Name="overlayAft" Type="ActorFrameTexture" InitCommand="%xero.aft"/>
+    <Layer Name="overlayCov" Type="Quad"/>
+    <Layer Name="overlay" Type="Sprite" InitCommand="%xero.sprite" Frag="shaders/overlay.frag"/>
+
+    <Layer Name=skyCover Type="Quad"/>
+
+    <Layer Name=fallguys2 File="gfx/fallguys.sprite"/>
+
+    <Layer Name=smackond File="gfx/smackond"/>
+
+    <Layer Name=fallguys File="gfx/fallguys.sprite"/>
+    <Layer Name=fallguysW File="gfx/fallguysW.sprite"/>
+
+    <Layer Name=clockout Type="Sprite" Texture="gfx/_clockout.png"/>
+    <Layer Name=clockout2 File="gfx/clockout.png" InitCommand="hidden,1;"/>
+
+    <Layer Name=hourWrapper Type="ActorFrame"><children>
+        <Layer Name=hour File="gfx/hour"/>
+    </children></Layer>
+
+    <Layer Name=hill1 File="gfx/hill1"/>
+    <Layer Name=hill2 File="gfx/hill2"/>
+
+    <Layer Name=hill1b File="gfx/hill1"/>
+    <Layer Name=hill2b File="gfx/hill2"/>
+
+    <Layer Name=beam File="gfx/beam"/>
+
+    <Layer Type="ActorProxy" Name="PC[1]"/><Layer Type="ActorProxy" Name="PC[2]"/>
+    <Layer Type="ActorProxy" Name="PC[3]"/><Layer Type="ActorProxy" Name="PC[4]"/>
+    <Layer Type="ActorProxy" Name="PJ[1]"/><Layer Type="ActorProxy" Name="PJ[2]"/>
+    <Layer Type="ActorProxy" Name="PJ[3]"/><Layer Type="ActorProxy" Name="PJ[4]"/>
+    <Layer Type="ActorProxy" Name="PP[1]"/><Layer Type="ActorProxy" Name="PP[2]"/>
+    <Layer Type="ActorProxy" Name="PP[3]"/><Layer Type="ActorProxy" Name="PP[4]"/>
+
+    <Layer Name=hill3 File="gfx/hill3"/>
+    <Layer Name=hill3b File="gfx/hill3"/>
+
+    <Layer Name="blurAft" Type="ActorFrameTexture" InitCommand="%xero.aft"/>
+    <Layer Name="blurCov" Type="Quad"/>
+    <Layer Name="blur" Type="Sprite" InitCommand="%xero.sprite" Frag="shaders/blur.frag"/>
+
+    <Layer Name="horizonAft" Type="ActorFrameTexture" InitCommand="%xero.aft"/>
+    <Layer Name="horizonCov" Type="Quad"/>
+    <Layer Name="horizon" Type="Sprite" InitCommand="%xero.sprite" Frag="shaders/horizon.frag"/>
+
+    <Layer Name=final Type="Quad"/>
+
+</children></Mods>
+<!--my voice was swallowed-->

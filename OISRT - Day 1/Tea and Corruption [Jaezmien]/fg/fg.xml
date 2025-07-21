@@ -1,0 +1,126 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="%melody(function(self)
+			if self:getaux()==1 then return end self:aux(1)
+			function am_bl(mult) return (60 / GAMESTATE:GetCurBPM()) * (mult or 1) end
+
+			init_hooks{'mods init',function()
+				lua{'fg/spellcards'}
+				lua{'fg/mods', env=modreader.jaezmien}
+			end}
+		end)"
+
+		OnCommand="diffusealpha,0;queuecommand,Setup" SetupCommand="%melody.setup"
+	/>
+	
+	<Layer Type="ActorFrame" OnCommand="%melody(function(self) fg=self; self:fov(SCREEN_FOV(45)) end)"><children>
+
+		<!-- Foreground actors here -->
+
+		<Layer
+			Type="ActorFrame"
+			Condition="melody.config.minimum_build ~= 'OpenITG'"
+			Name="Judgments"
+		><children>
+	
+			<ActorProxy Condition="GAMESTATE:IsPlayerEnabled(0)"
+				Name="P1 Judgment"
+				InitializeProxiesMessageCommand="%melody(function(self)
+					proxy.create_proxy( self, jud1, 'P1 Judgment' )
+					self:zoom( 0.7 )
+					self:xy( mod_plr_origin[1][1] , mod_plr_origin[1][2] )
+					jud1:hidden(1)
+					jud1:sleep(9E9)
+				end)"
+			/>
+			<ActorProxy Condition="GAMESTATE:IsPlayerEnabled(0)"
+				Name="P1 Combo"
+				InitializeProxiesMessageCommand="%melody(function(self)
+					proxy.create_proxy( self, com1, 'P1 Combo' )
+					self:zoom( 0.7 )
+					self:xy( mod_plr_origin[1][1] , mod_plr_origin[1][2] )
+					com1:hidden(1)
+					com1:sleep(9E9)
+				end)"
+			/>
+	
+			<ActorProxy Condition="GAMESTATE:IsPlayerEnabled(1) or GAMESTATE:IsEditMode()"
+				Name="P2 Judgment"
+				InitializeProxiesMessageCommand="%melody(function(self)
+					proxy.create_proxy( self, jud2, 'P2 Judgment' )
+					self:zoom( 0.7 )
+					self:xy( mod_plr_origin[2][1] , mod_plr_origin[2][2] )
+					jud2:hidden(1)
+					jud2:sleep(9E9)
+				end)"
+			/>
+			<ActorProxy Condition="GAMESTATE:IsPlayerEnabled(1) or GAMESTATE:IsEditMode()"
+				Name="P2 Combo"
+				InitializeProxiesMessageCommand="%melody(function(self)
+					proxy.create_proxy( self, com2, 'P2 Combo' )
+					self:zoom( 0.7 )
+					self:xy( mod_plr_origin[2][1] , mod_plr_origin[2][2] )
+					com2:hidden(1)
+					com2:sleep(9E9)
+				end)"
+			/>
+	
+		</children></Layer>
+
+		<Layer
+			Type="ActorFrameTexture"
+			InitCommand="%melody(function(self)
+				aft.set_aft( self, 'global' )
+			end)"
+		/>
+
+		<Layer Type="Quad" InitCommand="%melody.actor_block" OnCommand="diffuse,0,0,0,1"/>
+
+		<Layer
+			Type="Sprite"
+			Name="global2"
+			OnCommand="%melody(function(self)
+				self:xy( SCREEN_CENTER_X, SCREEN_CENTER_Y )
+				aft.set_sprite( self, 'global2', 'global2', true )
+				self:diffusealpha( 0.9 * aft.mult )
+				self:zoom( 1 + 0.01 )
+			end)"
+		/>
+
+		<Layer
+			Type="Sprite"
+			Name="global"
+			OnCommand="%melody(function(self)
+				self:xy( SCREEN_CENTER_X, SCREEN_CENTER_Y )
+				aft.set_sprite( self, 'global', 'global', true )
+			end)"
+		/>
+
+		<Layer
+			Type="ActorFrameTexture"
+			InitCommand="%melody(function(self)
+				aft.set_aft( self, 'global2' )
+			end)"
+		/>
+
+		<Layer
+			Type="Quad"
+			InitCommand="stretchto,0,SCREEN_CENTER_Y*1.25,SCREEN_WIDTH,SCREEN_HEIGHT;fadetop,1;hidden,1"
+			HaahMessageCommand="hidden,0;diffusealpha,0.5;decelerate,1;diffusealpha,0;queuecommand,H"
+			HCommand="hidden,1"
+		/>
+
+		<Layer
+			Type="Aux"
+			Var="melody.carou_offset"
+			InitCommand="aux,0"
+		/>
+
+		<Layer Type="Quad" InitCommand="%melody.actor_block" Name="Flash" OnCommand="hidden,1" HideCommand="hidden,1"/>
+		<Layer Type="Quad" InitCommand="%melody.actor_block" Name="Fade" OnCommand="diffusealpha,0;hidden,1" HideCommand="hidden,1"/>
+
+	</children></Layer>
+
+</children></ActorFrame>

@@ -1,0 +1,181 @@
+<ActorFrame OnCommand="%melody(function(self) bg=self; end)"><children>
+
+	<Layer Type="Quad" InitCommand="%melody.actor_block" OnCommand="diffuse,0,0,0,1"/>
+    <Layer File="itg" Name="itg" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y"/>
+
+	<!-- eat ass -->
+
+	<Layer
+		Type="ActorFrame"
+		Name="Interior"
+		InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;hidden,1"
+	><children>
+
+		<Layer
+			File="cloud"
+			InitCommand="zoom,6;texcoordvelocity,1,0"
+			OnCommand="queuecommand,Spin"
+			SpinCommand="%melody(function(self)
+				local sp = math.mod( self:getaux() + 0.1 , 360 )
+				self:aux( sp )
+				self:rotationz( sp )
+				self:sleep( 1/60 )
+				self:queuecommand( 'Spin' )
+			end)"
+		/>
+		<Layer
+			File="cloud2"
+			InitCommand="zoom,2;texcoordvelocity,0.4,0;diffusealpha,0.4"
+		/>-
+
+
+		<Layer
+			Type="ActorFrame"
+			Name="Inner"
+			OnCommand="%melody(function(self)
+				self:fov( SCREEN_FOV(45) )
+				-- self:zoom( 0.5 )
+			end)"
+		><children>
+
+			<Layer
+				Type="ActorFrame"
+				InitCommand="%melody(function(self)
+					self:SetDrawFunction(function()
+						for i,v in ipairs({'WindowMask'}) do
+							local offset = 0
+							local amt = 320
+							local xoffset = 320/2
+
+							self:GetChild(v):x( xoffset )
+							self:GetChild(v):Draw()
+							offset = offset + amt
+
+							while offset <= SCREEN_WIDTH*2 do
+								self:GetChild(v):x( -offset + xoffset)
+								self:GetChild(v):Draw()
+								self:GetChild(v):x( offset + xoffset )
+								self:GetChild(v):Draw()
+
+								offset = offset + amt
+							end
+						end
+					end)
+				end)"
+			><children>
+				<Layer
+					File="window_mask"
+					Name="WindowMask"
+					InitCommand="y,SCREEN_CENTER_Y;vertalign,bottom;addy,-80;z,-512;blend,noeffect;zwrite,1"
+				/>
+			</children></Layer>
+			<Layer
+				File="wall"
+				Name="top"
+				InitCommand="z,-512;y,SCREEN_CENTER_Y;vertalign,bottom;zoomto,SCREEN_WIDTH*8,480*1.65;ztest,1;ztestmode,writeonpass"
+			/>
+
+			<Layer
+				File="wall"
+				Name="bottom"
+				InitCommand="z,-512;y,SCREEN_CENTER_Y;vertalign,bottom;zoomto,SCREEN_WIDTH*8,480*1.65;rotationx,180"
+			/>
+
+			<!-- below floor -->
+			<Layer
+				Type="ActorFrame"
+				InitCommand="%melody(function(self)
+					-- yes im actually doing this alskfjsaldkfjasdf
+					self:SetDrawFunction(function()
+						for i,v in ipairs({'Pillar'}) do
+							local offset = 0
+							local amt = 320
+							local xoffset = 0
+
+							self:GetChild(v):x( xoffset )
+							self:GetChild(v):Draw()
+							offset = offset + amt
+
+							while offset <= SCREEN_WIDTH*2 do
+								self:GetChild(v):x( -offset + xoffset)
+								self:GetChild(v):Draw()
+								self:GetChild(v):x( offset + xoffset )
+								self:GetChild(v):Draw()
+
+								offset = offset + amt
+							end
+						end
+					end)
+				end)"
+			><children>
+				<!--
+					credit: Tamalesyatole - https://www.deviantart.com/tamalesyatole/art/Celestia-s-Throne-Room-Background-358286377
+				-->
+				<Layer
+					File="pillar_vampire"
+					Name="Pillar"
+					InitCommand="y,SCREEN_CENTER_Y;vertalign,bottom;z,-300;rotationx,180;addy,-24;zoom,1.4"
+				/>
+			</children></Layer>
+			<!-- below floor -->
+
+			<Layer
+				File="floor"
+				InitCommand="y,SCREEN_CENTER_Y;z,-512;vertalign,bottom;rotationx,90;zoomz,2;zoomto,SCREEN_WIDTH*12,512"
+			/>
+			<Layer
+				File="ceiling"
+				InitCommand="y,-540;z,-512;vertalign,bottom;rotationx,35;zoomz,4;zoomto,320*12,512*2"
+				OnCommand="%melody(function(self)
+					self:customtexturerect( 0, 0, 12, 4 )
+					self:addx( 80 )
+					self:diffusetopedge(0.5,0.5,0.5,1)
+				end)"
+			/>
+			
+			<!-- above floor -->
+			<Layer
+				Type="ActorFrame"
+				InitCommand="%melody(function(self)
+					self:SetDrawFunction(function()
+						for i,v in ipairs({'Window','Pillar'}) do
+							local offset = 0
+							local amt = 320
+							local xoffset = i==1 and 320/2 or 0
+
+							self:GetChild(v):x( xoffset )
+							self:GetChild(v):Draw()
+							offset = offset + amt
+
+							while offset <= SCREEN_WIDTH*2 do
+								self:GetChild(v):x( -offset + xoffset)
+								self:GetChild(v):Draw()
+								self:GetChild(v):x( offset + xoffset )
+								self:GetChild(v):Draw()
+
+								offset = offset + amt
+							end
+						end
+					end)
+				end)"
+			><children>
+				<Layer
+					File="pillar"
+					Name="Pillar"
+					InitCommand="y,SCREEN_CENTER_Y;vertalign,bottom;z,-300;zoom,1.4"
+				/>
+				<Layer
+					File="window_frame"
+					Name="Window"
+					InitCommand="y,SCREEN_CENTER_Y;vertalign,bottom;addy,-80;z,-512"
+				/>
+			</children></Layer>
+			<!-- above floor -->
+		</children></Layer>
+
+	</children></Layer>
+
+	<Layer Type="Quad" InitCommand="clearzbuffer,1" />
+
+	<Layer Type="Quad" InitCommand="%melody.actor_block" Name="Block" OnCommand="hidden,1"/>
+</children></ActorFrame>

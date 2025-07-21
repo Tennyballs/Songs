@@ -1,0 +1,701 @@
+<Mods LoadCommand = "%xero(function(self)
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+	-- your code goes here here:
+
+
+--spellcards
+card {0, 16, 'epicguitar.wav', 1, 'FF6241'}
+card {16, 29, 'conveyor.rotationx = 45', 2, 'FF6241'}
+card {32, 44, 'notitgKart8', 4, 'FF6241'}
+card {48, 79, 'just checkin in on you', 3, 'FF6241'}
+card {81, 112, 'bouncy balls', 3, 'FF6241'}
+card {112, 126, 'swagbeatdropbuildup', 1, 'FF6241'}
+card {129, 160, 'approach child', 4, 'FF6241'}
+card {160, 192, 'i use sine to much', 5, 'FF6241'}
+card {192, 220, 'stupid idea executed stupidly', 5, 'FF6241'}
+card {221, 240, '19 dollar column swaps', 3, 'FF6241'}
+card {240, 254, '80s synth lookin ass', 2, 'FF6241'}
+card {254, 265, 'smugass.png', 6, 'FF6241'}
+
+	aux {'fadeout'}
+	aux {'fadeout2'}
+	aux {'fadein'}
+
+for i, data in P1:GetNoteData(0, 17) do
+			ease {data[1],1, outExpo, 628, 'confusionOffset'..data[2]}
+	set {data[1]+1, 0, 'confusionOffset'..data[2]}
+	ease{data[1],1,pop,100,'arrowPath'..data[2]}
+end
+
+set{0,100,'boost'}
+	set{0,100,'bumpy'}
+	ease{2,1,outExpo,100,'flip'}
+	ease{2.2,1,outExpo,0,'flip'}
+
+	ease{6,1,outExpo,100,'flip'}
+	ease{6.2,1,outExpo,0,'flip'}
+
+
+
+
+	ease{10,0,outExpo,200,'bumpy'}
+	ease{10,1,outExpo,100,'flip'}
+	ease{10.2,1,outExpo,0,'flip'}
+
+ease{0,1,outExpo,628,'confusionoffset0'}
+set{1,0,'confusionoffset0'}
+ease{0.5,1,outExpo,628,'confusionoffset3'}
+set{1.5,0,'confusionoffset3'}
+ease{2,1,outExpo,628,'confusionoffset'}
+set{3,0,'confusionoffset'}
+ease{2.5,1,outExpo,628,'confusionoffset0'}
+set{3.5,0,'confusionoffset0'}
+ease{3,1,outExpo,628,'confusionoffset1'}
+set{4,0,'confusionoffset1'}
+ease{3.5,1,outExpo,628,'confusionoffset2'}
+set{4.5,0,'confusionoffset2'}
+ease{4,0.1,outExpo,628,'confusionoffset3'}
+set{5,0,'confusionoffset3'}
+ease{4.5,1,outExpo,628,'confusionoffset0'}
+set{5.5,0,'confusionoffset0'}
+
+ease{0,1,pop,100,'arrowPath0'}
+ease{0.5,1,pop,100,'arrowPath3'}
+ease{2,1,pop,100,'arrowPath'}
+ease{2.5,1,pop,100,'arrowPath0'}
+ease{3,1,pop,100,'arrowPath1'}
+ease{3.5,1,pop,100,'arrowPath2'}
+ease{4,0.1,pop,100,'arrowPath3'}
+ease{4.5,1,pop,100,'arrowPath0'}
+
+ease{16,1,outExpo,0,'boost'}
+set{16,0,'bumpy'}
+
+set{16,-700,'movex',plr=1}
+set{16,500,'movey',plr=1}
+ease{16,4,linear,-500,'movey',plr=2}
+ease{16,4,linear,700,'movex',plr=2}
+ease{16,8,linear,700,'movex',plr=1}
+ease{16,8,linear,-500,'movey',plr=1}
+
+
+
+set{20,-700,'movex',plr=2}
+set{20,500,'movey',plr=2}
+ease{20,8,linear,700,'movex',plr=2}
+ease{20,8,linear,-500,'movey',plr=2}
+
+set{24,-700,'movex',plr=1}
+set{24,500,'movey',plr=1}
+ease{24,6,linear,700-116,'movex',plr=1}
+ease{24,6,linear,-500+83,'movey',plr=1}
+
+
+set{30,0,'movex'}
+set{30,0,'movey'}
+set{30,25,'zoom'}
+
+ease{30,0.1,linear,0.5,'zoombg3'}
+ease{30,0.1,linear,50,'zoom'}
+ease{30.5,0.1,linear,0.75,'zoombg3'}
+ease{30.5,0.1,linear,75,'zoom'}
+ease{31,0.1,linear,1,'zoombg3'}
+ease{31,0.1,linear,100,'zoom'}
+
+set{30,0,'2x',}
+set{32,-10,'rotationX',plr=1}
+set{32,-5,'rotationZ',plr=1}
+set{32.2,10,'rotationX',plr=1}
+set{32.2,5,'rotationZ',plr=1}
+set{32.6,10,'rotationX',plr=1}
+set{32.6,-5,'rotationZ',plr=1}
+set{33,-10,'rotationX',plr=1}
+set{33,10,'rotationZ',plr=1}
+set{33.4,-10,'rotationX',plr=1}
+set{33.4,5,'rotationZ',plr=1}
+set{33.8,10,'rotationX',plr=1}
+set{33.8,10,'rotationZ',plr=1}
+set{34.2,-5,'rotationX',plr=1}
+set{34.2,5,'rotationZ',plr=1}
+set{34.6,-10,'rotationX',plr=1}
+set{34.6,-5,'rotationZ',plr=1}
+set{35,0,'rotationX',plr=1}
+set{35,0,'rotationZ',plr=1}
+set{35,10,'rotationY',plr=1}
+set{35.5,-20,'rotationY',plr=1}
+
+
+
+set{32,10,'rotationX',plr=2}
+set{32,5,'rotationZ',plr=2}
+set{32.2,-10,'rotationX',plr=2}
+set{32.2,-5,'rotationZ',plr=2}
+set{32.6,-10,'rotationX',plr=2}
+set{32.6,5,'rotationZ',plr=2}
+set{33,10,'rotationX',plr=2}
+set{33,-10,'rotationZ',plr=2}
+set{33.4,10,'rotationX',plr=2}
+set{33.8,-10,'rotationX',plr=2}
+set{33.8,-10,'rotationZ',plr=2}
+set{34.2,5,'rotationX',plr=2}
+set{34.2,-5,'rotationZ',plr=2}
+set{34.6,10,'rotationX',plr=2}
+set{34.6,5,'rotationZ',plr=2}
+set{35,0,'rotationX',plr=2}
+set{35,0,'rotationZ',plr=2}
+set{35,-10,'rotationY',plr=2}
+set{35.5,20,'rotationY',plr=2}
+
+
+set{36,0,'rotationY',plr=1}
+set{36,0,'rotationY',plr=2}
+
+set{40,10,'rotationY'}
+set{40,10,'rotationZ'}
+set{40,10,'rotationX'}
+set{40.5,-10,'rotationY'}
+set{40.5,5,'rotationZ'}
+set{40.5,-10,'rotationX'}
+set{41,5,'rotationY'}
+set{41,-5,'rotationZ'}
+set{41,10,'rotationX'}
+set{41.3,-10,'rotationY'}
+set{41.3,10,'rotationZ'}
+set{41.3,-5,'rotationX'}
+set{41.7,5,'rotationY'}
+set{41.7,-10,'rotationZ'}
+set{41.7,10,'rotationX'}
+set{42,10,'rotationY'}
+set{42,-5,'rotationZ'}
+set{42,5,'rotationX'}
+set{42.3,-10,'rotationY'}
+set{42.3,-5,'rotationZ'}
+set{42.3,5,'rotationX'}
+set{42.6,-10,'rotationY'}
+set{42.6,-10,'rotationZ'}
+set{42.6,-10,'rotationX'}
+set{42.7,10,'rotationY'}
+set{42.7,10,'rotationZ'}
+set{42.7,10,'rotationX'}
+set{42.8,-10,'rotationY'}
+set{42.8,-10,'rotationZ'}
+set{42.8,-10,'rotationX'}
+set{42.9,10,'rotationY'}
+set{42.9,10,'rotationZ'}
+set{42.9,10,'rotationX'}
+set{43,-10,'rotationY'}
+set{43,-10,'rotationZ'}
+set{43,-10,'rotationX'}
+set{43.3,10,'rotationY'}
+set{43.3,5,'rotationZ'}
+set{43.3,-5,'rotationX'}
+set{43.6,-10,'rotationY'}
+set{43.6,10,'rotationZ'}
+set{43.6,5,'rotationX'}
+set{43.7,0,'rotationY'}
+set{43.7,0,'rotationZ'}
+set{43.7,0,'rotationX'}
+--set{45.5,math.sin(45.5)*300,'movex',plr=1}
+--set{45.5,math.sin(45.5*2)*150+100,'movey',plr=1}
+--set{45.5,math.sin(45.5)*-300,'movex',plr=2}
+--set{45.5,math.sin(45.5*2)*-150+100,'movey',plr=2}
+
+
+ease{111,0.5,linear,0,'skewx'}
+
+for i=112, 121, 4 do
+ease{i,0.5,linear,50,'skewx'}
+ease{i +0.5,0.25,linear,-50,'skewx'}
+ease{i+0.75,0.25,linear,0,'skewx'}
+ 
+end
+for i=122.5, 124, 1 do
+ease{i,0.25,linear,50,'skewx'}
+ease{i +0.5,0.25,linear,-50,'skewx'}
+
+ 
+end
+ease{124.5,0.25,linear,0,'skewx'}
+
+set{80,100,'arrowPath'}
+set{35,55,'rotationx'}
+set{35.5,-55,'rotationx'}
+set{36,55,'rotationx'}
+set{36.5,-55,'rotationx'}
+set{37,0,'rotationx'}
+for i, data in P1:GetNoteData(48, 79) do
+	ease{data[1],1,pop,100,'arrowPath'..data[2]}
+ 	ease {data[1],0.5, outExpo, math.sin((data[2]-1.5)/2)*(100+data[1]), 'drunk'..data[2]}
+	ease {data[1]+0.5,1, outExpo, 0, 'drunk'..data[2]}
+		ease {data[1],0.5, outExpo, math.sin((data[2]-1.5)/2)*(100+data[1]), 'drunkZ'..data[2]}
+	ease {data[1]+0.5,1, outExpo, 0, 'drunkZ'..data[2]}
+		ease {data[1],0.5, outExpo, math.sin((data[2]-1.5)/2)*(100+data[1]), 'drunkY'..data[2]}
+	ease {data[1]+0.5,1, outExpo, 0, 'drunkY'..data[2]}
+		ease {data[1],0.5, outExpo, math.sin((data[2]-1.5)/2)*(100+data[1]), 'bumpy'..data[2]}
+	ease {data[1]+0.5,1, outExpo, 0, 'bumpy'..data[2]}
+			ease {data[1],0.5, outExpo, math.sin((data[2]-1.5)/2)*(650+data[1]*1.5), 'confusionOffset'..data[2]}
+	ease {data[1]+0.5,1, outExpo, 0, 'confusionOffset'..data[2]}
+end
+func {48, 30, function(beat, mods)
+   
+        
+	
+         mods[1].movex = math.cos(beat)*350-500 
+    
+end}
+func {48, 30, function(beat, mods)
+   
+        
+	
+         mods[2].movex = math.cos(beat+10)*-350+500 * (1 - mods[2].fadeout)
+    
+end}
+
+func {77, 3, function(beat, mods)
+   
+    mods[2].movex = 0 *( 1 - mods[2].fadein)
+	  
+		
+    
+end}
+ease {77, 5, linear, 0, 'fadein'}
+ease {76, 2, linear, 1, 'fadeout'}
+ease {77, 5, linear, 0, 'fadein'}
+set{79, 0, 'fadeout'}
+
+
+
+func {80, 32, function(beat, mods)
+mods[1].movex = math.cos(beat)*50
+mods[2].movex = math.cos(beat)*50
+    
+end}
+ease{82.75,0.5,bounce,100,'invert'}
+ease{83.5,0.5,bounce,100,'invert'}
+ease{86.75,0.5,bounce,100,'invert'}
+ease{87.5,0.5,bounce,100,'invert'}
+ease{89.75,0.5,bounce,100,'invert'}
+ease{90.5,0.5,bounce,100,'invert'}
+ease{93.75,0.5,bounce,100,'invert'}
+ease{94.5,0.5,bounce,100,'invert'}
+ease{96.75,0.5,bounce,100,'invert'}
+ease{97.5,0.5,bounce,100,'invert'}
+ease{100.75,0.5,bounce,100,'invert'}
+ease{103.5,0.5,bounce,100,'invert'}
+ease{106.75,0.5,bounce,100,'invert'}
+ease{109.5,0.5,bounce,100,'invert'}
+local fuck={193,193.75,194.5,195,195.5,196,197,197.75,198.5,199,199.5,200,201,201.75,202.5,203,203.5,204,205,205.75,206.5,207,207.5,208,209,209.75,210.5,211,211.5,212,213,213.75,214.5,215,215.5,216,217,217.75,218.5}
+for i=1, table.getn(fuck), 1 do
+
+ease{fuck[i],0.7,bounce,75,'zoomx'}
+end
+for i=80, 110, 1 do
+ ease{i,0.5,bounce,130,'zoomx'}
+ ease{i + 0.5,0.5,bounce,50,'zoomx'}
+
+  ease{i,0.5,bounce,120,'zoomy'}
+ ease{i + 0.5,0.5,bounce,80,'zoomy'}
+ ease{i,1,bounce,120,'drunk'}
+  ease{i+0.5,1,bounce,-120,'drunk'}
+
+
+
+ 
+end
+for i=81, 110, 1 do
+
+  ease{i,0.5,bounce,1.1,'zoombg5'}
+ ease{i + 0.5,0.5,bounce,0.9,'zoombg5'}
+
+
+ 
+end
+for i=80, 110, 2 do
+
+ ease{i,1,linear,50,'skewx'}
+end
+for i=81, 110, 2 do
+
+ ease{i,1,linear,-50,'skewx'}
+end
+for i=192, 219, 8 do
+	ease{i,1,linear,0,'flip',plr=2}
+ ease{i,1,linear,100,'flip',plr=1}
+end
+for i=196, 219, 8 do
+	ease{i,1,linear,0,'flip',plr=1}
+ ease{i,1,linear,100,'flip',plr=2}
+end
+ ease{217,1,linear,0,'flip'}
+
+  ease{220,0.5,linear,100,'reverse0'}
+  ease{220.5,0.5,linear,100,'reverse1'}
+  ease{221.5,0.5,linear,100,'reverse2'}
+   ease{222,0.5,linear,100,'reverse3'}
+  ease{222.5,0.5,linear,0,'reverse0'}
+  ease{222.5,0.5,linear,0,'reverse1'}
+  ease{222.5,0.5,linear,0,'reverse2'}
+   ease{222.5,0.5,linear,0,'reverse3'}
+
+set{30,1,'fadeout'}
+ease {32, 3, outExpo, 0, 'fadeout'}
+
+func {32, 15.5, function(beat, mods)
+   
+        mods[1].movex = math.sin(beat)*300 * (1 - mods[1].fadeout)
+        mods[1].movey = (math.sin(beat*2)*150+100) * (1 - mods[1].fadeout)
+    
+end}
+
+func {32, 15.5, function(beat, mods)
+   
+        mods[2].movex = math.sin(beat)*-300 * (1 - mods[2].fadeout)
+        mods[2].movey = (math.sin((beat)*2)*-150+100) * (1 - mods[2].fadeout)
+    
+end}
+ease {45.5, 1, inOutExpo, 1, 'fadeout'}
+ease {48, 3.5, linear, 0, 'fadeout'}
+
+
+
+
+
+for i, data in P1:GetNoteData(17, 30) do
+ 	ease {data[1],0.5, outExpo, 628, 'confusionoffset'..data[2]}
+    ease {data[1],1, outExpo, 100, 'arrowpath'..data[2]}
+	ease {data[1],1, outExpo, -20, 'moveY'..data[2]}
+	ease {data[1],1, outExpo, math.sin((data[2]-1.5)/2)*150, 'drunk'..data[2]}
+    ease {data[1] + 0.5,1, outExpo, 0, 'arrowpath'..data[2]}
+	ease {data[1] + 0.5,1, outExpo, 0, 'drunk'..data[2]}
+	ease {data[1] + 0.5,1, outExpo, 20, 'moveY'..data[2]}
+	set{data[1] + 0.5,0,'confusionoffset'..data[2]}
+end
+
+
+for i, data in P1:GetNoteData(31,34) do
+	 	ease {data[1],0.4, outExpo, 628, 'confusionoffset'..data[2]}
+	set{data[1] + 0.8,0,'confusionoffset'..data[2]}
+	set{data[1] + 0.2,20,'movey'..data[2]}
+	set{data[1] + 0.4,0,'movey'..data[2]}
+
+end
+
+
+set{124,0,'arrowpath'}
+set{124,0,'skewx'}
+ease{124.5,1,bounce,150,'zoomx'}
+ease{124.5,1,bounce,75,'zoomy'}
+ease{125,1,bounce,75,'zoomx'}
+ease{125,1,bounce,125,'zoomy'}
+ease{126,5,outExpo,400,'zoom'}
+
+ease{126,5,outExpo,100,'skewx'}
+ease{126,5,outExpo,100,'movex'}
+set{127,0,'zoom'}
+set{127,0,'skewx'}
+set{127,0,'movex'}
+ease{127.1,2,linear,100,'zoom'}
+
+--vocals
+
+func {127.5, 194-129, function(beat, mods)
+mods[2].stealth = (math.cos(beat-1)*-50 + 50 ) * (1 - mods[2].fadeout)
+      mods[2].rotationz = math.sin(beat*1.5+10)*10 * (1 - mods[2].fadeout)
+    mods[2].rotationy = math.sin(beat+10)*25 * (1 - mods[2].fadeout)
+        mods[2].movex = math.sin(beat)*-300 * (1 - mods[2].fadeout)
+        mods[2].movey = (math.cos((beat*2))*-150+100) * (1 - mods[2].fadeout)
+    
+end}
+func {127.5, 194-129, function(beat, mods)
+
+mods[1].stealth = (math.cos(beat)*50 + 50 ) * (1 - mods[1].fadeout)
+   mods[1].rotationz = math.sin(beat*1.5+10)*-10 * (1 - mods[1].fadeout)
+    mods[1].rotationy = math.sin(beat+10)*-25 * (1 - mods[1].fadeout)
+        mods[1].movex = math.sin(beat+10)*-300 * (1 - mods[1].fadeout)
+        mods[1].movey = (math.cos((beat*2+10))*-150+100) * (1 - mods[1].fadeout)
+    
+end}
+func {160, 193-160, function(beat, mods)
+   
+        mods[2].movez = math.sin(beat*2)*-300 * (1 - mods[2].fadeout)
+      
+    
+end}
+func {160, 193-160, function(beat, mods)
+   
+    
+        mods[1].movez = (math.sin((beat*2+10))*-150+100) * (1 - mods[1].fadeout)
+    
+end}
+
+func {192, 28, function(beat, mods)
+      mods[1].rotationz = math.sin(beat*1.5+10)*-10 * (1 - mods[1].fadeout)
+    mods[1].rotationy = math.sin(beat+10)*-25 * (1 - mods[1].fadeout)
+    
+        mods[1].movex= (math.sin((beat*2))*300) * (1 - mods[1].fadeout)
+		mods[1].movey= (math.sin((beat))*200+100) * (1 - mods[1].fadeout)
+		
+    
+end}
+func {192, 28, function(beat, mods)
+   
+   mods[2].rotationz = math.sin(beat*1.5+10)*-10 * (1 - mods[2].fadeout)
+    mods[2].rotationy = math.sin(beat+10)*-25 * (1 - mods[2].fadeout)
+        mods[2].movex= (math.sin((beat*2))*-300) * (1 - mods[2].fadeout)
+		mods[2].movey= (math.sin((beat))*-200+100) * (1 - mods[2].fadeout)
+		
+    
+end}
+set{200,1,'fadein'}
+
+
+
+ease{218,1,linear,1,'fadeout'}
+ease{222.5,2,linear,0,'fadein'}
+ease{240,2,linear,0,'fadeout'}
+ease{238,2,linear,1,'fadein'}
+ease{250,2,linear,1,'fadeout'}
+func {219, 3, function(beat, mods)
+   
+  mods[1].movex = 1 *( 1 - mods[1].fadein)
+   mods[1].movey = 1 *(1 - mods[1].fadein)
+    mods[2].movex = 1 *( 1 - mods[2].fadein)
+	   mods[2].movey = 1 *( 1 - mods[2].fadein)
+		
+    
+end}
+
+ease{240,2,linear,1,'fadein'}
+func {222, 22, function(beat, mods)
+   
+   mods[2].rotationz = math.sin(beat*2+1)*-20 * (1 - mods[2].fadein)
+    mods[2].rotationy = math.sin(beat+1)*-25 * (1 - mods[2].fadein)
+        mods[2].movex= (math.cos((beat*3))*-100) * (1 - mods[2].fadein)
+		mods[2].movey= (math.cos((beat))*-200+100) * (1 - mods[2].fadein)
+		   mods[1].rotationz = math.sin(beat*2+1)*-20 * (1 - mods[1].fadein)
+    mods[1].rotationy = math.sin(beat+1)*-25 * (1 - mods[1].fadein)
+        mods[1].movex= (math.cos((beat*3))*-100) * (1 - mods[1].fadein)
+		mods[1].movey= (math.cos((beat))*-200+100) * (1 - mods[1].fadein)
+end}
+func {240, 16, function(beat, mods)
+      mods[2].rotationz = math.sin(beat*2+1)*-20 * (1 - mods[2].fadeout)
+    mods[2].rotationy = math.sin(beat+1)*-25 * (1 - mods[2].fadeout)
+        mods[2].movex= (math.cos((beat*1))*-200) * (1 - mods[2].fadeout)
+		mods[2].movey= (math.cos((beat))*-200+100) * (1 - mods[2].fadeout)
+		   mods[1].rotationz = math.sin(beat*2+1)*20 * (1 - mods[1].fadeout)
+    mods[1].rotationy = math.sin(beat+1)*25 * (1 - mods[1].fadeout)
+        mods[1].movex= (math.cos((beat*1))*200) * (1 - mods[1].fadeout)
+		mods[1].movey= (math.cos((beat))*200+100) * (1 - mods[1].fadeout)
+		mods[2].movez= (math.sin((beat+0.5))*-200) * (1 - mods[2].fadeout)
+		mods[1].movez= (math.sin((beat))*-200) * (1 - mods[1].fadeout)
+		
+    
+end}
+ease{224,0.5,bounce,100,'invert'}
+ease{224.5,0.5,bounce,100,'invert'}
+ease{227,0.5,bounce,100,'invert'}
+ease{227.5,0.5,bounce,100,'invert'}
+ease{228,0.5,bounce,100,'invert'}
+ease{232,0.5,bounce,100,'invert'}
+ease{232.5,0.5,bounce,100,'invert'}
+ease{235,0.5,bounce,100,'invert'}
+ease{235.5,0.5,bounce,100,'invert'}
+ease{236,0.5,bounce,100,'invert'}
+set{254,100,'sudden'}
+set{254,100,'hidemines'}
+set{254,1,'suddenOffset'}
+
+
+--func {48, function()
+        --for pn=1,2 do
+       -- local plr = P[pn]
+        --local pos = 0.25
+         --if pn == 2 then pos = 0.75 end
+              -- if plr then plr:x(scx) end
+			  -- if plr then plr:y(scy) end
+   -- end
+   -- end}
+
+	
+
+	func {30, function()
+        for pn=1,2 do
+        local plr = P[pn]
+        --local pos = 0.25
+         --if pn == 2 then pos = 0.75 end
+               if plr then plr:x(SCREEN_CENTER_X) end
+    end
+    end}
+
+
+	func {0, function()
+        for pn=1,2 do
+        local plr = P[pn]
+        --local pos = 0.25
+         --if pn == 2 then pos = 0.75 end
+               if plr then plr:x(SCREEN_CENTER_X) end
+    end
+    end}
+
+
+func{0,function()
+
+  bg2:diffusealpha(0)
+end}
+func{16,function()
+  bg1:linear(0.5)
+  bg1:diffusealpha(0)
+   bg2:diffusealpha(1)
+end}
+func{29,function()
+  bg2:linear(0.5)
+  bg2:diffusealpha(0)
+   bg3:diffusealpha(1)
+end}
+func{46,function()
+  bg3:linear(0.5)
+  bg3:diffusealpha(0)
+   bg4:diffusealpha(1)
+	
+
+ 
+end}
+func{111,function()
+  bg5:linear(0.5)
+  bg5:diffusealpha(0)
+ bg6:diffusealpha(1)
+
+	
+
+ 
+end}
+func{127,function()
+  bg6:linear(0.5)
+  bg6:diffusealpha(0)
+ bg7:diffusealpha(1)
+	
+
+ 
+end}
+func{190,function()
+  bg7:linear(0.5)
+  bg7:diffusealpha(0)
+ bg8:diffusealpha(1)
+	
+
+ 
+end}
+func{221,function()
+  bg8:linear(0.5)
+  bg8:diffusealpha(0)
+ bg9:diffusealpha(1)
+	
+
+ 
+end}
+func{27,function()
+
+  bg5:diffusealpha(1)
+
+	
+
+ 
+end}
+
+func{254,function()
+ bg9:linear(0.5)
+  bg9:diffusealpha(0)
+
+	
+
+ 
+end}
+ease{260,1,linear,0,'hidemines'}
+func{260,function()
+  bg10:linear(1)
+  bg10:diffusealpha(0.08)
+ 
+	
+
+ 
+end}
+
+aux {'zoombg2'}
+node {'zoombg2', function(p)
+    bg2:zoom(p)
+end}
+aux {'zoombg3'}
+node {'zoombg3', function(p)
+    bg3:zoom(p)
+end}
+aux {'zoombg4'}
+node {'zoombg4', function(p)
+    bg4:zoom(p)
+end}
+aux {'zoombg5'}
+node {'zoombg5', function(p)
+    bg5:zoom(p)
+end}
+ease{78,2,linear,0,'zoom'}
+ease{80,1,linear,100,'zoom'}
+ease{78,2,linear,0,'zoombg4'}
+ease{80,1,linear,1,'zoombg5'}
+
+set{0,1,'zoombg4'}
+set{0,0,'zoombg5'}
+
+for i=15, 28, 2 do
+	ease{i,0.2,linear,5.1,'zoombg2'}
+		ease{i+0.2,0.2,linear,5,'zoombg2'}
+		
+ ease{i,0.2,linear,120,'zoom'}
+ ease{i+0.2,0.2,linear,110,'zoom'}
+end
+
+
+for i=32, 40, 4 do
+	ease{i,1,bounce,100,'flip',plr=1}
+		
+		
+	ease{i+2,1,bounce,100,'flip',plr=2}
+
+end
+
+func{16.5,function() 
+bg2:texcoordvelocity(-0.5,0.4)
+end}
+
+--texcoordvelocity,-0.50,0.35
+
+
+
+end)"
+Type = "ActorFrame"
+><children>
+<Layer File = "bg10.jpg" Name = "bg10" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0" />
+<Layer File = "bg9.png" Name = "bg9" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0" />
+<Layer File = "bg8.png" Name = "bg8" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0" />
+<Layer File = "bg7.png" Name = "bg7" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0" />
+<Layer File = "bg6.png" Name = "bg6" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0" />
+<Layer File = "bg5.png" Name = "bg5" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0" />
+<Layer File = "bg4.png" Name = "bg4" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0" />
+	<Layer File = "bg3.png" Name = "bg3" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,1;zoom,0.0;" />
+<Layer File = "bg2.png" Name = "bg2" OnCommand="customtexturerect,0,0,5,5;zoom,5;xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;" />
+	<Layer File = "bg1.png" Name = "bg1" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,1" />
+
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+</children></Mods>

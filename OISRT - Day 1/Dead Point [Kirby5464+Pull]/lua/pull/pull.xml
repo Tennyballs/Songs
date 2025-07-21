@@ -1,0 +1,221 @@
+<Mods LoadCommand="%xero(function(self)
+	-- pull that request be liek ~Kirby
+	-- let the hell begin
+	
+	ease {6.5, 0.5, outExpo, scx-160, 'playerx', plr = 1}
+	ease {6.5, 0.5, outExpo, scx+160, 'playerx', plr = 2}
+	
+	for i = 0,10,2 do
+		add {i, 0.5, outExpo, 50, 'invert'}    {i+0.5, 0.5, outExpo, 50, 'invert'}
+		    {i+1, 0.5, outExpo, -50, 'invert'} {i+1.5, 0.5, outExpo, -50, 'invert'}
+		ease {i, 0.5, pop, 100, 'tipsy'} {i+1, 0.5, pop, -100, 'tipsy'}
+	end
+	ease {12, 1, outExpo, 100, 'flip'} {13, 1, outExpo, 0, 'flip'}
+	
+	set {14, 100, 'invert', 0.1, 'glitch'}
+	local hide = true;
+	for of = 0,0.5,1/16 do set {14+of, hide and 0 or 100, 'opacity'}; hide = not hide end
+	set{15, 100, 'opacity', 0, 'glitch'}
+	ease{15, 1, outExpo, 0, 'invert'}
+	
+	set {16, scx-38, 'beta_X'}
+	beta_idle(16)
+	
+	ease {16, 12, inCubic, 3000, 'modFlip'}
+	     --{16,  2, inSine,  20, 'rotationzoffseted'}
+	     --{18,  4, inSine, -20, 'rotationzoffseted'}
+	     --{22,  2, inSine,   0, 'rotationzoffseted'}
+	     {24,  4, linear, 200, 'mini'}
+	     {24,  4, inCubic, 0.05, 'glitch'}
+	
+	beta_cast(24)
+	ease {24, 1, outExpo, scx, 'beta_X'}
+	beta_begone(27)
+	
+	set {28, scx, 'playerx', 2, 'opacity', 0, 'tiny0', 200, 'tiny1', 0, 'tiny2', 200, 'tiny3', 0, 'mini', 0, 'glitch'}
+	set {29, 0, 'tiny1', 0, 'tiny3'}
+	ease {30, 2, outSine, 100, 'opacity', 10, 'rotationzoffseted'}
+	     {30, 2, pop, 200, 'drunk', 75, 'tandrunk', 75, 'tanbumpy', 50, 'arrowpath', 0.1, 'glitch'}
+	     {30, 2, inCubic, -15, 'flip', 120, 'movex'}
+		 
+	func {30, 2, outSine, 0, 0.15, 'P_BG_plus:diffusealpha'}
+	
+	-- The first section
+	local positive, moveChange = true, false
+	for i = 32, 95 do
+		ease {i, 1, pop, -50, 'mini', 100 * (positive and 1 or -1), 'tipsy'}
+		ease {i, 1, inCubic, 15 * (positive and 1 or -1), 'flip', 40 * (positive and 2 or -1) * (moveChange and 1 or -1), 'movex'}
+		
+		positive = not positive
+		if i == 46 or i == 62 or i == 78 or i == 94 then moveChange = not moveChange end
+		
+		func {i, 1, pop, 1, 1.05 + (i%2==1 and 0.05 or 0), function(x) P_BG_plus:zoom(x) end}
+	end
+	ease {47, 1, outSine, -10, 'rotationzoffseted'}
+	ease {63, 1, outSine,  20, 'rotationzoffseted'}
+	ease {79, 1, outSine, -20, 'rotationzoffseted'}
+	ease {95, 1, outSine,   0, 'rotationzoffseted', 0, 'flip', 0, 'movex'}
+	
+	func {47, 1, outSine, 10, -10, 'P_BG_plus:rotationz'} {47, 1, outSine, -0.75, 0.75, function(x) P_BG_plus:texcoordvelocity(x, 0.75) end}
+	func {63, 1, outSine, -10, 20, 'P_BG_plus:rotationz'} {63, 1, outSine, function(i) P_BG_plus:texcoordvelocity(0.75-2.25*i, 0.75+0.75*i) end}
+	func {79, 1, outSine, 20, -20, 'P_BG_plus:rotationz'} {79, 1, outSine, -1.5, 1.5, function(x) P_BG_plus:texcoordvelocity(x, 1.5) end}
+	func {95, 1, outSine, -20,  0, 'P_BG_plus:rotationz'} {93, 1, outSine, 1.5, 0, function(x) P_BG_plus:texcoordvelocity(x, x) end}
+	
+	ease {88, 5, inCubic, 0.1, 'glitch'} {93, 1, outCubic, 0, 'glitch'}
+	
+	local positive = true
+	for i = 88, 94-0.125, 0.125 do
+		ease {i, 0.125, pop, (50 + 200 * ((i-88)/6)) * (positive and 1 or -1), 'drunk'}
+		positive = not positive
+	end
+	ease {94, 1, pop, 100, 'drunk', 100, 'tipsy', 50, 'drunk'}
+	ease {95, 1, pop, -100, 'drunk', -100, 'tipsy', 50, 'drunk'}
+	func {96, function() P_BG_plus:hidden(1) end}
+	
+	
+	-- mom said it's my turn to make more mods
+	set {256, scx-175, 'beta_X', 0, 'modFlip'}
+	beta_idle(256)
+	
+	
+	for i = 256, 279 do ease {i, 0.5, pop, 0.02, 'glitch'} end
+	
+	for i = 256, 271 do
+		ease {i, 1, pop, -75, 'mini', 100 * ((i%2)==0 and 1 or -1), 'tipsy', 100 * ((i%2)==0 and 1 or -1), 'drunk'}
+	end
+	for i = 272, 283, 0.5 do
+		ease {i, 0.5, pop, -75, 'mini', 50 * ((i%1)==0 and 1 or -1), 'tipsy', 50 * ((i%1)==0 and 1 or -1), 'drunk'}
+	end
+	
+	ease {272, 12, inCubic, 2500, 'modFlip'}
+	ease {280, 4, inExpo, scx-40, 'playerx', plr = 1} --subtle
+	ease {280, 4, inExpo, scx+40, 'playerx', plr = 2} --subtle 2
+	ease {279.5, 4.5, inCubic, 0.06, 'glitch'} --not so subtle
+	
+	beta_cast(280)
+	beta_begone(283)
+	
+	set {284, 0, 'xmod', 0, 'modFlip'}
+	ease {284, 4, linear, 1.25, 'xmod'}
+		{284, 4, outElastic, scx-160, 'playerx', 50, 'drunk', plr = 1}
+		{284, 4, pop, 100, 'drunk', 100, 'tipsy', 150, 'dizzy', 0.25, 'grey_t', 0.25, 'grey_t2'}
+		{284, 4, outElastic, scx+160, 'playerx', 0, 'opacity', plr = 2}
+		{284, 4, outExpo, 0, 'glitch'}
+	local intensity = 400
+	
+	set {288, 500, 'tipsyspacing'} --idek if this even does anything
+	set {288, intensity, 'tipsy', intensity, 'drunk', 365*5, 'confusionoffset', plr = 2}
+	local firstP = true
+	for i = 288, 316, 4 do
+		plr = firstP and 1 or 2
+		ease {i, 4, inSine, 600, 'centered2', 0, 'opacity'}
+		     {i+3, 1, inSine, intensity, 'tipsy', intensity, 'drunk', 365*5, 'confusionoffset'}
+		set  {i+4, 0, 'centered2'}
+		
+		ease {i+3, 1, pop, 0.5, 'grey_t' .. (i%8==0 and '' or '2')} --veeeesual
+		ease {i+3, 1, pop, 0.05, 'glitch'}
+		
+		plr = firstP and 2 or 1
+		ease {i+3, 1, inSine, 100, 'opacity', 0, 'drunk', 0, 'tipsy', 0, 'confusionoffset'}
+	
+		firstP = not firstP
+	end
+	plr = nil
+	for i = 288, 316, 4 do
+		ease {i,     0.5, pop,  150, 'drunk'}
+		ease {i+0.5, 0.5, pop, -150, 'drunk'}
+		ease {i+1,   0.5, pop,  150, 'drunk'}
+		ease {i+1.5, 0.5, pop, -150, 'drunk'}
+		ease {i+2,   0.5, pop,  150, 'drunk'}
+		ease {i+3,   0.5, pop, -150, 'drunk'}
+	end
+	
+	ease {302, 1, outQuad, 200, 'modFlip', plr = 2}
+	ease {303, 1, outQuad,   0, 'modFlip', plr = 2}
+	--And the award for jankest between section transition goes to
+	set {316, scx, 'playerx', plr = 1}
+	ease {319, 1, inSine, 0, 'tipsy', 0, 'drunk', 1.75, 'xmod'};
+	reset {320, only = {'playerx', 'opacity', 'confusionoffset'}, plr = 2}
+	
+	
+	beta_idle(319)
+	beta_cast(320)
+	beta_begone(352)
+	-- ACCENTS
+	
+	local hide = true
+	for i = 35,35+16+16+16,16 do
+		set{i, 0.05, 'glitch'}
+		for of = 0,0.5,1/16 do set {i+of, hide and 0 or 100, 'opacity'}; hide = not hide end
+		set{i+0.5, 100, 'opacity', 0, 'glitch'}
+	end
+	
+	
+	-- *lazer eyes 2* the giant accent table I didn't steal from a c2l I swear
+	local introkicks = {16,16.5,17,17.5,18,18.5,19,19.5,20,20.5,21,21.5,22,22.5,23,23.5,24,25,26,27}
+	local positive = true
+	for _,i in ipairs(introkicks) do
+		ease {i, 0.5, pop, 100 * (positive and 1 or -1), 'drunk', 100 * (positive and 1 or -1), 'tipsy'}
+		
+		if i < 24 then
+			ease {i+(80-16), 0.5, pop, 125 * (positive and 1 or -1), 'drunk', 125 * (positive and 1 or -1), 'tipsy'}
+		end
+		positive = not positive
+	end
+	local positive = true
+	for i = 64,79.5,0.5 do
+		ease {i, 0.5, pop, 75 * (positive and 1 or -1), 'drunk', 75 * (positive and 1 or -1), 'tipsy'}
+		positive = not positive
+	end
+	
+	-- even more weee
+	function arrowpathSwooshLR(i)
+		ease {i,      1, pop, 100, 'arrowpath0'} {i+0.25, 1, pop, 100, 'arrowpath1'}
+		     {i+0.50, 1, pop, 100, 'arrowpath2'} {i+0.75, 1, pop, 100, 'arrowpath3'}
+	end
+	function arrowpathSwooshRL(i)
+		ease {i,      1, pop, 100, 'arrowpath3'} {i+0.25, 1, pop, 100, 'arrowpath2'}
+		     {i+0.50, 1, pop, 100, 'arrowpath1'} {i+0.75, 1, pop, 100, 'arrowpath0'}
+	end
+	
+	set {47, 300, 'arrowpathgirth'}
+	arrowpathSwooshLR(47)
+	ease {62, 1, pop, 100, 'arrowpath0'} {62.5, 1, pop, 100, 'arrowpath3'} {63, 1, pop, 100, 'arrowpath1', 100, 'arrowpath2'}
+	arrowpathSwooshRL(79)
+	arrowpathSwooshLR(94)
+	arrowpathSwooshRL(95)
+	
+	set {259, 300, 'arrowpathgirth'}
+	arrowpathSwooshLR(259)
+	arrowpathSwooshRL(263)
+	arrowpathSwooshLR(267)
+	arrowpathSwooshLR(270)
+	arrowpathSwooshRL(271)
+	arrowpathSwooshLR(275)
+	arrowpathSwooshLR(279)
+	arrowpathSwooshLR(281)
+	arrowpathSwooshLR(283)
+
+	ease {313, 1, pop, -50, 'skewy', -100, 'mini'}
+	ease {314, 1, pop,  50, 'skewy', -100, 'mini'}
+
+	-- collab ????????????' ???????
+	set {320, 100, 'beat'}
+	for i = 320, 336 do
+		ease {i, 1, pop, -40, 'mini', 70 * ((i%2)==0 and 1 or -1), 'tipsy', 70 * ((i%2)==0 and 1 or -1), 'drunk'}
+	end
+	for i = 336, 344, 0.5 do
+		ease {i, 0.5, pop, -20, 'mini', 150 * ((i%1)==0 and 1 or -1), 'drunk'}
+	end
+	
+	-- CAR(d)???????????????????????????????????????????
+	card {0, 28, 'VR Bodysuit: on', 4, {.5, .5, .5, 1}}
+	card {32, 96, 'is this *really* vr...?', 6, {.6, .6, .6, 1}}
+	card {256, 285, 'Lord forgive me, I\'m back at my bullshit.', 4, {.5, .5, .5, 1}}
+	card {288, 318, 'what\'s a cafe, again?', 7, {.6, .6, .6, 1}}
+	card {320, 352, 'The Hard Part(tm)', 9, '#6699CC'}
+end)"
+	Type = "ActorFrame"
+><children>
+
+</children></Mods>

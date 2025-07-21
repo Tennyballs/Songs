@@ -1,0 +1,829 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,GAMESTATE:GetCurrentSong():MusicLengthSeconds()"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				prefix_path = SONGMAN:FindSong(GAMESTATE:GetCurrentSong():GetDisplayFullTitle()):GetSongDir();
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+				{0.000,'Store'},
+				{0.786,'BuzzBeginning'},
+				
+				{41.603,'MiniToBuzz'},
+				
+				{44.920,'XStretch'},
+				{46.074,'YStretch'},
+				
+				{46.940,'BuzzBounce'},
+				
+				{58.350,'Vortex'},
+				
+				{58.477,'BuzzBeginning'},
+				
+				{58.478,'VortexSpin'},
+				
+				{67.132,'ChangeZPosition'},
+				
+				{67.709,'Perspective'},
+				
+				{94.824,'HideVortex'},
+				
+				{44.920+58.847,'XStretch'},
+				{46.074+58.847,'YStretch'},
+				
+				{105.786,'BuzzBounce'},
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'1.9x,-999999% Cover,*10000 No Beat','end'},
+				
+				{0,0.497,'*10000 200% Mini,','end'},
+				{0.497,0.786,'*16 -250% Mini,*0.9 25% Flip,','end'},
+				{0.786,10.017,'*0.3 No Mini,*0.03 No Flip,','end'},
+				{0.786,0.930,'*32 500% Drunk,*32 500% Tipsy,','end'},
+				{0.930,10.017,'*0.5 No Drunk,*0.5 No Tipsy,','end'},
+				--{10.017,58.478,'','end'},
+				
+				{9.440,0.072,'*14 Invert,','len'},
+				{9.440+240/208/16*1,0.072,'*14 No Invert,*14 Flip,','len'},
+				{9.440+240/208/16*2,0.072,'*14 No Invert,*14 No Flip,','len'},
+				{9.440+240/208/16*3,0.072,'*14 -100% Invert,*14 Flip,','len'},
+				{9.440+240/208/16*4,0.072,'*28 Invert,*14 No Flip,','len'},
+				{9.440+240/208/16*5,0.072,'*14 No Invert,*14 No Flip,','len'},
+				{9.440+240/208/16*6,0.072,'*14 No Invert,*14 -100% Flip,','len'},
+				{9.440+240/208/16*7,0.250,'*14 No Invert,*14 No Flip,','len'},
+				
+				{10.017,18.094,'*0.4 250% Hallway,*0.8 -500% Mini,*0.4 1x','end'},
+				{10.305,18.094,'*0.07 35% Flip','end'},
+				
+				{9.872,14.199,'*10000 200% Beat','end'},
+				
+				{14.199,18.670,'*96 No Tipsy','end'},
+				{14.199,240/208/24,'*64 400% Tipsy','len'},
+				{14.488,240/208/24,'*64 -400% Tipsy','len'},
+				{14.632,240/208/24,'*64 400% Tipsy','len'},
+				{14.776,240/208/24,'*64 -400% Tipsy','len'},
+				{14.920,240/208/24,'*64 400% Tipsy','len'},
+				{15.065,240/208/24,'*64 -400% Tipsy','len'},
+				{15.209,240/208/24,'*64 400% Tipsy','len'},
+				{15.353,240/208/24,'*64 -400% Tipsy','len'},
+				{15.425,240/208/24,'*64 400% Tipsy','len'},
+				{15.497,240/208/24,'*64 -400% Tipsy','len'},
+				{15.642,240/208/24,'*64 400% Tipsy','len'},
+				{15.786,240/208/24,'*64 -400% Tipsy','len'},
+				{15.930,240/208/24,'*64 400% Tipsy','len'},
+				{16.074,240/208/24,'*64 -400% Tipsy','len'},
+				{16.219,240/208/24,'*64 400% Tipsy','len'},
+				{16.363,240/208/24,'*64 -400% Tipsy','len'},
+				{16.435,240/208/24,'*64 400% Tipsy','len'},
+				{16.507,240/208/24,'*64 -400% Tipsy','len'},
+				{16.579,240/208/24,'*64 400% Tipsy','len'},
+				{16.651,240/208/24,'*64 -400% Tipsy','len'},
+				{16.795,240/208/24,'*64 400% Tipsy','len'},
+				
+				{18.094,19.247,'*64 No Drunk,*0.35 No Flip,*5 No Mini,*2.5 Overhead','end'},
+				
+				
+				{18.670,0.072,'*14 Invert,','len'},
+				{18.670+240/208/16*1,0.072,'*14 No Invert,*14 Flip,','len'},
+				{18.670+240/208/16*2,0.072,'*14 No Invert,*14 No Flip,','len'},
+				{18.670+240/208/16*3,0.072,'*14 -100% Invert,*14 Flip,','len'},
+				{18.670+240/208/16*4,0.072,'*28 Invert,*14 No Flip,','len'},
+				{18.670+240/208/16*5,0.072,'*14 No Invert,*14 No Flip,','len'},
+				{18.670+240/208/16*6,0.072,'*14 No Invert,*14 -100% Flip,','len'},
+				{18.670+240/208/16*7,0.250,'*14 No Invert,*21 50% Flip,','len'},
+				
+				{19.247,25.594,'*10000 50% Flip,','end'},
+				{25.594,25.882,'*2 No Flip,','end'},
+				
+				{25.882,30.497,'*6 175% Mini,*12 -300% Flip,*1.5 1.5x','end'},
+				{30.497,31.000,'*6 No Mini,*12 No Flip,*1.5 1.9x','end'},
+				
+				{26.026,27.469,'*10000 2000% Beat','end'},
+				{28.334,30.353,'*10000 2000% Beat','end'},
+				
+				{27.469,240/208/16,'*32 -200% Flip','len'},
+				{27.541,240/208/16,'*32 -100% Flip','len'},
+				{27.613,240/208/8,'*32 No Flip','len'},
+				{27.757,240/208/16,'*32 -60% Flip','len'},
+				{27.829,240/208/16,'*32 -120% Flip','len'},
+				{27.901,240/208/16,'*32 -180% Flip','len'},
+				{27.973,240/208/16,'*32 -240% Flip','len'},
+				{28.045,240/208/8,'*32 -300% Flip','len'},
+				{28.190,240/208/8,'*32 No Flip','len'},
+				{28.334,240/208/8,'*32 -300% Flip','len'},
+				
+				{30.642,31.219,'*10000 200% Beat','end'},
+				
+				{31.363,240/208/8,'*16 150% Mini','len'},
+				{31.507,240/208/8,'*16 No Mini','len'},
+				{31.651,240/208/8,'*16 150% Mini','len'},
+				{31.795,240/208/8,'*16 No Mini','len'},
+				
+				{31.940,33.094,'*48 No Drunk,*48 No Tipsy,*12 No Mini,*12 No Flip','end'},
+				{31.940,240/208/16*3,'*48 250% Drunk,*48 250% Tipsy,*12 63% Mini,*12 -63% Flip','len'},
+				{32.372,240/208/16*3,'*48 -250% Drunk,*48 -250% Tipsy,*12 63% Mini,*12 -63% Flip','len'},
+				{32.805,240/208/8,'*48 250% Drunk,*48 250% Tipsy,*12 63% Mini,*12 -63% Flip','len'},
+				
+				{33.094,34.247,'*1.25 200% Mini','end'},
+				{33.094,36.555,'Blind','end'},
+				{34.247+240/208/8*0,240/208/8,'*1 No Mini','len'},
+				{34.247+240/208/8*1,240/208/8,'*2 No Mini','len'},
+				{34.247+240/208/8*2,240/208/8,'*3 No Mini','len'},
+				{34.247+240/208/8*3,240/208/8,'*4 No Mini','len'},
+				{34.247+240/208/8*4,240/208/8,'*5 No Mini','len'},
+				{34.247+240/208/8*5,240/208/8,'*6 No Mini','len'},
+				{34.247+240/208/8*6,240/208/8,'*7 No Mini','len'},
+				{34.247+240/208/8*7,240/208/8,'*8 No Mini','len'},
+				{34.247+240/208/8*8,240/208/8,'*9 No Mini','len'},
+				{34.247+240/208/8*9,240/208/8,'*10 No Mini','len'},
+				{34.247+240/208/8*10,240/208/8,'*11 No Mini','len'},
+				{34.247+240/208/8*11,240/208/8,'*12 No Mini','len'},
+				{34.247+240/208/8*12,240/208/8,'*13 No Mini','len'},
+				{34.247+240/208/8*13,240/208/8,'*14 No Mini','len'},
+				{34.247+240/208/8*14,240/208/8,'*15 No Mini','len'},
+				{34.247+240/208/8*15,37.709,'*16 No Mini','end'},
+				{34.247+240/208/8*0,240/208/16,'*1 200% Mini','len'},
+				{34.247+240/208/8*1,240/208/16,'*2 200% Mini','len'},
+				{34.247+240/208/8*2,240/208/16,'*3 200% Mini','len'},
+				{34.247+240/208/8*3,240/208/16,'*4 200% Mini','len'},
+				{34.247+240/208/8*4,240/208/16,'*5 200% Mini','len'},
+				{34.247+240/208/8*5,240/208/16,'*6 200% Mini','len'},
+				{34.247+240/208/8*6,240/208/16,'*7 200% Mini','len'},
+				{34.247+240/208/8*7,240/208/16,'*8 200% Mini','len'},
+				{34.247+240/208/8*8,240/208/16,'*9 200% Mini','len'},
+				{34.247+240/208/8*9,240/208/16,'*10 200% Mini','len'},
+				{34.247+240/208/8*10,240/208/16,'*11 200% Mini','len'},
+				{34.247+240/208/8*11,240/208/16,'*12 200% Mini','len'},
+				{34.247+240/208/8*12,240/208/16,'*13 200% Mini','len'},
+				{34.247+240/208/8*13,240/208/16,'*14 200% Mini','len'},
+				{34.247+240/208/8*14,240/208/16,'*15 200% Mini','len'},
+				{34.247+240/208/8*15,240/208/16,'*16 200% Mini','len'},
+				
+				{37.565,41.603,'*10000 200% Beat','end'},
+				
+				{37.709,44.055,'*12 600% Bumpy','end'},
+				{41.315,42.324,'*12 No Bumpy','end'},
+				{44.055,45.000,'*12 No Bumpy','end'},
+				{44.055,240/208/8,'*32 75% Mini','len'},
+				{44.199,240/208/8,'*32 150% Mini','len'},
+				{44.344,240/208/16,'*32 Mini','len'},
+				{44.416,240/208/16,'*32 50% Mini','len'},
+				{44.488,240/208/16,'*32 No Mini','len'},
+				
+				{41.603,240/208/4,'*32 1000% Dizzy','len'},
+				{41.892,240/208/2,'*32 No Dizzy','len'},
+				
+				{42.180,44.488,'*10000 200% Beat','end'},
+				
+				{44.776,240/208/4,'*32 125% Drunk,*32 125% Tipsy','len'},
+				{45.065,240/208/8,'*32 -125% Drunk,*32 -125% Tipsy','len'},
+				{45.209,240/208/16*3,'*32 125% Drunk,*32 125% Tipsy','len'},
+				{45.425,240/208/16*3,'*32 -125% Drunk,*32 -125% Tipsy','len'},
+				{45.642,240/208/4,'*32 125% Drunk,*32 125% Tipsy','len'},
+				{45.930,240/208/4,'*16 No Drunk,*16 No Tipsy','len'},
+				
+				{49.247,51.555,'*20 No Mini','end'},
+				{49.247,240/208/16,'*20 200% Mini','len'},
+				{49.392,240/208/16,'*20 200% Mini','len'},
+				{49.680,240/208/16,'*20 200% Mini','len'},
+				{49.969,240/208/16,'*20 200% Mini','len'},
+				{50.257,240/208/16,'*20 200% Mini','len'},
+				{50.545,240/208/16,'*20 200% Mini','len'},
+				{50.834,240/208/16,'*20 200% Mini','len'},
+				
+				{50.257,240/208/8,'*12 Distant','len'},
+				{50.545,240/208/8,'*12 200% Distant','len'},
+				{50.834,240/208/8,'*24 Overhead','len'},
+				
+				{51.411,56.026,'*10000 200% Beat','end'},
+				
+				{51.555,240/208/4,'*8 200% Hallway','len'},
+				{51.555+240/208/4*1,240/208/4,'*16 200% Distant','len'},
+				{51.555+240/208/4*2,240/208/4,'*16 200% Hallway','len'},
+				{51.555+240/208/4*3,240/208/4,'*16 200% Distant','len'},
+				{51.555+240/208/4*4,240/208/4,'*16 200% Hallway','len'},
+				{51.555+240/208/4*5,240/208/4,'*16 200% Distant','len'},
+				{51.555+240/208/4*6,240/208/4,'*16 200% Hallway','len'},
+				{51.555+240/208/4*7,240/208/4,'*8 Overhead','len'},
+				
+				{53.863,56.170,'*8 400% Bumpy,*2 Boost','end'},
+				{56.170,58.478,'*8 No Bumpy,*2 No Boost','end'},
+				
+				{56.170+240/208/8*0,240/208/8,'*16 24% Mini','len'},
+				{56.170+240/208/8*1,240/208/8,'*16 48% Mini','len'},
+				{56.170+240/208/8*2,240/208/8,'*16 72% Mini','len'},
+				{56.170+240/208/8*3,240/208/8,'*16 96% Mini','len'},
+				{56.170+240/208/8*4,240/208/8,'*16 120% Mini','len'},
+				{56.170+240/208/8*5,240/208/8,'*16 144% Mini','len'},
+				{56.170+240/208/8*6,240/208/8,'*16 168% Mini','len'},
+				{56.170+240/208/8*7,240/208/8,'*16 192% Mini','len'},
+				{57.324+240/208/16*0,240/208/16,'*16 176% Mini','len'},
+				{57.324+240/208/16*1,240/208/16,'*16 160% Mini','len'},
+				{57.324+240/208/16*2,240/208/16,'*16 144% Mini','len'},
+				{57.324+240/208/16*3,240/208/16,'*16 128% Mini','len'},
+				{57.324+240/208/16*4,240/208/16,'*16 112% Mini','len'},
+				{57.324+240/208/16*5,240/208/16,'*16 96% Mini','len'},
+				{57.324+240/208/16*6,240/208/16,'*16 80% Mini','len'},
+				{57.324+240/208/16*7,240/208/16,'*16 64% Mini','len'},
+				{57.324+240/208/16*8,240/208/16,'*16 48% Mini','len'},
+				{57.324+240/208/16*9,240/208/16,'*16 32% Mini','len'},
+				{57.324+240/208/16*10,240/208/16,'*16 16% Mini','len'},
+				{57.324+240/208/16*11,240/208/16,'*16 No Mini','len'},
+				
+				{58.478,67.132,'*0.125 No Mini,*0.25 No Drunk','end'},
+				{58.478,240/208/8,'*8 Mini,*16 200% Drunk','len'},
+				
+				{67.132,0.072,'*14 Invert,','len'},
+				{67.132+240/208/16*1,0.072,'*14 No Invert,*14 Flip,','len'},
+				{67.132+240/208/16*2,0.072,'*14 No Invert,*14 No Flip,','len'},
+				{67.132+240/208/16*3,0.072,'*14 -100% Invert,*14 Flip,','len'},
+				{67.132+240/208/16*4,0.072,'*28 Invert,*14 No Flip,','len'},
+				{67.132+240/208/16*5,0.072,'*14 No Invert,*14 No Flip,','len'},
+				{67.132+240/208/16*6,0.072,'*14 No Invert,*14 -100% Flip,','len'},
+				{67.132+240/208/16*7,0.250,'*14 No Invert,*14 No Flip,','len'},
+				
+				{67.132,94.824,'*2 Mini,*2 1.5x','end'},
+				{67.709,94.824,'*0.5 375% Hallway,*0.1 25% Brake','end'},
+				
+				{85.882,94.824,'25% Bumpy,25% Drunk','end'},
+				{94.824,96.555,'*2.5 Overhead','end'},
+				{95.401,103.334,'*2 0.4x,Hidden,Sudden,*10000 -50% HiddenOffset,*10000 -50% SuddenOffset','end'},
+				{96.555,100.594,'*0.66 400% Centered','end'},
+				{100.161,100.594,'*2 No Centered,*2 No Hidden,*2 No Sudden','end'},
+				{100.594,100.882,'*10000 Reverse,*10000 No Centered,*2 Hidden,*2 Sudden','end'},
+				{100.882,103.334,'*10000 Reverse,*0.66 400% Centered','end'},
+				{103.334,104.000,'*4 1.9x,*4 No Reverse,*6 No Centered,*4 No Hidden,*4 No Sudden','end'},
+				
+				{58.847+44.776,240/208/4,'*32 125% Drunk,*32 125% Tipsy','len'},
+				{58.847+45.065,240/208/8,'*32 -125% Drunk,*32 -125% Tipsy','len'},
+				{58.847+45.209,240/208/16*3,'*32 125% Drunk,*32 125% Tipsy','len'},
+				{58.847+45.425,240/208/16*3,'*32 -125% Drunk,*32 -125% Tipsy','len'},
+				{58.847+45.642,240/208/4,'*32 125% Drunk,*32 125% Tipsy','len'},
+				{58.847+45.930,240/208/4,'*16 No Drunk,*16 No Tipsy','len'},
+				
+				{58.847+49.247,58.847+51.555,'*20 No Mini','end'},
+				{58.847+49.247,240/208/16,'*20 200% Mini','len'},
+				{58.847+49.392,240/208/16,'*20 200% Mini','len'},
+				{58.847+49.680,240/208/16,'*20 200% Mini','len'},
+				{58.847+49.969,240/208/16,'*20 200% Mini','len'},
+				{58.847+50.257,240/208/16,'*20 200% Mini','len'},
+				{58.847+50.545,240/208/16,'*20 200% Mini','len'},
+				{58.847+50.834,240/208/16,'*20 200% Mini','len'},
+				
+				{58.847+50.257,240/208/8,'*12 Distant','len'},
+				{58.847+50.545,240/208/8,'*12 200% Distant','len'},
+				{58.847+50.834,240/208/8,'*24 Overhead','len'},
+				
+				{58.847+51.411,58.847+56.026,'*10000 200% Beat','end'},
+				
+				{58.847+51.555,240/208/4,'*8 200% Hallway','len'},
+				{58.847+51.555+240/208/4*1,240/208/4,'*16 200% Distant','len'},
+				{58.847+51.555+240/208/4*2,240/208/4,'*16 200% Hallway','len'},
+				{58.847+51.555+240/208/4*3,240/208/4,'*16 200% Distant','len'},
+				{58.847+51.555+240/208/4*4,240/208/4,'*16 200% Hallway','len'},
+				{58.847+51.555+240/208/4*5,240/208/4,'*16 200% Distant','len'},
+				{58.847+51.555+240/208/4*6,240/208/4,'*16 200% Hallway','len'},
+				{58.847+51.555+240/208/4*7,240/208/4,'*8 Overhead','len'},
+				
+				{112.709,114.872,'*16 200% Mini','end'},
+				{112.709+240/208/8*0,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*1,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*2,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*3,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*4,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*5,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*6,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*7,240/208/8,'*64 200% Mini','len'},
+				{112.709+240/208/8*7,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*7.5,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*8,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*9,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*10,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*11,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*12,240/208/4,'*64 200% Mini','len'},
+				{112.709+240/208/8*12,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*12.5,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*13,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*13.5,0.050,'*10000 No Mini','len'},
+				{112.709+240/208/8*14,0.050,'*10000 No Mini','len'},
+				{114.872,116.000,'*16 No Mini','end'},
+				
+				{115.161,240/208/16*3,'*32 150% Drunk,*32 150% Tipsy','len'},
+				{115.377,240/208/16*3,'*32 -150% Drunk,*32 -150% Tipsy','len'},
+				{115.594,240/208/16*3,'*32 150% Drunk,*32 150% Tipsy','len'},
+				{115.810,240/208/16*3,'*32 -150% Drunk,*32 -150% Tipsy','len'},
+				{116.026,240/208/16*2,'*32 150% Drunk,*32 150% Tipsy','len'},
+				{116.170,240/208/16*2,'*32 -150% Drunk,*32 -150% Tipsy','len'},
+				{116.315,240/208/16*3,'*32 150% Drunk,*32 150% Tipsy','len'},
+				{116.531,240/208/16*3,'*16 No Drunk,*16 No Tipsy','len'},
+				
+				{117.324,119.055,'0x','end'},
+				{119.055,150.000,'*24 100x','end'},
+				{119.344,150.000,'Blind,*16 Flip,*16 Dark','end'},
+				
+				}
+				
+				local inc = 1;
+				for i = 16.940,18.094,240/208/16 do
+					local multi = 1; if math.mod(inc,2) == 0 then multi = -1; end
+					table.insert(prefix_mods,{i,240/208/16,'*'.. inc*16 .. ' '.. inc*400*multi .. '% Drunk','len'});
+					--table.insert(prefix_mods,{16.940,20,'*10000 Drunk','len'});
+					inc = inc + 1;
+				end
+				
+				
+				prefix_plr = {};
+				
+				prefix_inc = 1;
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+			
+			prefix_inc = prefix_inc + 1;
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:rotationx(0);							
+						v:rotationy(0);
+						v:rotationz(0);
+						v:x(SCREEN_CENTER_X+160*multi);
+						v:y(SCREEN_CENTER_Y);
+						v:zoomx(1);
+						v:zoomy(1);
+						v:zoomz(1);
+						v:GetChild('Judgment'):stopeffect();
+						
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+						
+						SCREENMAN:GetTopScreen():SetDrawByZPosition(true);
+						SCREENMAN:GetTopScreen():GetChild('SongForeground'):z(-1);
+						SCREENMAN:GetTopScreen():GetChild('SongBackground'):z(-999);
+					end
+				end
+			end
+			
+			if beat >= 91 and fgcurcommand == 1 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:accelerate(240/208/8);
+						v:zoomy(6.5);
+						v:addy(650);
+						v:decelerate(240/208/8);
+						v:zoomy(12);
+						v:addy(650);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 107 and fgcurcommand == 2 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:decelerate(240/208/4);
+						v:y(SCREEN_CENTER_Y);
+						v:zoomy(1);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 349.5 and fgcurcommand == 3 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:accelerate(240/208/4);
+						v:rotationz(180);
+						v:decelerate(240/208/4);
+						v:rotationz(360);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat > 4 and beat < 36 then
+				local multi2 = 1; if math.mod(prefix_inc,2) == 0 then multi2 = -1; end
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()*multi2)+multi*160);
+						v:y(SCREEN_CENTER_Y+(math.cos(beat*math.pi/2)*auxvar:getaux()*multi2));
+					end
+				end
+				
+				if prefix_bg then
+					prefix_bg:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()*multi2));
+					prefix_bg:y(SCREEN_CENTER_Y+(math.cos(beat*math.pi/2)*auxvar:getaux()*multi2));
+				end
+			end
+			
+			if beat > 68 and beat < 90.250 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:zoomz(math.max(1,math.sin(beat*math.pi*2-3)*50))
+					end
+				end
+			end
+			
+			if beat > 128.5 and beat < 133 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:zoomx(1);
+						v:zoomy(1);
+						
+						if beat > 129 and beat < 132 then
+							v:zoomy(0.625 + math.cos(beat*math.pi*2)*0.375);
+						end
+						
+						if beat < 131.5 then
+							v:zoomx(0.625 + math.sin(beat*math.pi*2)*0.375);
+						end
+					end
+				end
+			end
+			
+			if beat > 145.5 and beat < 148 then
+				local multi2 = 1; if math.mod(prefix_inc,2) == 0 then multi2 = -1; end
+				GAMESTATE:ApplyGameCommand('mod,*10000 '.. -auxvar:getaux() ..'% Mini,*10000 '..auxvar:getaux()/10 ..'% Flip');
+				if beat > 146.5 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 '.. auxvar:getaux()*multi2 ..'% Mini,*10000 '..math.max(0,auxvar:getaux()/10*multi2) ..'% Flip');
+				end
+			end
+			
+			if beat > 164 and beat < 173 then
+				local multi2 = 1; if math.mod(prefix_inc,2) == 0 then multi2 = -1; end
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						if (beat > 165.5 and beat < 167) or
+							(beat > 168.5 and beat < 170) or
+							beat > 171 then
+							v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()*multi2)+multi*160);
+							v:y(SCREEN_CENTER_Y+(math.cos(beat*math.pi/2)*auxvar:getaux()*multi2));
+						else
+							v:x(SCREEN_CENTER_X+(math.cos(beat*math.pi/2)*auxvar:getaux()*multi2)+multi*160);
+							v:y(SCREEN_CENTER_Y+(math.sin(beat*math.pi/2)*auxvar:getaux()*multi2));
+						end
+						if beat > 172 then
+							v:x(SCREEN_CENTER_X+multi*160);
+							v:y(SCREEN_CENTER_Y);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat > 204 and beat < 236 then
+				local multi2 = 1; if math.mod(prefix_inc,2) == 0 then multi2 = -1; end
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()*multi2)+multi*160);
+						v:y(SCREEN_CENTER_Y+(math.cos(beat*math.pi/2)*auxvar:getaux()*multi2));
+					end
+				end
+				
+				if prefix_bg then
+					prefix_bg:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()*multi2));
+					prefix_bg:y(SCREEN_CENTER_Y+(math.cos(beat*math.pi/2)*auxvar:getaux()*multi2));
+				end
+			end
+			
+			
+			
+			if beat > 164+204 and beat < 173+204 then
+				local multi2 = 1; if math.mod(prefix_inc,2) == 0 then multi2 = -1; end
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						if (beat > 165.5+204 and beat < 167+204) or
+							(beat > 168.5+204 and beat < 170+204) or
+							beat > 171+204 then
+							v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()*multi2)+multi*160);
+							v:y(SCREEN_CENTER_Y+(math.cos(beat*math.pi/2)*auxvar:getaux()*multi2));
+						else
+							v:x(SCREEN_CENTER_X+(math.cos(beat*math.pi/2)*auxvar:getaux()*multi2)+multi*160);
+							v:y(SCREEN_CENTER_Y+(math.sin(beat*math.pi/2)*auxvar:getaux()*multi2));
+						end
+						if beat > 172+204 then
+							v:x(SCREEN_CENTER_X+multi*160);
+							v:y(SCREEN_CENTER_Y);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat > 236 and beat < 333 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:x(SCREEN_CENTER_X+(math.cos(beat*math.pi/4)*multi*-160));
+						v:y(SCREEN_CENTER_Y+auxvar:getaux()*4);
+						v:zoomy(1+auxvar:getaux()/100*4);
+						v:zoomz(1+auxvar:getaux()/100*4);
+						v:z(math.sin(beat*math.pi/4)*auxvar:getaux()*multi*2 - auxvar:getaux()*4);
+						v:rotationy(math.cos(beat*math.pi/4)*multi*auxvar:getaux()/10);
+						v:rotationz(math.sin(beat*math.pi/4)*multi*auxvar:getaux()/-10);
+						--v:skewx(math.cos(beat*math.pi/4)*multi*auxvar:getaux()/20);
+						--v:skewx(math.sin(beat*math.pi/4)*multi);
+						
+						if beat > 332 then
+							v:x(SCREEN_CENTER_X+multi*160);
+							v:y(SCREEN_CENTER_Y);
+						end
+					end
+				end
+			end
+			
+			if beat > 406 and beat < 407.5 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:vibrate();
+						v:effectmagnitude(math.sin(beat*math.pi*2)*100,math.sin(beat*math.pi)*100,0);
+						
+						if beat > 407 then v:stopeffect(); end
+					end
+				end
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (0.374 - 0.349) + tonumber(self:GetText()) self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		BuzzBeginningMessageCommand="finishtweening;linear,240/208/8;aux,200;linear,9-240/208/8;aux,0"
+		VortexMessageCommand="%function()
+			SOUND:PlayOnce( prefix_path..'lua/break2.ogg' );
+		end"
+		PerspectiveMessageCommand="finishtweening;aux,0;linear,240/208*16;aux,100;sleep,240/208*7.5;linear,240/208/2;aux,0"
+		
+		MiniToBuzzMessageCommand="finishtweening;aux,0;decelerate,240/208/4;aux,200;linear,240/208/4;aux,0;"
+		
+		BuzzBounceMessageCommand="finishtweening;aux,0;
+			decelerate,240/208/4;aux,100;accelerate,240/208/8;aux,0;
+			decelerate,240/208/4;aux,100;accelerate,240/208/8;aux,0;
+			decelerate,240/208/4;aux,100;accelerate,240/208/8;aux,0;
+			decelerate,240/208/4;aux,100;accelerate,240/208/8;aux,0;
+			decelerate,240/208/8;aux,100;accelerate,240/208/8;aux,0;
+			decelerate,240/208/8;aux,100;accelerate,240/208/8;aux,0;
+			"
+		
+		XStretchMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/208/4);
+					v:zoomx(4);
+					v:bounceend(240/208/8);
+					v:zoomx(1);
+				end
+			end
+		end"
+		YStretchMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/208/4);
+					v:zoomy(4);
+					v:bounceend(240/208/8);
+					v:zoomy(1);
+				end
+			end
+		end"
+	/>
+	
+	
+	
+	
+	
+	<Layer Type="Quad" InitCommand="draworder,-999" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,#000000" />
+	
+	
+	
+	<ActorFrame
+		FOV="165"
+		OnCommand="z,0;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y"
+		VortexSpinMessageCommand="playcommand,ShowBlackHole"
+		ChangeZPositionMessageCommand="%function(self) self:z(998); SCREENMAN:GetTopScreen():GetChild('SongForeground'):z(-998); end"
+		PerspectiveMessageCommand="linear,10;rotationx,-45"
+		DismissMessageCommand="linear,240/208/2;rotationx,-45"
+		><children>
+		<Layer
+			File="stars"
+			OnCommand="zoom,0;z,100"
+			_ShowBlackHoleCommand="linear,9.23;zoom,0.5"
+			ShowBlackHoleCommand="zoom,0.5"
+		/>
+		<Layer
+			File="dimension"
+			OnCommand="zoom,0;z,20"
+			_ShowBlackHoleCommand="linear,9.23;zoom,0.5"
+			ShowBlackHoleCommand="zoom,0.5"
+		/>
+	</children></ActorFrame>
+	
+	<ActorFrame FOV="135" ><children>
+		<Layer
+			File="background"
+			InitCommand="%function(self) prefix_bg = self; end"
+			OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,#808080FF"
+			VortexMessageCommand="diffusealpha,0"
+		/>
+		
+		<!-- First column -->
+		<Layer
+			File="bg pieces/01"
+			OnCommand="x,80+160*0;y,60+120*0;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.2); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(-100,-75)); self:rotationy(math.random(-100,-75)); self:rotationz(math.random(270,360)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/05"
+			OnCommand="x,80+160*0;y,60+120*1;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.1); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(-50,-25)); self:rotationy(math.random(-100,-75)); self:rotationz(math.random(180,270)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/09"
+			OnCommand="x,80+160*0;y,60+120*2;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.1); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(25,50)); self:rotationy(math.random(-100,-75)); self:rotationz(math.random(180,270)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/13"
+			OnCommand="x,80+160*0;y,60+120*3;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.2); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(75,100)); self:rotationy(math.random(-100,-75)); self:rotationz(math.random(270,360)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		
+		<!-- Second column -->
+		<Layer
+			File="bg pieces/02"
+			OnCommand="x,80+160*1;y,60+120*0;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.1); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(-100,-75)); self:rotationy(math.random(-50,-25)); self:rotationz(math.random(180,270)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/06"
+			OnCommand="x,80+160*1;y,60+120*1;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(-50,-25)); self:rotationy(math.random(-50,-25)); self:rotationz(math.random(90,180)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/10"
+			OnCommand="x,80+160*1;y,60+120*2;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(25,50)); self:rotationy(math.random(-50,-25)); self:rotationz(math.random(90,180)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/14"
+			OnCommand="x,80+160*1;y,60+120*3;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.1); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(75,100)); self:rotationy(math.random(-50,-25)); self:rotationz(math.random(180,270)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		
+		<!-- Third column -->
+		<Layer
+			File="bg pieces/03"
+			OnCommand="x,80+160*2;y,60+120*0;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.1); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(-100,-75)); self:rotationy(math.random(25,50)); self:rotationz(math.random(-270,-180)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/07"
+			OnCommand="x,80+160*2;y,60+120*1;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(-50,-25)); self:rotationy(math.random(25,50)); self:rotationz(math.random(-180,-90)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/11"
+			OnCommand="x,80+160*2;y,60+120*2;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(25,50)); self:rotationy(math.random(25,50)); self:rotationz(math.random(-180,-90)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/15"
+			OnCommand="x,80+160*2;y,60+120*3;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.1); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(75,100)); self:rotationy(math.random(25,50)); self:rotationz(math.random(-270,-180)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		
+		<!-- Fourth column -->
+		<Layer
+			File="bg pieces/04"
+			OnCommand="x,80+160*3;y,60+120*0;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.2); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(-100,-75)); self:rotationy(math.random(75,100)); self:rotationz(math.random(-360,-270)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/08"
+			OnCommand="x,80+160*3;y,60+120*1;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.1); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(-50,-25)); self:rotationy(math.random(75,100)); self:rotationz(math.random(-270,-180)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/12"
+			OnCommand="x,80+160*3;y,60+120*2;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.1); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(25,50)); self:rotationy(math.random(75,100)); self:rotationz(math.random(-270,-180)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		<Layer
+			File="bg pieces/16"
+			OnCommand="x,80+160*3;y,60+120*3;diffuse,#808080FF;hidden,1"
+			VortexMessageCommand="%function(self) self:hidden(0); self:sleep(0.2); self:accelerate(2); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:z(-1000); self:zoom(0); self:rotationx(math.random(75,100)); self:rotationy(math.random(75,100)); self:rotationz(math.random(-360,-270)); self:queuecommand('Hide'); end"
+			HideCommand="hidden,1"
+		/>
+		
+		
+		
+		
+	</children></ActorFrame>
+	
+	
+	
+	
+	<Layer Type="Quad" InitCommand="draworder,999" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,#00000000" HideVortexMessageCommand="linear,240/208;diffusealpha,1" />
+	
+</children></ActorFrame>

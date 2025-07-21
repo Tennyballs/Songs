@@ -1,0 +1,646 @@
+<ActorFrame><children>
+
+    <Layer
+        Type="Quad"
+        InitCommand="%melody(function(self)
+            if self:getaux()==1 then return end self:aux(1)
+
+			thinice = setmetatable({}, { __index = melody, __call = function(s,a) if a then setfenv(a,s); return a; end setfenv(2,s) end })
+        
+			init_hooks{'game init', function()
+				mod_plr(function(p) p:hidden(1) end) -- hide players
+				GAMESTATE:ApplyModifiers('disablemines')
+				lua{'fg/main', env=thinice}
+			end}
+			update_hooks{'game update', function()
+				thinice.update()
+
+				if GAMESTATE:GetSongBeat() >= 4.8 and thinice.menuState == 0 then
+					fg('ScreenMenu'):queuecommand('SummonNextScreen')
+					SOUND:PlayOnce( song_dir .. 'sfx/menu_button_press.ogg' )
+					thinice.menuState = 1
+				end
+				if GAMESTATE:GetSongBeat() >= 9.2 and thinice.menuState == 1 then
+					fg('ScreenMenu'):queuecommand('SummonGameScreen')
+					fg('ScreenGame'):queuecommand('Summon')
+					SOUND:PlayOnce( song_dir .. 'sfx/menu_button_press.ogg' )
+
+					thinice.load_level( thinice.levelList[1] )
+					thinice.gameLoop = true
+
+					thinice.menuState = 2
+				end
+				
+				if GAMESTATE:GetSongBeat() >= 10.5 and not thinice.gameStarted then
+					thinice.ignoreInput = false
+					thinice.gameStarted = --[[ so ]] true --[[ bestie ]]
+
+					fg('ScreenMenu'):hidden( 1 )
+					fg('ScreenGame'):finishtweening()
+					fg('ScreenGame'):y( 0 )
+					fg('ScreenGame'):hidden( 0 )
+					
+					fg('ScreenGame')('Timer'):queuecommand('Show')
+				end
+			end}
+        end)"
+
+        OnCommand="diffusealpha,0;queuecommand,Setup" SetupCommand="%melody.setup"
+    />
+    
+    <Layer Type="Quad" InitCommand="%melody.actor_block" OnCommand="diffuse,0,0,0,1"/>
+
+    <Layer Type="ActorFrame" OnCommand="%melody(function(self) fg=self; end)"><children>
+
+        <Layer
+			Type="Quad"
+			InitCommand="%melody.actor_block"
+			OnCommand="%melody(function(self)
+				local r, g, b = hex_to_rgb('#D9F1FF')
+				self:diffuse( r, g, b, 1 )
+			end)"
+		/>
+
+		<!--
+		
+			DO NOT LOOK DOWN
+
+			ITS FULL OF QUEUECOMMAND HELL DOWN THERE
+
+			help
+		
+		-->
+
+		<Layer
+			Type="ActorFrame"
+			Name="ScreenMenu"
+			InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;propagate,1"
+		><children>
+			<Layer
+				File="../assets/menu_img_1"
+				InitCommand="%function(self) self:SetTextureFiltering( false ) end"
+				OnCommand="zoom,2.25;addy,SCREEN_CENTER_Y*0.2"
+				SummonNextScreenCommand="tween,1,'inOutCubic(%f,0,1,1)';addy,-SCREEN_HEIGHT"
+			/>
+			<Layer
+				File="../assets/menu_img_2"
+				InitCommand="%function(self) self:SetTextureFiltering( false ) end"
+				OnCommand="zoom,2.25;addy,SCREEN_CENTER_Y*0.4;addy,SCREEN_HEIGHT"
+				SummonNextScreenCommand="tween,1,'inOutCubic(%f,0,1,1)';addy,-SCREEN_HEIGHT"
+				SummonGameScreenCommand="tween,1,'inOutCubic(%f,0,1,1)';addy,-SCREEN_HEIGHT"
+			/>
+			<Layer
+				Type="BitmapText"
+				Font="fonts/cpBurbank2"
+				Text="Melt ice on your way through each maze. Once the ice::is melted you can't walk back. Get to the end::before time runs out!"
+				InitCommand="%function(self) self:SetTextureFiltering( false ) end"
+				OnCommand="shadowlength,0;zoom,1;addy,SCREEN_HEIGHT;addy,-SCREEN_CENTER_Y*0.25;queuecommand,SetColor"
+				SetColorCommand="%melody(function(self)
+					local r, g, b = hex_to_rgb('#0961BE')
+					self:diffuse( r, g, b, 1 )
+				end)"
+				SummonNextScreenCommand="tween,1,'inOutCubic(%f,0,1,1)';addy,-SCREEN_HEIGHT"
+				SummonGameScreenCommand="tween,1,'inOutCubic(%f,0,1,1)';addy,-SCREEN_HEIGHT"
+			/>
+			<Layer
+				File="../assets/logo"
+				InitCommand="%function(self) self:SetTextureFiltering( false ) end"
+				OnCommand="zoom,0.6;addy,-SCREEN_CENTER_Y*0.7"
+				SummonGameScreenCommand="tween,1,'inOutCubic(%f,0,1,1)';addy,-SCREEN_HEIGHT"
+			/>
+		</children>
+
+		</Layer>
+
+		<Layer
+			Type="ActorFrame"
+			Name="ScreenGame"
+			InitCommand="xy,0,0;hidden,1"
+			SummonCommand="hidden,0;y,SCREEN_HEIGHT;tween,1,'inOutCubic(%f,0,1,1)';y,0"
+		><children>
+
+			<!-- game -->
+			<Layer
+				Type="Quad"
+				Name="OceanBack"
+				OnCommand="%melody(function(self)
+					local r, g, b = hex_to_rgb('#0066CC')
+					self:diffuse( r, g, b, 1 )
+				end)"
+			/>
+			<Layer
+				Type="ActorFrame"
+				Name="OceanRenderer"
+			><children>
+				<Layer
+					File="../assets/water"
+				/>
+				<Layer
+					File="../assets/water"
+					InitCommand="setstate,8"
+				/>
+				<Layer
+					File="../assets/water"
+					InitCommand="setstate,12"
+				/>
+				<Layer
+					File="../assets/water"
+					InitCommand="setstate,18"
+				/>
+				<Layer
+					File="../assets/water"
+					InitCommand="setstate,23"
+				/>
+				<Layer
+					File="../assets/water"
+					InitCommand="setstate,26"
+				/>
+				<Layer
+					File="../assets/water"
+					InitCommand="setstate,32"
+				/>
+			</children></Layer>
+			<Layer
+				Type="ActorFrame"
+				Name="IceMeltRenderer"
+			><children>
+				<Layer
+					File="../assets/ice_melt"
+					Name="Sprite"
+					InitCommand="animate,0;setstate,0"
+				/>
+			</children></Layer>
+
+
+			<Layer
+				Type="Polygon"
+				Name="TilePolygon"
+				Texture="../assets/tiles"
+			/>
+			<Layer
+				File="../assets/key"
+				Name="TileKey"
+				Texture="../assets/key"
+				InitCommand="hidden,1"
+			/>
+
+			<Layer
+				Type="ActorFrame"
+				Name="Puffle"
+				InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;propagate,1"
+			><children>
+				<!-- lmao i got lazy -->
+				<Layer
+					File="../assets/swirl"
+					Name="DrowningTile"
+					InitCommand="hidden,1"
+					DrownCommand="hidden,0"
+					SpawnCommand="hidden,1"
+					IdleCommand="hidden,1"
+				/>
+				<Layer
+					File="../assets/puffle_drown"
+					Name="DrowningSprite"
+					InitCommand="y,-8;animate,0;hidden,1"
+					DrownCommand="hidden,0;animate,1;setstate,0"
+					IdleCommand="hidden,1"
+				/>
+				<Layer
+					File="../assets/puffle_spawn"
+					Name="Spawn"
+					InitCommand="hidden,1;animate,0"
+					SpawnCommand="hidden,0;animate,1;setstate,0;sleep,0.04*16;queuecommand,SetIdle"
+					SetIdleCommand="%melody.thinice(function(self)
+						if melody.thinice.gameLoop then
+							self:GetParent():playcommand('Idle')
+							ignoreInput = false
+						end
+					end)"
+					IdleCommand="hidden,1"
+				/>
+				<Layer
+					File="../assets/puffle_idle"
+					Name="Idle"
+					InitCommand="hidden,0"
+					DrownCommand="hidden,1"
+					SpawnCommand="hidden,1"
+					IdleCommand="hidden,0"
+					GameFailedSfx1MessageCommand="hidden,1"
+				/>
+				<Layer
+					File="../assets/explosion"
+					InitCommand="hidden,1;animate,0"
+					GameFailedSfx1MessageCommand="hidden,0;animate,1;setstate,0;sleep,0.05*25;queuecommand,Hide"
+					HideCommand="hidden,1"
+				/>
+			</children></Layer>
+
+			
+
+			<!-- ui -->
+			<Layer
+				Type="BitmapText"
+				Font="fonts/cpBurbank2"
+				Text="LEVEL X"
+				Name="LevelIndicator"
+				InitCommand="%function(self) self:SetTextureFiltering( false ) end"
+				OnCommand="shadowlength,0;horizalign,left;queuecommand,SetColor"
+				SetColorCommand="%melody(function(self)
+					local r, g, b = hex_to_rgb('#0961BE')
+					self:diffuse( r, g, b, 1 )
+				end)"
+			/>
+
+			<Layer
+				Type="BitmapText"
+				Font="fonts/cpBurbank2"
+				Text="XX / XX"
+				Name="ScoreIndicator"
+				InitCommand="%function(self) self:SetTextureFiltering( false ) end"
+				OnCommand="shadowlength,0;queuecommand,SetColor"
+				SetColorCommand="%melody(function(self)
+					local r, g, b = hex_to_rgb('#0961BE')
+					self:diffuse( r, g, b, 1 )
+				end)"
+			/>
+
+			<Layer
+				Type="BitmapText"
+				Font="fonts/cpBurbank2"
+				Text="SOLVED X"
+				Name="SolvedIndicator"
+				InitCommand="%function(self) self:SetTextureFiltering( false ) end"
+				OnCommand="shadowlength,0;horizalign,right;queuecommand,SetColor"
+				SetColorCommand="%melody(function(self)
+					local r, g, b = hex_to_rgb('#0961BE')
+					self:diffuse( r, g, b, 1 )
+				end)"
+			/>
+
+			<Layer
+				Type="BitmapText"
+				Font="fonts/cpBurbank2"
+				Text="POINTS XX"
+				Name="PointsIndicator"
+				InitCommand="%function(self) self:SetTextureFiltering( false ) end"
+				OnCommand="shadowlength,0;horizalign,right;queuecommand,SetColor"
+				SetColorCommand="%melody(function(self)
+					local r, g, b = hex_to_rgb('#0961BE')
+					self:diffuse( r, g, b, 1 )
+				end)"
+			/>
+			
+			<Layer Type="Quad" Name="BorderLeft"/> <!-- oh god why -->
+			<Layer Type="Quad" Name="BorderRight"/>
+
+			<Layer
+				Type="Quad"
+				InitCommand="hidden,1;stretchto,SCREEN_CENTER_X-320,SCREEN_HEIGHT-5,SCREEN_CENTER_X+320,SCREEN_HEIGHT;blend,invertdest"
+				Name="Timer"
+				ShowCommand="hidden,0;croptop,1;decelerate,1;croptop,0"
+			/>
+		</children></Layer>
+
+		<!-- hello there fellow code scroller -->
+
+		<Layer
+			Type="ActorFrame"
+			Name="ScreenResults"
+			InitCommand="hidden,1"
+		><children>
+
+			<Layer
+				Type="ActorFrame"
+				Name="Puffle"
+				InitCommand="x,SCREEN_CENTER_X-320-(270/2);y,SCREEN_CENTER_Y*1.5"
+				SpawnCommand="linear,2;x,SCREEN_CENTER_X;queuecommand,Unignite"
+			><children>
+				<Layer
+					File="../assets/results/enterf"
+					InitCommand="y,-58+17" HCommand="hidden,1"
+					UnigniteCommand="sleep,1;queuecommand,H"
+				/>
+				<Layer
+					File="../assets/results/enter"
+					InitCommand="y,17"
+					UnigniteCommand="hidden,1"
+				/>
+				<Layer
+					File="../assets/results/puffout"
+					InitCommand="animate,0;hidden,1"
+					UnigniteCommand="hidden,0;setstate,0;sleep,1;queuecommand,Unignite2"
+					Unignite2Command="animate,1;sleep,0.04*5;sleep,1;queuecommand,PuffleSprite"
+					PuffleSpriteCommand="%function(self)
+						MESSAGEMAN:Broadcast('LoadResultStat')
+						self:sleep(1)
+						self:queuecommand('PuffleSprite2')
+					end"
+					PuffleSprite2Command="%function(self) self:GetParent():queuecommand('PuffleSetSprite') end"
+					PuffleSetSpriteCommand="hidden,1"
+				/>
+				<Layer
+					File="../assets/results/smoke"
+					InitCommand="y,-50;animate,0;hidden,1"
+					UnigniteCommand="sleep,1;queuecommand,Unignite2"
+					Unignite2Command="hidden,0;animate,1;sleep,0.05*12;queuecommand,H"
+					HCommand="hidden,1"
+				/>
+
+				<Layer
+					File="../assets/results/puffle"
+					InitCommand="animate,0;hidden,1"
+					PuffleSetSpriteCommand="hidden,0;setstate,0;queuecommand,StareUp1"
+					StareUp1Command="setstate,1;sleep,0.1;queuecommand,StareUp2" StareUp2Command="setstate,2"
+					PuffleResultEmoteMessageCommand="%melody.thinice(function(self)
+						local percent = (player.get_final_points()-(coinBags*10)) / maxPoints
+						--
+						if percent < 0.7 then
+							self:queuecommand('Angry1')
+							if not GAMESTATE:IsEditMode() then
+								for pn=1,2 do
+									if GAMESTATE:IsHumanPlayer(pn-1) then
+										SCREENMAN:GetTopScreen():SetLife(pn-1, 0)
+									end
+								end
+							end
+						elseif percent < 0.9 then
+							self:queuecommand('Smile1')
+						else
+							self:queuecommand('Happy1')
+						end
+					end)"
+
+					Angry1Command="setstate,3;sleep,0.1;queuecommand,Angry2"
+					Angry2Command="setstate,4;queuemessage,ResultShock;sleep,1.5;queuecommand,Angry3"
+					Angry3Command="setstate,5;sleep,0.05;queuecommand,Angry4"
+					Angry4Command="setstate,6;queuemessage,ResultAngry;sleep,2.5;queuecommand,End"
+
+					Smile1Command="setstate,7;sleep,0.1;queuecommand,Smile2"
+					Smile2Command="setstate,8;queuemessage,ResultSmile;sleep,1.5;queuecommand,Smile3"
+					Smile3Command="setstate,9;sleep,0.05;queuecommand,Smile4"
+					Smile4Command="setstate,10;sleep,2.5;queuecommand,End"
+
+					Happy1Command="setstate,11;sleep,0.1;queuecommand,Happy2"
+					Happy2Command="setstate,12;queuemessage,ResultSmile;sleep,1.5;queuecommand,Happy3"
+					Happy3Command="setstate,13;sleep,0.05;queuecommand,Happy4"
+					Happy4Command="setstate,14;queuemessage,ResultHappy;sleep,2.5;queuecommand,End"
+
+					EndCommand="%melody.thinice(function(self)
+						end_game() -- hopefully these all end at the same time ?
+					end)"
+				/>
+			</children></Layer>
+
+			<!-- resalt -->
+			<Layer
+				Type="ActorFrame"
+				Name="ResultText"
+				InitCommand="x,SCREEN_CENTER_X-320"
+				LoadResultStatMessageCommand="queuemessage,ShowResult1;queuemessage,ResultTextShow;sleep,0.8;queuecommand,LoadResultStat2"
+				      LoadResultStat2Command="queuemessage,ShowResult2;queuemessage,ResultTextShow;sleep,0.8;queuecommand,LoadResultStat3"
+				      LoadResultStat3Command="queuemessage,ShowResult3;queuemessage,ResultTextShow;sleep,0.8;queuecommand,LoadResultStat4"
+				      LoadResultStat4Command="queuemessage,ShowResult4;queuemessage,ResultTextShow;sleep,0.8;queuecommand,LoadResultStat5"
+				      LoadResultStat5Command="queuemessage,ShowResult5;queuemessage,ResultTextShow;sleep,0.8;queuecommand,LoadResultStat6"
+				      LoadResultStat6Command="queuemessage,ShowResult6;queuemessage,ResultTextShow;sleep,0.8;queuecommand,LoadResultStat7"
+				      LoadResultStat7Command="queuemessage,ShowResult7;queuemessage,ResultSolveQuick;sleep,1.2;queuemessage,PuffleResultEmote"
+				ohgod="why"
+			><children>
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="Levels solved"
+					InitCommand="hidden,1;x,20;y,30;horizalign,left;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult1MessageCommand="hidden,0"
+				/>
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="X"
+					InitCommand="hidden,1;x,640-20;y,30;horizalign,right;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult1MessageCommand="%melody.thinice(function(self)
+						self:settext( solvedLevelsCount ); self:hidden(0)
+					end)"
+				/>
+				<!-- -->
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="Levels solved on first try"
+					InitCommand="hidden,1;x,20;y,30+40*1;horizalign,left;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult2MessageCommand="hidden,0"
+				/>
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="X"
+					InitCommand="hidden,1;x,640-20;y,30+40*1;horizalign,right;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult2MessageCommand="%melody.thinice(function(self)
+						self:settext( levelsSolvedFirstTry ); self:hidden(0)
+					end)"
+				/>
+				<!-- -->
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="Coin bags collected"
+					InitCommand="hidden,1;x,20;y,30+40*2;horizalign,left;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult3MessageCommand="hidden,0"
+				/>
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="X"
+					InitCommand="hidden,1;x,640-20;y,30+40*2;horizalign,right;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult3MessageCommand="%melody.thinice(function(self)
+						self:settext( coinBags ); self:hidden(0)
+					end)"
+				/>
+				<!-- -->
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="Total ice melted"
+					InitCommand="hidden,1;x,320;y,SCREEN_CENTER_Y-80;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult4MessageCommand="hidden,0"
+				/>
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="X"
+					InitCommand="hidden,1;x,320;y,SCREEN_CENTER_Y-40;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult4MessageCommand="%melody.thinice(function(self)
+						self:settext( iceMelted .. ' Tiles' ); self:hidden(0)
+					end)"
+				/>
+				<!-- -->
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="Total points"
+					InitCommand="hidden,1;x,20;y,SCREEN_HEIGHT-30-40*2;horizalign,left;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult5MessageCommand="hidden,0"
+				/>
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="X"
+					InitCommand="hidden,1;x,640-20;y,SCREEN_HEIGHT-30-40*2;horizalign,right;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult5MessageCommand="%melody.thinice(function(self)
+						self:settext( player.get_final_points() ); self:hidden(0)
+					end)"
+				/>
+				<!-- -->
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="Coins earned"
+					InitCommand="hidden,1;x,20;y,SCREEN_HEIGHT-30-40*1;horizalign,left;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult6MessageCommand="hidden,0"
+				/>
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="X"
+					InitCommand="hidden,1;x,640-20;y,SCREEN_HEIGHT-30-40*1;horizalign,right;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult6MessageCommand="%melody.thinice(function(self)
+						self:settext( coinBags * 10 ); self:hidden(0)
+					end)"
+				/>
+				<!-- -->
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="Final Score"
+					InitCommand="hidden,1;x,320;y,SCREEN_CENTER_Y+0;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult7MessageCommand="hidden,0"
+				/>
+				<Layer
+					Type="BitmapText"
+					Font="fonts/cpBurbank2"
+					Text="X"
+					InitCommand="hidden,1;x,320;y,SCREEN_CENTER_Y+40;shadowlength,0;queuecommand,SetColor"
+					SetColorCommand="%melody(function(self) local r, g, b = hex_to_rgb('#0961BE'); self:diffuse( r, g, b, 1 ) end)"
+					ShowResult7MessageCommand="%melody.thinice(function(self)
+						self:settext( math.round2((totalPlayerPoints/maxPoints)*100,2) .. '%' ); self:hidden(0)
+					end)"
+				/>
+			</children></Layer>
+
+		</children></Layer>
+
+		<Layer
+			Type="BitmapText"
+			Font="_eurostile outline"
+			Text="Finished!"
+			InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;shadowlength,2;zoom,1;hidden,1"
+			GameFinishedMessageCommand="addy,20;diffuse,0.8,1,0.8,0;hidden,0;decelerate,0.5;addy,-20;diffusealpha,1;sleep,4;queuecommand,ShowResults"
+			GameFailedMessageCommand="settext,Time's out!;addy,20;diffuse,1,0.8,0.8,0;hidden,0;decelerate,0.5;addy,-20;diffusealpha,1;sleep,4;queuecommand,ShowResults"
+			ShowResultsCommand="%melody.thinice(function(self)
+				self:hidden(1)
+				fg('ScreenGame'):hidden(1)
+				fg('ScreenResults'):hidden(0)
+				fg('ScreenResults'):queuecommand('Spawn')
+			end)"
+		/>
+
+		<Layer
+			Type="BitmapText"
+			Font="_eurostile outline"
+			Text="Please wait!"
+			InitCommand="xy,SCREEN_CENTER_X+3,SCREEN_CENTER_Y;shadowlength,0;zoom,1;hidden,1"
+			GameBonusMessageCommand="hidden,0;diffusealpha,0;linear,0.2;diffusealpha,1"
+			GameFinishedMessageCommand="finishtweening;hidden,1"
+			GameFailedMessageCommand="finishtweening;hidden,1"
+		/>
+
+		<!-- i got lazy dont @ me -->
+		<Layer
+			Type="ActorFrame"
+			Name="Soundman"
+			InitCommand="hidden,1"
+		><children>
+			<ActorSound
+				File="../sfx/puffle_move"
+				PuffleMoveMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/sink"
+				PuffleSinkMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/coin_got"
+				PuffleCoinMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/puffle_start"
+				PuffleStartMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/thick_melt"
+				ThickMeltMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/next_level_or_puffle_smile"
+				PuffleNextLevelMessageCommand="stop;start"
+				ResultSmileMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/key_got_use"
+				PuffleKeyMessageCommand="stop;start"
+			/>
+
+			<ActorSound
+				File="../sfx/result_text_show"
+				ResultTextShowMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/solve_quick"
+				ResultSolveQuickMessageCommand="stop;start"
+			/>
+
+			<ActorSound
+				File="../sfx/result_puffle_angry"
+				ResultAngryMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/result_puffle_shock"
+				ResultShockMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/result_puffle_happy"
+				ResultHappyMessageCommand="stop;start"
+			/> <!-- is also the portal sound but i dont have enough time to impl -->
+
+			<ActorSound
+				File="../sfx/good"
+				GameFinishedMessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/mine"
+				GameFailedSfx1MessageCommand="stop;start"
+			/>
+			<ActorSound
+				File="../sfx/fart"
+				GameFailedSfx2MessageCommand="stop;start"
+			/>
+		</children></Layer>
+
+		<Layer Type="Quad" Name="BorderLeft" InitCommand="diffuse,0,0,0,1;stretchto,0,0,SCREEN_CENTER_X-320,SCREEN_HEIGHT"/>
+		<Layer Type="Quad" Name="BorderRight" InitCommand="diffuse,0,0,0,1;stretchto,SCREEN_CENTER_X+320,0,SCREEN_WIDTH,SCREEN_HEIGHT"/>
+
+    </children></Layer>
+
+</children></ActorFrame>

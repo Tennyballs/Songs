@@ -1,0 +1,773 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+	--Prep? Prep.
+
+	P1:x(scx)
+	P2:x(scx)
+	clap:xy(scx - 64 * 2,scy)
+	clap:basezoomx(0.25)
+	clap:basezoomy(0.25)
+	clap2:xy(scx + 64 * 2,scy)
+	clap2:basezoomx(0.25)
+	clap2:basezoomy(0.25)
+	
+	set{0, -99999999, 'cover'}
+	set {0, 2, 'xmod', 100, 'dizzyholds'}
+	setdefault {100, 'stealth', 100, 'dark'}
+
+	definemod {'clapalpha', function(p)
+    	clap:diffusealpha(p)
+    end}
+
+	definemod {'clap2alpha', function(p)
+    	clap2:diffusealpha(p)
+    end}
+
+
+
+--clap image. I feel there's a better ease but I turned this into a mods rush SRT for myself...
+	ease {38.5, 0.25, outCirc, 1, 'clapalpha'}
+	ease {38.75, 0.25, outCirc, 0, 'clapalpha'}
+	ease {39, 0.25, outCirc, 1, 'clap2alpha'}
+	ease {39.25, 0.25, outCirc, 0, 'clap2alpha'}
+
+	ease {54.5, 0.25, outCirc, 1, 'clapalpha'}
+	ease {54.75, 0.25, outCirc, 0, 'clapalpha'}
+	ease {55, 0.25, outCirc, 1, 'clap2alpha'}
+	ease {55.25, 0.25, outCirc, 0, 'clap2alpha'}
+
+	ease {70.5, 0.25, outCirc, 1, 'clapalpha'}
+	ease {70.75, 0.25, outCirc, 0, 'clapalpha'}
+	ease {71, 0.25, outCirc, 1, 'clap2alpha'}
+	ease {71.25, 0.25, outCirc, 0, 'clap2alpha'}
+
+
+	--Mods Eases / Sets
+	
+	ease {4, 4, inCirc, 0, 'stealth', 0, 'dark'}
+
+	ease {0, 1, inCirc, 100, 'Tornado'}
+	ease {39, 1, inCirc, 0, 'Tornado'}
+
+	ease {39, 1, inCirc, 100, 'Bumpy', 100, 'Wave'}
+	ease {70, 1, inCirc, 0, 'Bumpy', 0, 'Wave'}
+
+	ease {40, 0.5, outCirc, 30, 'Flip'}
+	ease {41, 1, outCirc, 0, 'Flip'}
+	ease {41.5, 1, outCirc, 20, 'Flip'}
+	ease {42, 1, outCirc, 0, 'Flip'}
+	ease {43, 0.5, outCirc, 20, 'Flip'}
+	ease {43.5, 1, outCirc, 0, 'Flip'}
+	ease {44, 1, outCirc, 20, 'Flip'}
+	ease {44.5, 1, outCirc, 0, 'Flip'}
+	ease {45.5, 1, outCirc, 20, 'Flip'}
+	ease {46, 1, outCirc, 0, 'Flip'}
+	ease {47, 1, outCirc, 20, 'Flip'}
+	ease {47.5, 1, outCirc, 0, 'Flip'}
+	ease {48, 0.5, outCirc, 30, 'Flip'}
+	ease {49, 1, outCirc, 0, 'Flip'}
+	ease {49.5, 1, outCirc, 20, 'Flip'}
+	ease {50, 1, outCirc, 0, 'Flip'}
+	ease {51, 1, outCirc, 20, 'Flip'}
+	ease {51.5, 1, outCirc, 0, 'Flip'}
+	ease {52, 1, outCirc, 20, 'Flip'}
+	ease {52.5, 1, outCirc, 0, 'Flip'}
+	ease {53.5, 1, outCirc, 20, 'Flip'}
+	ease {54.5, 1, outCirc, 0, 'Flip'}
+	ease {55, 1, outCirc, 20, 'Flip'}
+	ease {55.5, 1, outCirc, 0, 'Flip'}
+	ease {56, 1, outCirc, 30, 'Flip'}
+	ease {57, 1, outCirc, 0, 'Flip'}
+	ease {57.5, 1, outCirc, 20, 'Flip'}
+	ease {59, 1, outCirc, 0, 'Flip'}
+	ease {59.5, 1, outCirc, 20, 'Flip'}
+	ease {60, 1, outCirc, 0, 'Flip'}
+	ease {60.5, 1, outCirc, 20, 'Flip'}
+	ease {61.5, 1, outCirc, 0, 'Flip'}
+	ease {62, 1, outCirc, 20, 'Flip'}
+	ease {63, 1, outCirc, 0, 'Flip'}
+	ease {63.5, 1, outCirc, 20, 'Flip'}
+	ease {64, 1, outCirc, 30, 'Flip'}
+	ease {65, 1, outCirc, 0, 'Flip'}
+	ease {65.5, 1, outCirc, 20, 'Flip'}
+	ease {66, 1, outCirc, 0, 'Flip'}
+	ease {66.5, 1, outCirc, 20, 'Flip'}
+	ease {67.5, 1, outCirc, 0, 'Flip'}
+	ease {68, 1, outCirc, 20, 'Flip'}
+	ease {68.5, 1, outCirc, 40, 'Flip'}
+	ease {69, 1, outCirc, 80, 'Flip'}
+	ease {69.5, 1, outCirc, 100, 'Flip'}
+	ease {70, 1, outCirc, 120, 'Flip'}
+	ease {70.5, 1, outCirc, 100, 'Flip'}
+	ease {71, 1, outCirc, 0, 'Flip'}
+
+
+	ease {40, 1, outCirc, 50, 'z'}
+	ease {42, 7, outCirc, 100, 'movex'}
+	ease {42, 7, outCirc, 25, 'rotationy'}
+	ease {50, 7, outCirc, 0, 'movex'}
+	ease {50, 7, outCirc, 0, 'rotationy'}
+	ease {59, 7, outCirc, -100, 'movex'}
+	ease {59, 7, outCirc, -25, 'rotationy'}
+	ease {66, 7, outCirc, 0, 'movex'}
+	ease {66, 7, outCirc, 0, 'rotationy'}
+	ease {72, 1, outCirc, 0, 'z'}
+
+
+	ease {73, 0.5, outCirc, 200, 'movex0'}
+	ease {73, 0.5, outCirc, -200, 'movex2'}
+	ease {73.5, 0.5, outCirc, 0, 'movex0'}
+	ease {73.5, 0.5, outCirc, 0, 'movex2'}
+	ease {74, 0.5, outCirc, 200, 'movex0'}
+	ease {74, 0.5, outCirc, -200, 'movex2'}
+	ease {74.5, 0.5, outCirc, 0, 'movex0'}
+	ease {74.5, 0.5, outCirc, 0, 'movex2'}
+
+	ease {75.5, 0.5, outCirc, 100, 'movex1'}
+	ease {75.5, 0.5, outCirc, -100, 'movex2'}
+
+	ease {76.5, 0.5, outCirc, 100, 'movex2'}
+	ease {76.5, 0.5, outCirc, -200, 'movex3'}
+	ease {77, 0.5, outCirc, -100, 'movex2'}
+	ease {77, 0.5, outCirc, 0, 'movex3'}
+	ease {77.5, 0.5, outCirc, 100, 'movex2'}
+	ease {77.5, 0.5, outCirc, -200, 'movex3'}
+	ease {78, 0.5, outCirc, -100, 'movex2'}
+	ease {78, 0.5, outCirc, 0, 'movex3'}
+
+	ease {79, 0.5, outCirc, 0, 'movex1'}
+	ease {79, 0.5, outCirc, 0, 'movex2'}
+	ease {80, 0.5, outCirc, 100, 'movex1'}
+	ease {80, 0.5, outCirc, -100, 'movex2'}
+
+	ease {81, 0.5, outCirc, 100, 'movex0'}
+	ease {81, 0.5, outCirc, -200, 'movex2'}
+	ease {81.5, 0.5, outCirc, 0, 'movex0'}
+	ease {81.5, 0.5, outCirc, -100, 'movex2'}
+	ease {82, 0.5, outCirc, 100, 'movex0'}
+	ease {82, 0.5, outCirc, -200, 'movex2'}
+	ease {82.5, 0.5, outCirc, 0, 'movex0'}
+	ease {82.5, 0.5, outCirc, -100, 'movex2'}
+
+	ease {83.5, 0.5, outCirc, 0, 'movex1'}
+	ease {83.5, 0.5, outCirc, 0, 'movex2'}
+
+	ease {84.5, 0.5, outCirc, 200, 'movex1'}
+	ease {84.5, 0.5, outCirc, -200, 'movex3'}
+	ease {85, 0.5, outCirc, 0, 'movex1'}
+	ease {85, 0.5, outCirc, 0, 'movex3'}
+	ease {85.5, 0.5, outCirc, 200, 'movex1'}
+	ease {85.5, 0.5, outCirc, -200, 'movex3'}
+	ease {86, 0.5, outCirc, 0, 'movex1'}
+	ease {86, 0.5, outCirc, 0, 'movex3'}
+
+	ease {87, 0.5, outCirc, 100, 'movex1'}
+	ease {87, 0.5, outCirc, -100, 'movex2'}
+
+	ease {88, 0.5, outCirc, 0, 'movex1'}
+	ease {88, 0.5, outCirc, 0, 'movex2'}
+
+	ease {89, 0.5, outCirc, 100, 'movex0'}
+	ease {89, 0.5, outCirc, -100, 'movex1'}
+	ease {89.5, 0.5, outCirc, 0, 'movex0'}
+	ease {89.5, 0.5, outCirc, 0, 'movex1'}
+	ease {90, 0.5, outCirc, 100, 'movex0'}
+	ease {90, 0.5, outCirc, -100, 'movex1'}
+	ease {90.5, 0.5, outCirc, 0, 'movex0'}
+	ease {90.5, 0.5, outCirc, 0, 'movex1'}
+
+	ease {91.5, 0.5, outCirc, 100, 'movex1'}
+	ease {91.5, 0.5, outCirc, -100, 'movex2'}
+
+	ease {92.5, 0.5, outCirc, 100, 'movex2'}
+	ease {92.5, 0.5, outCirc, -200, 'movex3'}
+	ease {93, 0.5, outCirc, -100, 'movex2'}
+	ease {93, 0.5, outCirc, 0, 'movex3'}
+	ease {93.5, 0.5, outCirc, 100, 'movex2'}
+	ease {93.5, 0.5, outCirc, -200, 'movex3'}
+	ease {94, 0.5, outCirc, -100, 'movex2'}
+	ease {94, 0.5, outCirc, 0, 'movex3'}
+
+	ease {95, 0.5, outCirc, 0, 'movex1'}
+	ease {95, 0.5, outCirc, 0, 'movex2'}
+
+	ease {96, 0.5, outCirc, 100, 'movex1'}
+	ease {96, 0.5, outCirc, -100, 'movex2'}
+
+	ease {97, 0.5, outCirc, 100, 'movex0'}
+	ease {97, 0.5, outCirc, -200, 'movex2'}
+	ease {97.5, 0.5, outCirc, 0, 'movex0'}
+	ease {97.5, 0.5, outCirc, -100, 'movex2'}
+	ease {98, 0.5, outCirc, 100, 'movex0'}
+	ease {98, 0.5, outCirc, -200, 'movex2'}
+	ease {98.5, 0.5, outCirc, 0, 'movex0'}
+	ease {98.5, 0.5, outCirc, -100, 'movex2'}
+
+	ease {99.5, 0.5, outCirc, 0, 'movex1'}
+	ease {99.5, 0.5, outCirc, 0, 'movex2'}
+
+	set {102, -64, 'x',plr=1}
+	set {102.5, 64, 'x',plr=2}
+	set {103, -128, 'x',plr=1}
+	set {103.5, 128, 'x',plr=2}
+
+	ease {104, 1, outCirc, 200, 'tiny0',plr=1}
+	ease {104, 1, outCirc, 200, 'tiny1',plr=1}
+	ease {104, 1, outCirc, 200, 'tiny2',plr=1}
+	ease {104, 1, outCirc, 200, 'tiny3',plr=1}
+	ease {104, 0.5, outCirc, 100,'HideNoteFlash',plr=1}
+
+	ease {110, 0.5, outCirc, 628, 'ConfusionOffset',plr=2}
+	ease {111, 0.5, outCirc, 0, 'ConfusionOffset',plr=2}
+	ease {110, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {110.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+	ease {111, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {111.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+	
+	 ease {116, 0.5, outCirc, 0,'HideNoteFlash', plr=1}
+	 ease {116, 0.5, outCirc, 100,'HideNoteFlash', plr=2}
+	 ease {116, 0.5, outCirc, 0, 'tiny3',plr=1}
+	 ease {116.25, 0.5, outCirc, 0, 'tiny2',plr=1}
+	 ease {116.5, 0.5, outCirc, 0, 'tiny1',plr=1}
+	 ease {116.75, 0.5, outCirc, 0, 'tiny0',plr=1}
+	 ease {116, 0.5, outCirc, 200, 'tiny3',plr=2}
+	 ease {116.25, 0.5, outCirc, 200, 'tiny2',plr=2}
+	 ease {116.5, 0.5, outCirc, 200, 'tiny1',plr=2}
+	 ease {116.75, 0.5, outCirc, 200, 'tiny0',plr=2}
+
+	ease {118, 0.5, outCirc, 628, 'ConfusionOffset',plr=1}
+	ease {119, 0.5, outCirc, 0, 'ConfusionOffset',plr=1}
+	ease {118, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {118.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+	ease {119, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {119.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+
+	ease {126, 0.5, outCirc, 628, 'ConfusionOffset',plr=1}
+	ease {127, 0.5, outCirc, 0, 'ConfusionOffset',plr=1}
+	ease {126, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {126.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+	ease {127, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {127.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+
+	 ease {131.5, 0.5, outCirc, 0,'HideNoteFlash', plr=2}
+	 ease {131.5, 0.5, outCirc, 100,'HideNoteFlash', plr=1}
+	 ease {131.5, 0.5, outCirc, 0, 'tiny0',plr=2}
+	 ease {131.75, 0.5, outCirc, 0, 'tiny1',plr=2}
+	 ease {132, 0.5, outCirc, 0, 'tiny2',plr=2}
+	 ease {132.25, 0.5, outCirc, 0, 'tiny3',plr=2}
+	 ease {131.5, 0.5, outCirc, 200, 'tiny0',plr=1}
+	 ease {131.75, 0.5, outCirc, 200, 'tiny1',plr=1}
+	 ease {132, 0.5, outCirc, 200, 'tiny2',plr=1}
+	 ease {132.25, 0.5, outCirc, 200, 'tiny3',plr=1}
+
+	ease {134, 0.5, outCirc, 628, 'ConfusionOffset',plr=2}
+	ease {135, 0.5, outCirc, 0, 'ConfusionOffset',plr=2}
+	ease {134, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {134.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+	ease {135, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {135.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+
+	ease {142, 0.5, outCirc, 628, 'ConfusionOffset',plr=2}
+	ease {143, 0.5, outCirc, 0, 'ConfusionOffset',plr=2}
+	ease {142, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {142.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+	ease {143, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {143.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+
+	ease {148, 0.5, outCirc, 0,'HideNoteFlash', plr=1}
+	ease {148, 0.5, outCirc, 100,'HideNoteFlash', plr=2}
+	ease {148, 0.5, outCirc, 0, 'tiny3',plr=1}
+	ease {148.25, 0.5, outCirc, 0, 'tiny2',plr=1}
+	ease {148.5, 0.5, outCirc, 0, 'tiny1',plr=1}
+	ease {148.75, 0.5, outCirc, 0, 'tiny0',plr=1}
+	ease {149, 0.5, outCirc, 200, 'tiny3',plr=2}
+	ease {149.25, 0.5, outCirc, 200, 'tiny2',plr=2}
+	ease {149.5, 0.5, outCirc, 200, 'tiny1',plr=2}
+	ease {149.75, 0.5, outCirc, 200, 'tiny0',plr=2}
+
+	ease {150, 0.5, outCirc, 628, 'ConfusionOffset',plr=1}
+	ease {151, 0.5, outCirc, 0, 'ConfusionOffset',plr=1}
+	ease {150, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {150.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+	ease {151, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {151.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+
+	ease {158, 0.5, outCirc, 628, 'ConfusionOffset',plr=1}
+	ease {159, 0.5, outCirc, 0, 'ConfusionOffset',plr=1}
+	ease {158, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {158.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+	ease {159, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {159.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+
+	ease {163.5, 0.5, outCirc, 0,'HideNoteFlash', plr=2}
+	ease {163.5, 0.5, outCirc, 100,'HideNoteFlash', plr=1}
+	ease {163.5, 0.5, outCirc, 0, 'tiny0',plr=2}
+	ease {163.75, 0.5, outCirc, 0, 'tiny1',plr=2}
+	ease {164, 0.5, outCirc, 0, 'tiny2',plr=2}
+	ease {164.25, 0.5, outCirc, 0, 'tiny3',plr=2}
+	ease {164.5, 0.5, outCirc, 200, 'tiny0',plr=1}
+	ease {164.75, 0.5, outCirc, 200, 'tiny1',plr=1}
+	ease {165, 0.5, outCirc, 200, 'tiny2',plr=1}
+	ease {165.25, 0.5, outCirc, 200, 'tiny3',plr=1}
+
+	ease {166, 0.5, outCirc, 628, 'ConfusionOffset',plr=2}
+	ease {167, 0.5, outCirc, 0, 'ConfusionOffset',plr=2}
+	ease {166, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {166.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+	ease {167, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {167.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+
+	ease {174, 0.5, outCirc, 628, 'ConfusionOffset',plr=2}
+	ease {175, 0.5, outCirc, 0, 'ConfusionOffset',plr=2}
+	ease {174, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {174.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+	ease {175, 0.5, outCirc, 50, 'movey',50 , 'z',plr=2}
+	ease {175.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=2}
+
+	ease {180, 0.5, outCirc, 0,'HideNoteFlash', plr=1}
+	ease {180, 0.5, outCirc, 100,'HideNoteFlash', plr=2}
+	ease {180, 0.5, outCirc, 0, 'tiny3',plr=1}
+	ease {180.25, 0.5, outCirc, 0, 'tiny2',plr=1}
+	ease {180.5, 0.5, outCirc, 0, 'tiny1',plr=1}
+	ease {180.75, 0.5, outCirc, 0, 'tiny0',plr=1}
+	ease {181, 0.5, outCirc, 200, 'tiny3',plr=2}
+	ease {181.25, 0.5, outCirc, 200, 'tiny2',plr=2}
+	ease {181.5, 0.5, outCirc, 200, 'tiny1',plr=2}
+	ease {181.75, 0.5, outCirc, 200, 'tiny0',plr=2}
+
+	ease {182, 0.5, outCirc, 0,'HideNoteFlash', plr=1}
+	ease {182, 0.5, outCirc, 0,'HideNoteFlash', plr=2}
+
+	ease {182, 0.5, outCirc, 628, 'ConfusionOffset',plr=1}
+	ease {183, 0.5, outCirc, 0, 'ConfusionOffset',plr=1}
+	ease {182, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {182.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+	ease {183, 0.5, outCirc, 50, 'movey',50 , 'z',plr=1}
+	ease {183.5, 0.5, outCirc, 0, 'movey',0 , 'z',plr=1}
+
+	ease {190, 0.5, outCirc, 628, 'ConfusionOffset'}
+	ease {191, 0.5, outCirc, 0, 'ConfusionOffset'}
+	ease {190, 0.5, outCirc, 50, 'movey',50 , 'z'}
+	ease {190.5, 0.5, outCirc, 0, 'movey',0 , 'z'}
+	ease {191, 0.5, outCirc, 50, 'movey',50 , 'z'}
+	ease {191.5, 0.5, outCirc, 0, 'movey',0 , 'z'}
+
+	ease {107.5, 0.5, outCirc, 100, 'movex1'}
+	ease {107.5, 0.5, outCirc, -100, 'movex2'}
+
+	ease {115.5, 0.5, outCirc, 0, 'movex1'}
+	ease {115.5, 0.5, outCirc, 0, 'movex2'}
+
+	ease {123.5, 0.5, outCirc, 100, 'movex1'}
+	ease {123.5, 0.5, outCirc, -100, 'movex2'}
+
+	ease {131.5, 0.5, outCirc, 0, 'movex1'}
+	ease {131.5, 0.5, outCirc, 0, 'movex2'}
+
+	ease {139.5, 0.5, outCirc, 100, 'movex1'}
+	ease {139.5, 0.5, outCirc, -100, 'movex2'}
+	
+	ease {147.5, 0.5, outCirc, 0, 'movex1'}
+	ease {147.5, 0.5, outCirc, 0, 'movex2'}
+
+	ease {155.5, 0.5, outCirc, 100, 'movex1'}
+	ease {155.5, 0.5, outCirc, -100, 'movex2'}
+
+	ease {163.5, 0.5, outCirc, 0, 'movex1'}
+	ease {163.5, 0.5, outCirc, 0, 'movex2'}
+
+	ease {171.5, 0.5, outCirc, 100, 'movex1'}
+	ease {171.5, 0.5, outCirc, -100, 'movex2'}
+
+	ease {179.5, 0.5, outCirc, 0, 'movex1'}
+	ease {179.5, 0.5, outCirc, 0, 'movex2'}
+
+	ease {192, 3, inCirc, 360 * 25, 'RotationZ'}
+	ease {194, 5.5, inOutCirc, 360 * 75, 'RotationZ'}
+	ease {194, 5.5, inOutCirc, 360 * 75, 'RotationZ'}
+	
+	ease {194, 5, inOutCirc, 0, 'x',plr=1}
+	ease {194, 5, inOutCirc, 0, 'x',plr=2}
+
+	ease {196, 1, outCirc, 100, 'dizzy'}
+	ease {196, 40, outCirc, 628 * 20, 'ConfusionOffset'}
+
+	ease {232, 4, outCirc, 1000, 'movey'}
+
+	aux{'roter'}
+
+	func{100,200,function(beat, mods)
+  	 for pn=1,2 do
+    	if P[pn] then
+      	P[pn]:rotationx( mods[pn]['roter'] * math.sin(beat*math.pi*0.25) )
+      	P[pn]:rotationy( mods[pn]['roter'] * math.cos(beat*math.pi*0.25) )
+       end
+      end
+     end}
+
+	ease {104, 4, inOutCubic, 20, 'roter'}
+	ease {192, 4, inOutCubic, 0, 'roter'}
+	
+	ease {166, 4, inOutCubic, 40, 'drunk'}
+	ease {182, 4, inOutCubic, 0, 'drunk'}
+
+	ease {199, 1, inCirc, 100, 'Bumpy', 100, 'Wave'}
+	ease {240, 1, inCirc, 0, 'Bumpy', 0, 'Wave'}
+
+	ease {206.5, 7, outCirc, 100, 'movex'}
+	ease {206.5, 7, outCirc, 25, 'rotationy'}
+	ease {214.5, 7, outCirc, 0, 'movex'}
+	ease {214.5, 7, outCirc, 0, 'rotationy'}
+	ease {222.5, 7, outCirc, -100, 'movex'}
+	ease {222.5, 7, outCirc, -25, 'rotationy'}
+	ease {230.5, 7, outCirc, 0, 'movex'}
+	ease {230.5, 7, outCirc, 0, 'rotationy'}
+
+	ease {200, 0.5, outCirc, 30, 'Flip'}
+	ease {200.5, 1, outCirc, 0, 'Flip'}
+	ease {201.5, 1, outCirc, 20, 'Flip'}
+	ease {202, 1, outCirc, 0, 'Flip'}
+	ease {202.5, 0.5, outCirc, 20, 'Flip'}
+	ease {203.5, 1, outCirc, 0, 'Flip'}
+	ease {204, 1, outCirc, 20, 'Flip'}
+	ease {204.5, 1, outCirc, 0, 'Flip'}
+	ease {205.5, 1, outCirc, 20, 'Flip'}
+	ease {206, 1, outCirc, 0, 'Flip'}
+	ease {206.5, 1, outCirc, 20, 'Flip'}
+	ease {207, 1, outCirc, 0, 'Flip'}
+	ease {208, 0.5, outCirc, 30, 'Flip'}
+	ease {208.5, 1, outCirc, 0, 'Flip'}
+	ease {209.5, 1, outCirc, 20, 'Flip'}
+	ease {210, 1, outCirc, 0, 'Flip'}
+	ease {210.5, 1, outCirc, 20, 'Flip'}
+	ease {211.5, 1, outCirc, 0, 'Flip'}
+	ease {212, 1, outCirc, 20, 'Flip'}
+	ease {212.5, 1, outCirc, 0, 'Flip'}
+	ease {213.5, 1, outCirc, 20, 'Flip'}
+	ease {214, 1, outCirc, 0, 'Flip'}
+	ease {214.5, 1, outCirc, 20, 'Flip'}
+	ease {215, 1, outCirc, 0, 'Flip'}
+	ease {216, 1, outCirc, 30, 'Flip'}
+	ease {216.5, 1, outCirc, 0, 'Flip'}
+	ease {217.5, 1, outCirc, 20, 'Flip'}
+	ease {218, 1, outCirc, 0, 'Flip'}
+	ease {218.5, 1, outCirc, 20, 'Flip'}
+	ease {219.5, 1, outCirc, 0, 'Flip'}
+	ease {220, 1, outCirc, 20, 'Flip'}
+	ease {220.5, 1, outCirc, 0, 'Flip'}
+	ease {221.5, 1, outCirc, 20, 'Flip'}
+	ease {222, 1, outCirc, 0, 'Flip'}
+	ease {222.5, 1, outCirc, 20, 'Flip'}
+	ease {223, 1, outCirc, 30, 'Flip'}
+	ease {224, 1, outCirc, 0, 'Flip'}
+	ease {224.5, 1, outCirc, 20, 'Flip'}
+	ease {225.5, 1, outCirc, 0, 'Flip'}
+	ease {226.5, 1, outCirc, 20, 'Flip'}
+	ease {227.5, 1, outCirc, 0, 'Flip'}
+	ease {228, 1, outCirc, 20, 'Flip'}
+	ease {228.5, 1, outCirc, 40, 'Flip'}
+	ease {229, 1, outCirc, 80, 'Flip'}
+	ease {229.5, 1, outCirc, 100, 'Flip'}
+	ease {230, 1, outCirc, 120, 'Flip'}
+	ease {230.5, 1, outCirc, 100, 'Flip'}
+	ease {231, 1, outCirc, 0, 'Flip'}
+
+
+	--More cursed shit that's easier to figure out then trouble shooting better for loop code
+
+	for loop = 0,4 do
+     if loop % 2 == 0 then
+	 	ease {105+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {105+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 4 then
+		ease {105+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+    end
+
+	for loop = 0,7 do
+     if loop % 2 == 0 then
+	 	ease {108.5+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {108.5+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 7 then
+		ease {108.5+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+	for loop = 0,4 do
+     if loop % 2 == 0 then
+	 	ease {113+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {113+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 4 then
+		ease {113+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+    end
+
+	for loop = 0,10 do
+     if loop % 2 == 0 then
+	 	ease {115.5+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {115.5+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 10 then
+		ease {115.5+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+for loop = 0,4 do
+     if loop % 2 == 0 then
+	 	ease {121+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {121+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 4 then
+		ease {121+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+    end
+
+	for loop = 0,7 do
+     if loop % 2 == 0 then
+	 	ease {124.5+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {124.5+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 7 then
+		ease {124.5+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+	for loop = 0,4 do
+     if loop % 2 == 0 then
+	 	ease {129+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {129+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 4 then
+		ease {129+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+    end
+
+	for loop = 0,10 do
+     if loop % 2 == 0 then
+	 	ease {131.5+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {131.5+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 10 then
+		ease {131.5+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+	
+	for loop = 0,6 do
+     if loop % 2 == 0 then
+	 	ease {137+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {137+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 6 then
+		ease {137+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+    end
+
+	for loop = 0,9 do
+     if loop % 2 == 0 then
+	 	ease {139.5+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {139.5+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 9 then
+		ease {139.5+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+	for loop = 0,6 do
+     if loop % 2 == 0 then
+	 	ease {145+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {145+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 6 then
+		ease {145+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+    end
+
+	for loop = 0,10 do
+     if loop % 2 == 0 then
+	 	ease {147.5+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {147.5+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 10 then
+		ease {147.5+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+	for loop = 0,6 do
+     if loop % 2 == 0 then
+	 	ease {153+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {153+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 6 then
+		ease {153+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+    end
+
+	for loop = 0,9 do
+     if loop % 2 == 0 then
+	 	ease {155.5+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {155.5+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 9 then
+		ease {155.5+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+	for loop = 0,6 do
+     if loop % 2 == 0 then
+	 	ease {161+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {161+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 6 then
+		ease {161+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+    end
+
+	for loop = 0,8 do
+     if loop % 2 == 0 then
+	 	ease {164+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {164+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 8 then
+		ease {164+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+	for loop = 0,14 do
+     if loop % 2 == 0 then
+	 	ease {169+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {169+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 14 then
+		ease {169+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+	for loop = 0,14 do
+     if loop % 2 == 0 then
+	 	ease {177+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {177+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 14 then
+		ease {177+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+	for loop = 0,16 do
+     if loop % 2 == 0 then
+	 	ease {184+loop/2, 0.5, outCirc, 100,'invert'}
+        end
+     if loop % 2 == 1 then
+	    ease {184+loop/2, 0.5, outCirc, 0,'invert'}
+        end
+        if loop == 16 then
+		ease {184+loop/2, 0.5, outCirc, 0,'invert'}
+    	end
+	end
+
+	for loop = 0,16 do
+     if loop % 2 == 0 then
+        ease {184+loop/2, 1, outCirc, 200, 'tiny0',plr=1}
+        ease {184+loop/2, 1, outCirc, 200, 'tiny1',plr=1}
+		ease {184+loop/2, 1, outCirc, 200, 'tiny2',plr=1}
+        ease {184+loop/2, 1, outCirc, 200, 'tiny3',plr=1}
+		ease {184+loop/2, 1, outCirc, 0, 'tiny0',plr=2}
+        ease {184+loop/2, 1, outCirc, 0, 'tiny1',plr=2}
+		ease {184+loop/2, 1, outCirc, 0, 'tiny2',plr=2}
+        ease {184+loop/2, 1, outCirc, 0, 'tiny3',plr=2}
+        end
+     if loop % 2 == 1 then
+        ease {184+loop/2, 1, outCirc, 200, 'tiny0',plr=2}
+        ease {184+loop/2, 1, outCirc, 200, 'tiny1',plr=2}
+		ease {184+loop/2, 1, outCirc, 200, 'tiny2',plr=2}
+        ease {184+loop/2, 1, outCirc, 200, 'tiny3',plr=2}
+		ease {184+loop/2, 1, outCirc, 0, 'tiny0',plr=1}
+        ease {184+loop/2, 1, outCirc, 0, 'tiny1',plr=1}
+		ease {184+loop/2, 1, outCirc, 0, 'tiny2',plr=1}
+        ease {184+loop/2, 1, outCirc, 0, 'tiny3',plr=1}
+        end
+        if loop == 16 then
+        ease {184+loop/2, 1, outCirc, 0, 'tiny0',plr=2}
+        ease {184+loop/2, 1, outCirc, 0, 'tiny1',plr=2}
+		ease {184+loop/2, 1, outCirc, 0, 'tiny2',plr=2}
+        ease {184+loop/2, 1, outCirc, 0, 'tiny3',plr=2}
+		ease {184+loop/2, 1, outCirc, 0, 'tiny0',plr=1}
+        ease {184+loop/2, 1, outCirc, 0, 'tiny1',plr=1}
+		ease {184+loop/2, 1, outCirc, 0, 'tiny2',plr=1}
+        ease {184+loop/2, 1, outCirc, 0, 'tiny3',plr=1}
+        end
+    end
+	
+
+	--spell cards
+
+	card {0, 39, 'Wind Day', 1, '#000000'}
+	card {39, 79, 'Getting Ready', 1, '#000000'}
+	card {79, 100, 'On The Way To The City', 1, '#000000'}
+	card {102, 199, 'Walking In The City :)', 1, '#000000'}
+	card {200, 240, 'I ate too much sushi at the resterant *barf*', 1, '#000000'}
+
+end)"
+Type = "ActorFrame"
+><children>
+	<Layer File = "../images/clap.png" Name = "clap" />
+	<Layer File = "../images/clap2.png" Name = "clap2" />
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+</children></Mods>

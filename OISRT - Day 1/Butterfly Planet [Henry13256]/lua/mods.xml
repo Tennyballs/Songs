@@ -1,0 +1,379 @@
+<Mods LoadCommand = "%xero(function(self)
+	if not P1 or not P2 then
+		backToSongWheel('Two Player Mode Required')
+		return
+	end
+
+	-- judgment / combo proxies
+	for pn = 1, 2 do
+		setupJudgeProxy(PJ[pn], P[pn]:GetChild('Judgment'), pn)
+		setupJudgeProxy(PC[pn], P[pn]:GetChild('Combo'), pn)
+	end
+	-- player proxies
+	for pn = 1, #PP do
+		PP[pn]:SetTarget(P[pn])
+		P[pn]:hidden(1)
+	end
+	-- your code goes here here:
+--p3 nonsense--
+	func{0,function(self)
+  for pn=3,8 do
+    if P[pn] then
+      P[pn]:GetChild('Combo'):hidden(1)
+      P[pn]:GetChild('Judgment'):hidden(1)
+    end
+  end
+end}
+	func { 0, function()
+    for pn=3,4 do
+        local p = P[pn]
+        p:SetInputPlayer(math.mod(pn-1, 2))
+    end
+end }
+P3:SetAwake(true)
+P3:hidden(1)
+P3:GetChild('Judgment'):hidden(1)
+--default
+	setdefault {2.95, 'xmod', 100, 'overhead', 100, 'dizzyholds', 100, 'modtimer'}
+	P1:x(scx)
+	P2:x(scx)
+--simple start--
+ease {0, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {1, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {2, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {3, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {4, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {5, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {6, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {7, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {8, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {9, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {10, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {11, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {12, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {13, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {14, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {15, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {16, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {17, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {18, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {19, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {20, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {21, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {22, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {23, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {24, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {25, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {26, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {27, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {28, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {29, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {30, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {31, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {32, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {33, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {34, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {35, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {36, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {37, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {38, 1, outExpo, math.pi * 200, 'confusionoffset'}
+ease {39, 1, outExpo, math.pi * 0, 'confusionoffset'}
+ease {0, 1, outExpo, 100, 'beaty'}
+ease {39, 1, outExpo, 0, 'beaty'}
+ease {0, 1, outExpo, 100, 'beatz'}
+ease {39, 1, outExpo, 0, 'beatz'}
+ease {0, 1, outExpo, 200, 'bumpy'}
+ease {39, 1, outExpo, 0, 'bumpy'}
+ease {0, 1, outExpo, 100, 'wave'}
+ease {30, 1, outExpo, 0, 'wave'}
+--mini single column--
+ease {31.333, 0.667, outExpo, 100, 'reverse'}
+ease {31.333, 0.667, outExpo, 50, 'flip'}
+ease {32, 0.375, outExpo, 0, 'flip'}
+ease {32.375, 0.375, outExpo, 50, 'flip'}
+ease {32.750, 0.375, outExpo, 0, 'flip'}
+ease {33.333, 0.667, outExpo, 50, 'flip'}
+ease {33.333, 0.667, outExpo, 0, 'reverse'}
+ease {34, 0.375, outExpo, 0, 'flip'}
+ease {34.375, 0.375, outExpo, 50, 'flip'}
+ease {34.750, 0.375, outExpo, 0, 'flip'}
+ease {35.333, 0.667, outExpo, 50, 'flip'}
+ease {35.333, 0.667, outExpo, 100, 'reverse'}
+ease {36, 0.375, outExpo, 0, 'flip'}
+ease {36.375, 0.375, outExpo, 50, 'flip'}
+ease {36.750, 0.375, outExpo, 0, 'flip'}
+ease {37.333, 0.667, outExpo, 50, 'flip'}
+ease {37.333, 0.667, outExpo, 0, 'reverse'}
+ease {38, 0.375, outExpo, 0, 'flip'}
+ease {38.375, 0.375, outExpo, 50, 'flip'}
+ease {38.750, 0.375, outExpo, 0, 'flip'}
+--swinging column swap--
+func{40,function()
+   P3:hidden(0)
+end}
+	ease {39.5, 1.5, outExpo, 100, 'stealth'}
+	ease {39.5, 1.5, outExpo, 100, 'hidenoteflash'}
+	ease {39.5, 1.5, outExpo, 100, 'stealthpastreceptors'}
+	ease {39.5, 1.5, outExpo, 100, 'dark'}
+	ease {39, 2.5, outExpo, 100, 'reverse', plr = 3}
+	ease {40, 2.5, outExpo, 80, 'dark', plr = 3}
+	ease {40, 2.5, outExpo, 10, 'stealth', plr = 3}
+	ease {40, 2.5, outExpo, 100, 'drunk', plr = 3}
+for i=40,63,6 do
+  ease {i+2,2,outCubic,125,'flip', plr = 3}
+  ease {i+2,2,outCubic,0,'invert', plr = 3}
+  ease {i,2,outCubic,-50,'flip', plr = 3}
+  ease {i,2,outCubic,0,'invert', plr = 3}
+  ease {i+4,2,outCubic,-25,'flip', plr = 3}
+  ease {i+4,2,outCubic,150,'invert', plr = 3}
+end
+	ease {63.875, 1.5, outExpo, 0, 'stealth'}
+	ease {63.875, 1.5, outExpo, 0, 'hidenoteflash'}
+	ease {63.875, 1.5, outExpo, 0, 'stealthpastreceptors'}
+	ease {63.875, 1.5, outExpo, 0, 'dark'}
+	ease {63.875, 1.5, outExpo, 0, 'reverse'}
+	ease {63.3, 2.5, outExpo, 100, 'dark', plr = 3}
+	ease {63.3, 2.5, outExpo, 100, 'stealth', plr = 3}
+	ease {63.3, 2.5, outExpo, 0, 'reverse', plr = 3}
+	ease {63.3, 2.5, outExpo, 0, 'flip', plr = 3}
+	ease {63.3, 2.5, outExpo, 0, 'invert', plr = 3}
+func{65,function()
+   P3:hidden(1)
+end}	
+--square--
+	ease {64.875, 0.167, outExpo, 200, 'sawtooth'}
+	ease {65, 0.875, outExpo, -200, 'sawtooth'}
+	ease {65.875, 0.167, outExpo, 200, 'sawtooth'}
+	ease {65.5, 0.875, outExpo, -200, 'sawtooth'}
+	ease {65.875, 0.5, outExpo, 200, 'sawtooth'}
+	ease {66.375, 0.5, outExpo, -200, 'sawtooth'}
+	ease {66.875, 0.5, outExpo, 200, 'sawtooth'}
+	ease {67.375, 2.167, outExpo, -200, 'sawtooth'}
+	ease {68.5, 0.5, outExpo, 200, 'sawtooth'}
+	ease {69, 0.5, outExpo, -200, 'sawtooth'}
+	ease {69.5, 0.5, outExpo, 200, 'sawtooth'}
+	ease {70, 0.5, outExpo, -200, 'sawtooth'}
+	ease {70.5, 0.5, outExpo, 0, 'sawtooth'}
+--rotation--
+	ease {72.5, 0.375, outExpo, 72, 'rotationz'}
+	ease {72.875, 0.375, outExpo, 144, 'rotationz'}
+	ease {73.25, 0.375, outExpo, 216, 'rotationz'}
+	ease {73.625, 0.375, outExpo, 288, 'rotationz'}
+	ease {74, 0.375, outExpo, 360, 'rotationz'}
+	ease {74.75, 0.75, outExpo, 100, 'reverse2'}
+	ease {74.75, 0.75, outExpo, 100, 'reverse3'}
+	ease {75.5, 0.75, outExpo, 100, 'reverse0'}
+	ease {75.5, 0.75, outExpo, 100, 'reverse1'}
+	ease {76.5, 0.375, outExpo, 288, 'rotationz'}
+	ease {76.875, 0.375, outExpo, 216, 'rotationz'}
+	ease {77.25, 0.375, outExpo, 144, 'rotationz'}
+	ease {77.625, 0.375, outExpo, 72, 'rotationz'}
+	ease {78, 0.375, outExpo, 0, 'rotationz'} 
+	ease {78.5, 0.75, outExpo, 0, 'reverse2'}
+	ease {78.5, 0.75, outExpo, 0, 'reverse3'}
+	ease {78.875, 0.75, outExpo, 0, 'reverse0'}
+	ease {78.875, 0.75, outExpo, 0, 'reverse1'}
+--square-- 
+	ease {80, 1, outExpo, -400, 'square'} 
+	ease {81, 1, outExpo, 400, 'square'}
+	ease {82, 0.5, outExpo, -400, 'square'} 
+	ease {82.5, 0.5, outExpo, 400, 'square'} 
+	ease {83, 0.375, outExpo, -400, 'square'} 
+	ease {83.375, 0.625, outExpo, 400, 'square'} 
+	ease {84, 1, outExpo, -400, 'square'} 
+	ease {85, 1, outExpo, 400, 'square'} 
+	ease {86, 0.5, outExpo, -400, 'square'} 
+	ease {86.5, 0.375, outExpo, 400, 'square'} 
+	ease {86.875, 0.5, outExpo, -400, 'square'} 
+	ease {87.375, 0.625, outExpo, 400, 'square'} 
+	ease {88, 0.5, outExpo, 0, 'square'} 
+--tinyz with rotation--
+	ease {88, 3.5, outExpo, 20000, 'tinyz'} 
+	ease {89.5, 0.5, outExpo, 10000, 'tinyz'} 
+	ease {89.875, 0.5, outExpo, 0, 'tinyz'} 
+	ease {89.5, 0.5, outExpo, 100, 'flip'} 
+	ease {89.875, 0.5, outExpo, 0, 'flip'} 
+	
+	ease {90.5, 0.375, outExpo, 72, 'rotationz'}
+	ease {90.875, 0.375, outExpo, 144, 'rotationz'}
+	ease {91.25, 0.375, outExpo, 216, 'rotationz'}
+	ease {91.625, 0.375, outExpo, 288, 'rotationz'}
+	ease {92, 0.375, outExpo, 360, 'rotationz'}
+	set {90.5, 0, 'flip'}
+	set {90.875, 100, 'flip'}
+	set {91.25, 0, 'flip'}
+	set {91.625, 100, 'flip'}
+	set {92, 0, 'flip'}
+	ease {92, 3.5, outExpo, -10000, 'tinyz'} 
+	ease {93.5, 0.5, outExpo, -5000, 'tinyz'} 
+	ease {93.875, 0.5, outExpo, 0, 'tinyz'} 
+	ease {94.5, 0.5, outExpo, 100, 'invert'} 
+	ease {94.875, 0.5, outExpo, 0, 'invert'} 
+	ease {93.375, 0.5, outExpo, 100, 'invert'} 
+	ease {93.875, 0.5, outExpo, 0, 'invert'} 
+	
+	ease {94.5, 0.375, outExpo, 288, 'rotationz'}
+	ease {94.875, 0.375, outExpo, 216, 'rotationz'}
+	ease {95.25, 0.375, outExpo, 144, 'rotationz'}
+	ease {95.625, 0.375, outExpo, 72, 'rotationz'}
+	ease {96, 0.375, outExpo, 0, 'rotationz'}
+	set {94.5, 0, 'invert'}
+	set {94.875, 100, 'invert'}
+	set {95.25, 0, 'invert'}
+	set {95.625, 100, 'invert'}
+	set {96, 0, 'invert'}
+--final--
+	ease {96, 1, outExpo, -400, 'square'} 
+	ease {97, 1, outExpo, 400, 'square'} 
+	ease {98, 1, outExpo, -400, 'square'} 
+	ease {99, 1, outExpo, 0, 'square'} 
+--double rotation--
+	set {100, 100, 'dark2', plr = 1}
+	set {100, 100, 'dark3', plr = 1}
+	set {100, 100, 'dark0', plr = 2}
+	set {100, 100, 'dark1', plr = 2}
+	
+	set {100, 100, 'hidenoteflash2', plr = 1}
+	set {100, 100, 'hidenoteflash3', plr = 1}
+	set {100, 100, 'hidenoteflash0', plr = 2}
+	set {100, 100, 'hidenoteflash1', plr = 2}
+	
+	set {100, 100, 'stealth2', plr = 1}
+	set {100, 100, 'stealth3', plr = 1}
+	set {100, 100, 'stealth0', plr = 2}
+	set {100, 100, 'stealth1', plr = 2}
+	
+	ease {100, 1, outExpo, 40, 'rotationz', plr = 1}
+	ease {100, 1, outExpo, -40, 'rotationz', plr = 2}
+	ease {100.375, 1, outExpo, 80, 'rotationz', plr = 1}
+	ease {100.375, 1, outExpo, -80, 'rotationz', plr = 2}
+	ease {100.750, 1, outExpo, 120, 'rotationz', plr = 1}
+	ease {100.750, 1, outExpo, -120, 'rotationz', plr = 2}
+	ease {101.125, 1, outExpo, 160, 'rotationz', plr = 1}
+	ease {101.125, 1, outExpo, -160, 'rotationz', plr = 2}
+	ease {101.500, 1, outExpo, 200, 'rotationz', plr = 1}
+	ease {101.500, 1, outExpo, -200, 'rotationz', plr = 2}
+	ease {101.875, 1, outExpo, 240, 'rotationz', plr = 1}
+	ease {101.875, 1, outExpo, -240, 'rotationz', plr = 2}
+	ease {102.250, 1, outExpo, 280, 'rotationz', plr = 1}
+	ease {102.250, 1, outExpo, -280, 'rotationz', plr = 2}
+	ease {102.625, 1, outExpo, 320, 'rotationz', plr = 1}
+	ease {102.625, 1, outExpo, -320, 'rotationz', plr = 2}
+	ease {103, 1, outExpo, 360, 'rotationz', plr = 1}
+	ease {103, 1, outExpo, -360, 'rotationz', plr = 2}
+--context switch--
+func{104,function()
+   P3:hidden(0)
+end}	
+	set {120.7, 1.5, 'xmod', plr = 3}
+	ease {103.5, 1.5, outExpo, 100, 'stealth'}
+	ease {103.5, 1.5, outExpo, 100, 'hidenoteflash'}
+	ease {103.5, 1.5, outExpo, 100, 'stealthpastreceptors'}
+	ease {103.5, 1.5, outExpo, 100, 'dark'}
+	ease {103, 2.5, outExpo, 100, 'reverse', plr = 3}
+	ease {104, 2.5, outExpo, 80, 'dark', plr = 3}
+	ease {104, 2.5, outExpo, 10, 'stealth', plr = 3}
+for i=104,120,6 do
+  ease {i+2,2,outCubic,125,'flip', plr = 3}
+  ease {i+2,2,outCubic,0,'invert', plr = 3}
+  ease {i,2,outCubic,-50,'flip', plr = 3}
+  ease {i,2,outCubic,0,'invert', plr = 3}
+  ease {i+4,2,outCubic,-25,'flip', plr = 3}
+  ease {i+4,2,outCubic,150,'invert', plr = 3}
+end
+	ease {104, 0.5, outExpo, -50, 'flip', plr = 3}
+	ease {104, 0.5, outExpo, 125, 'drunk', plr = 3}
+	ease {104, 0.5, outExpo, 20, 'tipsy', plr = 3}
+	ease {104, 0.5, outExpo, 75, 'tornado', plr = 3}
+	ease {120, 0.5, outExpo, 100, 'dark', plr = 3}
+	ease {120, 0.5, outExpo, 100, 'hidenoteflash', plr = 3}
+	ease {120, 0.5, outExpo, 100, 'stealth', plr = 3}
+	ease {120, 0.5, outExpo, -200, 'flip', plr = 3}
+	ease {120.75, 1.5, outExpo, 0, 'stealth'}
+	ease {120.75, 1.5, outExpo, 0, 'hidenoteflash'}
+	ease {120.75, 1.5, outExpo, 0, 'stealthpastreceptors'}
+	ease {120.75, 1.5, outExpo, 0, 'dark'}
+	ease {120.5, 0.2, outExpo, 50, 'flip'}
+	ease {117, 2.5, outExpo, 0, 'stealthpastreceptors', plr = 3}
+	
+func{121,function()
+   P3:hidden(1)
+end}	
+--final--
+	set {120.7, 2, 'xmod'}
+	ease {122.5, 0.5, outExpo, -150, 'mini'}
+	ease {123, 0.5, outExpo, -300, 'mini'}
+	ease {123.5, 0.5, outExpo, -450, 'mini'}
+
+	set {124.5, 2.95, 'xmod'}
+	set {124.5, 50, 'stealth'}
+	ease {124.5, 1, outExpo, 0, 'mini'}
+	ease {124.5, 1, outExpo, 0, 'stealth'}
+	ease {124.5, 0.5, outExpo, 0, 'flip'}
+--final final--
+	ease {126, 1, outExpo, 50, 'flip'}
+	ease {126.375, 1, outExpo, 0, 'flip'}
+	ease {126.750, 1, outExpo, 50, 'flip'}
+	ease {127.5, 1, outExpo, 0, 'flip'}
+	set {127.5, 50, 'stealth'}
+	ease {127.6, 2, outExpo, 0, 'stealth'}
+
+	ease {129.5, 0.5, outExpo, 100, 'reverse3'}
+	ease {130, 0.5, outExpo, 100, 'reverse1'}
+	ease {130.5, 0.5, outExpo, 100, 'reverse2'}
+	ease {131, 0.5, outExpo, 100, 'reverse0'}
+
+	ease {131, 1, outExpo, 50, 'flip'}
+	ease {131.375, 1, outExpo, 0, 'flip'}
+	ease {131.750, 1, outExpo, 50, 'flip'}
+	ease {132.5, 1, outExpo, 0, 'flip'}
+	set {132.5, 50, 'stealth'}
+	ease {132.6, 2, outExpo, 0, 'stealth'}
+
+	ease {133.5, 0.5, outExpo, 0, 'reverse3'}
+	ease {134, 0.5, outExpo, 0, 'reverse2'}
+	ease {134.5, 0.5, outExpo, 0, 'reverse1'}
+	ease {135, 0.5, outExpo, 0, 'reverse0'}
+
+	ease {135, 1, outExpo, 50, 'flip'}
+	ease {135.375, 1, outExpo, 0, 'flip'}
+	ease {135.750, 1, outExpo, 50, 'flip'}
+	ease {136.5, 1, outExpo, 0, 'flip'}
+	set {136.5, 50, 'stealth'}
+	ease {136.6, 2, outExpo, 0, 'stealth'}
+	
+	ease {137.5, 0.5, outExpo, 100, 'reverse3'}
+	ease {138, 0.5, outExpo, 100, 'reverse1'}
+	ease {138.5, 0.5, outExpo, 100, 'reverse2'}
+	ease {139, 0.5, outExpo, 100, 'reverse0'}
+
+	ease {139.75, 0.5, outExpo, 400, 'square'}
+	ease {139.75, 0.5, outExpo, -2500, 'tinyz'}
+	ease {140.375, 0.5, outExpo, -400, 'square'}
+	ease {140.375, 0.5, outExpo, -5000, 'tinyz'}
+	ease {141.875, 0.5, outExpo, 400, 'square'}
+	ease {141.875, 0.5, outExpo, -7500, 'tinyz'}
+	ease {142.5, 0.5, outExpo, -400, 'square'}
+	ease {142.5, 0.5, outExpo, -10000, 'tinyz'}
+	ease {142.6, 0.1, outExpo, 0, 'square'}
+	ease {143.375, 0.167, outExpo, 15, 'flip'}
+	ease {143.5, 0.375, outExpo, 30, 'flip'}
+	ease {143.875, 0.5, outExpo, 50, 'flip'}
+	ease {143.375, 0.167, outExpo, -300, 'mini'}
+	ease {143.5, 0.375, outExpo, -600, 'mini'}
+	ease {143.875, 0.5, outExpo, -900, 'mini'}
+	ease {143.875, 0.5, outExpo, 100, 'centered'}
+	ease {143.875, 3, outExpo, 100, 'dark'}
+	set {147, 100, 'disablemines'}
+	set {147, 100, 'stealth'}
+	set {147, 100, 'stealthpastreceptors'}
+end)"
+Type = "ActorFrame"
+><children>
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+</children></Mods>

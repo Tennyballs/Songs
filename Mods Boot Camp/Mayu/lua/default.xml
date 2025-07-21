@@ -1,0 +1,530 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,GAMESTATE:GetCurrentSong():MusicLengthSeconds()"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+				{48.762,'Vib'},
+				{56.262,'Vib'},
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'1x,-999999% Cover,*10000 No Beat','end'},
+				
+				{0,30.012,'*10000 No Centered,*10000 No Mini','end'},
+				
+				{0.012+0.05,1.825,'*1 400% Centered','len'},
+				{1.887+0.05,1.825,'*0.75 400% Centered','len'},
+				{3.762+0.05,3.700,'*0.5 400% Centered','len'},
+				{7.512+0.05,1.825,'*1 400% Centered','len'},
+				{9.387+0.05,1.825,'*0.75 400% Centered','len'},
+				{11.262+0.05,14.074,'*0.5 400% Centered','end'},
+				{15.012+0.05,1.825,'*1 400% Centered','len'},
+				{16.887+0.05,1.825,'*0.75 400% Centered','len'},
+				{18.762+0.05,3.700,'*0.5 400% Centered','len'},
+				{22.512+0.05,1.825,'*1 400% Centered','len'},
+				{24.387+0.05,1.825,'*0.75 400% Centered','len'},
+				
+				{26.262+0.05,0.418,'*1 400% Centered','len'},
+				{26.731+0.05,0.418,'*1 400% Centered','len'},
+				{27.199+0.05,0.418,'*1 400% Centered','len'},
+				{27.668+0.05,0.418,'*1 400% Centered','len'},
+				{28.137+0.05,0.184,'*0.875 400% Centered','len'},
+				{28.371+0.05,0.184,'*0.75 400% Centered','len'},
+				{28.606+0.05,0.184,'*0.625 400% Centered','len'},
+				{28.840+0.05,0.184,'*0.5 400% Centered','len'},
+				{29.074+0.05,0.067,'*0.375 400% Centered','len'},
+				{29.192+0.05,0.067,'*0.255 400% Centered','len'},
+				{29.309+0.05,0.184,'*0.125 400% Centered','len'},
+				
+				{0.012,1.875,'*10000 No Mini','len'},
+				{1.887,1.875,'*10000 50% Mini','len'},
+				{3.762,3.750,'*10000 100% Mini','len'},
+				{7.512,1.875,'*10000 No Mini','len'},
+				{9.387,1.875,'*10000 50% Mini','len'},
+				{11.262,14.074,'*10000 100% Mini','end'},
+				
+				{15.012,1.875,'*10000 No Mini','len'},
+				{16.887,1.875,'*10000 50% Mini','len'},
+				{18.762,3.750,'*10000 100% Mini','len'},
+				{22.512,1.875,'*10000 No Mini','len'},
+				{24.387,1.875,'*10000 50% Mini','len'},
+				
+				{28.137,0.235,'*8 25% Mini','len'},
+				{28.371,0.235,'*8 50% Mini','len'},
+				{28.606,0.235,'*8 75% Mini','len'},
+				{28.840,0.235,'*8 100% Mini','len'},
+				{29.074,0.118,'*16 125% Mini','len'},
+				{29.192,0.118,'*16 150% Mini','len'},
+				{29.309,0.118,'*16 175% Mini','len'},
+				{29.426,0.118,'*16 200% Mini','len'},
+				
+				{31.418,0.117,'*32 400% Drunk','len'},
+				{31.535,0.117,'*64 -400% Drunk','len'},
+				{31.653,0.500,'*32 No Drunk','len'},
+				{33.059,0.469,'*10000 800% Beat','len'},
+				
+				{38.918,0.117,'*32 400% Drunk','len'},
+				{39.035,0.117,'*64 -400% Drunk','len'},
+				{39.153,0.500,'*32 No Drunk','len'},
+				{40.559,0.469,'*10000 -800% Beat','len'},
+				
+				--{0,3.762,'*0.6 Stealth','end'},
+				{3.762,7.512,'*0.4 Stealth','end'},
+				{7.512,11.262,'*0.6 Stealth','end'},
+				{11.262,14.074,'*0.2 Stealth','end'},
+				{15.012,18.762,'*0.6 Stealth','end'},
+				{18.762,22.512,'*0.2 Stealth','end'},
+				{22.512,26.262,'*0.6 Stealth','end'},
+				
+				--{0.012,0.050,'*10000 50% Stealth','len'},
+				--{1.887,0.050,'*10000 50% Stealth','len'},
+				--{3.762,0.050,'*10000 50% Stealth','len'},
+				{7.512,0.050,'*10000 50% Stealth','len'},
+				{9.387,0.050,'*10000 50% Stealth','len'},
+				{11.262,0.050,'*10000 50% Stealth','len'},
+				{15.012,0.050,'*10000 50% Stealth','len'},
+				{16.887,0.050,'*10000 50% Stealth','len'},
+				{18.762,0.050,'*10000 50% Stealth','len'},
+				{22.512,0.050,'*10000 50% Stealth','len'},
+				{24.387,0.050,'*10000 50% Stealth','len'},
+				{26.262,0.050,'*10000 50% Stealth','len'},
+				
+				{14.074,15.012,'*1.5 No Centered,*1.075 No Mini,*1 No Stealth','end'},
+				
+				{15.715,0.468,'*10000 800% Beat','len'},
+				{17.590,0.468,'*10000 -800% Beat','len'},
+				{19.465,0.468,'*10000 800% Beat','len'},
+				{21.340,0.9375,'*10000 -800% Beat','len'},
+				{23.215,0.468,'*10000 -800% Beat','len'},
+				{25.090,0.468,'*10000 800% Beat','len'},
+				{26.028,1.875,'*10000 -400% Beat','len'},
+				
+				-- END OF DRIVEN INTRO --
+				
+				{29.543,30.012,'*8 No Mini,*10000 No Stealth','end'},
+				{29.543,45.012,'*10000 90.9% Centered,*10000 -500% Reverse,*10000 0.25x','end'},
+				{45.012,59.543,'*10000 No Centered,*10000 No Reverse,*10000 2.75x','end'},
+				
+				{30.012,1.406,'*3 800% Bumpy','len'},
+				{30.012,0.352,'*2 70% Distant,*1 35% Mini','len'},
+				{30.364,0.352,'*2 140% Distant,*1 70% Mini','len'},
+				{30.715,0.703,'*1 210% Distant,*0.5 105% Mini','len'},
+				{31.418,0.469,'*4.5 Overhead,*2.25 No Mini,*9 No Bumpy','len'},
+				{30.012+1.875,1.406,'*3 800% Bumpy','len'},
+				{30.012+1.875,0.352,'*2 70% Distant,*1 35% Mini','len'},
+				{30.364+1.875,0.352,'*2 140% Distant,*1 70% Mini','len'},
+				{30.715+1.875,0.703,'*1 210% Distant,*0.5 105% Mini','len'},
+				{31.418+1.875,0.469,'105% Mini,*9 No Bumpy','len'},
+				{33.762,1.875,'210% Distant,105% Mini,*4 1000% Bumpy,*4 1000% Tornado','len'},
+				{35.637,1.875,'*1.25 Overhead,*1.25 No Mini,*4 No Bumpy,*4 No Tornado','len'},
+				
+				{30.012+7.5,1.406,'*3 800% Bumpy','len'},
+				{30.012+7.5,0.352,'*2 70% Distant,*1 35% Mini','len'},
+				{30.364+7.5,0.352,'*2 140% Distant,*1 70% Mini','len'},
+				{30.715+7.5,0.703,'*1 210% Distant,*0.5 105% Mini','len'},
+				{31.418+7.5,0.469,'*4.5 Overhead,*2.25 No Mini,*9 No Bumpy','len'},
+				{30.012+1.875+7.5,1.406,'*3 800% Bumpy','len'},
+				{30.012+1.875+7.5,0.352,'*2 70% Distant,*1 35% Mini','len'},
+				{30.364+1.875+7.5,0.352,'*2 140% Distant,*1 70% Mini','len'},
+				{30.715+1.875+7.5,0.703,'*1 210% Distant,*0.5 105% Mini','len'},
+				{31.418+1.875+7.5,0.469,'105% Mini,*9 No Bumpy','len'},
+				{33.762+7.5,1.875,'210% Distant,105% Mini,*4 1000% Bumpy,*4 1000% Tornado','len'},
+				{35.637+7.5,1.875,'*1.25 Overhead,*1.25 No Mini,*4 No Bumpy,*4 No Tornado','len'},
+				
+				
+				
+				{45.012,58.137,'*8 No Drunk,*8 No Tipsy','end'},
+				{58.137,60.000,'*16 No Drunk,*16 No Tipsy','end'},
+				{45.012,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{45.364,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{45.715,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{46.067,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				
+				{46.418,0.117,'*32 400% Drunk','len'},
+				{46.535,0.117,'*64 -400% Drunk','len'},
+				{46.653,0.234,'*32 No Drunk','len'},
+				
+				{46.887,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{47.239,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{47.590,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{47.942,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{48.059,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{48.293,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{48.528,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{48.645,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{48.762,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{49.114,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{49.465,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{49.817,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{50.168,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{50.403,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{50.637,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{50.989,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{51.340,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{51.692,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{51.809,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{52.043,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{52.278,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{52.395,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{52.512,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{52.864,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{53.215,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{53.567,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				
+				{53.918,0.117,'*32 400% Drunk','len'},
+				{54.035,0.117,'*64 -400% Drunk','len'},
+				{54.153,0.234,'*32 No Drunk','len'},
+				
+				{54.387,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{54.739,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{55.090,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{55.442,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{55.559,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{55.793,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{56.028,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{56.145,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{56.262,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{56.496,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{56.731,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{56.965,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{57.199,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{57.434,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{57.668,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{57.903,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{58.137,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{58.254,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{58.371,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{58.489,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{58.606,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{58.723,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{58.840,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{58.957,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				
+				{59.074,59.543,'*4.5 200% Mini','end'},
+				{59.543,86.028,'*10000 90.9% Centered,*10000 -500% Reverse,*8 Mini,*8 100% Distant,*10000 800% Sudden,*10000 -80% SuddenOffset,*10000 0.4x','end'},
+				
+				{59.778,86.028,'*10000 200% Beat','end'},
+				
+				{59.074,60.012,'*8 800% Dizzy','end'},
+				{60.012,8.000,'*1.35 No Dizzy','len'},
+				
+				{60.012,1.406,'*24 -1000% Bumpy,*4.8 -100% Mini,*0.5 0.2x','len'},
+				{60.012+1.406,0.234,'*96 1000% Bumpy,*12 150% Mini,*0.5 0.4x','len'},
+				{60.012+1.640,0.234,'*48 No Bumpy,*4 Mini,0.4x','len'},
+				{60.012+3.281,0.234,'*16 -400% Flip,*4 200% Mini,*4 Overhead','len'},
+				{60.012+3.281+0.234,0.234,'*18 No Flip,*4 Mini,*4 Distant','len'},
+				
+				{60.012+3.75*1,1.406,'*24 -1000% Bumpy,*4.8 -100% Mini,*0.5 0.2x','len'},
+				{60.012+1.406+3.75*1,0.234,'*96 1000% Bumpy,*12 150% Mini,*0.5 0.4x','len'},
+				{60.012+1.640+3.75*1,0.234,'*48 No Bumpy,*4 Mini,0.4x','len'},
+				--{60.012+3.281+3.75*1,0.234,'*16 -400% Flip,*4 200% Mini,*4 Overhead','len'},
+				--{60.012+3.281+0.234+3.75*1,0.234,'*18 No Flip,*4 Mini,*4 Distant','len'},
+				
+				{60.012+3.75*2,1.406,'*24 -1000% Bumpy,*4.8 -100% Mini,*0.5 0.2x','len'},
+				{60.012+1.406+3.75*2,0.234,'*96 1000% Bumpy,*12 150% Mini,*0.5 0.4x','len'},
+				{60.012+1.640+3.75*2,0.234,'*48 No Bumpy,*4 Mini,0.4x','len'},
+				{60.012+3.281+3.75*2,0.234,'*16 -400% Flip,*4 200% Mini,*4 Overhead','len'},
+				{60.012+3.281+0.234+3.75*2,0.234,'*18 No Flip,*4 Mini,*4 Distant','len'},
+				
+				{60.012+3.75*3,1.406,'*24 -1000% Bumpy,*4.8 -100% Mini,*0.5 0.2x','len'},
+				{60.012+1.406+3.75*3,0.234,'*96 1000% Bumpy,*12 150% Mini,*0.5 0.4x','len'},
+				{60.012+1.640+3.75*3,0.234,'*48 No Bumpy,*4 Mini,0.4x','len'},
+				--{60.012+3.281+3.75*3,0.234,'*16 -400% Flip,*4 200% Mini,*4 Overhead','len'},
+				--{60.012+3.281+0.234+3.75*3,0.234,'*18 No Flip,*4 Mini,*4 Distant','len'},
+				
+				{60.012+3.75*4,1.406,'*24 -1000% Bumpy,*4.8 -100% Mini,*0.5 0.2x','len'},
+				{60.012+1.406+3.75*4,0.234,'*96 1000% Bumpy,*12 150% Mini,*0.5 0.4x','len'},
+				{60.012+1.640+3.75*4,0.234,'*48 No Bumpy,*4 Mini,0.4x','len'},
+				{60.012+3.281+3.75*4,0.234,'*16 -400% Flip,*4 200% Mini,*4 Overhead','len'},
+				{60.012+3.281+0.234+3.75*4,0.234,'*18 No Flip,*4 Mini,*4 Distant','len'},
+				
+				{60.012+3.75*5,1.406,'*24 -1000% Bumpy,*4.8 -100% Mini,*0.5 0.2x','len'},
+				{60.012+1.406+3.75*5,0.234,'*96 1000% Bumpy,*12 150% Mini,*0.5 0.4x','len'},
+				{60.012+1.640+3.75*5,0.234,'*48 No Bumpy,*4 Mini,0.4x','len'},
+				--{60.012+3.281+3.75*5,0.234,'*16 -400% Flip,*4 200% Mini,*4 Overhead','len'},
+				--{60.012+3.281+0.234+3.75*5,0.234,'*18 No Flip,*4 Mini,*4 Distant','len'},
+				
+				{60.012+3.75*6,1.406,'*24 -1000% Bumpy,*4.8 -100% Mini,*0.5 0.2x','len'},
+				{60.012+1.406+3.75*6,0.234,'*96 1000% Bumpy,*12 150% Mini,*0.5 0.4x','len'},
+				{60.012+1.640+3.75*6,0.234,'*48 No Bumpy,*4 Mini,0.4x','len'},
+				{60.012+3.281+3.75*6,0.234,'*24 -400% Flip,*6 200% Mini,*4 Overhead','len'},
+				{60.012+3.281+0.234+3.75*6,0.234,'*10000 No Flip,*12 Mini,*10000 Overhead','len'},
+				{60.012+3.281+0.234+3.75*6,0.234,'*10000 No Centered,*10000 No Reverse,*8 No Mini,*10000 1x,*10000 No Sudden','len'},
+				
+				{74.074,75.012,'*8 800% Dizzy','end'},
+				{75.012,8.000,'*1.35 No Dizzy','len'},
+				
+				{87.668,0.234,'*32 -1000% Bumpy','len'},
+				{87.903,0.234,'*48 No Bumpy','len'},
+				
+				{86.262,90.012,'*10000 No Centered,1x','end'},
+				{86.262+0.05,0.418,'*1 400% Centered','len'},
+				{86.731+0.05,0.418,'*1 400% Centered','len'},
+				{87.199+0.05,0.418,'*1 400% Centered','len'},
+				{87.668+0.05,0.418,'*1 400% Centered','len'},
+				{88.137+0.05,0.184,'*0.875 400% Centered','len'},
+				{88.371+0.05,0.184,'*0.75 400% Centered','len'},
+				{88.606+0.05,0.184,'*0.625 400% Centered','len'},
+				{88.840+0.05,0.184,'*0.5 400% Centered','len'},
+				{89.074+0.05,0.067,'*0.375 400% Centered','len'},
+				{89.192+0.05,0.067,'*0.255 400% Centered','len'},
+				{89.309+0.05,0.184,'*0.125 400% Centered','len'},
+				
+				{88.137,0.235,'*8 25% Mini','len'},
+				{88.371,0.235,'*8 50% Mini','len'},
+				{88.606,0.235,'*8 75% Mini','len'},
+				{88.840,0.235,'*8 100% Mini','len'},
+				{89.074,0.118,'*16 125% Mini','len'},
+				{89.192,0.118,'*16 150% Mini','len'},
+				{89.309,0.118,'*16 175% Mini','len'},
+				{89.426,0.118,'*16 200% Mini','len'},
+				
+				{89.543,999,'*10000 90.9% Centered,*10000 -500% Reverse,*10 No Mini,*16 800% Sudden,*10000 -80% SuddenOffset,*10000 0.25x','end'},
+				
+				{89.074,90.012,'*8 800% Dizzy','end'},
+				{90.012,8.000,'*1.35 No Dizzy','len'},
+				
+				
+				{90.012,1.406,'*3 800% Bumpy','len'},
+				{90.012,0.352,'*2 70% Distant,*1 35% Mini','len'},
+				{90.364,0.352,'*2 140% Distant,*1 70% Mini','len'},
+				{90.715,0.703,'*1 210% Distant,*0.5 105% Mini','len'},
+				{91.418,0.469,'*4.5 Overhead,*2.25 No Mini,*9 No Bumpy','len'},
+				{90.012+1.875,1.406,'*3 800% Bumpy','len'},
+				{90.012+1.875,0.352,'*2 70% Distant,*1 35% Mini','len'},
+				{90.364+1.875,0.352,'*2 140% Distant,*1 70% Mini','len'},
+				{90.715+1.875,0.703,'*1 210% Distant,*0.5 105% Mini','len'},
+				{91.418+1.875,0.469,'105% Mini,*9 No Bumpy','len'},
+				{93.762,1.875,'150% Distant,105% Mini,*4 -1000% Bumpy,*0.1 -85% SuddenOffset,*0.1 0.125x','len'},
+				{95.637,1.875,'*1.25 Overhead,*1.25 No Mini,*4 No Bumpy,*0.1 -80% SuddenOffset,*0.1 0.25x','len'},
+				
+				{90.012+7.5,1.406,'*3 800% Bumpy','len'},
+				{90.012+7.5,0.352,'*2 70% Distant,*1 35% Mini','len'},
+				{90.364+7.5,0.352,'*2 140% Distant,*1 70% Mini','len'},
+				{90.715+7.5,0.703,'*1 210% Distant,*0.5 105% Mini','len'},
+				{91.418+7.5,0.469,'*4.5 Overhead,*2.25 No Mini,*9 No Bumpy','len'},
+				{90.012+1.875+7.5,1.406,'*3 800% Bumpy','len'},
+				{90.012+1.875+7.5,0.352,'*2 70% Distant,*1 35% Mini','len'},
+				{90.364+1.875+7.5,0.352,'*2 140% Distant,*1 70% Mini','len'},
+				{90.715+1.875+7.5,0.703,'*1 210% Distant,*0.5 105% Mini','len'},
+				{91.418+1.875+7.5,0.469,'105% Mini,*9 No Bumpy','len'},
+				{93.762+7.5,1.875,'150% Distant,105% Mini,*4 -1000% Bumpy,*0.1 -85% SuddenOffset,*0.1 0.125x','len'},
+				{95.637+7.5,1.875,'*1.25 Overhead,*1.25 No Mini,*4 No Bumpy,*0.1 -80% SuddenOffset,*0.1 0.25x','len'},
+				
+				{97.512,97.981,'*16 -800% Dizzy','end'},
+				{97.981,8.000,'*1.35 No Dizzy','len'},
+
+				{90.715,0.469,'*10000 400% Beat','len'},
+				{92.590,0.469,'*10000 -400% Beat','len'},
+				{94.465,0.469,'*10000 400% Beat','len'},
+				{96.340,0.469,'*10000 -400% Beat','len'},
+				{98.215,0.469,'*10000 400% Beat','len'},
+				{100.090,0.469,'*10000 -400% Beat','len'},
+				
+				{101.731,0.117,'*32 400% Drunk','len'},
+				{101.848,0.117,'*64 -400% Drunk','len'},
+				{101.965,0.234,'*32 No Drunk','len'},
+				
+				{102.199,999,'*8 No Drunk,*8 No Tipsy','end'},
+				{102.199,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{102.551,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{102.903,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{103.957,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				{104.192,0.050,'*10000 150% Drunk,*10000 150% Tipsy','len'},
+				{104.309,0.050,'*10000 -150% Drunk,*10000 -150% Tipsy','len'},
+				
+				{104.309,0.469,'*10000 -400% Beat','len'},
+				
+				}
+				
+				
+				
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:rotationx(0);							
+						v:rotationy(0);
+						v:rotationz(0);
+						v:x(SCREEN_CENTER_X+160*multi);
+						v:y(SCREEN_CENTER_Y);
+						v:zoomx(1);
+						v:zoomy(1);
+						v:GetChild('Judgment'):stopeffect();
+						
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+					end
+				end
+			end
+			
+			if (beat >= 64 and fgcurcommand == 1) or
+				(beat >= 80 and fgcurcommand == 2) or
+				(beat >= 96 and fgcurcommand == 3) or
+				(beat >= 112 and fgcurcommand == 4) or
+				(beat >= 192 and fgcurcommand == 13) or
+				(beat >= 208 and fgcurcommand == 14) then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:sleep(0.01);
+						v:rotationz(0);
+						v:decelerate(0.3515625);
+						v:rotationz(25);
+						v:decelerate(0.3515625);
+						v:rotationz(-25);
+						v:decelerate(0.703125);
+						v:rotationz(0);
+						v:sleep(0.46875);
+						
+						v:decelerate(0.3515625);
+						v:rotationz(-25);
+						v:decelerate(0.3515625);
+						v:rotationz(25);
+						v:decelerate(0.703125);
+						v:rotationz(0);
+						v:sleep(0.46875);
+						
+						if fgcurcommand <= 2 then
+							v:accelerate(1.875);
+							v:rotationz(1800);
+							v:decelerate(1.35);
+							v:rotationz(3600);
+						end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			if (beat >= 129.25 and fgcurcommand == 5) or
+				(beat >= 129.25+8 and fgcurcommand) == 6 or
+				(beat >= 129.25+16 and fgcurcommand) == 7 or
+				(beat >= 129.25+24 and fgcurcommand) == 8 or
+				(beat >= 129.25+32 and fgcurcommand) == 9 or
+				(beat >= 129.25+40 and fgcurcommand) == 10 or
+				(beat >= 129.25+48 and fgcurcommand) == 11 or
+				(beat >= 129.25+56 and fgcurcommand) == 12 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:linear(240/128/16);
+						v:skewx(1);
+						v:linear(240/128/16);
+						v:skewx(-1);
+						v:linear(240/128/16);
+						v:skewx(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			
+			
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if (beat > 104 and beat < 134) or
+				beat > 200 and beat < 230 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:vibrate();
+						v:effectmagnitude(auxvar:getaux(),auxvar:getaux(),0);
+					end
+				end
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (0.010 - 0.006) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		VibMessageCommand="finishtweening;aux,0;linear,2.8125;aux,25;linear,0.46875;aux,0"
+	/>
+	
+</children></ActorFrame>
