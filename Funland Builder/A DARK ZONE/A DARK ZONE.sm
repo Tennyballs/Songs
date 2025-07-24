@@ -19,11 +19,11 @@
 #SCROLLS:;
 #KEYSOUNDS:;
 
-//---------------dance-single - ---------------
+//---------------dance-single - Funland Builder---------------
 #NOTES:
      dance-single:
-     :
-     Beginner:
+     Funland Builder:
+     Challenge:
      5:
      0,0,0,0,0:
 // measure 0

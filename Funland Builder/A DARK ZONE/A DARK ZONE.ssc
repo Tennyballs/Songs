@@ -35,14 +35,14 @@
 #ATTACKS:;
 #KEYSOUNDS:;
 
-//---------------dance-single - ---------------
+//---------------dance-single - Funland Builder---------------
 #NOTEDATA:;
 #CHARTNAME:Funland Builder;
 #CHARTSTYLE:KB;
-#CREDIT:;
+#CREDIT:Funland Builder;
 #STEPSTYPE:dance-single;
-#DESCRIPTION:;
-#DIFFICULTY:Beginner;
+#DESCRIPTION:Funland Builder;
+#DIFFICULTY:Challenge;
 #METER:5;
 #METERF:5;
 #RADARVALUES:0,0,0,0,0;
