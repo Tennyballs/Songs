@@ -17,90 +17,43 @@ end
 -- your code goes here here:
 setdefault {2, 'xmod', 100, 'overhead', 100, 'dizzyholds', 100, 'modtimer'}
 
-for pn=1,2 do
-	P[pn]:x(scx);
-	P[pn]:fov(90);
+set{126,1800,'drunkspeed'}
+
+
+ease{134-4,8,spike, 250, 'drunk', plr=1}
+ease{166-4,8,spike, 250, 'drunk', plr=1}
+ease{138-4,8,spike, -250, 'drunk', 50, 'stealth', -500, 'tiny', plr=2}
+ease{170-4,8,spike, -250, 'drunk', 50, 'stealth', -500, 'tiny', plr=2}
+ease{138,2,flip(outBack),250,'dizzy'}
+ease{170,2,flip(outBack),250,'dizzy'}
+
+for pn = 1, 2 do
+	P[pn]:fov(90)
 end
 
-ease{0, 1, flip(outBack), 100, 'x', 25, 'zoomx'}
-ease{4, 1, flip(outBack), -100, 'x', 25, 'zoomx'}
-ease{8, 1, flip(outBack), 100, 'x', 25, 'zoomx'}
-ease{12, 1, flip(outBack), -100, 'x', 25, 'zoomx'}
-ease{14, 1, flip(outBack), 100, 'x', 25, 'zoomx'}
-ease{16, 1, flip(outBack), -100, 'x', 25, 'zoomx'}
-ease{20, 1, flip(outBack), 100, 'x', 25, 'zoomx'}
-ease{24, 1, flip(outBack), -100, 'x', 25, 'zoomx'}
-ease{28, 1, flip(outBack), 100, 'x', 25, 'zoomx'}
-ease{30, 1, flip(outBack), -100, 'x', 25, 'zoomx'}
+set{124, 100, 'beat', -50, 'beatmult'}
 
-local function check_it_out(beat)
-	ease{beat, 2, pop, 100, 'movey3'}
-	ease{beat+2/3, 2, pop, 100, 'movey2'}
-	ease{beat+1+2/3, 2, pop, -100, 'movey1'}
-end
-local function im_in_the_house(beat)
-	ease{beat+1/3*2, 2, pop, 100, 'movey0'}
-	ease{beat+1, 2, pop, 100, 'movey1'}
-	ease{beat+1+1/3*2, 2, pop, -100, 'movey2'}
-	ease{beat+2, 2, pop, 100, 'movey3'}
-end
-local function im_in_the_house2(beat)
-	ease{beat, 2, pop, 100, 'movey0'}
-	ease{beat+2/3, 2, pop, 100, 'movey1'}
-	ease{beat+2, 2, pop, -100, 'movey2'}
-	ease{beat+2+2/3, 2, pop, 100, 'movey3'}
-end
-local function carpet(beat)
-	ease{beat, 2, pop, -100, 'movey0'}
-	ease{beat+1/3*2, 2, pop, 100, 'movey2'}
-end
-local function carpet2(beat)
-	ease{beat, 2, pop, -100, 'movey0'}
-	ease{beat+4/3, 2, pop, 100, 'movey1'}
-end
-local function like_carpet(beat)
-	ease{beat, 2, pop, 100, 'movey1'}
-	carpet(beat+1)
-end
-local function check_it_out2(beat)
-	ease{beat, 2, pop, 100, 'movey3'}
-	ease{beat+2/3, 2, pop, 100, 'movey0'}
-	ease{beat+1, 2, pop, -100, 'movey1'}
+ease{120, 1, flip(outExpo), 50, 'rotationx', -25, 'rotationy', plr=1}
+ease{120, 1, flip(outExpo), 50, 'rotationx', 25, 'rotationy', plr=2}
+ease{121, 1, flip(outExpo), 20, 'rotationx', 45, 'rotationy', plr=1}
+ease{121, 1, flip(outExpo), 20, 'rotationx', -45, 'rotationy', plr=2}
+ease{122, 1, flip(outExpo), 20, 'rotationx', -50, 'rotationy', plr=1}
+ease{122, 1, flip(outExpo), 20, 'rotationx', -50, 'rotationy', plr=2}
+ease{123, 1, flip(outExpo), 50, 'rotationx', -25, 'rotationy', plr=1}
+ease{123, 1, flip(outExpo), -50, 'rotationx', -25, 'rotationy', plr=2}
+
+for i=0, 3 do
+	ease{148+i*2, 2, flip(linear), 1, 'xmod'}
+	ease{180+i*2, 2, flip(linear), 1, 'xmod'}
 end
 
-check_it_out(32)
-im_in_the_house(34)
-like_carpet(39)
-like_carpet(43)
-carpet(46)
-carpet(48)
+ease{130, 1.5, flip(linear), 1000, 'zigzag', -500, 'zigzagsize'}
+ease{146, 1.5, flip(linear), 1000, 'zigzag', -500, 'zigzagsize'}
+ease{154, 1.5, flip(linear), 1000, 'zigzag', -500, 'zigzagsize'}
+ease{162, 1.5, flip(linear), 1000, 'zigzag', -500, 'zigzagsize'}
+ease{178, 1.5, flip(linear), 1000, 'zigzag', -500, 'zigzagsize'}
 
-check_it_out2(51)
-im_in_the_house2(53)
+set{188, 200, 'drunkspeed'}
+ease{188, 8, linear, 100, 'drunk', 1.5, 'xmod'}
 
-
-check_it_out(64)
-im_in_the_house(66)
-like_carpet(71)
-like_carpet(75)
-carpet(78)
-carpet(80)
-
-ease{57+2/3, 2, pop, 100, 'movey0'}
-ease{58+2/3, 2, pop, 100, 'movey1'}
-ease{59+2/3, 2, pop, 100, 'movey2'}
-ease{60, 2, pop, 100, 'movey3'}
-
-carpet2(61+2/3)
-
-check_it_out2(83)
-im_in_the_house2(85)
-
-ease{89+2/3, 2, pop, 100, 'movey0'}
-ease{90+2/3, 2, pop, 100, 'movey1'}
-ease{91+2/3, 2, pop, 100, 'movey2'}
-ease{92, 2, pop, 100, 'movey3'}
-
-carpet2(92+2/3)
-
-ease{96, 4, linear, 100, 'drunk'}
+reset{251, 1, outExpo}
