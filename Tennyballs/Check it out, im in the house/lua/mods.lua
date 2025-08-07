@@ -104,3 +104,25 @@ ease{92, 2, pop, 100, 'movey3'}
 carpet2(92+2/3)
 
 ease{96, 4, linear, 100, 'drunk'}
+
+for i=0, 4 do
+	ease{98-1/3+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{98+2/3+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{100+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{103+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{104+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{107+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{108+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{109.5+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{111+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{112+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{116+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{117.5+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{119+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{120+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+	ease{123+i/3, 1/2, flip(linear), 200 - i/4 * 100, 'stealth'}
+end
+
+for i=0, 4, 1/3 do
+	ease{124+i, 1/3, flip(linear), 200, 'stealth', 200, 'dark'}
+end

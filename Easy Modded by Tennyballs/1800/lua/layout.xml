@@ -1,9 +1,21 @@
 <Layer Type = "ActorFrame"><children>
+	<Layer Type = "Image" Name = "BG" File = "background.png" />
 	<Layer Type = "ActorProxy" Name = "PC[1]" />
 	<Layer Type = "ActorProxy" Name = "PC[2]" />
 	<Layer Type = "ActorProxy" Name = "PJ[1]" />
 	<Layer Type = "ActorProxy" Name = "PJ[2]" />
 	<Layer Type = "ActorProxy" Name = "PP[1]" />
 	<Layer Type = "ActorProxy" Name = "PP[2]" />
+
+	<Layer Type = "ActorFrame"><children>
+		<Layer Type = "Image" Name = "A[1]" File = "tex/1.png" />
+		<Layer Type = "Image" Name = "A[2]" File = "tex/-.png" />
+		<Layer Type = "Image" Name = "A[3]" File = "tex/8.png" />
+		<Layer Type = "Image" Name = "A[4]" File = "tex/0.png" />
+		<Layer Type = "Image" Name = "A[5]" File = "tex/0.png" />
+	</children></Layer>
+
+	<Layer Type = "ActorFrameTexture" Name = "Aft" />
+	<Layer Type = "Sprite" Name = "AftSprite" Frag = "shader/glitch2.3.frag" />
 
 </children></Layer>
