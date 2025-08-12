@@ -47,6 +47,9 @@ ease{32, 4, flip(outExpo), 100, 'shader0'}
 vibrate(0, 32, flip(linear))
 vibrate(32, 4, flip(outExpo))
 for i=0, 3 do
-
 	ease{100+i*8, 8, bounce, 100, 'shader0'}
+end
+
+for i=0, 63 do
+	ease{132+i, 1, tap, 2.5, 'xmod'}
 end

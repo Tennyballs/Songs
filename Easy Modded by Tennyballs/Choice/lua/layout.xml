@@ -1,4 +1,6 @@
 <Layer Type = "ActorFrame"><children>
+	<Layer Type = "Image" Name = "BG" File = "background.png" />
+
 	<Layer Type = "ActorProxy" Name = "PC[1]" />
 	<Layer Type = "ActorProxy" Name = "PC[2]" />
 	<Layer Type = "ActorProxy" Name = "PJ[1]" />

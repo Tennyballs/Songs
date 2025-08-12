@@ -1,37 +1,44 @@
 #TITLE:Choice;
 #SUBTITLE:;
 #ARTIST:Jack Stauber's Micropop;
-#MUSIC:Choice.ogg;
+#TITLETRANSLIT:;
+#SUBTITLETRANSLIT:;
+#ARTISTTRANSLIT:;
+#GENRE:;
+#CREDIT:;
 #BANNER:;
 #BACKGROUND:;
 #LYRICSPATH:;
 #CDTITLE:;
-#SAMPLESTART:0.000000;
-#SAMPLELENGTH:10.000000;
-#OFFSET:-0.01;
-#BPMS:0.000000=125.000000;
+#MUSIC:Choice.ogg;
+#OFFSET:-0.010;
+#SAMPLESTART:17.230;
+#SAMPLELENGTH:10.000;
+#SELECTABLE:YES;
+#BPMS:0.000=125.000;
 #STOPS:;
-#TIMESIGNATURES:;
+#SCROLLS:0.000=1.000;
+#TIMESIGNATURES:0.000=4=4;
 #BGCHANGES:;
-#FGCHANGES:-10.000=template/main.xml=1.000=0=0=1=====;
-#ATTACKS:;
-#SPEEDS:;
-#SCROLLS:;
+
+//The majority of simfile scripts and visual effects are stored here.
+#FGCHANGES:-10.000=template/main.xml=1.000=0=0=1=====,
+;
+
 #KEYSOUNDS:;
 
-//---------------dance-single - ---------------
+//---------------dance-single - ----------------
 #NOTES:
      dance-single:
      :
      Beginner:
      8:
-     0,0,0,0,0:
-// measure 0
+     0.556,0.495,0.055,0.713,0.315:
 0000
 0000
 0000
 0000
-,  // measure 1
+,
 1000
 0000
 1000
@@ -48,7 +55,7 @@
 0000
 0000
 0000
-,  // measure 2
+,
 0200
 0300
 2000
@@ -65,7 +72,7 @@
 0000
 0100
 0000
-,  // measure 3
+,
 1000
 0000
 0000
@@ -82,7 +89,7 @@
 0000
 0030
 0000
-,  // measure 4
+,
 0100
 0000
 0020
@@ -99,7 +106,7 @@
 0000
 0001
 0000
-,  // measure 5
+,
 1000
 0000
 0000
@@ -116,7 +123,7 @@
 0000
 0000
 0000
-,  // measure 6
+,
 0200
 0300
 2000
@@ -133,7 +140,7 @@
 0000
 0010
 0000
-,  // measure 7
+,
 1000
 0000
 0100
@@ -142,7 +149,7 @@
 0001
 0001
 1000
-,  // measure 8
+,
 0020
 0030
 0200
@@ -159,7 +166,7 @@
 0000
 0000
 0000
-,  // measure 9
+,
 1000
 0000
 0010
@@ -176,7 +183,7 @@
 0000
 0100
 0010
-,  // measure 10
+,
 1000
 0000
 0001
@@ -193,7 +200,7 @@
 0000
 0100
 1000
-,  // measure 11
+,
 0020
 0030
 0200
@@ -202,7 +209,7 @@
 0003
 0010
 0200
-,  // measure 12
+,
 1000
 0000
 0000
@@ -219,7 +226,7 @@
 0100
 0010
 0100
-,  // measure 13
+,
 1000
 0000
 0000
@@ -236,7 +243,7 @@
 0000
 0010
 0100
-,  // measure 14
+,
 2000
 0000
 0000
@@ -245,15 +252,15 @@
 0030
 0200
 0000
-0010
+0001
 0000
-0000
-0000
-0010
 0000
 0300
+0010
 0000
-,  // measure 15
+0100
+1000
+,
 0020
 0030
 0000
@@ -262,7 +269,7 @@
 0000
 0011
 0001
-,  // measure 16
+,
 0100
 0000
 0010
@@ -279,7 +286,7 @@
 0000
 3100
 1000
-,  // measure 17
+,
 0000
 0010
 0000
@@ -344,24 +351,25 @@
 0000
 0000
 0000
-,  // measure 18
+,
 0000
 0000
 0000
 0000
-,  // measure 19
+,
 0300
 0000
 0000
 0000
 ;
 
-//---------------dance-single - ---------------
+
+//---------------dance-single - ----------------
 #NOTES:
      dance-single:
      :
      Medium:
      10:
-     0,0,0,0,0:
+     0.000,0.000,0.000,0.000,0.000:
 ;
 
