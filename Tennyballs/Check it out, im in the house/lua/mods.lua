@@ -15,12 +15,28 @@ for pn = 1, #PP do
 end
 
 -- your code goes here here:
-setdefault {2, 'xmod', 100, 'overhead', 100, 'dizzyholds', 100, 'modtimer'}
+definemod{'pixelate', function(a)
+	screen:GetShader():uniform1f('amount', a)
+end}
+setdefault {2, 'xmod', 100, 'overhead', 100, 'dizzyholds', 100, 'modtimer', 0.001, 'pixelate'}
 
 for pn=1,2 do
 	P[pn]:x(scx);
 	P[pn]:fov(90);
 end
+sprite(screen)
+aft(myaft)
+screen:SetTexture(myaft:GetTexture())
+
+for i=0, 7 do
+	ease{1+i*16, 1, flip(linear), 25, 'pixelate'}
+	ease{5+i*16, 1, flip(linear), 25, 'pixelate'}
+	ease{9+i*16, 1, flip(linear), 25, 'pixelate'}
+	ease{10+i*16, 1, flip(linear), 25, 'pixelate'}
+	ease{13+i*16, 1, flip(linear), 25, 'pixelate'}
+	ease{15+i*16, 1, flip(linear), 25, 'pixelate'}
+end
+
 
 ease{0, 1, flip(outBack), 100, 'x', 25, 'zoomx'}
 ease{4, 1, flip(outBack), -100, 'x', 25, 'zoomx'}

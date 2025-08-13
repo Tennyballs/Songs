@@ -5,5 +5,7 @@
 	<Layer Type = "ActorProxy" Name = "PJ[2]" />
 	<Layer Type = "ActorProxy" Name = "PP[1]" />
 	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	<Layer Type = "ActorFrameTexture" Name = "myaft" />
+	<Layer Type = "Sprite" Name = "screen" Frag = "pixelate.frag" />
 
 </children></Layer>
