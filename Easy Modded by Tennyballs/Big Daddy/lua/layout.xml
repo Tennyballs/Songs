@@ -1,0 +1,23 @@
+<Layer Type = "ActorFrame"><children>
+	<Layer
+		Type="Quad"
+		InitCommand="%function(self)
+			self:x(SCREEN_CENTER_X);
+			self:y(SCREEN_CENTER_Y);
+			self:zoomto(SCREEN_WIDTH, SCREEN_HEIGHT);
+			self:diffuse(0, 0, 0, 1);
+		end"
+	/>
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer Type = "ActorProxy" Name = "PP[2]" />
+	<Layer Type = "ActorFrameTexture" Name = "AFT" />
+	<Layer Type = "Image" File = "../background.png" Name = "BG" />
+	<Layer Type = "Sprite" Name = "SPRITE2" />
+	<Layer Type = "Sprite" Name = "SPRITE" Frag = "lumikey.frag" />
+	<Layer Type = "ActorFrameTexture" Name = "AFT2" />
+
+</children></Layer>
