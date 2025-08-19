@@ -110,7 +110,6 @@ for i=0, 3 do
 	table.insert(shakes, 117+i)
 
 	for j=0, 7 do
-			
 		table.insert(shakes, 236+i*8+j)
 	end
 end
@@ -193,7 +192,10 @@ ease{244, 0.5, linear, 45, 'rotz'}
 
 ease{251, 1, bell, 200, 'zoomx'}
 
-set{396, 0, 'rotz'}
+set{252, 0, 'rotz'}
+ease{260, 0.5, linear, -45, 'rotz'}
+
+ease{264, 1, bounce, 200, 'zoomx'}
 
 SPRITE2:wag()
 func{396, function()
@@ -204,6 +206,56 @@ func{396, function()
 	SPRITE:effectclock('beat')
 end}
 
-for i=1, 31 do
+func_ease{132, 32, linear, 1, 0, 'BG:diffusealpha'}
+ease{196, 32, linear, 150, 'hallway'}
+set{208, 400, 'centered2'}
+ease{208, 2, flip(linear), 0, 'centered2'}
+set{210, 0, 'centered2'}
+ease{232, 4, outBack, 0, 'hallway', 3, 'xmod'}
+
+
+for i=1, 31+32 do
 	func_ease{396+i, 1, linear, 1, 1.05, 'SPRITE2:zoom'}
 end
+
+for i=0, 4*16-5, 2 do
+	ease{396+i, 1.5, pop, -scx/2, 'x', -100, 'y', plr=1}
+	ease{396+i+1, 1.5, pop, scx/2, 'x', 100, 'y', plr=2}
+end
+
+reset{392, 4, outBack}
+for i=0, 2, .5 do
+	ease{208+i, 0.25/2, linear, 180, 'blacksphere'}
+	ease{208.25+i, 0.25/2, linear, 0, 'blacksphere'}
+end
+
+ease{456, 4, linear, 80, 'stealth'}
+func_ease{456, 4, bounce, 1.05, 1, 'SPRITE2:zoom'}
+
+for i=0, 31, 0 do
+	ease{460+i, 1, flip(linear), 100, 'stealth'}
+end
+
+func{408, function()
+	for pn=1, 2 do
+		P[pn]:vibrate()
+	end
+end}
+
+func_ease{408, 1, linear, 100, 0, function(v)
+	for pn=1, 2 do
+		P[pn]:effectmagnitude(0, v, 0)
+	end
+end}
+
+func_ease{409, 2, linear, 2, 0, function(v)
+	v = bounce(v % 1)
+	for pn=1, 2 do
+		P[pn]:effectmagnitude(v* 100, 0, 0)
+	end
+end}
+
+ease{411, 1, outExpo, 100, 'reverse'}
+
+
+ease{424, 4, bounce, 180, 'rotx'}
