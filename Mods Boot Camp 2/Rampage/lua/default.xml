@@ -1,0 +1,695 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,100.96"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				prefix_inc = 0;
+				prefix_songpath = SONGMAN:FindSong(GAMESTATE:GetCurrentSong():GetDisplayFullTitle()):GetSongDir();
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+					{7.936,'SpingForward'},
+					{8.323,'SpingForward'},
+					
+					{8.710,'SpingBack'},
+					{9.000,'SpingBack'},
+					{9.291,'SpingBack'},
+					
+					{9.484,'SpingForward'},
+					{9.871,'SpingForward'},
+					{10.259,'SpingForward'},
+					{10.452,'SpingBack'},
+					{10.646,'SpingForward'},
+					
+					{240/310*4+7.936,'SpingBack'},
+					{240/310*4+8.323,'SpingBack'},
+					
+					{240/310*4+8.710,'SpingForward'},
+					{240/310*4+9.000,'SpingForward'},
+					{240/310*4+9.291,'SpingForward'},
+					
+					{240/310*4+9.484,'SpingBack'},
+					{240/310*4+9.871,'SpingBack'},
+					{240/310*4+10.259,'SpingBack'},
+					
+					{20.129,'AsdfOn'},
+					{20.323,'Flash'},
+					
+					{21.097,'PullMyFingerLeft'},
+					{21.484,'PullMyFingerRight'},
+					
+					{21.871,'TimeToStop'},
+					
+					{22.646,'RorikonWorld'},
+					
+					{25.162,'Rameeee'},
+					
+					{28.065,'CensoredInYourAss'},
+					{28.839,'ALeek'},
+					
+					{29.613,'OopsISpunIt1'},
+					{30.388,'OopsISpunIt2'},
+					{31.162,'OopsISpunIt3'},
+					
+					{31.936,'SukiDesuka'},
+					
+					{33.484,'PullMyFingerRight'},
+					{33.871,'PullMyFingerLeft'},
+					
+					{34.259,'TimeToStop'},
+					
+					{35.033,'RorikonWorld'},
+					
+					{36.000,'WaitWaitWaitWhatTheFuckIsThat'},
+					
+					{40.452,'CensoredInYourAss'},
+					{41.226,'ALeek'},
+					
+					{42.000,'OopsISpunIt1'},
+					{42.775,'OopsISpunIt2'},
+					{43.549,'OopsISpunIt3'},
+					
+					{44.904,'AsdfOff'},
+					
+					{45.097,'Flash'},
+					
+					{50.517,'ExtremeCloseupWhoaaaaaaaaLeft'},
+					{50.710,'ExtremeCloseupWhoaaaaaaaaRight'},
+					{50.904,'ExtremeCloseupWhoaaaaaaaaLeft'},
+					
+					{56.710,'ExtremeCloseupWhoaaaaaaaaRight'},
+					{56.904,'ExtremeCloseupWhoaaaaaaaaLeft'},
+					{57.097,'ExtremeCloseupWhoaaaaaaaaRight'},
+					
+					{62.904,'ExtremeCloseupWhoaaaaaaaaLeft'},
+					{63.097,'ExtremeCloseupWhoaaaaaaaaRight'},
+					{63.291,'ExtremeCloseupWhoaaaaaaaaLeft'},
+					
+					{69.097,'ExtremeCloseupWhoaaaaaaaaRight'},
+					{69.291,'ExtremeCloseupWhoaaaaaaaaLeft'},
+					{69.484,'ExtremeCloseupWhoaaaaaaaaRight'},
+					
+					{69.871,'INeverAskedForThis'},
+					
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'1.25x,-999999% Cover,*10000 No Beat','end'},
+				
+				{1.742,240/310*7,'*0.1846 Tornado','len'},
+				{1.742+240/310*7,240/310,'*1.2917 No Tornado','len'},
+				
+				{13.742,240/310/4,'*51.6667 1000% Bumpy','len'},
+				{13.742+240/310/4,240/310/4,'*51.6667 No Bumpy','len'},
+				
+				{16.452,240/310/8*3,'*6.8889 200% Brake','len'},
+				{16.452+240/310/8*3,240/310/8*3,'*6.8889 No Brake','len'},
+				
+				{20.323,240/310/4,'*5.1667 -100% Mini,*2.5834 50% Flip','len'},
+				
+				{20.517,240/310/8,'*10000 -66.6667% Mini,*10000 66.6667% Flip','len'},
+				{20.517+240/310/8,240/310/8,'*10000 -33.333% Mini,*10000 83.3333% Flip','len'},
+				{20.517+240/310/4,240/310/4,'*10000 No Mini,*10000 Flip','len'},
+				
+				{20.904,240/310/4,'*10.3334 No Flip','len'},
+				
+				{22.646,240/310/8,'*10000 No Drunk','len'},
+				
+				{23.807,240/310,'*5.1667 100.01% Reverse','len'},
+				{23.807+240/310,240/310/2,'*5.1667 No Reverse','len'},
+				
+				{26.129,240/310/4,'*10000 1.25x','len'},
+				
+				{26.517,240/310/8,'*20.6667 200% Drunk','len'},
+				{26.517+240/310/8,240/310/8,'*41.3334 -200% Drunk','len'},
+				{26.517+240/310/8*2,240/310/8,'*41.3334 200% Drunk','len'},
+				{26.517+240/310/8*3,240/310/8,'*41.3334 -200% Drunk','len'},
+				{26.517+240/310/8*4,240/310/4,'*20.6667 No Drunk','len'},
+				
+				{26.517,240/310/4*3,'*1.29167 50% Reverse','len'},
+				
+				{27.097,240/310/8,'*10.3334 No Reverse,*5.1667 25% Split,*5.1667 25% Cross,*5.1667 25% Alternate','len'},
+				{27.097+240/310/8,240/310/8,'*5.1667 No Reverse,*5.1667 No Split,*5.1667 50% Cross,*5.1667 50% Alternate','len'},
+				{27.097+240/310/4,240/310/4,'*5.1667 No Reverse,*5.1667 -25% Split,*5.1667 25% Cross,*5.1667 75% Alternate','len'},
+				{27.097+240/310/2,240/310/4,'*5.1667 No Reverse,*5.1667 No Split,*5.1667 No Cross,*5.1667 Alternate','len'},
+				
+				{27.678,240/310/8,'*10000 75% Alternate,*10000 1x','len'},
+				{27.678+240/310/8,240/310/8,'*10000 50% Alternate,*10000 0.75x','len'},
+				{27.678+240/310/8*2,240/310/8,'*10000 25% Alternate,*10000 0.5x','len'},
+				{27.678+240/310/8*3,240/310/8,'*10000 No Alternate,*10000 0.25x','len'},
+				{27.678+240/310/8*4,240/310/8,'*10000 1.25x','len'},
+				
+				{32.710,240/310/4,'*5.1667 -100% Mini,*2.5834 50% Flip','len'},
+				
+				{32.904,240/310/8,'*10000 -66.6667% Mini,*10000 66.6667% Flip','len'},
+				{32.904+240/310/8,240/310/8,'*10000 -33.333% Mini,*10000 83.3333% Flip','len'},
+				{32.904+240/310/4,240/310/4,'*10000 No Mini,*10000 Flip','len'},
+				
+				{33.291,240/310/4,'*10.3334 No Flip','len'},
+				
+				{35.033,240/310/8,'*10000 No Drunk','len'},
+				
+				{38.517,240/310/4,'*10000 1.25x','len'},
+				
+				{38.904,240/310/8,'*20.6667 200% Drunk','len'},
+				{38.904+240/310/8,240/310/8,'*41.3334 -200% Drunk','len'},
+				{38.904+240/310/8*2,240/310/8,'*41.3334 200% Drunk','len'},
+				{38.904+240/310/8*3,240/310/8,'*41.3334 -200% Drunk','len'},
+				{38.904+240/310/8*4,240/310/4,'*20.6667 No Drunk','len'},
+				
+				{38.904,240/310/4*3,'*1.29167 50% Reverse','len'},
+				
+				{39.484,240/310/8,'*10.3334 No Reverse,*5.1667 25% Split,*5.1667 25% Cross,*5.1667 25% Alternate','len'},
+				{39.484+240/310/8,240/310/8,'*5.1667 No Reverse,*5.1667 No Split,*5.1667 50% Cross,*5.1667 50% Alternate','len'},
+				{39.484+240/310/4,240/310/4,'*5.1667 No Reverse,*5.1667 -25% Split,*5.1667 25% Cross,*5.1667 75% Alternate','len'},
+				{39.484+240/310/2,240/310/4,'*5.1667 No Reverse,*5.1667 No Split,*5.1667 No Cross,*5.1667 Alternate','len'},
+				
+				{40.065,240/310/8,'*10000 75% Alternate,*10000 1x','len'},
+				{40.065+240/310/8,240/310/8,'*10000 50% Alternate,*10000 0.75x','len'},
+				{40.065+240/310/8*2,240/310/8,'*10000 25% Alternate,*10000 0.5x','len'},
+				{40.065+240/310/8*3,240/310/8,'*10000 No Alternate,*10000 0.25x','len'},
+				{40.065+240/310/8*4,240/310/8,'*10000 1.25x','len'},
+				
+				{72.194,91.549,'*10000 -500% Reverse,*10000 91% Centered,*10000 0.1125x','end'},
+				{72.194,90.194,'*19.375 1500% Bumpy,*2.5834 200% Wave,*1.29167 Mini,*0.3229167 25% Flip,*0.0645834 5% Hallway','end'},
+				{90.194,91.549,'*11.071429 No Bumpy,*1.476191 No Wave,*0.738095 No Mini,*0.136197 No Flip,*0.036905 No Hallway','end'},
+				{91.549,240/310/8,'*10000 No Reverse,*10000 No Centered,*10000 1.25x','len'},
+				
+				{91.452,240/310/4,'*10000 500% Beat','len'},
+				
+				{91.549,240/310*6,'*0.645834 Dark','len'},
+				
+				{96.194,240/310,'*1.29167 No Dark','len'},
+				
+				{96.194,240/310*2,'*1.29167 200% Tornado','len'},
+				{96.194+240/310*2,240/310*2,'*1.29167 No Tornado','len'},
+				
+				{99.678,240/310/8,'*20.6667 Invert','len'},
+				{99.678+240/310/8,240/310/8,'*20.6667 No Invert,*20.6667 Flip','len'},
+				{99.678+240/310/8*2,240/310/8,'*20.6667 Flip,*20.6667 -100% Invert','len'},
+				{99.678+240/310/8*3,240/310/8,'*20.6667 No Flip,*20.6667 No Invert','len'},
+				
+				}
+				
+				for i = 1.742,7.161,240/310/8 do
+					table.insert(prefix_mods,{i,240/310/16,'*5.1667 25% Centered','len'});
+					table.insert(prefix_mods,{i+240/310/16,240/310/16,'*5.1667 No Centered','len'});
+				end
+				
+				for i = 14.129,16.451,240/310/2 do
+					table.insert(prefix_mods,{i,240/310/8,'*20.6667 Invert','len'});
+					table.insert(prefix_mods,{i+240/310/8,240/310/8,'*20.6667 No Invert,*20.6667 Flip','len'});
+					table.insert(prefix_mods,{i+240/310/8*2,240/310/8,'*20.6667 Flip,*20.6667 -100% Invert','len'});
+					table.insert(prefix_mods,{i+240/310/8*3,240/310/8,'*20.6667 No Flip,*20.6667 No Invert','len'});
+				end
+				
+				for i = 17.226,19.548,240/310/2 do
+					table.insert(prefix_mods,{i,240/310/8,'*20.6667 Invert','len'});
+					table.insert(prefix_mods,{i+240/310/8,240/310/8,'*20.6667 No Invert,*20.6667 Flip','len'});
+					table.insert(prefix_mods,{i+240/310/8*2,240/310/8,'*20.6667 Flip,*20.6667 -100% Invert','len'});
+					table.insert(prefix_mods,{i+240/310/8*3,240/310/8,'*20.6667 No Flip,*20.6667 No Invert','len'});
+				end
+				
+				for i = 24.968,26.128,240/310/2 do
+					table.insert(prefix_mods,{i,240/310/8,'*10000 1.25x','len'});
+					table.insert(prefix_mods,{i+240/310/8,240/310/8,'*10000 0.75x','len'});
+					table.insert(prefix_mods,{i+240/310/8*2,240/310/8,'*10000 1x','len'});
+					table.insert(prefix_mods,{i+240/310/8*3,240/310/8,'*10000 0.5x','len'});
+				end
+				
+				for i = 37.355,38.516,240/310/2 do
+					table.insert(prefix_mods,{i,240/310/8,'*10000 1.25x','len'});
+					table.insert(prefix_mods,{i+240/310/8,240/310/8,'*10000 0.75x','len'});
+					table.insert(prefix_mods,{i+240/310/8*2,240/310/8,'*10000 1x','len'});
+					table.insert(prefix_mods,{i+240/310/8*3,240/310/8,'*10000 0.5x','len'});
+				end
+				
+				for i = 45.097,50.516,240/310/4 do
+					table.insert(prefix_mods,{i,240/310/8,'*20 2x','len'});
+					table.insert(prefix_mods,{i+240/310/8,240/310/8,'*20 1.25x','len'});
+				end
+				
+				for i = 51.291,56.709,240/310/2 do
+					table.insert(prefix_mods,{i,240/310/8,'*20.6667 Invert','len'});
+					table.insert(prefix_mods,{i+240/310/8,240/310/8,'*20.6667 No Invert,*20.6667 Flip','len'});
+					table.insert(prefix_mods,{i+240/310/8*2,240/310/8,'*20.6667 Flip,*20.6667 -100% Invert','len'});
+					table.insert(prefix_mods,{i+240/310/8*3,240/310/8,'*20.6667 No Flip,*20.6667 No Invert','len'});
+				end
+				
+				for i = 57.484,62.903,240/310/2 do
+					table.insert(prefix_mods,{i,240/310/8,'*20.6667 Flip,*20.6667 -100% Invert','len'});
+					table.insert(prefix_mods,{i+240/310/8,240/310/8,'*20.6667 No Invert,*20.6667 Flip','len'});
+					table.insert(prefix_mods,{i+240/310/8*2,240/310/8,'*20.6667 Invert,*20.6667 No Flip','len'});
+					table.insert(prefix_mods,{i+240/310/8*3,240/310/8,'*20.6667 No Flip,*20.6667 No Invert','len'});
+				end
+				
+				for i = 63.678,69.096,240/310/4 do
+					table.insert(prefix_mods,{i,240/310/16,'*41.3334 Invert','len'});
+					table.insert(prefix_mods,{i+240/310/16,240/310/16,'*41.3334 No Invert,*41.3334 Flip','len'});
+					table.insert(prefix_mods,{i+240/310/16*2,240/310/16,'*41.3334 Flip,*41.3334 -100% Invert','len'});
+					table.insert(prefix_mods,{i+240/310/16*3,240/310/16,'*41.3334 No Flip,*41.3334 No Invert','len'});
+				end
+				
+				for i = 93.097,96.193,240/310/2 do
+					table.insert(prefix_mods,{i,240/310/8,'*20.6667 Invert','len'});
+					table.insert(prefix_mods,{i+240/310/8,240/310/8,'*20.6667 No Invert,*20.6667 Flip','len'});
+					table.insert(prefix_mods,{i+240/310/8*2,240/310/8,'*20.6667 Flip,*20.6667 -100% Invert','len'});
+					table.insert(prefix_mods,{i+240/310/8*3,240/310/8,'*20.6667 No Flip,*20.6667 No Invert','len'});
+				end
+				
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			prefix_inc = prefix_inc + 1;
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					if v then
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+						
+						
+					end
+				end
+			end
+			
+			if beat >= 5 and fgcurcommand == 1 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:linear(240/310/4);
+						v:zoom(0.25);
+						v:linear(240/310/2);
+						v:zoom(1);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 102 and fgcurcommand == 2 or beat >= 230 and fgcurcommand == 6 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:zoom(0);
+						v:sleep(240/310/2);
+						v:zoom(1);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 120 and fgcurcommand == 3 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:bounceend(240/310/2);
+						v:skewx(1);
+						v:rotationz(45);
+						v:sleep(240/310/4);
+						v:bounceend(240/310/4);
+						v:skewx(0);
+						v:rotationz(0);
+						v:bounceend(240/310/2);
+						v:skewx(-1);
+						v:rotationz(-45);
+						v:sleep(240/310/4);
+						v:bounceend(240/310/4);
+						v:skewx(0);
+						v:rotationz(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 128 and fgcurcommand == 4 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:accelerate(240/310/4*6);
+						v:zoom(0.1);
+						v:rotationz(-45);
+						v:spring(240/310/4);
+						v:zoom(1);
+						v:rotationz(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 192 and fgcurcommand == 5 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:accelerate(240/310/4*6);
+						v:zoom(0.1);
+						v:rotationz(45);
+						v:spring(240/310/4);
+						v:zoom(1);
+						v:rotationz(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat >= 112 and beat < 116 or beat >= 176 and beat < 180 then
+				local multi = -1; if math.mod(prefix_inc,2) == 0 then multi = 1; end
+				GAMESTATE:ApplyGameCommand('mod,*10000 '..auxvar:getaux()*multi..'% Drunk');
+			end
+			
+			if beat >= 128 and beat < 136 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:vibrate();
+						v:effectmagnitude(auxvar:getaux(),auxvar:getaux(),0);
+					end
+				end
+			end
+			
+			if beat >= 148 and beat < 151 or beat >= 212 and beat < 215 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:vibrate();
+						v:effectmagnitude(0,auxvar:getaux(),0);
+					end
+				end
+			end
+			if beat >= 164 and beat < 167 then
+				local multi = -1; if math.mod(prefix_inc,2) == 0 then multi = 1; end
+				GAMESTATE:ApplyGameCommand('mod,*10000 '..auxvar:getaux()*multi..'% Tornado');
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (-0.182 - 0.005) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		RameeeeMessageCommand="finishtweening;aux,0;linear,240/310/4*5;aux,20;linear,240/310/4;aux,0"
+		TimeToStopMessageCommand="finishtweening;aux,0;decelerate,240/310/4;aux,200;accelerate,240/310/4;aux,0;decelerate,240/310/4;aux,400;accelerate,240/310/4;aux,0"
+		ALeekMessageCommand="finishtweening;aux,0;linear,240/310/8;aux,50;linear,240/310/8*3;aux,0"
+		SukiDesukaMessageCommand="finishtweening;aux,0;decelerate,240/310/4;aux,200;accelerate,240/310/4;aux,0"
+		AsdfOnMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					SCREENMAN:GetTopScreen():GetChild('PlayerP'..i):GetChild('Judgment'):GetChild(''):Load(prefix_songpath..'lua/judgent labil 2x6.png');
+				end
+			end
+		end"
+		AsdfOffMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					SCREENMAN:GetTopScreen():GetChild('PlayerP'..i):GetChild('Judgment'):GetChild(''):Load(THEME:GetPath(EC_GRAPHICS, '', 'Judgment label 2x6'));
+				end
+			end
+		end"
+		SpingForwardMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:decelerate(240/310/8);
+					v:rotationx(30);
+					v:zoomz(50);
+					v:accelerate(240/310/8);
+					v:rotationx(0);
+					v:zoomz(1);
+				end
+			end
+		end"
+		SpingBackMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:decelerate(240/310/8);
+					v:rotationx(-30);
+					v:zoomz(50);
+					v:accelerate(240/310/8);
+					v:rotationx(0);
+					v:zoomz(1);
+				end
+			end
+		end"
+		PullMyFingerLeftMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:decelerate(240/310/4);
+					v:skewx(1);
+					v:spring(240/310/8);
+					v:skewx(0);
+				end
+			end
+		end"
+		PullMyFingerRightMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:decelerate(240/310/4);
+					v:skewx(-1);
+					v:spring(240/310/8);
+					v:skewx(0);
+				end
+			end
+		end"
+		RorikonWorldMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:rotationz(360);
+					v:linear(240/310/4);
+					v:zoom(0.25);
+					v:sleep(240/310/4);
+					v:decelerate(240/310/2);
+					v:zoom(1);
+					v:rotationz(0);
+				end
+			end
+		end"
+		CensoredInYourAssMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:GetChild('Combo'):zoom(0);
+					v:GetChild('Combo'):sleep(240/310);
+					v:GetChild('Combo'):zoom(1);
+					v:GetChild('Judgment'):zoom(20);
+					v:GetChild('Judgment'):rotationz(1260);
+					v:GetChild('Judgment'):sleep(240/310/4);
+					v:GetChild('Judgment'):linear(240/310/2);
+					v:GetChild('Judgment'):zoom(0);
+					v:GetChild('Judgment'):rotationz(0);
+				end
+			end
+		end"
+		OopsISpunIt1MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:decelerate(240/310/2);
+					v:rotationz(90);
+					v:decelerate(240/310/4);
+					v:rotationz(0);
+				end
+			end
+		end"
+		OopsISpunIt2MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:decelerate(240/310/2);
+					v:rotationz(-180);
+					v:decelerate(240/310/4);
+					v:rotationz(0);
+				end
+			end
+		end"
+		OopsISpunIt3MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:decelerate(240/310/2);
+					v:rotationz(270);
+					v:decelerate(240/310/4);
+					v:rotationz(0);
+				end
+			end
+		end"
+		WaitWaitWaitWhatTheFuckIsThatMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:decelerate(240/310/2);
+					v:rotationz(180);
+					v:sleep(240/310/4);
+					v:decelerate(240/310/2);
+					v:rotationz(0);
+				end
+			end
+		end"
+		ExtremeCloseupWhoaaaaaaaaLeftMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:linear(240/310/16);
+					v:addx(-200);
+					v:zoom(2);
+					v:linear(240/310/16*3);
+					v:addx(200);
+					v:zoom(1);
+				end
+			end
+		end"
+		ExtremeCloseupWhoaaaaaaaaRightMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:linear(240/310/16);
+					v:addx(200);
+					v:zoom(2);
+					v:linear(240/310/16*3);
+					v:addx(-200);
+					v:zoom(1);
+				end
+			end
+		end"
+		INeverAskedForThisMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:accelerate(240/310*2);
+					v:rotationz(30);
+					v:zoom(0.5);
+					v:spring(240/310);
+					v:rotationz(0);
+					v:zoom(1);
+				end
+			end
+		end"
+		
+	/>
+	
+	<Layer
+		File="whiteflash"
+		OnCommand="%function(self)
+		self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
+		self:diffusealpha(0); end"
+		FlashMessageCommand="%function(self)
+		self:diffusealpha(1);
+		self:sleep(0.05);
+		self:linear(240/310/4-0.05);
+		self:diffusealpha(0); end"
+	/>
+	
+	<Layer
+		File="leek"
+		OnCommand="%function(self)
+		self:x(SCREEN_WIDTH*0.75);
+		self:y(SCREEN_HEIGHT+320);
+		self:diffusealpha(0); end"
+		ALeekMessageCommand="%function(self)
+		self:diffusealpha(1);
+		self:decelerate(240/310/2);
+		self:y(SCREEN_CENTER_Y-160);
+		self:rotationz(450);
+		self:accelerate(240/310/2);
+		self:y(SCREEN_HEIGHT+320);
+		self:rotationz(900);
+		self:sleep(0);
+		self:rotationz(0);
+		self:diffusealpha(0); end"
+	/>
+	
+	<Layer
+		File="leek"
+		OnCommand="%function(self)
+		self:x(SCREEN_WIDTH*0.25);
+		self:y(SCREEN_HEIGHT+320);
+		self:diffusealpha(0); end"
+		ALeekMessageCommand="%function(self)
+		self:diffusealpha(1);
+		self:decelerate(240/310/2);
+		self:y(SCREEN_CENTER_Y-160);
+		self:rotationz(450);
+		self:accelerate(240/310/2);
+		self:y(SCREEN_HEIGHT+320);
+		self:rotationz(900);
+		self:sleep(0);
+		self:rotationz(0);
+		self:diffusealpha(0); end"
+	/>
+	
+</children></ActorFrame>

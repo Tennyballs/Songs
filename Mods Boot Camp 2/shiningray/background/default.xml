@@ -1,0 +1,23 @@
+<ActorFrame> <children>
+
+	<Layer
+		File="stars"
+		OnCommand="customtexturerect,0,0,3.5,3.5;texcoordvelocity,0,-2.5;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH*1.5,SCREEN_HEIGHT*1.5;blend,add;diffusealpha,0;sleep,240/83*14;diffusealpha,0.75"
+	/>
+
+	<Layer
+		File="stars"
+		OnCommand="customtexturerect,0,0,2.5,2.5;texcoordvelocity,0,-3.5;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH*1.5,SCREEN_HEIGHT*1.5;blend,add;diffusealpha,0;sleep,240/83*14;diffusealpha,0.75"
+	/>
+
+	<Layer
+		File="stars"
+		OnCommand="customtexturerect,0,0,2,2;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH*2,SCREEN_HEIGHT*2;blend,add;diffusealpha,0;sleep,240/83*10;diffusealpha,1;linear,240/83*4;rotationz,-180;sleep,0;diffusealpha,0"
+	/>
+
+	<Layer
+		File="background"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0.5;sleep,240/83*10;diffusealpha,0"
+	/>
+
+</children> </ActorFrame>

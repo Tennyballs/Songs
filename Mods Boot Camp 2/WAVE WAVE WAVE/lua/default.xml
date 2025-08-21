@@ -1,0 +1,710 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,118.099"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+					{73.778+240/135/8*0,'Just1'},
+					{73.778+240/135/8*0,'Like1'},
+					{73.778+240/135/8*0,'A1'},
+					{73.778+240/135/8*0,'Wave1'},
+
+					{75.556+240/135/8*0,'Just2'},
+					{75.556+240/135/8*0,'Like2'},
+					{75.556+240/135/8*0,'A2'},
+					{75.556+240/135/8*0,'Wave2'},
+
+					{78.222+240/135/16*0,'Make'},
+					{78.222+240/135/16*3,'Waves'},
+					{78.222+240/135/16*8,'To'},
+					{78.222+240/135/16*11,'The'},
+					{78.222+240/135/16*14,'Beat'},
+
+					{80.889+240/135/8*0,'Just1'},
+					{80.889+240/135/8*0,'Like1'},
+					{80.889+240/135/8*0,'A1'},
+					{80.889+240/135/8*0,'Wave1'},
+
+					{82.667+240/135/8*0,'Just2'},
+					{82.667+240/135/8*0,'Like2'},
+					{82.667+240/135/8*0,'A2'},
+					{82.667+240/135/8*0,'Wave2'},
+
+					{85.333+240/135/16*0,'Make'},
+					{85.333+240/135/16*3,'Waves'},
+
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'3x,-999999% Cover,*10000 No Beat','end'},
+
+				{1.778,58.667,'*0.03515625 50% Drunk','end'},
+
+				{8.444+240/135/4*0.5,240/135/4,'*0.25 No Brake','len'},
+				{8.444+240/135/4*0.5,240/135/8,'*0.25 Brake','len'},
+				{8.444+240/135/4*1.5,240/135/4,'*0.5 No Brake','len'},
+				{8.444+240/135/4*1.5,240/135/8,'*0.5 Brake','len'},
+				{8.444+240/135/4*2.5,240/135/4,'*0.75 No Brake','len'},
+				{8.444+240/135/4*2.5,240/135/8,'*0.75 Brake','len'},
+				{8.444+240/135/4*3.5,240/135/4,'*1 No Brake','len'},
+				{8.444+240/135/4*3.5,240/135/8,'*1 Brake','len'},
+				{8.444+240/135/4*4.5,240/135/4,'*1.25 No Brake','len'},
+				{8.444+240/135/4*4.5,240/135/8,'*1.25 Brake','len'},
+				{8.444+240/135/4*5.5,240/135/4,'*1.5 No Brake','len'},
+				{8.444+240/135/4*5.5,240/135/8,'*1.5 Brake','len'},
+				{8.444+240/135/4*6.5,240/135/4,'*1.75 No Brake','len'},
+				{8.444+240/135/4*6.5,240/135/8,'*1.75 Brake','len'},
+				{8.444+240/135/4*7.5,240/135/4,'*2 No Brake','len'},
+				{8.444+240/135/4*7.5,240/135/8,'*2 Brake','len'},
+				{8.444+240/135/4*8.5,240/135/4,'*2.25 No Brake','len'},
+				{8.444+240/135/4*8.5,240/135/8,'*2.25 Brake','len'},
+				{8.444+240/135/4*9.5,240/135/4,'*2.5 No Brake','len'},
+				{8.444+240/135/4*9.5,240/135/8,'*2.5 Brake','len'},
+				{8.444+240/135/4*10.5,240/135/4,'*2.75 No Brake','len'},
+				{8.444+240/135/4*10.5,240/135/8,'*2.75 Brake','len'},
+				{8.444+240/135/4*11.5,240/135/4,'*3 No Brake','len'},
+				{8.444+240/135/4*11.5,240/135/8,'*3 Brake','len'},
+				{8.444+240/135/4*12.5,240/135/4,'*3.25 No Brake','len'},
+				{8.444+240/135/4*12.5,240/135/8,'*3.25 Brake','len'},
+				
+				{22.667+240/135/4*0.5,240/135/4,'*0.25 No Brake','len'},
+				{22.667+240/135/4*0.5,240/135/8,'*0.25 Brake','len'},
+				{22.667+240/135/4*1.5,240/135/4,'*0.5 No Brake','len'},
+				{22.667+240/135/4*1.5,240/135/8,'*0.5 Brake','len'},
+				{22.667+240/135/4*2.5,240/135/4,'*0.75 No Brake','len'},
+				{22.667+240/135/4*2.5,240/135/8,'*0.75 Brake','len'},
+				{22.667+240/135/4*3.5,240/135/4,'*1 No Brake','len'},
+				{22.667+240/135/4*3.5,240/135/8,'*1 Brake','len'},
+				{22.667+240/135/4*4.5,240/135/4,'*1.25 No Brake','len'},
+				{22.667+240/135/4*4.5,240/135/8,'*1.25 Brake','len'},
+				{22.667+240/135/4*5.5,240/135/4,'*1.5 No Brake','len'},
+				{22.667+240/135/4*5.5,240/135/8,'*1.5 Brake','len'},
+				{22.667+240/135/4*6.5,240/135/4,'*1.75 No Brake','len'},
+				{22.667+240/135/4*6.5,240/135/8,'*1.75 Brake','len'},
+				{22.667+240/135/4*7.5,240/135/4,'*2 No Brake','len'},
+				{22.667+240/135/4*7.5,240/135/8,'*2 Brake','len'},
+				{22.667+240/135/4*8.5,240/135/4,'*2.25 No Brake','len'},
+				{22.667+240/135/4*8.5,240/135/8,'*2.25 Brake','len'},
+				{22.667+240/135/4*9.5,240/135/4,'*2.5 No Brake','len'},
+				{22.667+240/135/4*9.5,240/135/8,'*2.5 Brake','len'},
+				{22.667+240/135/4*10.5,240/135/4,'*2.75 No Brake','len'},
+				{22.667+240/135/4*10.5,240/135/8,'*2.75 Brake','len'},
+				{22.667+240/135/4*11.5,240/135/4,'*3 No Brake','len'},
+				{22.667+240/135/4*11.5,240/135/8,'*3 Brake','len'},
+				{22.667+240/135/4*12.5,240/135/4,'*3.25 No Brake','len'},
+				{22.667+240/135/4*12.5,240/135/8,'*3.25 Brake','len'},
+
+				{36.889+240/135/4*0.5,240/135/4,'*0.25 No Brake','len'},
+				{36.889+240/135/4*0.5,240/135/8,'*0.25 Brake','len'},
+				{36.889+240/135/4*1.5,240/135/4,'*0.5 No Brake','len'},
+				{36.889+240/135/4*1.5,240/135/8,'*0.5 Brake','len'},
+				{36.889+240/135/4*2.5,240/135/4,'*0.75 No Brake','len'},
+				{36.889+240/135/4*2.5,240/135/8,'*0.75 Brake','len'},
+				{36.889+240/135/4*3.5,240/135/4,'*1 No Brake','len'},
+				{36.889+240/135/4*3.5,240/135/8,'*1 Brake','len'},
+				{36.889+240/135/4*4.5,240/135/4,'*1.25 No Brake','len'},
+				{36.889+240/135/4*4.5,240/135/8,'*1.25 Brake','len'},
+				{36.889+240/135/4*5.5,240/135/4,'*1.5 No Brake','len'},
+				{36.889+240/135/4*5.5,240/135/8,'*1.5 Brake','len'},
+				{36.889+240/135/4*6.5,240/135/4,'*1.75 No Brake','len'},
+				{36.889+240/135/4*6.5,240/135/8,'*1.75 Brake','len'},
+				{36.889+240/135/4*7.5,240/135/4,'*2 No Brake','len'},
+				{36.889+240/135/4*7.5,240/135/8,'*2 Brake','len'},
+				{36.889+240/135/4*8.5,240/135/4,'*2.25 No Brake','len'},
+				{36.889+240/135/4*8.5,240/135/8,'*2.25 Brake','len'},
+				{36.889+240/135/4*9.5,240/135/4,'*2.5 No Brake','len'},
+				{36.889+240/135/4*9.5,240/135/8,'*2.5 Brake','len'},
+				{36.889+240/135/4*10.5,240/135/4,'*2.75 No Brake','len'},
+				{36.889+240/135/4*10.5,240/135/8,'*2.75 Brake','len'},
+				{36.889+240/135/4*11.5,240/135/4,'*3 No Brake','len'},
+				{36.889+240/135/4*11.5,240/135/8,'*3 Brake','len'},
+				{36.889+240/135/4*12.5,240/135/4,'*3.25 No Brake','len'},
+				{36.889+240/135/4*12.5,240/135/8,'*3.25 Brake','len'},
+				{36.889+240/135/4*13.5,240/135/4,'*3.5 No Brake','len'},
+				{36.889+240/135/4*13.5,240/135/8,'*3.5 Brake','len'},
+				{36.889+240/135/4*14.5,240/135/4,'*3.75 No Brake','len'},
+				{36.889+240/135/4*14.5,240/135/8,'*3.75 Brake','len'},
+				{36.889+240/135/4*15.5,240/135/4,'*3.25 No Brake','len'},
+				{36.889+240/135/4*15.5,240/135/8,'*3.25 Brake','len'},
+				{36.889+240/135/4*16.5,240/135/4,'*2.75 No Brake','len'},
+				{36.889+240/135/4*16.5,240/135/8,'*2.75 Brake','len'},
+
+				{65.333+240/135/4*0.5,240/135/4,'*0.25 No Brake','len'},
+				{65.333+240/135/4*0.5,240/135/8,'*0.25 Brake','len'},
+				{65.333+240/135/4*1.5,240/135/4,'*0.5 No Brake','len'},
+				{65.333+240/135/4*1.5,240/135/8,'*0.5 Brake','len'},
+				{65.333+240/135/4*2.5,240/135/4,'*0.75 No Brake','len'},
+				{65.333+240/135/4*2.5,240/135/8,'*0.75 Brake','len'},
+				{65.333+240/135/4*3.5,240/135/4,'*1 No Brake','len'},
+				{65.333+240/135/4*3.5,240/135/8,'*1 Brake','len'},
+				{65.333+240/135/4*4.5,240/135/4,'*1.25 No Brake','len'},
+				{65.333+240/135/4*4.5,240/135/8,'*1.25 Brake','len'},
+				{65.333+240/135/4*5.5,240/135/4,'*1.5 No Brake','len'},
+				{65.333+240/135/4*5.5,240/135/8,'*1.5 Brake','len'},
+				{65.333+240/135/4*6.5,240/135/4,'*1.75 No Brake','len'},
+				{65.333+240/135/4*6.5,240/135/8,'*1.75 Brake','len'},
+				{65.333+240/135/4*7.5,240/135/4,'*2 No Brake','len'},
+				{65.333+240/135/4*7.5,240/135/8,'*2 Brake','len'},
+				{65.333+240/135/4*8.5,240/135/4,'*2.25 No Brake','len'},
+				{65.333+240/135/4*8.5,240/135/8,'*2.25 Brake','len'},
+				{65.333+240/135/4*9.5,240/135/4,'*2.5 No Brake','len'},
+				{65.333+240/135/4*9.5,240/135/8,'*2.5 Brake','len'},
+				{65.333+240/135/4*10.5,240/135/4,'*2.75 No Brake','len'},
+				{65.333+240/135/4*10.5,240/135/8,'*2.75 Brake','len'},
+				{65.333+240/135/4*11.5,240/135/4,'*3 No Brake','len'},
+				{65.333+240/135/4*11.5,240/135/8,'*3 Brake','len'},
+				{65.333+240/135/4*12.5,240/135/4,'*3.25 No Brake','len'},
+				{65.333+240/135/4*12.5,240/135/8,'*3.25 Brake','len'},
+				{65.333+240/135/4*13.5,240/135/4,'*3.5 No Brake','len'},
+				{65.333+240/135/4*13.5,240/135/8,'*3.5 Brake','len'},
+				{65.333+240/135/4*14.5,240/135/4,'*3.75 No Brake','len'},
+				{65.333+240/135/4*14.5,240/135/8,'*3.75 Brake','len'},
+				{65.333+240/135/4*15.5,240/135/4,'*3.25 No Brake','len'},
+				{65.333+240/135/4*15.5,240/135/8,'*3.25 Brake','len'},
+
+				{108.000+240/135/4*0.5,240/135/4,'*0.25 No Brake','len'},
+				{108.000+240/135/4*0.5,240/135/8,'*0.25 Brake','len'},
+				{108.000+240/135/4*1.5,240/135/4,'*0.5 No Brake','len'},
+				{108.000+240/135/4*1.5,240/135/8,'*0.5 Brake','len'},
+				{108.000+240/135/4*2.5,240/135/4,'*0.75 No Brake','len'},
+				{108.000+240/135/4*2.5,240/135/8,'*0.75 Brake','len'},
+				{108.000+240/135/4*3.5,240/135/4,'*1 No Brake','len'},
+				{108.000+240/135/4*3.5,240/135/8,'*1 Brake','len'},
+				{108.000+240/135/4*4.5,240/135/4,'*1.25 No Brake','len'},
+				{108.000+240/135/4*4.5,240/135/8,'*1.25 Brake','len'},
+				{108.000+240/135/4*5.5,240/135/4,'*1.5 No Brake','len'},
+				{108.000+240/135/4*5.5,240/135/8,'*1.5 Brake','len'},
+				{108.000+240/135/4*6.5,240/135/4,'*1.75 No Brake','len'},
+				{108.000+240/135/4*6.5,240/135/8,'*1.75 Brake','len'},
+				{108.000+240/135/4*7.5,240/135/4,'*2 No Brake','len'},
+				{108.000+240/135/4*7.5,240/135/8,'*2 Brake','len'},
+				{108.000+240/135/4*8.5,240/135/4,'*2.25 No Brake','len'},
+				{108.000+240/135/4*8.5,240/135/8,'*2.25 Brake','len'},
+				{108.000+240/135/4*9.5,240/135/4,'*2.5 No Brake','len'},
+				{108.000+240/135/4*9.5,240/135/8,'*2.5 Brake','len'},
+				{108.000+240/135/4*10.5,240/135/4,'*2.75 No Brake','len'},
+				{108.000+240/135/4*10.5,240/135/8,'*2.75 Brake','len'},
+				{108.000+240/135/4*11.5,240/135/4,'*3 No Brake','len'},
+				{108.000+240/135/4*11.5,240/135/8,'*3 Brake','len'},
+				{108.000+240/135/4*12.5,240/135/4,'*3.25 No Brake','len'},
+				{108.000+240/135/4*12.5,240/135/8,'*3.25 Brake','len'},
+
+				{30.222+240/135/8*0,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*1,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*2,240/135/8*3,'*4.5 -50% Drunk','len'},
+
+				{30.222+240/135/8*5,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*6,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*7,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*8,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*9,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*10,240/135/8*3,'*4.5 -50% Drunk','len'},
+
+				{30.222+240/135/8*13,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*14,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*15,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*16,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*17,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*18,240/135/8*3,'*4.5 -50% Drunk','len'},
+
+				{30.222+240/135/8*21,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*22,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*23,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*24,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*25,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*26,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*27,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*28,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*29,240/135/8,'*4.5 50% Drunk','len'},
+				{30.222+240/135/8*30,240/135/8,'*4.5 -50% Drunk','len'},
+				{30.222+240/135/8*31,240/135/8,'*4.5 50% Drunk','len'},
+
+				{37.333+240/135/8*0,240/135/8,'*4.5 -50% Drunk','len'},
+				{37.333+240/135/8*1,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*2,240/135/8*3,'*4.5 -50% Drunk','len'},
+
+				{37.333+240/135/8*5,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*6,240/135/8,'*4.5 -50% Drunk','len'},
+				{37.333+240/135/8*7,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*8,240/135/8,'*4.5 -50% Drunk','len'},
+				{37.333+240/135/8*9,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*10,240/135/8*3,'*4.5 -50% Drunk','len'},
+
+				{37.333+240/135/8*13,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*14,240/135/8,'*4.5 -50% Drunk','len'},
+				{37.333+240/135/8*15,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*16,240/135/8,'*4.5 -50% Drunk','len'},
+				{37.333+240/135/8*17,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*18,240/135/8,'*4.5 -50% Drunk','len'},
+				{37.333+240/135/8*19,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*20,240/135/8,'*4.5 -50% Drunk','len'},
+				{37.333+240/135/8*21,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*22,240/135/8,'*4.5 -50% Drunk','len'},
+				{37.333+240/135/8*23,240/135/8*2,'*4.5 50% Drunk','len'},
+
+				{37.333+240/135/8*25,240/135/8,'*4.5 -50% Drunk','len'},
+				{37.333+240/135/8*26,240/135/8,'*4.5 50% Drunk','len'},
+				{37.333+240/135/8*27,240/135/8*5,'*4.5 -50% Drunk','len'},
+
+				{44.444,240/135*8,'*4.5 Bumpy,*2.826 62.8% Dizzy','len'},
+
+				{56.889,240/135,'0.5625 No Bumpy,*0.35325 No Dizzy','len'},
+
+				{58.222,240/135/4,'*2.25 No Drunk','len'},
+
+				{44.444+240/135/8*0,240/135/8,'*6.75 Drunk','len'},
+				{44.444+240/135/8*1,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*2,240/135/8*3,'*9 Drunk','len'},
+
+				{44.444+240/135/8*5,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*6,240/135/8,'*9 Drunk','len'},
+				{44.444+240/135/8*7,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*8,240/135/8,'*9 Drunk','len'},
+				{44.444+240/135/8*9,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*10,240/135/8*3,'*9 Drunk','len'},
+
+				{44.444+240/135/8*13,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*14,240/135/8,'*9 Drunk','len'},
+				{44.444+240/135/8*15,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*16,240/135/8,'*9 Drunk','len'},
+				{44.444+240/135/8*17,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*18,240/135/8*3,'*9 Drunk','len'},
+
+				{44.444+240/135/8*21,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*22,240/135/8,'*9 Drunk','len'},
+				{44.444+240/135/8*23,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*24,240/135/8,'*9 Drunk','len'},
+				{44.444+240/135/8*25,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*26,240/135/8,'*9 Drunk','len'},
+				{44.444+240/135/8*27,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*28,240/135/8,'*9 Drunk','len'},
+				{44.444+240/135/8*29,240/135/8,'*9 -100% Drunk','len'},
+				{44.444+240/135/8*30,240/135/8,'*9 Drunk','len'},
+				{44.444+240/135/8*31,240/135/8,'*9 -100% Drunk','len'},
+
+				{51.556+240/135/8*0,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*1,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*2,240/135/8*3,'*9 Drunk','len'},
+
+				{51.556+240/135/8*5,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*6,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*7,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*8,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*9,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*10,240/135/8*3,'*9 Drunk','len'},
+
+				{51.556+240/135/8*13,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*14,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*15,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*16,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*17,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*18,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*19,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*20,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*21,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*22,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*23,240/135/8*2,'*9 -100% Drunk','len'},
+
+				{51.556+240/135/8*25,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*26,240/135/8,'*9 -100% Drunk','len'},
+				{51.556+240/135/8*27,240/135/8,'*9 Drunk','len'},
+				{51.556+240/135/8*28,240/135/8*2,'*9 -100% Drunk','len'},
+
+				{58.444,240/135*4,'*10000 -100% Beat','len'},
+				{58.222,240/135*4,'*2.25 Tipsy','len'},
+				{58.222,240/135*8,'*1.6875 75% Stealth','len'},
+				{65.333,240/135/4,'*2.25 No Tipsy','len'},
+				{65.333,240/135*4,'*2 2x','len'},
+				{72.444,240/135/4,'*1.6875 No Stealth,*2 3x','len'},
+
+				{65.778,240/135/2,'*9 Invert','len'},
+				{65.778+240/135/8*3,240/135/8,'*9 No Invert, *9 Flip','len'},
+				{65.778+240/135/2,240/135/2,'*9 No Flip','len'},
+
+				{67.556,240/135/2,'*9 Flip,*9 -100% Invert','len'},
+				{67.556+240/135/8*3,240/135/8,'*9 No Invert, *9 Flip','len'},
+				{67.556+240/135/16*7,240/135/16,'*9 Invert, *9 No Flip','len'},
+				{67.556+240/135/2,240/135/2,'*9 No Invert','len'},
+
+				{69.333-240/135/4,240/135/4*3,'*9 Flip,*9 -100% Invert','len'},
+				{69.333,240/135/2,'*9 No Flip,*18 Invert','len'},
+				{69.333+240/135/8*3,240/135/8,'*9 No Invert, *9 Flip','len'},
+				{69.333+240/135/2,240/135/2,'*9 No Flip','len'},
+
+				{71.111,240/135/4*3,'*1.5 -200% Mini,*0.15 20% Flip','len'},
+				{71.111+240/135/4*3,240/135/4,'*9 No Mini,*0.9 No Flip','len'},
+				{71.111+240/135/4*3,100.889,'*22.5 500% Invert,*2.25 50% Drunk','end'},
+
+				{86.222,100.889,'*1.5 Mini,*7.5 1000% Invert','end'},
+				{86.222,100.889,'*0.75 50% Wave','end',1},
+				{86.222,100.889,'*0.75 -50% Wave','end',2},
+
+				{86.222,101.333,'*2 2x,*2 c72','end'},
+
+				{87.111,101.333,'*0.56 200% Centered,*8 No Stealth,*10000 No Reverse','end'},
+
+				{89.778+240/135*2*0,240/135/2,'*1.125 Stealth','len'},
+				{90.667+240/135*2*0,0.050,'*10000 No Centered','len'},
+				{90.667+240/135*2*0,240/135*2,'*10000 100.01% Reverse','len'},
+
+				{89.778+240/135*2*1,240/135/2,'*1.125 Stealth','len'},
+				{90.667+240/135*2*1,0.050,'*10000 No Centered','len'},
+
+				{89.778+240/135*2*2,240/135/2,'*1.125 Stealth','len'},
+				{90.667+240/135*2*2,0.050,'*10000 No Centered','len'},
+				{90.667+240/135*2*2,240/135*2,'*10000 100.01% Reverse','len'},
+
+				{100.444,240/135/4,'*3 Stealth','len'},
+
+				{100.889,240/135/4,'*10000 50% Stealth,*10000 No Reverse,*10000 No Centered,*10000 No Invert,*10000 3x,*10000 No Mini','len'},
+				{100.889,108.000,'*10000 50% Drunk','end'},
+
+				{100.889+0.050,240/135/4-0.050,'*1.27 No Stealth','len'},
+
+				{108.000,240/135/4,'*1.125 No Drunk','len'},
+
+				{115.556,200,'*4 Stealth,*4 Dark','end'},
+
+				{115.556,240/135/32,'*10000 50% Stealth, *10000 50% Dark','len'},
+				{115.556+240/135/16*3,240/135/32,'*10000 50% Stealth, *10000 50% Dark','len',2},
+				{115.556+240/135/16*5,240/135/32,'*10000 50% Stealth, *10000 50% Dark','len',1},
+				{115.556+240/135/16*6,240/135/32,'*10000 50% Stealth, *10000 50% Dark','len',2},
+				{115.556+240/135/16*10,240/135/32,'*10000 50% Stealth, *10000 50% Dark','len',1},
+				{115.556+240/135/16*12,240/135/32,'*10000 50% Stealth, *10000 50% Dark','len',2},
+				{115.556+240/135/16*14,240/135/32,'*10000 50% Stealth, *10000 50% Dark','len',1},
+				
+				}
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					if v then
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+						
+						
+					end
+				end
+			end
+			
+			if beat >= 163 and fgcurcommand == 1 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:linear(240/153/8)
+						v:x(SCREEN_CENTER_X+multi*320);
+						v:GetChild('Judgment'):x(multi*-160);
+						v:GetChild('Combo'):x(multi*-160);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 227 and fgcurcommand == 2 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:x(SCREEN_CENTER_X+multi*160);
+						v:GetChild('Judgment'):x(0);
+						v:GetChild('Combo'):x(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end			
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat >= 35 and beat < 67 or beat >= 163 and beat < 195 or beat >= 227 and beat < 259 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						GAMESTATE:ApplyGameCommand('mod,*10000 '..-math.cos(((beat+1)/2)*math.pi)*50+50 ..'% Centered',1);
+					end
+				end
+			end
+
+			if beat >= 36 and beat < 68 or beat >= 164 and beat < 196 or beat >= 228 and beat < 260 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						GAMESTATE:ApplyGameCommand('mod,*10000 '..-math.cos((beat/2)*math.pi)*50+50 ..'% Centered',2);
+					end
+				end
+			end
+
+			if beat >= 203 and beat < 204 or beat >= 219 and beat < 220 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						GAMESTATE:ApplyGameCommand('mod,*10000 '..math.cos(((beat+1)/2)*math.pi)*1000 ..'% Invert');
+					end
+				end
+			end
+
+			if beat >= 204 and beat < 204.5 or beat >= 220 and beat < 220.5 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						GAMESTATE:ApplyGameCommand('mod,*10000 '..math.sin((beat+1)*math.pi)*1000 ..'% Invert');
+					end
+				end
+			end
+
+			if beat >= 204.5 and beat < 211 or beat >= 220.5 and beat < 227 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						GAMESTATE:ApplyGameCommand('mod,*10000 -1000% Invert');
+					end
+				end
+			end
+
+			if beat >= 211 and beat < 212 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						GAMESTATE:ApplyGameCommand('mod,*10000 '..-math.cos(((beat+1)/2)*math.pi)*1000 ..'% Invert');
+					end
+				end
+			end
+
+			if beat >= 212 and beat < 212.5 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						GAMESTATE:ApplyGameCommand('mod,*10000 '..-math.sin((beat+1)*math.pi)*1000 ..'% Invert');
+					end
+				end
+			end
+
+			if beat >= 212.5 and beat < 219 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						GAMESTATE:ApplyGameCommand('mod,*10000 1000% Invert');
+					end
+				end
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (0.012 - 0.917) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		SkewTwitchMessageCommand="finishtweening;aux,0;linear,9.6;aux,1.5;linear,1.6;aux,0"
+		Just1MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/135/16);
+					v:rotationz(2);
+					v:decelerate(240/135/16);
+					v:rotationz(4);
+				end
+			end
+		end"
+		Just2MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/135/16);
+					v:rotationz(-2);
+					v:decelerate(240/135/16);
+					v:rotationz(-4);
+				end
+			end
+		end"
+		Like1MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/135/16);
+					v:rotationz(-2);
+					v:decelerate(240/135/16);
+					v:rotationz(-8);
+				end
+			end
+		end"
+		Like2MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/135/16);
+					v:rotationz(2);
+					v:decelerate(240/135/16);
+					v:rotationz(8);
+				end
+			end
+		end"
+		A1MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/135/16);
+					v:rotationz(2);
+					v:decelerate(240/135/16);
+					v:rotationz(12);
+				end
+			end
+		end"
+		A2MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/135/16);
+					v:rotationz(-2);
+					v:decelerate(240/135/16);
+					v:rotationz(-12);
+				end
+			end
+		end"
+		Wave1MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/135/16);
+					v:rotationz(9);
+					v:decelerate(240/135/16);
+					v:rotationz(0);
+				end
+			end
+		end"
+		Wave2MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/135/16);
+					v:rotationz(-9);
+					v:decelerate(240/135/16);
+					v:rotationz(0);
+				end
+			end
+		end"
+		MakeMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				if v then
+					v:accelerate(240/135/32*3);
+					v:skewx(0.25);
+					v:rotationz(11.25);
+					v:decelerate(240/135/32*3);
+					v:skewx(0.5);
+					v:rotationz(22.5);
+				end
+			end
+		end"
+		WavesMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:accelerate(240/135/32*3);
+					v:skewx(0.25);
+					v:rotationz(11.25);
+					v:decelerate(240/135/32*3);
+					v:skewx(0);
+					v:rotationz(0);
+				end
+			end
+		end"
+		ToMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:accelerate(240/135/32*3);
+					v:skewx(0.375*multi);
+					v:decelerate(240/135/32*3);
+					v:skewx(0.75*multi);
+				end
+			end
+		end"
+		TheMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:accelerate(240/135/32*3);
+					v:skewx(-0.375*multi);
+					v:decelerate(240/135/32*3);
+					v:skewx(-0.75*multi);
+				end
+			end
+		end"
+		BeatMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:accelerate(240/135/16);
+					v:skewx(-0.375*multi);
+					v:decelerate(240/135/16);
+					v:skewx(0*multi);
+				end
+			end
+		end"
+	/>
+	
+</children></ActorFrame>

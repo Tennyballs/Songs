@@ -1,0 +1,925 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,110.53"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				prefix_phase = 0;
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+					{10.769,'DoubleSnare'},
+					{20.615,'DoubleSnare'},
+
+					{20.923+240/195/8*0,'IncrementPhase'},
+					{20.923+240/195/8*1,'IncrementPhase'},
+					{20.923+240/195/8*2,'IncrementPhase'},
+					{20.923+240/195/8*3,'IncrementPhase'},
+					{20.923+240/195/8*4,'IncrementPhase'},
+					{20.923+240/195/8*5,'IncrementPhase'},
+					{20.923+240/195/8*6,'IncrementPhase'},
+					{20.923+240/195/8*7,'IncrementPhase'},
+					{20.923+240/195/8*8,'IncrementPhase'},
+					{20.923+240/195/8*9,'IncrementPhase'},
+					{20.923+240/195/8*10,'IncrementPhase'},
+					{20.923+240/195/8*11,'IncrementPhase'},
+					{20.923+240/195/8*12,'IncrementPhase'},
+					{20.923+240/195/8*13,'IncrementPhase'},
+					{20.923+240/195/8*14,'IncrementPhase'},
+					{20.923+240/195/8*15,'IncrementPhase'},
+					{23.385+240/195/8*0,'IncrementPhase'},
+					{23.385+240/195/8*1,'IncrementPhase'},
+					{23.385+240/195/8*2,'IncrementPhase'},
+					{23.385+240/195/8*3,'IncrementPhase'},
+					{23.385+240/195/8*4,'IncrementPhase'},
+					{23.385+240/195/8*5,'IncrementPhase'},
+					{23.385+240/195/8*6,'IncrementPhase'},
+					{23.385+240/195/8*7,'IncrementPhase'},
+					{23.385+240/195/8*8,'IncrementPhase'},
+					{23.385+240/195/8*9,'IncrementPhase'},
+					{23.385+240/195/8*10,'IncrementPhase'},
+					{23.385+240/195/8*11,'IncrementPhase'},
+					{23.385+240/195/8*12,'IncrementPhase'},
+					{23.385+240/195/8*13,'IncrementPhase'},
+					{23.385+240/195/8*14,'IncrementPhase'},
+					{23.385+240/195/8*15,'IncrementPhase'},
+					{25.846+240/195/8*0,'IncrementPhase2'},
+					{25.846+240/195/8*1,'IncrementPhase2'},
+					{25.846+240/195/8*2,'IncrementPhase2'},
+					{25.846+240/195/8*3,'IncrementPhase2'},
+					{25.846+240/195/8*4,'IncrementPhase2'},
+					{25.846+240/195/8*5,'IncrementPhase2'},
+					{25.846+240/195/8*6,'IncrementPhase2'},
+					{25.846+240/195/8*7,'IncrementPhase2'},
+					{25.846+240/195/8*8,'IncrementPhase2'},
+					{25.846+240/195/8*9,'IncrementPhase2'},
+					{25.846+240/195/8*10,'IncrementPhase2'},
+					{25.846+240/195/8*11,'IncrementPhase2'},
+					{25.846+240/195/8*12,'IncrementPhase2'},
+					{25.846+240/195/8*13,'IncrementPhase2'},
+					{25.846+240/195/8*14,'IncrementPhase2'},
+					{25.846+240/195/8*15,'IncrementPhase2'},
+					{28.308+240/195/16*0,'IncrementPhase'},
+					{28.308+240/195/16*1,'IncrementPhase'},
+					{28.308+240/195/16*2,'IncrementPhase'},
+					{28.308+240/195/16*3,'IncrementPhase'},
+					{28.308+240/195/16*4,'IncrementPhase'},
+					{28.308+240/195/16*5,'IncrementPhase'},
+					{28.308+240/195/16*6,'IncrementPhase'},
+					{28.308+240/195/16*7,'IncrementPhase'},
+					{28.308+240/195/16*8,'IncrementPhase'},
+					{28.308+240/195/16*9,'IncrementPhase'},
+					{28.308+240/195/16*10,'IncrementPhase'},
+					{28.308+240/195/16*11,'IncrementPhase'},
+					{28.308+240/195/16*12,'IncrementPhase'},
+					{28.308+240/195/16*13,'IncrementPhase'},
+					{28.308+240/195/16*14,'IncrementPhase'},
+					{28.308+240/195/16*15,'IncrementPhase'},
+
+					{30.462,'DoubleSnare'},
+
+					{30.769,'Wuuuuub'},
+					{33.231,'Wuuuuub'},
+
+					{35.692,'Wuuuuub2'},
+
+					{40.615,'Wuuuuub3'},
+					{43.077,'Wuuuuub3'},
+
+					{45.538,'Wuuuuub4'},
+
+					{50.154,'DoubleSnare'},
+					{60.000,'DoubleSnare'},
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'2.5x,-999999% Cover,*10000 No Beat','end'},
+
+				{0,0.462,'*10000 10000% Invert','end'},
+				{0,9.846,'*10000 50% Drunk,*10000 50% Tipsy,*10000 75% Stealth,*10000 -50% Expand','end'},
+
+				{0.462+240/195/64*0,240/195/64,'*10000 -400% Invert','len'},
+				{0.462+240/195/64*1,240/195/64,'*10000 390% Invert','len'},
+				{0.462+240/195/64*2,240/195/64,'*10000 -380% Invert','len'},
+				{0.462+240/195/64*3,240/195/64,'*10000 370% Invert','len'},
+				{0.462+240/195/64*4,240/195/64,'*10000 -360% Invert','len'},
+				{0.462+240/195/64*5,240/195/64,'*10000 350% Invert','len'},
+				{0.462+240/195/64*6,240/195/64,'*10000 -340% Invert','len'},
+				{0.462+240/195/64*7,240/195/64,'*10000 330% Invert','len'},
+				{0.462+240/195/64*8,240/195/64,'*10000 -320% Invert','len'},
+				{0.462+240/195/64*9,240/195/64,'*10000 310% Invert','len'},
+				{0.462+240/195/64*10,240/195/64,'*10000 -300% Invert','len'},
+				{0.462+240/195/64*11,240/195/64,'*10000 290% Invert','len'},
+				{0.462+240/195/64*12,240/195/64,'*10000 -280% Invert','len'},
+				{0.462+240/195/64*13,240/195/64,'*10000 270% Invert','len'},
+				{0.462+240/195/64*14,240/195/64,'*10000 -260% Invert','len'},
+				{0.462+240/195/64*15,240/195/64,'*10000 250% Invert','len'},
+				{0.462+240/195/64*16,240/195/64,'*10000 -240% Invert','len'},
+				{0.462+240/195/64*17,240/195/64,'*10000 230% Invert','len'},
+				{0.462+240/195/64*18,240/195/64,'*10000 -220% Invert','len'},
+				{0.462+240/195/64*19,240/195/64,'*10000 210% Invert','len'},
+				{0.462+240/195/64*20,240/195/64,'*10000 -200% Invert','len'},
+				{0.462+240/195/64*21,240/195/64,'*10000 190% Invert','len'},
+				{0.462+240/195/64*22,240/195/64,'*10000 -180% Invert','len'},
+				{0.462+240/195/64*23,240/195/64,'*10000 170% Invert','len'},
+				{0.462+240/195/64*24,240/195/64,'*10000 -160% Invert','len'},
+				{0.462+240/195/64*25,240/195/64,'*10000 150% Invert','len'},
+				{0.462+240/195/64*26,240/195/64,'*10000 -140% Invert','len'},
+				{0.462+240/195/64*27,240/195/64,'*10000 130% Invert','len'},
+				{0.462+240/195/64*28,240/195/64,'*10000 -120% Invert','len'},
+				{0.462+240/195/64*29,240/195/64,'*10000 110% Invert','len'},
+				{0.462+240/195/64*30,240/195/64,'*10000 -100% Invert','len'},
+				{0.462+240/195/64*31,240/195/64,'*10000 90% Invert','len'},
+				{0.462+240/195/64*32,240/195/64,'*10000 -80% Invert','len'},
+				{0.462+240/195/64*33,240/195/64,'*10000 70% Invert','len'},
+				{0.462+240/195/64*34,240/195/64,'*10000 -60% Invert','len'},
+				{0.462+240/195/64*35,240/195/64,'*10000 50% Invert','len'},
+				{0.462+240/195/64*36,240/195/64,'*10000 -40% Invert','len'},
+				{0.462+240/195/64*37,240/195/64,'*10000 30% Invert','len'},
+				{0.462+240/195/64*38,240/195/64,'*10000 -20% Invert','len'},
+				{0.462+240/195/64*39,240/195/64,'*10000 10% Invert','len'},
+				{0.462+240/195/64*40,240/195/64,'*10000 No Invert','len'},
+
+				{6.154,9.846,'*0.271 No Expand','end'},
+
+				{8.615,10.769,'*0.203125 Stealth,*0.8125 Dark','end'},
+
+				{9.846,240/195/16,'*10000 No Stealth,*10000 No Dark,*10000 200% Mini,*10000 No Drunk,*10000 No Tipsy','len'},
+
+				{9.846+0.050,240/195-0.050,'*1.7 No Mini','len'},
+
+				{11.077,18.462,'*3.80859375 200% Centered,*6.5 Stealth','end'},
+
+				{11.077+240/195*0+240/195/4*0,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*0+240/195/4*1,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*0+240/195/4*2,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*0+240/195/4*3,240/195/4,'*10000 No Centered,*10000 No Stealth','len'},
+
+				{11.077+240/195*1+240/195/4*0,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*1+240/195/4*1,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*1+240/195/4*2,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*1+240/195/4*3,240/195/4,'*10000 No Centered,*10000 No Stealth','len'},
+
+				{11.077+240/195*2+240/195/4*0,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*2+240/195/4*1,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*2+240/195/4*2,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*2+240/195/4*3,240/195/4,'*10000 No Centered,*10000 No Stealth','len'},
+
+				{11.077+240/195*3+240/195/4*0,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*3+240/195/4*1,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*3+240/195/4*2,240/195/2,'*10000 No Centered,*10000 No Stealth','len'},
+
+				{11.077+240/195*4+240/195/4*0,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*4+240/195/4*1,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*4+240/195/4*2,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*4+240/195/4*3,240/195/4,'*10000 No Centered,*10000 No Stealth','len'},
+
+				{11.077+240/195*5+240/195/4*0,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*5+240/195/4*1,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*5+240/195/4*2,0.06,'*10000 No Centered,*10000 No Stealth','len'},
+				{11.077+240/195*5+240/195/4*3,240/195/4,'*10000 No Centered,*10000 No Stealth','len'},
+
+				{11.077+240/195*0+240/195/4*3,240/195/8,'*6.5 -50% Flip','len'},
+				{11.077+240/195*0+240/195/8*7,240/195/8,'*6.5 No Flip','len'},
+
+				{11.077+240/195*1+240/195/4*3,240/195/8,'*6.5 -50% Flip','len'},
+				{11.077+240/195*1+240/195/8*7,240/195/8,'*6.5 No Flip','len'},
+
+				{11.077+240/195*2+240/195/4*3,240/195/8,'*6.5 -50% Flip','len'},
+				{11.077+240/195*2+240/195/8*7,240/195/8,'*6.5 No Flip','len'},
+
+				{11.077+240/195*3+240/195/4*2,240/195/8,'*26 -200% Tipsy','len'},
+				{11.077+240/195*3+240/195/8*5,240/195/8,'*26 No Tipsy','len'},
+
+				{11.077+240/195*3+240/195/4*3,240/195/8,'*6.5 -50% Flip','len'},
+				{11.077+240/195*3+240/195/8*7,240/195/8,'*6.5 No Flip','len'},
+
+				{11.077+240/195*4+240/195/4*3,240/195/8,'*6.5 -50% Flip','len'},
+				{11.077+240/195*4+240/195/8*7,240/195/8,'*6.5 No Flip','len'},
+
+				{11.077+240/195*5+240/195/4*3,240/195/8,'*6.5 -50% Flip','len'},
+				{11.077+240/195*5+240/195/8*7,240/195/8,'*6.5 No Flip','len'},
+
+				{10.923+240/195*0,240/195*6,'*10000 200% Beat','len'},
+
+				{18.462+240/195/8*0,240/195/8,'*9.75 150% Mini','len'},
+				{18.462+240/195/8*1,240/195/8,'*9.75 No Mini','len'},
+				{18.462+240/195/8*2,240/195/8,'*9.75 150% Mini','len'},
+				{18.462+240/195/8*3,240/195/8,'*9.75 No Mini','len'},
+				{18.462+240/195/16*8,240/195/16,'*19.5 150% Mini','len'},
+				{18.462+240/195/16*9,240/195/16,'*19.5 No Mini','len'},
+				{18.462+240/195/16*10,240/195/16,'*19.5 150% Mini','len'},
+				{18.462+240/195/16*11,240/195/16,'*19.5 No Mini','len'},
+				{18.462+240/195/16*12,240/195/16,'*19.5 150% Mini','len'},
+				{18.462+240/195/16*13,240/195/16,'*19.5 No Mini','len'},
+				{18.462+240/195/16*14,240/195/16,'*19.5 150% Mini','len'},
+				{18.462+240/195/16*15,240/195/16,'*19.5 No Mini','len'},
+
+				{19.692,29.538,'*0.54167 66.667% Mini','end'},
+
+				{19.692+240/195/16*0,240/195/16,'*26 Flip, *26 -100% Invert','len'},
+				{19.692+240/195/16*1,240/195/16,'*26 Flip, *26 No Invert','len'},
+				{19.692+240/195/16*2,240/195/16,'*26 No Flip, *26 No Invert','len'},
+				{19.692+240/195/16*3,240/195/16,'*26 No Flip, *26 100% Invert','len'},
+				{19.692+240/195/16*4,240/195/16,'*26 Flip, *52 -100% Invert','len'},
+				{19.692+240/195/16*5,240/195/16,'*26 Flip, *26 No Invert','len'},
+				{19.692+240/195/16*6,240/195/16,'*26 No Flip, *26 No Invert','len'},
+				{19.692+240/195/16*7,240/195/16,'*26 No Flip, *26 100% Invert','len'},
+				{19.692+240/195/16*8,240/195/16,'*26 Flip, *52 -100% Invert','len'},
+				{19.692+240/195/16*9,240/195/16,'*26 Flip, *26 No Invert','len'},
+				{19.692+240/195/16*10,240/195/16,'*26 No Flip, *26 No Invert','len'},
+				{19.692+240/195/16*11,240/195/16,'*26 No Flip, *26 100% Invert','len'},
+				{19.692+240/195/16*12,240/195/16,'*26 Flip, *52 -100% Invert','len'},
+				{19.692+240/195/16*13,240/195/16,'*26 Flip, *26 No Invert','len'},
+				{19.692+240/195/16*14,240/195/16,'*26 No Flip, *26 No Invert','len'},
+
+				{20.923,30.769,'Blind','end'},
+				{20.923,29.538,'*10000 -500% Reverse,*10000 No Split,*10000 No Cross,*10000 No Alternate,*10000 0.22x,*10000 400% Sudden,*10000 -70% SuddenOffset','end'},
+				{29.538,240/195/2,'*10000 No Reverse,*10000 No Split,*10000 No Cross,*10000 No Alternate,*10000 2.5x','len'},
+
+				{25.385,240/195/8,'*10000 50% Stealth','len'},
+				{25.385+240/195/8,240/195/4,'*1.625 No Stealth','len'},
+
+				{28.308,29.538,'*0.8 Stealth','end'},
+				
+				{29.500,0.050,'*10000 No Reverse','len'},
+
+				{29.538,240/195/4,'*21.667 -100% Mini,*3.25 25% Flip,*6.5 50% Reverse,*13 Stealth,*10000 No Sudden,*10000 0% SuddenOffset','len'},
+				{29.538+240/195/4,240/195/4,'*2.1667 -66.667% Mini,*0.54167 16.6667% Flip,*1.0834 33.3334% Reverse,*0.65 90% Stealth','len'},
+				{29.538+240/195/4*2,240/195/4,'*2.1667 -33.334% Mini,*0.54167 8.3334% Flip,*1.0834 16.667% Reverse,*2.6 50% Stealth','len'},
+				{29.538+240/195/4*3,240/195/4,'*2.1667 No Mini,*0.54167 No Flip,*1.0834 No Reverse,*3.5 No Stealth','len'},
+
+				{29.538,49.231,'*10000 1.5x','end'},
+				{30.769,49.231,'*10000 Centered','end'},
+				{49.231,50,'*10000 No Centered','end'},
+
+				{31.385+240/195*0+240/195/4*0,240/195/4,'*13 200% Wave','len',1},
+				{31.385+240/195*0+240/195/4*0,240/195/4,'*13 -200% Wave','len',2},
+				{31.385+240/195*0+240/195/4*1,240/195/4,'*13 No Wave','len'},
+				{31.385+240/195*0+240/195/8*4,240/195/8,'*6.5 50% Reverse,*6.5 -50% Alternate','len'},
+				{31.385+240/195*0+240/195/8*5,240/195/8,'*6.5 No Reverse,*6.5 No Alternate','len'},
+				{31.385+240/195*0+240/195/8*6,240/195/8,'*6.5 50% Alternate','len'},
+				{31.385+240/195*0+240/195/8*7,240/195/8,'*6.5 No Alternate','len'},
+				{31.385+240/195*0+240/195/4*4,240/195/4,'*13 200% Wave','len',1},
+				{31.385+240/195*0+240/195/4*4,240/195/4,'*13 -200% Wave','len',2},
+				{31.385+240/195*0+240/195/4*5,240/195/4,'*13 No Wave','len'},
+
+				{31.385+240/195*2+240/195/4*0,240/195/4,'*13 200% Wave','len',1},
+				{31.385+240/195*2+240/195/4*0,240/195/4,'*13 -200% Wave','len',2},
+				{31.385+240/195*2+240/195/4*1,240/195/4,'*13 No Wave','len'},
+				{31.385+240/195*2+240/195/8*4,240/195/8,'*6.5 50% Alternate','len'},
+				{31.385+240/195*2+240/195/8*5,240/195/8,'*6.5 No Alternate','len'},
+				{31.385+240/195*2+240/195/8*6,240/195/8,'*6.5 50% Reverse,*6.5 -50% Alternate','len'},
+				{31.385+240/195*2+240/195/8*7,240/195/8,'*6.5 No Reverse,*6.5 No Alternate','len'},
+				{31.385+240/195*2+240/195/4*4,240/195/4,'*13 200% Wave','len',1},
+				{31.385+240/195*2+240/195/4*4,240/195/4,'*13 -200% Wave','len',2},
+				{31.385+240/195*2+240/195/4*5,240/195/4,'*13 No Wave','len'},
+
+				{31.385+240/195*4+240/195/4*0,240/195/4,'*13 200% Wave','len',1},
+				{31.385+240/195*4+240/195/4*0,240/195/4,'*13 -200% Wave','len',2},
+				{31.385+240/195*4+240/195/4*1,240/195/4,'*13 No Wave','len'},
+				{31.385+240/195*4+240/195/8*4,240/195/8,'*6.5 50% Reverse,*6.5 -50% Alternate','len'},
+				{31.385+240/195*4+240/195/8*5,240/195/8,'*6.5 No Reverse,*6.5 No Alternate','len'},
+				{31.385+240/195*4+240/195/8*6,240/195/8,'*6.5 50% Alternate','len'},
+				{31.385+240/195*4+240/195/8*7,240/195/8,'*6.5 No Alternate','len'},
+				{31.385+240/195*4+240/195/4*4,240/195/4,'*13 200% Wave','len',1},
+				{31.385+240/195*4+240/195/4*4,240/195/4,'*13 -200% Wave','len',2},
+				{31.385+240/195*4+240/195/4*5,240/195/4,'*13 No Wave','len'},
+
+				{38.308+240/195/16*0,240/195/16,'*26 150% Drunk','len'},
+				{38.308+240/195/16*1,240/195/16,'*26 No Drunk','len'},
+
+				{38.615+240/195/16*0,240/195/16,'*26 -150% Drunk','len'},
+				{38.615+240/195/16*1,240/195/16,'*26 No Drunk','len'},
+
+				{38.615,40,'*10000 -100% HiddenOffset,*10000 -100% SuddenOffset','end'},
+				{38.846,40,'*10000 Hidden,*13 200% HiddenOffset,*13 Dark','end'},
+				{39.154,40,'*10000 No Hidden, *10000 Sudden,*13 200% SuddenOffset,*13 No Dark','end'},
+
+				{39.154,40.615,'*10000 0.5x,*10000 Flip','end'},
+
+				{39.385,40.615,'*8 8x','end'},
+
+				{40,40.615,'*13 Stealth,*13 Dark','end'},
+
+				{40.308,40.615,'*13 No Stealth,*13 No Dark,*10000 1.5x,*10000 No Flip','end'},
+
+				{31.385+240/195*8+240/195/4*0,240/195/4,'*26 400% Wave','len',1},
+				{31.385+240/195*8+240/195/4*0,240/195/4,'*26 -400% Wave','len',2},
+				{31.385+240/195*8+240/195/4*1,240/195/4,'*26 No Wave','len'},
+				{31.385+240/195*8+240/195/8*4,240/195/8,'*6.5 50% Split','len'},
+				{31.385+240/195*8+240/195/8*5,240/195/8,'*6.5 No Split','len'},
+				{31.385+240/195*8+240/195/8*6,240/195/8,'*6.5 50% Reverse,*6.5 -50% Split','len'},
+				{31.385+240/195*8+240/195/8*7,240/195/8,'*6.5 No Reverse,*6.5 No Split','len'},
+				{31.385+240/195*8+240/195/4*4,240/195/4,'*26 400% Wave','len',1},
+				{31.385+240/195*8+240/195/4*4,240/195/4,'*26 -400% Wave','len',2},
+				{31.385+240/195*8+240/195/4*5,240/195/4,'*26 No Wave','len'},
+
+				{31.385+240/195*10+240/195/4*0,240/195/4,'*26 400% Wave','len',1},
+				{31.385+240/195*10+240/195/4*0,240/195/4,'*26 -400% Wave','len',2},
+				{31.385+240/195*10+240/195/4*1,240/195/4,'*26 No Wave','len'},
+				{31.385+240/195*10+240/195/8*4,240/195/8,'*6.5 50% Reverse,*6.5 -50% Split','len'},
+				{31.385+240/195*10+240/195/8*5,240/195/8,'*6.5 No Reverse,*6.5 No Split','len'},
+				{31.385+240/195*10+240/195/8*6,240/195/8,'*6.5 50% Split','len'},
+				{31.385+240/195*10+240/195/8*7,240/195/8,'*6.5 No Split','len'},
+				{31.385+240/195*10+240/195/4*4,240/195/4,'*26 400% Wave','len',1},
+				{31.385+240/195*10+240/195/4*4,240/195/4,'*26 -400% Wave','len',2},
+				{31.385+240/195*10+240/195/4*5,240/195/4,'*26 No Wave','len'},
+
+				{31.385+240/195*12+240/195/4*0,240/195/4,'*26 400% Wave','len',1},
+				{31.385+240/195*12+240/195/4*0,240/195/4,'*26 -400% Wave','len',2},
+				{31.385+240/195*12+240/195/4*1,240/195/4,'*26 No Wave','len'},
+				{31.385+240/195*12+240/195/8*4,240/195/8,'*6.5 50% Split','len'},
+				{31.385+240/195*12+240/195/8*5,240/195/8,'*6.5 No Split','len'},
+				{31.385+240/195*12+240/195/8*6,240/195/8,'*6.5 50% Reverse,*6.5 -50% Split','len'},
+				{31.385+240/195*12+240/195/8*7,240/195/8,'*6.5 No Reverse,*6.5 No Split','len'},
+				{31.385+240/195*12+240/195/4*4,240/195/4,'*26 400% Wave','len',1},
+				{31.385+240/195*12+240/195/4*4,240/195/4,'*26 -400% Wave','len',2},
+				{31.385+240/195*12+240/195/4*5,240/195/4,'*26 No Wave','len'},
+
+				{48.000,240/195/32,'*26 Tornado','len'},
+				{48.000+240/195/32,240/195/32*7,'*3.8 No Tornado','len'},
+
+				{48.308,240/195/32,'*26 -100% Tornado','len'},
+				{48.308+240/195/32,240/195/32*7,'*3.8 No Tornado','len'},
+
+				{48.615,49.212,'*2.5 Stealth, *2.5 Dark','end'},
+
+				{48.615,240/195/2,'*52 628% Dizzy','len'},
+
+				{49.231,240/195/64*2,'*10000 200% Mini,*10000 No Dizzy','len'},
+
+				{49.231,60.308,'*8 1x,*8 c104','end'},
+
+				{49.231+0.050,240/195-0.050,'*1.7 No Mini','len'},
+
+				{50.462,60.308,'*0.8125 200% Centered, *8 No Stealth, *10000 No Reverse, *0.1354 200% Drunk','end'},
+
+				{52.308+240/195*2*0,240/195/2,'*3.25 Stealth','len'},
+				{52.923+240/195*2*0,0.050,'*10000 No Centered','len'},
+				{52.923+240/195*2*0,240/195*2,'*10000 100.01% Reverse','len'},
+
+				{52.308+240/195*2*1,240/195/2,'*3.25 Stealth','len'},
+				{52.923+240/195*2*1,0.050,'*10000 No Centered','len'},
+
+				{52.308+240/195*2*2,240/195/2,'*3.25 Stealth','len'},
+				{52.923+240/195*2*2,0.050,'*10000 No Centered','len'},
+				{52.923+240/195*2*2,240/195*2,'*10000 100.01% Reverse','len'},
+
+				{57.846,60.308,'*10000 Sudden,*0.40625 -200% SuddenOffset','end'},
+				{59.077,240/195/4,'*6.5 Stealth, *6.5 Dark','len'},
+				{59.385,68.923,'*10000 2x,*10000 Hidden,*10000 Sudden,*10000 55% HiddenOffset,*10000 45% SuddenOffset,*10000 200% Wave,*10000 No Reverse,*10000 No Centered,*10000 No Drunk,*10000 50% Stealth','end'},
+				{67.692,240/195,'*0.8125 Stealth','len'},
+				{68.923,240/195,'*10000 No Hidden,*10000 No Sudden,*10000 No Wave,*10000 2x,*3.25 No Stealth','len'},
+
+				{64.615,240/195/2*5,'*3.25 314% Dizzy','len'},
+				{67.692,240/195*2,'*52 No Dizzy','len'},
+
+				{70.000,88.615,'66.67% Bumpy,25% Drunk,-50% Expand','end'},
+
+				{69.538,240/195/16*3,'*6.5 66.67% Distant,*13 2.5x','len'},
+				{69.769,240/195/16*3,'*6.5 133.33% Distant,*13 3x','len'},
+				{70.000,78.769,'*6.5 200% Distant,*13 3x','end'},
+
+				{78.769,240/195/4,'*6.5 100% Distant,*1.625 25% Reverse','len'},
+				{78.769,240/195/2,'*0.8125 No Drunk,*3.5 No Bumpy,*1.625 No Expand','len'},
+				{78.769+240/195/4,240/195/4,'*6.5 Overhead,*1.625 50% Reverse','len'},
+				{79.385,88.615,'*3.25 200% Hallway,*0.8125 100% Reverse,*3.5 66.67% Bumpy,*1.625 Drunk,*3.25 -66.67% Expand','end'},
+				{88.615,240/195/2,'*6.5 Overhead,*3.25 No Reverse,*3.25 No Bumpy,*3.25 No Drunk,*3.25 No Expand','len'},
+
+				{89.077,240/195/2,'*10000 500% Beat','len'},
+				{89.077,98.462,'*1.625 Brake,*3.25 -200% Mini','end'},
+				{98.462,240/195/4,'*6.5 No Brake,*13 No Mini','len'},
+
+				{99.385,108.308,'*6.5 50% Drunk,*6.5 50% Tipsy,*6.5 75% Stealth,*3.25 -50% Expand','end'},
+
+				{89.846+240/195*0+240/195/16*0,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 -50% Cross','len'},
+				{89.846+240/195*0+240/195/16*3,240/195/16*2,'*13 100.01% Reverse,*6.5 -100% Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{89.846+240/195*0+240/195/16*5,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 50% Cross','len'},
+				{89.846+240/195*0+240/195/16*8,240/195/16*8,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{89.846+240/195*1+240/195/16*0,240/195/16*3,'*13 No Reverse, *6.5 50% Split,*6.5 50% Alternate,*6.5 50% Cross','len'},
+				{89.846+240/195*1+240/195/16*3,240/195/16*2,'*6.5 Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{89.846+240/195*1+240/195/16*5,240/195/16*3,'*6.5 50% Split,*6.5 50% Alternate,*6.5 -50% Cross','len'},
+				{89.846+240/195*1+240/195/16*8,240/195/16*8,'*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{89.846+240/195*2+240/195/16*0,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 -50% Cross','len'},
+				{89.846+240/195*2+240/195/16*3,240/195/16*2,'*13 100.01% Reverse,*6.5 -100% Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{89.846+240/195*2+240/195/16*5,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 50% Cross','len'},
+				{89.846+240/195*2+240/195/16*8,240/195/16*8,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{89.846+240/195*3+240/195/16*0,240/195/16*3,'*13 No Reverse, *6.5 50% Split,*6.5 50% Alternate,*6.5 50% Cross','len'},
+				{89.846+240/195*3+240/195/16*3,240/195/16*2,'*6.5 Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{89.846+240/195*3+240/195/16*5,240/195/16*3,'*6.5 50% Split,*6.5 50% Alternate,*6.5 -50% Cross','len'},
+				{89.846+240/195*3+240/195/16*8,240/195/16*8,'*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{89.846+240/195*4+240/195/16*0,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 -50% Cross','len'},
+				{89.846+240/195*4+240/195/16*3,240/195/16*2,'*13 100.01% Reverse,*6.5 -100% Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{89.846+240/195*4+240/195/16*5,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 50% Cross','len'},
+				{89.846+240/195*4+240/195/16*8,240/195/16*8,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{89.846+240/195*5+240/195/16*0,240/195/16*3,'*13 No Reverse, *6.5 50% Split,*6.5 50% Alternate,*6.5 50% Cross','len'},
+				{89.846+240/195*5+240/195/16*3,240/195/16*2,'*6.5 Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{89.846+240/195*5+240/195/16*5,240/195/16*3,'*6.5 50% Split,*6.5 50% Alternate,*6.5 -50% Cross','len'},
+				{89.846+240/195*5+240/195/16*8,240/195/16*8,'*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{89.846+240/195*6+240/195/16*0,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 -50% Cross','len'},
+				{89.846+240/195*6+240/195/16*3,240/195/16*2,'*13 100.01% Reverse,*6.5 -100% Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{89.846+240/195*6+240/195/16*5,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 50% Cross','len'},
+				{89.846+240/195*6+240/195/16*8,240/195/16*8,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{90.615+240/195*0+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{90.615+240/195*0+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{90.615+240/195*0+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{90.615+240/195*0+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{90.615+240/195*1+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{90.615+240/195*1+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{90.615+240/195*1+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{90.615+240/195*1+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{90.615+240/195*2+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{90.615+240/195*2+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{90.615+240/195*2+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{90.615+240/195*2+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{90.615+240/195*3+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{90.615+240/195*3+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{90.615+240/195*3+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{90.615+240/195*3+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{90.615+240/195*4+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{90.615+240/195*4+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{90.615+240/195*4+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{90.615+240/195*4+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{90.615+240/195*5+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{90.615+240/195*5+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{90.615+240/195*5+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{90.615+240/195*5+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{90.615+240/195*6+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{90.615+240/195*6+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{90.615+240/195*6+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{90.615+240/195*6+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{98.462,240/195/16*3,'*6.5 No Reverse','len'},
+
+				{98.769+240/195/8*0,240/195/8,'*13 Flip','len'},
+				{98.769+240/195/8*1,240/195/8,'*13 No Flip,*13 Invert','len'},
+				{98.769+240/195/8*2,240/195/8,'*13 Flip,*26 -100% Invert','len'},
+				{98.769+240/195/8*3,240/195/8,'*3.25 75% Flip,*22.75 75% Invert','len'},
+				{98.769+240/195/8*4,240/195/8,'*6.5 25% Flip,*6.5 125% Invert','len'},
+				{98.769+240/195/8*5,240/195/8,'*3.25 No Flip,*16.25 No Invert','len'},
+
+				{99.692+240/195*0+240/195/16*0,240/195/16*3,'*13 No Reverse,*6.5 -50% Split,*6.5 50% Alternate,*6.5 50% Cross','len'},
+				{99.692+240/195*0+240/195/16*3,240/195/16*2,'*13 No Reverse,*6.5 No Split,*6.5 Alternate,*6.5 No Cross','len'},
+				{99.692+240/195*0+240/195/16*5,240/195/16*3,'*13 No Reverse,*6.5 50% Split,*6.5 50% Alternate,*6.5 50% Cross','len'},
+				{99.692+240/195*0+240/195/16*8,240/195/16*8,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{99.692+240/195*1+240/195/16*0,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 50% Alternate,*6.5 -50% Cross','len'},
+				{99.692+240/195*1+240/195/16*3,240/195/16*2,'*13 100.01% Reverse,*6.5 -100% Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{99.692+240/195*1+240/195/16*5,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 -50% Cross','len'},
+				{99.692+240/195*1+240/195/16*8,240/195/16*8,'*13 No Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{99.692+240/195*2+240/195/16*0,240/195/16*3,'*13 No Reverse,*6.5 50% Split,*6.5 50% Alternate,*6.5 -50% Cross','len'},
+				{99.692+240/195*2+240/195/16*3,240/195/16*2,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 -100% Cross','len'},
+				{99.692+240/195*2+240/195/16*5,240/195/16*3,'*13 100.01% Reverse,*6.5 50% Split,*6.5 -50% Alternate,*6.5 -50% Cross','len'},
+				{99.692+240/195*2+240/195/16*8,240/195/16*8,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{99.692+240/195*3+240/195/16*0,240/195/16*3,'*13 No Reverse,*6.5 50% Split,*6.5 50% Alternate,*6.5 50% Cross','len'},
+				{99.692+240/195*3+240/195/16*3,240/195/16*2,'*13 No Reverse,*6.5 No Split,*6.5 Alternate,*6.5 No Cross','len'},
+				{99.692+240/195*3+240/195/16*5,240/195/16*3,'*13 No Reverse,*6.5 50% Split,*6.5 50% Alternate,*6.5 -50% Cross','len'},
+				{99.692+240/195*3+240/195/16*8,240/195/16*8,'*13 No Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{99.692+240/195*4+240/195/16*0,240/195/16*3,'*13 No Reverse,*6.5 -50% Split,*6.5 50% Alternate,*6.5 50% Cross','len'},
+				{99.692+240/195*4+240/195/16*3,240/195/16*2,'*13 100.01% Reverse,*6.5 -100% Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{99.692+240/195*4+240/195/16*5,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 50% Cross','len'},
+				{99.692+240/195*4+240/195/16*8,240/195/16*8,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{99.692+240/195*5+240/195/16*0,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 50% Alternate,*6.5 -50% Cross','len'},
+				{99.692+240/195*5+240/195/16*3,240/195/16*2,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 -100% Cross','len'},
+				{99.692+240/195*5+240/195/16*5,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 -50% Alternate,*6.5 -50% Cross','len'},
+				{99.692+240/195*5+240/195/16*8,240/195/16*8,'*13 No Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+
+				{99.692+240/195*6+240/195/16*0,240/195/16*3,'*13 No Reverse,*6.5 50% Split,*6.5 50% Alternate,*6.5 -50% Cross','len'},
+				{99.692+240/195*6+240/195/16*3,240/195/16*2,'*13 No Reverse,*6.5 No Split,*6.5 Alternate,*6.5 No Cross','len'},
+				{99.692+240/195*6+240/195/16*5,240/195/16*3,'*13 100.01% Reverse,*6.5 -50% Split,*6.5 50% Alternate,*6.5 -50% Cross','len'},
+				{99.692+240/195*6+240/195/16*8,240/195/16*2,'*13 100.01% Reverse,*6.5 No Split,*6.5 No Alternate,*6.5 No Cross','len'},
+				{99.692+240/195*6+240/195/16*10,240/195/16*2,'*13 No Reverse','len'},
+				{99.692+240/195*6+240/195/16*12,240/195/16*20,'*13 100.01% Reverse,*6.5 No Drunk,*6.5 No Tipsy,*13 No Stealth,*13 No Expand','len'},
+
+				{100.462+240/195*0+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{100.462+240/195*0+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{100.462+240/195*0+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{100.462+240/195*0+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{100.462+240/195*1+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{100.462+240/195*1+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{100.462+240/195*1+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{100.462+240/195*1+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{100.462+240/195*2+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{100.462+240/195*2+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{100.462+240/195*2+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{100.462+240/195*2+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{100.462+240/195*3+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{100.462+240/195*3+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{100.462+240/195*3+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{100.462+240/195*3+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{100.462+240/195*4+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{100.462+240/195*4+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{100.462+240/195*4+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{100.462+240/195*4+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{100.462+240/195*5+240/195/16*0,240/195/16,'*13 Invert','len'},
+				{100.462+240/195*5+240/195/16*1,240/195/16,'*13 No Invert','len'},
+				{100.462+240/195*5+240/195/16*2,240/195/8,'*13 Invert','len'},
+				{100.462+240/195*5+240/195/16*4,240/195/8,'*13 No Invert','len'},
+
+				{108.308+240/195/8*0,240/195/8,'*13 Flip','len'},
+				{108.308+240/195/8*1,240/195/8,'*13 No Flip,*13 Invert','len'},
+				{108.308+240/195/8*2,240/195/8,'*13 Flip,*26 -100% Invert','len'},
+				{108.308+240/195/8*3,240/195/8,'*13 No Flip,*13 No Invert','len'},
+				{108.308+240/195/8*4,240/195/8,'*9.75 75% Flip,*9.75 75% Invert','len'},
+				{108.308+240/195/8*5,240/195/8,'*6.5 25% Flip,*6.5 125% Invert','len'},
+				{108.308+240/195/8*6,240/195/8,'*6.5 75% Flip,*32.5 -125% Invert','len'},
+				{108.308+240/195/8*7,240/195/8,'*6.5 25% Flip,*6.5 -75% Invert','len'},
+				{108.308+240/195/8*8,200,'*3.25 50% Flip,*3.25 -50% Invert,*8.125 58.75% Reverse,*3.25 -25% Split,Blind','end'},
+
+				}
+				
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+						
+						v:x(SCREEN_CENTER_X);
+						v:GetChild('Judgment'):x(160*multi);
+						v:GetChild('Combo'):x(160*multi);
+						
+					end
+				end
+			end
+
+			if beat >= 68 and fgcurcommand == 1 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:y(SCREEN_CENTER_Y+1350);
+						if i == 2 then v:x(SCREEN_CENTER_X+170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 72 and fgcurcommand == 2 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						if i == 2 then v:x(SCREEN_CENTER_X-170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 76 and fgcurcommand == 3 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						if i == 2 then v:x(SCREEN_CENTER_X+170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 80 and fgcurcommand == 4 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						if i == 2 then v:x(SCREEN_CENTER_X-170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 84 and fgcurcommand == 5 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						if i == 2 then v:x(SCREEN_CENTER_X+170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 86 and fgcurcommand == 6 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						if i == 2 then v:x(SCREEN_CENTER_X-170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 88 and fgcurcommand == 7 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						if i == 2 then v:x(SCREEN_CENTER_X+170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 90 and fgcurcommand == 8 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						if i == 2 then v:x(SCREEN_CENTER_X-170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 92 and fgcurcommand == 9 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						if i == 2 then v:x(SCREEN_CENTER_X+170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 94 and fgcurcommand == 10 then
+				local multi = -1; if i == 2 then multi = 1; end
+				for i,v in pairs(prefix_plr) do
+					if v then
+						if i == 2 then v:x(SCREEN_CENTER_X-170.667); end
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 96 and fgcurcommand == 11 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:x(SCREEN_CENTER_X);
+						v:y(SCREEN_CENTER_Y);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 100 and fgcurcommand == 12 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:y(SCREEN_CENTER_Y-135);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+
+			if beat >= 160 and fgcurcommand == 13 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:y(SCREEN_CENTER_Y);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			if beat >= 356 and fgcurcommand == 14 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						v:zoomx(3.5);
+						v:zoomy(3.5);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat > 64 and beat < 96 then
+				for i,v in pairs(prefix_plr) do
+					if v then
+						--v:x(SCREEN_CENTER_X+(math.sin(beat*math.pi/2)*auxvar:getaux()))
+					end
+				end
+			end
+
+			if beat >= 68 and beat < 96 then
+				local phase = math.mod(prefix_phase,16) + 1;
+				if phase == 1 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse',2)
+				elseif phase == 2 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -250% Split,*10000 -250% Cross,*10000 -250% Alternate',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -500% Reverse,*10000 250% Split,*10000 250% Cross,*10000 250% Alternate',2);
+				elseif phase == 3 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -500% Split',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 -500% Reverse,*10000 500% Split',2);
+				elseif phase == 4 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -250% Split,*10000 250% Cross,*10000 -250% Alternate',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 -500% Reverse,*10000 -250% Split,*10000 250% Cross,*10000 -250% Alternate',2);
+				elseif phase == 5 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse',1)
+				elseif phase == 6 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -250% Split,*10000 250% Cross,*10000 -250% Alternate',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 -500% Reverse,*10000 -250% Split,*10000 250% Cross,*10000 -250% Alternate',2);
+				elseif phase == 7 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -500% Split',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 -500% Reverse,*10000 500% Split',2);
+				elseif phase == 8 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -250% Split,*10000 -250% Cross,*10000 -250% Alternate',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -500% Reverse,*10000 250% Split,*10000 250% Cross,*10000 250% Alternate',2);
+				elseif phase == 9 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse',2)
+				elseif phase == 10 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 -500% Reverse,*10000 -250% Split,*10000 250% Cross,*10000 -250% Alternate',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -250% Split,*10000 250% Cross,*10000 -250% Alternate',2);
+				elseif phase == 11 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 -500% Reverse,*10000 500% Split',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -500% Split',2);
+				elseif phase == 12 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -500% Reverse,*10000 250% Split,*10000 250% Cross,*10000 250% Alternate',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -250% Split,*10000 -250% Cross,*10000 -250% Alternate',2);
+				elseif phase == 13 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse',1)
+				elseif phase == 14 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -500% Reverse,*10000 250% Split,*10000 250% Cross,*10000 250% Alternate',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -250% Split,*10000 -250% Cross,*10000 -250% Alternate',2);
+				elseif phase == 15 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 -500% Reverse,*10000 500% Split',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -500% Split',2);
+				else
+					GAMESTATE:ApplyGameCommand('mod,*10000 -500% Reverse,*10000 -250% Split,*10000 250% Cross,*10000 -250% Alternate',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Reverse,*10000 -250% Split,*10000 250% Cross,*10000 -250% Alternate',2);
+				end
+				
+				if GAMESTATE:GetSongBeat()<=640 then
+					SCREENMAN:GetTopScreen():effectmagnitude(0,10,0);
+				else
+					SCREENMAN:GetTopScreen():stopeffect();
+				end
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (0.012 - 0.181) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		DoubleSnareMessageCommand="%function()
+			local screen = SCREENMAN:GetTopScreen();
+			screen:linear(240/195/16);
+			screen:addx(-SCREEN_CENTER_X*3);
+			screen:zoomx(4);
+			screen:sleep(240/195/16);
+			screen:linear(240/195/16);
+			screen:addx(SCREEN_CENTER_X*3);
+			screen:zoomx(1);
+		end"
+		WuuuuubMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:linear(240/195/16*6);
+					v:skewx(2*multi);
+					v:bounceend(240/145/16*2);
+					v:skewx(0);
+				end
+			end
+		end"
+		Wuuuuub2MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:linear(240/195/16*2);
+					v:skewx(-1*multi);
+					v:linear(240/195/16*4);
+					v:skewx(2*multi);
+					v:bounceend(240/145/16*2);
+					v:skewx(0);
+				end
+			end
+		end"
+		Wuuuuub3MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:linear(240/195/16*4);
+					v:skewx(-2*multi);
+					v:linear(240/195/16*2);
+					v:skewx(2*multi);
+					v:bounceend(240/145/16*2);
+					v:skewx(0);
+				end
+			end
+		end"
+		Wuuuuub4MessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:linear(240/195/16*2);
+					v:skewx(2*multi);
+					v:linear(240/195/16*2);
+					v:skewx(-2*multi);
+					v:linear(240/195/16*2);
+					v:skewx(2*multi);
+					v:bounceend(240/145/16*2);
+					v:skewx(0);
+				end
+			end
+		end"
+		IncrementPhaseMessageCommand="%function() prefix_phase = prefix_phase + 1; end"
+		IncrementPhase2MessageCommand="%function() prefix_phase = prefix_phase + 2; end"
+	/>
+	
+</children></ActorFrame>

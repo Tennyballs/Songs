@@ -1,0 +1,760 @@
+<ActorFrame><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,115.343"
+	/>
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+				fgcurcommand = 1;
+				checked = false;
+				prefix_time = 0;
+				prefix_inc = 0;
+				prefix_randx = 0;
+				prefix_randy = 0;
+				prefix_angle = 0;
+				prefix_screenside = 0;
+				
+				prefix_curmessage = 1;
+				
+				
+				prefix_messages = {
+					{12.680,'SqueezeInLeft'},
+					{13.299,'SqueezeInLeft'},
+					{13.917,'SqueezeInLeft'},
+					{14.536,'SqueezeInLeft'},
+					{15.154,'SqueezeInLeft'},
+					{15.773,'SqueezeInLeft'},
+					{16.391,'SqueezeInLeft'},
+					{17.010,'SqueezeInLeft'},
+					
+					{240/194*4+12.680,'SqueezeInRight'},
+					{240/194*4+13.299,'SqueezeInRight'},
+					{240/194*4+13.917,'SqueezeInRight'},
+					{240/194*4+14.536,'SqueezeInRight'},
+					{240/194*4+15.154,'SqueezeInRight'},
+					{240/194*4+15.773,'SqueezeInRight'},
+					{240/194*4+16.391,'SqueezeInRight'},
+					{240/194*4+17.010,'SqueezeInRight'},
+					
+					{240/194*8+12.680,'RandomSqueeze'},
+					{240/194*8+13.299,'RandomSqueeze'},
+					{240/194*8+13.917,'RandomSqueeze'},
+					{240/194*8+14.536,'RandomSqueeze'},
+					{240/194*8+15.154,'RandomSqueeze'},
+					{240/194*8+15.773,'RandomSqueeze'},
+					{240/194*8+16.391,'RandomSqueeze'},
+					{240/194*8+17.010,'RandomSqueeze'},
+					
+					{52.268,'ScreenMove'},
+					{52.500,'ScreenMove'},
+					{52.732,'ScreenMove'},
+					{52.964,'ScreenMove'},
+					
+					{54.742,'ScreenMove'},
+					{54.974,'ScreenMove'},
+					{55.206,'ScreenMove'},
+					{55.438,'ScreenMove'},
+					
+					{56.752,'ScreenMove'},
+					{57.062,'ScreenReset'},
+					
+					{57.216,'ScreenMove'},
+					{57.448,'ScreenMove'},
+					{57.680,'ScreenMove'},
+					{57.912,'ScreenMove'},
+					
+					{58.144,'InvertVibBounce'},
+					
+					{58.453,'ScreenMove'},
+					{58.685,'ScreenMove'},
+					{58.917,'ScreenMove'},
+					{59.149,'ScreenMove'},
+					
+					{59.381,'InvertVibBounce'},
+					
+					{59.690,'ScreenMove'},
+					{59.922,'ScreenMove'},
+					
+					{60.309,'ScreenMove'},
+					{60.541,'ScreenMove'},
+					
+					{61.546,'ScreenMove'},
+					{61.778,'ScreenMove'},
+					{62.010,'ScreenReset'},
+					{62.165,'ScreenBack'},
+					
+					{62.165,'BuildUp'},
+					
+					{94.330,'LastVib'},
+					
+					{99.278,'ScreenMove'},
+					{99.510,'ScreenMove'},
+					{99.742,'ScreenMove'},
+					{99.974,'ScreenMove'},
+					{100.206,'ScreenMove'},
+					{100.438,'ScreenMove'},
+					{100.670,'ScreenMove'},
+					{100.902,'ScreenMove'},
+					{101.134,'ScreenMove'},
+					{101.366,'ScreenMove'},
+					{101.598,'ScreenMove'},
+					{101.752,'ScreenMove'},
+					{102.371,'ScreenMove'},
+					{102.989,'ScreenMove'},
+					{103.299,'ScreenMove'},
+					{103.608,'ScreenMove'},
+					{103.763,'ScreenMove'},
+					{103.917,'ScreenReset'},
+					{104.072,'ScreenBack'},
+					
+					{104.227,'BuildUpKinda'},
+					
+				};
+				
+				
+				prefix_mods = {
+				
+				{0,200,'2x,-999999% Cover,*10000 No Beat','end'},
+				
+				{0,11.443,'*10000 Centered','end'},
+				
+				{1.546,240/194/16,'*6.4667 50% Flip,*32.3334 -250% Mini','len'},
+				{1.546+240/194/16,240/194/2-240/194/16,'*0.9239 No Flip,*4.62 No Mini','len'},
+				
+				{2.783,240/194/16,'*6.4667 50% Flip,*32.3334 -250% Mini','len'},
+				{2.783+240/194/16,240/194/2-240/194/16,'*0.9239 No Flip,*4.62 No Mini','len'},
+				
+				{4.020,240/194/16,'*6.4667 50% Flip,*32.3334 -250% Mini','len'},
+				{4.020+240/194/16,240/194/2-240/194/16,'*0.9239 No Flip,*4.62 No Mini','len'},
+				
+				{6.495,240/194/16,'*6.4667 50% Flip,*32.3334 -250% Mini','len'},
+				{6.495+240/194/16,240/194/2-240/194/16,'*0.9239 No Flip,*4.62 No Mini','len'},
+				
+				{8.969,240/194/16,'*6.4667 50% Flip,*32.3334 -250% Mini','len'},
+				{8.969+240/194/16,240/194/2-240/194/16,'*0.9239 No Flip,*4.62 No Mini','len'},
+				
+				{11.443,240/194,'*1.6167 No Centered,Stealth,Dark','len'},
+				
+				{12.680,240/194/4,'*10000 No Stealth,*10000 No Dark','len'},
+				
+				{32.165,240/194/8,'*64.6667 1000% Bumpy,*64.6667 1000% Tornado','len'},
+				{32.165+240/194/8,240/194/4,'*64.6667 No Bumpy,*64.6667 No Tornado','len'},
+				
+				{32.474,49.794,'Blind','end'},
+				
+				{32.474,240/194,'*3.2334 Flip','len'},
+				
+				{32.474+240/194,240/194/2,'*3.2334 No Flip,*3.2334 Invert','len'},
+				{32.474+240/194/2*3,240/194/2,'*3.2334 No Invert','len'},
+				{32.474+240/194/2*4,240/194/2,'*3.2334 Invert','len'},
+				{32.474+240/194/2*5,240/194/2,'*3.2334 Flip,*6.4667 -100% Invert','len'},
+				{32.474+240/194/2*6,240/194/2,'*3.2334 Flip,*3.2334 No Invert','len'},
+				{32.474+240/194/2*7,240/194/2,'*3.2334 No Flip','len'},
+				
+				{37.422,240/194/2,'*3.2334 Invert','len'},
+				{37.422+240/194/2,240/194/4,'*3.2334 Flip,*3.2334 No Invert','len'},
+				{37.422+240/194/4*3,240/194/4,'*3.2334 No Flip','len'},
+				{37.422+240/194,240/194/2,'*3.2334 Flip,*3.2334 -100% Invert','len'},
+				{37.422+240/194/2*3,240/194/2,'*3.2334 No Flip,*6.4667 100% Invert','len'},
+				{37.422+240/194/2*4,240/194,'*3.2334 No Invert','len'},
+				{37.422+240/194/2*6,240/194/2,'*3.2334 Flip','len'},
+				{37.422+240/194/2*7,240/194/2,'*3.2334 No Flip','len'},
+				
+				{42.371,240/194,'*3.2334 Invert','len',1},
+				{42.371+240/194/2*2,240/194/2,'*3.2334 No Flip,*3.2334 No Invert','len',1},
+				{42.371+240/194/2*3,240/194/2,'*3.2334 Flip','len',1},
+				{42.371+240/194/2*4,240/194,'*3.2334 No Flip,*3.2334 No Invert','len',1},
+				{42.371+240/194/2*6,240/194,'*3.2334 Flip,*3.2334 -100% Invert','len',1},
+				{42.371+240/194/2*8,240/194,'*3.2334 No Flip,*3.2334 No Invert','len',1},
+				{42.371+240/194/2*10,240/194/2,'*3.2334 Invert','len',1},
+				{42.371+240/194/2*11,240/194/2,'*3.2334 No Flip,*3.2334 No Invert','len',1},
+				
+				{42.371+240/194/2*2,240/194/2,'*3.2334 Flip,*3.2334 -100% Invert','len',2},
+				{42.371+240/194/2*3,240/194/2,'*3.2334 No Flip,*3.2334 No Invert','len',2},
+				{42.371+240/194/2*4,240/194,'*3.2334 Invert','len',2},
+				{42.371+240/194/2*6,240/194,'*3.2334 No Flip,*3.2334 No Invert','len',2},
+				{42.371+240/194/2*8,240/194,'*3.2334 Flip','len',2},
+				{42.371+240/194/2*10,240/194/2,'*3.2334 No Flip,*3.2334 No Invert','len',2},
+				{42.371+240/194/2*11,240/194/2,'*3.2334 Flip,*3.2334 -100% Invert','len',2},
+				{42.371+240/194/2*12,240/194,'*10000 No Flip,*10000 No Invert','len',2},
+				
+				{49.794,240/194/16,'*38.8 300% Drunk,*38.8 300% Tipsy','len'},
+				{49.794+240/194/16,240/194/16,'*38.8 No Drunk,*38.8 No Tipsy','len'},
+				
+				{49.794+240/194/16*3,240/194/16,'*38.8 -300% Drunk,*38.8 -300% Tipsy','len'},
+				{49.794+240/194/16*4,240/194/16,'*38.8 No Drunk,*38.8 No Tipsy','len'},
+				
+				{49.794+240/194/16*6,240/194/16,'*38.8 300% Drunk,*38.8 300% Tipsy','len'},
+				{49.794+240/194/16*7,240/194/16,'*38.8 No Drunk,*38.8 No Tipsy','len'},
+				
+				{49.794+240/194/16*9,240/194/16,'*38.8 -300% Drunk,*38.8 -300% Tipsy','len'},
+				{49.794+240/194/16*10,240/194/16,'*38.8 No Drunk,*38.8 No Tipsy','len'},
+				
+				{49.794+240/194/16*12,240/194/16,'*38.8 300% Drunk,*38.8 300% Tipsy','len'},
+				{49.794+240/194/16*13,240/194/16,'*38.8 No Drunk,*38.8 No Tipsy','len'},
+				{49.794+240/194/16*14,240/194/16,'*38.8 -300% Drunk,*38.8 -300% Tipsy','len'},
+				{49.794+240/194/16*15,240/194/8,'*38.8 No Drunk,*38.8 No Tipsy','len'},
+				
+				{51.031,240/194/16,'*38.8 300% Tipsy','len'},
+				{51.031+240/194/16,240/194/16,'*77.6 -300% Tipsy','len'},
+				{51.031+240/194/16*2,240/194/16,'*77.6 300% Tipsy','len'},
+				{51.031+240/194/16*3,240/194/16,'*77.6 -300% Tipsy','len'},
+				{51.031+240/194/16*4,240/194/16,'*77.6 300% Tipsy','len'},
+				{51.031+240/194/16*5,240/194/16,'*77.6 -300% Tipsy','len'},
+				{51.031+240/194/16*6,240/194/16,'*77.6 300% Tipsy','len'},
+				{51.031+240/194/16*7,240/194/16,'*77.6 -300% Tipsy','len'},
+				{51.031+240/194/16*8,240/194/16,'*77.6 300% Tipsy','len'},
+				{51.031+240/194/16*9,240/194/16,'*77.6 -300% Tipsy','len'},
+				{51.031+240/194/16*10,240/194/16,'*77.6 300% Tipsy','len'},
+				{51.031+240/194/16*11,240/194/16,'*77.6 -300% Tipsy','len'},
+				{51.031+240/194/16*12,240/194/16,'*77.6 300% Tipsy','len'},
+				{51.031+240/194/16*13,240/194/16,'*77.6 -300% Tipsy','len'},
+				{51.031+240/194/16*14,240/194/16,'*77.6 300% Tipsy','len'},
+				{51.031+240/194/16*15,240/194/8,'*38.8 No Tipsy','len'},
+				
+				{51.031,61.546,'1.5x','end'},
+				
+				{62.165,240/194*7,'*0.1734 150% Mini,*0.1734 -150% Flip,*0.404167 200% Wave','len'},
+				{70.824,240/194/2,'*2.425 No Mini,*2.425 No Flip,*3.2334 No Wave','len'},
+				
+				{71.443,240/194/2,'*12.9334 Dark,*6.4667 50% Stealth,*2 0x','len'},
+				{71.443+240/194/4,240/194/4,'*6.4667 Stealth','len'},
+				
+				{72.062,240/194/4,'*10000 No Stealth,*10000 No Dark','len'},
+				
+				{72.062,240/194*16,'*10000 0.7x,*10000 100% Mini','len'},
+				
+				{92.165,93.093,'*10000 300% Centered','end'},
+				{93.093,240/194,'*3.2334 No Centered','len'},
+				{92.165,94.020,'Blind','end'},
+				
+				{93.093,240/194/16,'*38.8 300% Drunk','len'},
+				{93.093+240/194/16,240/194/16,'*77.6 -300% Drunk','len'},
+				{93.093+240/194/16*2,240/194/16,'*77.6 300% Drunk','len'},
+				{93.093+240/194/16*3,240/194/16,'*77.6 -300% Drunk','len'},
+				{93.093+240/194/16*4,240/194/16,'*77.6 300% Drunk','len'},
+				{93.093+240/194/16*5,240/194/16,'*77.6 -300% Drunk','len'},
+				{93.093+240/194/16*6,240/194/16,'*77.6 300% Drunk','len'},
+				{93.093+240/194/16*7,240/194/16,'*77.6 -300% Drunk','len'},
+				{93.093+240/194/16*8,240/194/16,'*77.6 300% Drunk','len'},
+				{93.093+240/194/16*9,240/194/16,'*77.6 -300% Drunk','len'},
+				{93.093+240/194/16*10,240/194/16,'*77.6 300% Drunk','len'},
+				{93.093+240/194/16*11,240/194/8,'*38.8 No Drunk','len'},
+				
+				{94.020,240/194/4,'*3.75 Dark,*3.75 Stealth','len'},
+				
+				{94.330,240/194/4,'*10000 No Stealth,*10000 No Dark','len'},
+				
+				{93.093,114.123,'1.5x,*10000 No Mini','end'},
+				
+				{104.227,240/194*5.5,'*0.2205 150% Mini,*0.2205 -150% Flip,*0.294 200% Wave','len'},
+				{111.031,240/194/2,'*2.425 No Mini,*2.425 No Flip,*3.2334 No Wave','len'},
+				
+				{114.123,240/194/16*3,'*4.3112 Centered,*12.9334 300% Flip','len'},
+				{114.355,240/194*2,'*4.3112 -1000% Centered,*12.9334 -300% Flip,*43.1112 1000% Tornado,*43.1112 1000% Bumpy','len'},
+				
+				{53.505,240/194/8,'*12.9334 100.01% Reverse','len'},
+				{53.505+240/194/8,240/194/8,'*12.9334 No Reverse','len'},
+				{53.505+240/194/8*2,240/194/16*3,'*8.6223 100.01% Reverse','len'},
+				{53.505+240/194/8*3.5,240/194/16*3,'*8.6223 No Reverse','len'},
+				{53.505+240/194/8*5,240/194/8,'*12.9334 100.01% Reverse','len'},
+				{53.505+240/194/8*6,240/194/4,'*12.9334 No Reverse','len'},
+				
+				{55.979,240/194/8,'*12.9334 100.01% Reverse','len'},
+				{55.979+240/194/8,240/194/8,'*12.9334 No Reverse','len'},
+				{55.979+240/194/8*2,240/194/16*3,'*8.6223 100.01% Reverse','len'},
+				{55.979+240/194/8*3.5,240/194/16*3,'*8.6223 No Reverse','len'},
+				
+				{58.453,240/194/8,'*10000 No Invert','len'},
+				{59.690,240/194/8,'*10000 No Invert','len'},
+				
+				}
+				
+				
+				prefix_plr = {};
+				
+				self:queuecommand('Update');
+				
+				
+			end"
+		
+		UpdateCommand="%function(self)
+		
+			local beat = GAMESTATE:GetSongBeat();
+			
+			-----------------------
+			-- Player mod resets --
+			-----------------------
+			GAMESTATE:ApplyGameCommand('mod,clearall')
+			prefix_inc = prefix_inc + 1;
+			
+			--------------------------------------------------------------------------------------------
+			-- Mod reader code originally coded by Taronuke, remade to support end times and lengths. --
+			--------------------------------------------------------------------------------------------
+			for i,v in pairs(prefix_mods) do
+				if prefix_time >=v[1] then
+					if (v[4] == 'len' and prefix_time <=v[1]+v[2]) or (v[4] == 'end' and prefix_time <=v[2]) then
+						if table.getn(v) == 5 then
+							GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+						else
+							GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+						end
+					end
+				end
+			end
+			
+			if beat >= 0 and not checked then
+				
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(prefix_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				checked = true;
+				
+				SCREENMAN:GetTopScreen():GetChild('Overlay'):hidden(1);
+				SCREENMAN:GetTopScreen():GetChild('Underlay'):hidden(1);
+				for i,v in pairs(prefix_plr) do
+					if v then
+						SCREENMAN:GetTopScreen():GetChild('ScoreP'..i):hidden(1);
+						SCREENMAN:GetTopScreen():GetChild('LifeP'..i):hidden(1);
+						v:zoomx(0);
+						v:zoomy(0);
+						v:rotationz(11520);
+					end
+				end
+			end
+			
+			if beat >= 1 and fgcurcommand == 1 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:accelerate(240/194/4*3);
+						v:zoomx(1);
+						v:zoomy(1);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 4 and fgcurcommand == 2 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:decelerate(240/194*8);
+						v:rotationz(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 36 and fgcurcommand == 3 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:accelerate(240/194);
+						v:zoom(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 40 and fgcurcommand == 4 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:GetChild('Judgment'):x(160*multi);
+						v:GetChild('Combo'):x(160*multi);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 88 and fgcurcommand == 5 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:zoom(0);
+						v:x(SCREEN_CENTER_X);
+						v:y(SCREEN_CENTER_Y);
+						v:decelerate(240/194*2);
+						v:zoom(1);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 96 and fgcurcommand == 6 or beat >= 360 and fgcurcommand == 13 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:linear(240/194/32*3);
+						v:rotationz(15*multi);
+						v:sleep(240/194/32*3);
+						v:linear(240/194/32*3);
+						v:rotationz(30*multi);
+						v:sleep(240/194/32*3);
+						v:linear(240/194/32*3);
+						v:rotationz(45*multi);
+						v:sleep(240/194/32*3);
+						v:linear(240/194/32*3);
+						v:rotationz(60*multi);
+						v:sleep(240/194/32*3);
+						v:linear(240/194/16);
+						v:rotationz(30*multi);
+						v:sleep(240/194/16);
+						v:linear(240/194/16);
+						v:rotationz(0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 160 and fgcurcommand == 7 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:rotationy(0);
+						v:x(SCREEN_CENTER_X);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 164 and fgcurcommand == 8 then
+				SCREENMAN:GetTopScreen():linear(240/194);
+				SCREENMAN:GetTopScreen():zoom(0.5);
+				SCREENMAN:GetTopScreen():x(SCREEN_CENTER_X*0.5);
+				SCREENMAN:GetTopScreen():y(SCREEN_CENTER_Y*0.5);
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 232 and fgcurcommand == 9 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:x(SCREEN_CENTER_X);
+						v:y(SCREEN_CENTER_Y+320);
+						v:zoomx(1);
+						v:zoomy(5);
+						v:zoomz(0.01);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 298 and fgcurcommand == 10 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:x(SCREEN_CENTER_X);
+						v:y(SCREEN_CENTER_Y);
+						v:skewx(0);
+						v:zoom(1);
+						v:zoomz(1);
+						v:rotationx(0);
+						v:rotationz(0);
+						v:vibrate();
+						v:effectmagnitude(0,0,0);
+					end
+				end
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 304 and fgcurcommand == 11 then
+				SCREENMAN:GetTopScreen():accelerate(240/194*2);
+				SCREENMAN:GetTopScreen():zoom(0.75);
+				SCREENMAN:GetTopScreen():x(SCREEN_CENTER_X+(xross_const1*0.75*math.cos((-15+xross_const2)/180*math.pi)));
+				SCREENMAN:GetTopScreen():y(SCREEN_CENTER_Y+(xross_const1*0.75*math.sin((-15+xross_const2)/180*math.pi)));
+				SCREENMAN:GetTopScreen():rotationz(-15);
+				SCREENMAN:GetTopScreen():decelerate(240/194*2);
+				SCREENMAN:GetTopScreen():zoom(0.5);
+				SCREENMAN:GetTopScreen():x(SCREEN_CENTER_X+(xross_const1*0.5*math.cos((-30+xross_const2)/180*math.pi)));
+				SCREENMAN:GetTopScreen():y(SCREEN_CENTER_Y+(xross_const1*0.5*math.sin((-30+xross_const2)/180*math.pi)));
+				SCREENMAN:GetTopScreen():rotationz(-30);
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			if beat >= 320 and fgcurcommand == 12 then
+				SCREENMAN:GetTopScreen():vibrate();
+				SCREENMAN:GetTopScreen():effectmagnitude(0,0,0);
+				fgcurcommand = fgcurcommand + 1;
+			end
+			
+			-------------------------
+			-- BEAT SPECIFIC STUFF --
+			-------------------------
+			if beat >= 100 and beat < 103 then
+				GAMESTATE:ApplyGameCommand('mod,*10000 '..-math.cos(2*beat*math.pi)*50+50 ..'% Invert');
+			end
+			
+			if beat >= 104 and beat < 160 then
+				local degrees = math.mod(beat,2)*180;
+				local xmove = math.sin(beat*(math.pi/8))*160;
+				if math.mod(beat,2) >= 0.5 and math.mod(beat,2) < 1.5 then
+					GAMESTATE:ApplyGameCommand('mod,*10000 Stealth,*10000 Dark',1);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Stealth,*10000 No Dark',2);
+				else
+					GAMESTATE:ApplyGameCommand('mod,*10000 Stealth,*10000 Dark',2);
+					GAMESTATE:ApplyGameCommand('mod,*10000 No Stealth,*10000 No Dark',1);
+				end
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:zoom(1);
+						v:y(SCREEN_CENTER_Y);
+						v:x(SCREEN_CENTER_X+xmove);
+						if i == 1 then
+							v:rotationy(degrees);
+						else
+							v:rotationy(degrees+180);
+						end
+					end
+				end
+			end
+			
+			if beat >= 187 and beat < 188 or beat >= 191 and beat < 192 then
+				local multi = -1; if math.mod(prefix_inc,2) == 0 then multi = 1; end
+				GAMESTATE:ApplyGameCommand('mod,*10000 '..-auxvar:getaux()*multi..'% Invert');
+			end
+			
+			if beat >= 200 and beat < 230 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:vibrate();
+						v:effectmagnitude(auxvar:getaux(),auxvar:getaux(),0);
+					end
+				end
+			end
+			
+			if beat >= 232 and beat < 296 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					local beatmod = math.mod(beat,16)
+					if v then
+						if i == 1 then
+							if beatmod < 8 then
+								v:rotationx((8-beatmod)*22.5-90);
+								v:rotationz(beatmod*2);
+							else
+								v:rotationx(-90);
+								v:rotationz(0);
+							end
+						else
+							if beatmod >= 8 then
+								v:rotationx((8-(beatmod-8))*22.5-90);
+								v:rotationz((beatmod-8)*-2);
+							else
+								v:rotationx(-90);
+								v:rotationz(0);
+							end
+						end
+						v:vibrate();
+						v:effectmagnitude(20,20,0);
+					end
+				end
+			end
+			
+			if beat >= 264 and beat < 296 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					local damp = math.mod(beat,8);
+					if v then
+						v:skewx(math.sin(beat*math.pi)*1/damp);
+					end
+				end
+			end
+			
+			if beat >= 304 and beat < 320 then
+				SCREENMAN:GetTopScreen():vibrate();
+				SCREENMAN:GetTopScreen():effectmagnitude(auxvar:getaux(),auxvar:getaux(),0);
+			end
+			
+			if beat >= 336 and beat < 360 then
+				for i,v in pairs(prefix_plr) do
+					local multi = -1; if i == 2 then multi = 1; end
+					if v then
+						v:vibrate();
+						v:effectmagnitude(auxvar:getaux(),auxvar:getaux(),0);
+					end
+				end
+			end
+			
+			if beat >= 364 and beat < 368 then
+				GAMESTATE:ApplyGameCommand('mod,*10000 '..-math.cos(2*beat*math.pi)*50+50 ..'% Invert');
+			end
+			
+			--------------------------------------------------------------
+			-- Message reader to make specific values of the actor aux. --
+			--------------------------------------------------------------
+			if prefix_curmessage <= table.getn(prefix_messages) then
+				if prefix_time >= prefix_messages[prefix_curmessage][1] then
+					MESSAGEMAN:Broadcast(prefix_messages[prefix_curmessage][2]);
+					prefix_curmessage = prefix_curmessage + 1;
+				end
+			end
+			
+			self:queuecommand('Update2');
+			
+		end"
+
+
+		Update2Command="%function(self)
+		self:sleep(0.02);
+		self:queuecommand('Update');
+		end"
+
+	/>
+	
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); prefix_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') - (-0.297 - -0.300) + tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<0MATH Type="Quad"
+		InitCommand="%function()
+			xross_const1 = math.sqrt(math.pow(SCREEN_WIDTH/2,2)+math.pow(SCREEN_HEIGHT/2,2))
+			xross_const2 = 180+math.deg(math.atan(SCREEN_HEIGHT/SCREEN_WIDTH))
+		end"
+	/>
+	
+	<!-- Aux actor, VERY IMPORTANT -->
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		InvertVibBounceMessageCommand="finishtweening;aux,0;decelerate,240/194/8;aux,100;accelerate,240/194/8;aux,0"
+		BuildUpMessageCommand="finishtweening;aux,0;linear,240/194*7;aux,25;sleep,0;aux,0"
+		BuildUpKindaMessageCommand="finishtweening;aux,0;linear,240/194*5.5;aux,25;sleep,0;aux,0"
+		LastVibMessageCommand="finishtweening;aux,0;linear,240/194*4;aux,25"
+		SqueezeInLeftMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:x(SCREEN_CENTER_X-320);
+					v:y(SCREEN_CENTER_Y);
+					v:zoomx(0);
+					v:zoomy(2);
+					v:linear(240/194/8);
+					v:x(SCREEN_CENTER_X);
+					v:zoomx(1);
+					v:zoomy(1);
+					v:sleep(240/194/8);
+					v:linear(240/194/8);
+					v:x(SCREEN_CENTER_X+320);
+					v:zoomx(0);
+					v:zoomy(2);
+				end
+			end
+		end"
+		SqueezeInRightMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:x(SCREEN_CENTER_X+320);
+					v:y(SCREEN_CENTER_Y);
+					v:zoomx(0);
+					v:zoomy(2);
+					v:linear(240/194/8);
+					v:x(SCREEN_CENTER_X);
+					v:zoomx(1);
+					v:zoomy(1);
+					v:sleep(240/194/8);
+					v:linear(240/194/8);
+					v:x(SCREEN_CENTER_X-320);
+					v:zoomx(0);
+					v:zoomy(2);
+				end
+			end
+		end"
+		SqueezeInUpMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:x(SCREEN_CENTER_X);
+					v:y(SCREEN_CENTER_Y-240);
+					v:zoomx(2);
+					v:zoomy(0);
+					v:linear(240/194/8);
+					v:y(SCREEN_CENTER_Y);
+					v:zoomx(1);
+					v:zoomy(1);
+					v:sleep(240/194/8);
+					v:linear(240/194/8);
+					v:y(SCREEN_CENTER_Y+240);
+					v:zoomx(2);
+					v:zoomy(0);
+				end
+			end
+		end"
+		SqueezeInDownMessageCommand="%function()
+			for i,v in pairs(prefix_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					v:x(SCREEN_CENTER_X);
+					v:y(SCREEN_CENTER_Y+240);
+					v:zoomx(2);
+					v:zoomy(0);
+					v:linear(240/194/8);
+					v:y(SCREEN_CENTER_Y);
+					v:zoomx(1);
+					v:zoomy(1);
+					v:sleep(240/194/8);
+					v:linear(240/194/8);
+					v:y(SCREEN_CENTER_Y-240);
+					v:zoomx(2);
+					v:zoomy(0);
+				end
+			end
+		end"
+		RandomSqueezeMessageCommand="%function(self)
+			local rand = math.random(1,4);
+			if rand == 1 then
+				self:queuecommand('SqueezeInLeft');
+			elseif rand == 2 then
+				self:queuecommand('SqueezeInRight');
+			elseif rand == 3 then
+				self:queuecommand('SqueezeInUp');
+			else
+				self:queuecommand('SqueezeInDown');
+			end
+		end"
+		ScreenMoveMessageCommand="%function()
+			prefix_randx = math.random(SCREEN_CENTER_X-192,SCREEN_CENTER_X-64);
+			prefix_randy = math.random(SCREEN_CENTER_Y-120,SCREEN_CENTER_Y+120);
+			if math.mod(prefix_screenside,2) == 1 then prefix_randx = prefix_randx+2*(SCREEN_CENTER_X-prefix_randx); end
+			prefix_angle = (90/SCREEN_WIDTH)*prefix_randx-45;
+			SCREENMAN:GetTopScreen():spring(240/194/8);
+			SCREENMAN:GetTopScreen():x(prefix_randx+(xross_const1*0.5*math.cos((prefix_angle+xross_const2)/180*math.pi)));
+			SCREENMAN:GetTopScreen():y(prefix_randy+(xross_const1*0.5*math.sin((prefix_angle+xross_const2)/180*math.pi)));
+			SCREENMAN:GetTopScreen():rotationz(prefix_angle);
+			prefix_screenside = prefix_screenside + 1;
+		end"
+		ScreenResetMessageCommand="%function()
+			SCREENMAN:GetTopScreen():spring(240/194/8);
+			SCREENMAN:GetTopScreen():zoom(0.5);
+			SCREENMAN:GetTopScreen():x(SCREEN_CENTER_X*0.5);
+			SCREENMAN:GetTopScreen():y(SCREEN_CENTER_Y*0.5);
+			SCREENMAN:GetTopScreen():rotationz(0);
+		end"
+		ScreenBackMessageCommand="%function()
+			SCREENMAN:GetTopScreen():spring(240/194/8);
+			SCREENMAN:GetTopScreen():zoom(1);
+			SCREENMAN:GetTopScreen():x(0);
+			SCREENMAN:GetTopScreen():y(0);
+		end"
+		ScreenDownMessageCommand="%function()
+			SCREENMAN:GetTopScreen():linear(240/194/4);
+			SCREENMAN:GetTopScreen():zoom(1);
+			SCREENMAN:GetTopScreen():zoom(0.5);
+			SCREENMAN:GetTopScreen():x(SCREEN_CENTER_X*0.5);
+			SCREENMAN:GetTopScreen():y(SCREEN_CENTER_Y*0.5);
+		end"
+	/>
+	
+</children></ActorFrame>

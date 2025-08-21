@@ -1,0 +1,19 @@
+<ActorFrame> <children>
+	<Layer
+		File="texture"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;customtexturerect,0,0,2.25,2.25;texcoordvelocity,0,-3;zoomto,SCREEN_WIDTH*1.75,SCREEN_HEIGHT*1.75;blend,add;diffusealpha,0.75;linear,310;rotationz,18000"
+	/>
+	<Layer
+		File="texture"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;customtexturerect,0,0,3.75,3.75;texcoordvelocity,0,-3;zoomto,SCREEN_WIDTH*1.5,SCREEN_HEIGHT*1.5;blend,add;diffusealpha,0.75;linear,310;rotationz,18000"
+	/>
+	<Layer
+		File="blackscreen"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,1;sleep,1.188;accelerate,240/200*4;zoom,0;rotationz,30;"
+	/>
+	<Layer
+		File="background"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0.5;sleep,1.188;accelerate,240/200*4;zoom,0;rotationz,30;"
+	/>
+
+</children> </ActorFrame>
