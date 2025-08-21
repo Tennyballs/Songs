@@ -1,0 +1,49 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {0,36,'Firestopper',5,{1,.3,.5,1}},
+                {36,44,'(Freeform Jazz Music Stops)',6,{.7,.7,.7,1}},
+                {44,52,'Professional Courtesy',4,{.3,.6,1,1}},
+                {52,64,'Fly Away Now',5,{.45,.45,1,1}},
+                {64,72,'DYSCONTROLLED GALAXY',1,{.6,.3,1,1}},
+                {72,92,'Swop \'n\' drop',6,{.75,.15,1,1}},
+                {92,93,'Now Is A Dull TopScreen',4,{0,0,0,1}},
+                {98,102,'Warriors Foot Dive',4,{0,.5,1,1}},
+                {102,136,'Ayaslaughterer',7,{1,.8,.2,1}},
+                {136,152,'Blastix Riot Gear',6,{1,.5,0,1}},
+                {152,188,'12 Little Fragments of Timing Window',5,{.2,.2,.5,1}},
+                {188,196,'Yo that\'s sick',6,{.2,.4,1,1}},
+                {196,204,'This Clothes',5,{.3,.6,1,1}},
+                {204,216,'*Feels Sickness*',6,{.4,.8,1,1}},
+                {218,221,'The Haunted House Jump',10,{.1,.6,.8,1}},
+                {224,248,'Warriors Reboot',6,{0,1,.3,1}},
+                {256,272,'Warriors Threeboot',7,{1,0,.4,1}},
+                {272,284,'Seismic Activity',7,{.6,.2,1,1}},
+                {284,288,'Clouded Judgment',5,{.8,.35,1,1}},
+                {288,308,'Back The Fuck Away',4,{1,.5,1,1}},
+                {308,320,'The Sampling Paradise',6,{1,.3,.5,1}},
+                {320,344,'Blastix Riot Police',6,{1,.5,0,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

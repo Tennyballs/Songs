@@ -1,0 +1,3325 @@
+<Layer Type="ActorFrame" ><children>
+
+	<CODE Type="Quad" OnCommand="hidden,1"
+		InitCommand="%function(self) disc_aux = self end"
+	/>
+	<CODE Type="Quad" OnCommand="hidden,1;x,1;"
+		InitCommand="%function(self) med_pulser = self end"
+	/>
+	
+	<CODE Type="Quad" InitCommand="hidden,1;sleep,9E9" OnCommand="%function(self)
+	
+		prefix_songpath = SONGMAN:FindSong(GAMESTATE:GetCurrentSong():GetDisplayFullTitle()):GetSongDir();
+	
+		local function modulo(a, b)
+			return a - math.floor(a/b)*b;
+		end
+		
+		local function randomXD(t)
+			if t == 0 then return 0.5 else
+			return modulo(math.sin(t * 3229.3) * 43758.5453, 1) end
+		end
+		
+		function poly_npot(val)
+			local out = 2
+			while out < val do
+				out = out*2
+			end
+			return out
+		end
+	
+		disc_total_verts = 120
+		
+		local function modtable_compare(a,b) return a[1] < b[1] end
+		
+		local m,m2,me,l,e,str,mpf = mod_insert,mod_message,mod_ease,'len','end','',mpf_insert
+		
+		local spb = 60/173
+		
+		local function PrxA(pn)
+			return _G['Proxy'..pn..'A']
+		end
+		local function PrxB(pn)
+			return _G['Proxy'..pn..'B']
+		end
+		local function PrxC(pn)
+			return _G['Proxy'..pn..'C']
+		end
+		
+		
+		local function PrxE(pn)
+			return _G['Proxy'..pn..'E']
+		end
+		local function PrxF(pn)
+			return _G['Proxy'..pn..'F']
+		end
+		
+		
+		m2(0,function()
+			
+			for pn=3,4 do
+			
+				_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn)
+				
+				local a = Plr(pn)
+				if a then
+					local b = a:GetChild('Judgment')
+					if b then
+						b:hidden(1)
+					end
+					local b = a:GetChild('Combo')
+					if b then
+						b:hidden(1)
+					end
+					
+					local nd = a:GetNoteData()
+					
+					for i=table.getn(nd),1,-1 do
+					
+						if nd[i][1] > 576 and nd[i][1] < 615.5 then
+							table.remove(nd,i)
+						end
+						if nd[i][1] > 840 and nd[i][1] < 875.5 then
+							table.remove(nd,i)
+						end
+						if nd[i][1] > 615.5 and nd[i][1] < 640 and math.mod(nd[i][1],4) < 1.75 and pn == 4 then
+							table.remove(nd,i)
+						end
+						if nd[i][1] > 615.5 and nd[i][1] < 640 and math.mod(nd[i][1],4) > 1.75 and pn == 3 then
+							table.remove(nd,i)
+						end
+						if nd[i][1] >= 640 and nd[i][1] < 645.5 and pn == 4 then
+							table.remove(nd,i)
+						end
+						if nd[i][1] > 645.5 and nd[i][1] < 656 and pn == 3 then
+							table.remove(nd,i)
+						end
+						
+					end
+					
+					a:SetInputPlayer(pn-3)
+					
+					a:SetNoteDataFromLua(nd)
+					
+				end
+				
+			end
+			
+		end,true)
+		
+		m2(0.01,function()
+			MESSAGEMAN:Broadcast('GetProxy');
+		end,true)
+		
+		-----------------------------
+		-- Yin Bao Sprite Commands --
+		-----------------------------
+		
+		m2(0,function()
+			
+			if slumpo then
+			
+				yin_model_head:Load(prefix_songpath..'lua/Tarp/EXBao/private/memehead 2x1.png');
+				
+				yin_lotus1:Load(prefix_songpath..'lua/Tarp/EXBao/private/joy.png');
+				yin_lotus2:Load(prefix_songpath..'lua/Tarp/EXBao/private/fascinating.png');
+				yin_lotus3:Load(prefix_songpath..'lua/Tarp/EXBao/private/uuuuuu.png');
+				yin_lotus4:Load(prefix_songpath..'lua/Tarp/EXBao/private/yikes.png');
+				
+				for i=1,table.getn(yin_ass_mines) do
+					local a = yin_ass_mines[i]
+					if math.mod(i,2) == 0 then
+						a:Load(prefix_songpath..'lua/Tarp/EXBao/private/taki.png');
+					else
+						a:Load(prefix_songpath..'lua/Tarp/EXBao/private/cool.png');
+					end
+				end
+				
+				yin_pligma:hidden(0)
+				
+			end
+			
+		end,true)
+		
+		m2(4,function()
+		
+			Yin_DaiBG:basezoomx(.65)
+			Yin_DaiBG:basezoomy(.65)
+			Yin_DaiBG:x(SCREEN_CENTER_X);
+			Yin_DaiBG:y(SCREEN_CENTER_Y+70);
+			Yin_DaiBG:queuecommand('Spawn');
+			
+		end)
+		
+		m2(35,function()
+			
+			Yin_DaiBG:queuecommand('Cast');
+			
+		end)
+		
+		m2(42,function()
+			
+			Yin_DaiBG:queuecommand('Hide');
+			
+		end)
+		
+		m2(292,function(self)
+		
+			char_yin1:basezoomx(.7)
+			char_yin1:basezoomy(.7)
+			char_yin1:x(SCREEN_CENTER_X);
+			char_yin1:y(SCREEN_CENTER_Y);
+		
+			char_yin1:queuecommand('Invis');
+			char_yin1:queuecommand('FSPis');
+			
+			char_yin1:queuecommand('SpawnQ');
+			
+		end)
+		
+		m2(300,function(self)
+			char_yin1:queuecommand('Pised');
+		end)
+		
+		m2(307,function(self)
+			char_yin1:queuecommand('Flash');
+		end)
+		
+		m2(308,function(self)
+			char_yin1:queuecommand('Hide');
+		end)
+		
+		mpf(292,300,function(beat)
+			
+			yin_fsp:diffusealpha( 1*linear((beat-292)/8,0,1,1) )
+				
+			yin_fsp:zoom( 5 - 3*inQuart((beat-292)/8,0,1,1) )
+			
+			yin_fsp:GetShader():uniform1f( 'timer', beat)
+			yin_fsp:GetShader():uniform1f( 'glitch', .5-.5*inQuart((beat-292)/8,0,1,1) )
+			
+		end)
+		
+		m2(292,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxE(pn)
+				if a then
+					a:hidden(0)
+				end
+			end
+		end,true)
+		
+		m2(308,function()
+			
+			yin_throne:hidden(0)
+			yin_throne:z(-2000)
+			yin_throne:linear(15.5*60/174)
+			yin_throne:z(-1000)
+			
+			yin_thronebgcover:hidden(0)
+			yin_thronebgcover:diffusealpha(1)
+			yin_thronebgcover:linear(15.5*60/174)
+			yin_thronebgcover:diffusealpha(.5)
+			
+		end)
+		
+		m2(323.5,function()
+			
+			yin_throne:hidden(0)
+			
+			yin_thronebgcover:hidden(0)
+			yin_thronebgcover:diffusealpha(.5)
+			
+		end,true)
+		
+		m2(324.5,function()
+			
+			yin_throne:decelerate(22.5/175)
+			yin_throne:rotationz(20)
+			yin_throne:accelerate(22.5/175)
+			yin_throne:rotationz(0)
+			yin_throne:decelerate(22.5/175)
+			yin_throne:rotationz(-20)
+			yin_throne:accelerate(22.5/175)
+			yin_throne:rotationz(0)
+			
+		end)
+		
+		mpf(326,350,function(beat)
+		
+			yin_throne:y( sh/2 - 20*math.abs(math.sin(beat*math.pi)) )
+			local rz = 0
+			
+			if beat > 340 and beat < 344 then
+				rz = -180*inOutExpo(beat-340,0,1,4)
+			elseif beat >= 344 then
+				rz = -180
+			end
+			
+			yin_throne:rotationz(rz)
+			
+		end)
+		
+		m2(350,function()
+			
+			yin_throne:decelerate(60/174)
+			yin_throne:addz(200)
+			yin_throne:sleep(60/174)
+			yin_throne:decelerate(60/174)
+			yin_throne:addz(200)
+			yin_throne:sleep(60/174)
+			yin_throne:decelerate(60/174)
+			yin_throne:addz(200)
+			yin_throne:sleep(60/174)
+			yin_throne:tween(120/174,'inOutCubic(%f,0,1,1)')
+			yin_throne:addz(-600)
+			yin_throne:rotationz(0)
+			
+		end)
+		
+		function math.clamp(val,min,max)
+			if val > max then return max end
+			if val < min then return min end
+			return val
+		end
+		
+		mpf(358,377.5,function(beat)
+		
+			yin_throne:y( sh/2 - 30*math.abs(math.sin(beat*math.pi)) )
+			
+			local rot = 15*math.cos( math.pi*-0.25 + beat*math.pi*0.5)
+			local rz = math.clamp(rot,-10,10)
+			
+			yin_throne:rotationz(rz)
+			
+		end)
+		
+		m2(377.5,function()
+			
+			yin_throne:accelerate(30/174)
+			yin_throne:rotationz(0)
+			
+		end)
+		
+		m2(378,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxE(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxF(pn)
+				if a then
+					a:hidden(0)
+				end
+			end
+		end,true)
+		
+		m2(378,function()
+			
+			yin_throne:hidden(0)
+			
+			yin_thronebgcover:linear(120/174)
+			yin_thronebgcover:diffusealpha(1)
+			yin_thronebgcover:sleep(60/174)
+			yin_thronebgcover:linear(120/174)
+			yin_thronebgcover:diffusealpha(0.3)
+			
+			paint_aft:hidden(0)
+			
+		end)
+		
+		m2(380,function()
+			
+			yin_tapestry:hidden(0)
+			
+			h_painting:GetShader():uniformTexture( 'sampler1', h_noise1:GetTexture() )
+			h_painting:GetShader():uniformTexture( 'sampler2', h_noise2:GetTexture() )
+			
+			h_painting:hidden(0)
+			h_painting:diffusealpha(0)
+			h_painting:sleep(60/174)
+			h_painting:linear(120/174)
+			h_painting:diffusealpha(1)
+			
+		end)
+		
+		m2(406,function()
+			
+			--[[
+			yin_thronebgcover:linear(60/174)
+			yin_thronebgcover:diffusealpha(1)
+			yin_thronebgcover:sleep(60/174)
+			yin_thronebgcover:linear(60/174)
+			yin_thronebgcover:diffusealpha(0.5)
+			]]
+			
+			MESSAGEMAN:Broadcast('TapFade')
+			
+			h_painting:sleep(240/174)
+			h_painting:linear(240/174)
+			h_painting:diffusealpha(0)
+			
+		end)
+		
+		m2(418,function()
+			
+			yin_tapestry:hidden(1)
+			paint_aft:hidden(1)
+			
+		end,true)
+		
+		m2(410.5,function()
+			
+			yin_throne:rotationz(0)
+			yin_throne:tween(90/174,'inOutExpo(%f,0,1,1)')
+			yin_throne:rotationz(-180)
+			yin_throne:sleep(0)
+			yin_throne:rotationz(-180)
+			yin_throne:tween(90/174,'inOutExpo(%f,0,1,1)')
+			yin_throne:rotationz(0)
+			
+		end)
+		
+		m2(416,function()
+			
+			yin_throne:tween(120/174,'inExpo(%f,0,1,1)')
+			yin_throne:addz(1500)
+			yin_throne:rotationz(-90)
+			
+		end)
+		
+		mpf(418,446,function(beat)
+		
+			local b2 = (beat-418)/2
+			
+			local pingpong = 1-(b2-math.floor(b2))
+			if math.mod(b2,2)>1 then
+				pingpong = 1-pingpong
+			end
+		
+			local b2 = (beat-416)/4
+			
+			local pingpong2 = 1-(b2-math.floor(b2))
+			if math.mod(b2,2)>1 then
+				pingpong2 = 1-pingpong2
+			end
+			
+			yin_throne:z( -1000 + 1500*inExpo(pingpong,0,1,1) )
+			
+			--Trace(pingpong2)
+			
+			if beat < 444 then
+				yin_throne:rotationz(180*inOutExpo(pingpong2,0,1,1))
+			else
+				yin_throne:rotationz(0)
+			end
+			
+		end)
+		
+		m2(450,function()
+			
+			yin_throne:tween(280/174,'outExpo(%f,0,1,1)')
+			yin_throne:z(-1000)
+			yin_throne:rotationz(0)
+			
+		end)
+		
+		m2(446,function(self)
+		
+			char_yin1:basezoomx(.65)
+			char_yin1:basezoomy(.65)
+			char_yin1:x(SCREEN_CENTER_X);
+			char_yin1:y(SCREEN_CENTER_Y);
+		
+			char_yin1:queuecommand('Idle');
+			
+			char_yin1:queuecommand('Spawn');
+			
+			yin_throne:z( -1000 + 1500 )
+			yin_throne:rotationz(0)
+			
+		end)
+		
+		m2(449,function()
+			char_yin1:queuecommand('Cast');	
+		end)
+		
+		m2(455,function(self)
+			char_yin1:queuecommand('Hide');
+		end)
+		
+		m2(506,function()
+			
+			yin_throne:rotationz(0)
+			yin_throne:tween(240/174,'inOutExpo(%f,0,1,1)')
+			yin_throne:rotationz(-180)
+			yin_throne:sleep(0)
+			yin_throne:rotationz(180)
+			yin_throne:tween(240/174,'inOutExpo(%f,0,1,1)')
+			yin_throne:rotationz(0)
+			
+		end)
+		mpf(514,542,function(beat)
+		
+			local mu = 0
+			if beat > 516 and beat < 542 then mu = 1+linear(beat-516,0,1,(542-516)) end
+		
+			local b2 = (beat-512)/2
+			local pingpong = 1-(b2-math.floor(b2))
+			if math.mod(b2,2)>1 then
+				pingpong = 1-pingpong
+			end
+			
+			b2 = (beat-514)/4
+			local pingpong2 = (b2-math.floor(b2))
+			if math.mod(b2,2)>1 then
+				pingpong2 = 1-pingpong2
+			end
+			
+			yin_throne:z( -1000 + 1500*inExpo(pingpong,0,1,1) )
+			yin_throne:rotationz( mu*(-45 + 90*inOutExpo(pingpong2,0,1,1)) )
+			
+		end)
+		
+		m2(542,function()
+			
+			yin_throne:tween(120/174,'inExpo(%f,0,1,1)')
+			yin_throne:rotationz(0)
+			yin_throne:y(0)
+			yin_throne:z(-1000)
+			
+		end)
+		
+		m2(544,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxE(pn)
+				if a then
+					a:hidden(0)
+				end
+				local a = PrxB(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxF(pn)
+				if a then
+					a:hidden(1)
+				end
+			end
+			
+			yin_throne:hidden(1)
+			
+			yin_throne2:hidden(0)
+			
+			yin_thronebgcover:hidden(0)
+			yin_thronebgcover:diffuse(1,0,1,1)
+			
+			yin_thronebgcover2:hidden(0)
+			yin_thronebgcover2:diffusealpha(0.5)
+			
+		end,true)
+		
+		m2(544,function() MESSAGEMAN:Broadcast('FuckWaterOn') end)
+		m2(572,function() MESSAGEMAN:Broadcast('FuckWaterOff') end)
+		
+		m2(576,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxE(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxF(pn)
+				if a then
+					a:hidden(0)
+				end
+			end
+			yin_thronebgcover:hidden(1)
+		end,true)
+		
+		m2(576,function()
+			
+			yin_throne2:tween(120/174,'outCubic(%f,0,1,1)')
+			yin_throne2:y(sh/2)
+			yin_throne2:tween(240/174,'inCubic(%f,0,1,1)')
+			yin_throne2:y(-sh*2)
+			yin_throne2:queuecommand('Hide')
+			
+		end)
+		
+		m2(584,function()
+		
+			yin_throne2:hidden(1)
+			
+		end,true)
+		
+		m2(456,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxE(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxF(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxB(pn)
+				if a then
+					a:hidden(0)
+				end
+			end
+		end,true)
+		
+		m2(584,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxE(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxF(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxB(pn)
+				if a then
+					a:hidden(0)
+				end
+			end
+			
+			for i = 1, table.getn(h_afts) do h_afts[i]:hidden(1) end
+			
+		end,true)
+		
+		----------------
+		-- HalStar BG --
+		----------------
+		
+		mpf(452,456,function(beat)
+			
+			local t = 2.5*inQuad(beat-452,0,1,4)
+			
+			h_fisheye:hidden(0)
+			h_fisheye:GetShader():uniform1f('amt', t)
+			
+		end)
+		
+		m2(456,function()
+		
+			h_fisheye:hidden(1)
+		
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				t_starbg:hidden(0)
+				t_starbg_sprite:hidden(0)
+				med_aft_coverquad:hidden(0)
+			end
+		end,true)
+		
+		m2(495,function()
+			t_starbg_sprite:linear(180/174)
+			t_starbg_sprite:diffusealpha(0)
+		end)
+		
+		m2(498,function()
+			for pn=1,2 do
+				t_starbg:hidden(1)
+				t_starbg_sprite:hidden(1)
+				med_aft_coverquad:hidden(1)
+			end
+		end,true)
+		
+		m(584,908,'2x',e)
+		
+		-----------------------------
+		-- Temple entry (b584-652) --
+		-----------------------------
+		
+		--DAIKYI: mods for the spiral twist are here.
+		--Effect is running on P1 and P2 only. Canal stuff is P3/4
+		
+		me(583,1,0,400*0.6,'centered2',l,inQuad,1)
+		me(583,1,0,400*0.6,'centered2',l,inQuad,2)
+		me(584,4,200,200,'tiny',l,outCubic,1,2)
+		me(584,4,0,200,'tiny',l,outCubic,2,4)
+		me(584,5,0,100,'stealth',l,outCubic,2,3)
+		me(584,4,100,100,'stealthgr',l,outCubic,2,3)
+		me(584,4,100,50,'stealthgg',l,outCubic,2,3)
+		me(584,4,100,25,'stealthgb',l,outCubic,2,3)
+		m(584,616,'*-1 -100 holdgirth,*-1 200 tiny','end',1)
+		m(584,616,'*-1 -100 holdgirth,*-1 200 tiny','end',2)
+		
+		
+		
+		for i=588,611,8 do
+			me(i-2,2,-150,0,'longholds',l,outInQuad,1)
+			me(i-2,2,200,-200,'tiny',l,outCubic,1)
+			me(i,4,-200,200,'tiny',l,outCubic,1)
+			me(i+1,4,0,100,'stealth',l,outCubic,1,3)
+			me(i+1,4,100,100,'stealthgr',l,outCubic,1,3)
+			me(i+1,4,100,50,'stealthgg',l,outCubic,1,3)
+			me(i+1,4,100,25,'stealthgb',l,outCubic,1,3)
+			me(i+1,4,-200,200,'tiny',l,outCubic,1,3)
+			me(i+2,2,-150,0,'longholds',l,outInQuad,2)
+			me(i+2,2,200,-200,'tiny',l,outCubic,2)
+			me(i+4,4,-200,200,'tiny',l,outCubic,2)
+			me(i+5,4,-200,200,'tiny',l,outCubic,2,3)
+			me(i+5,4,0,100,'stealth',l,outCubic,2,3)
+			me(i+5,4,100,100,'stealthgr',l,outCubic,2,3)
+			me(i+5,4,100,50,'stealthgg',l,outCubic,2,3)
+			me(i+5,4,100,25,'stealthgb',l,outCubic,2,3)
+		end
+		
+			me(612-2,2,-150,0,'longholds',l,inQuad,1)
+			me(612-2,2,200,-200,'tiny',l,outCubic,1)
+			me(612,4,-200,200,'tiny',l,outCubic,1)
+			me(612+1,4,-200,200,'tiny',l,outCubic,1,3)
+			me(612+1,4,0,100,'stealth',l,outCubic,1,3)
+			me(612+1,4,100,100,'stealthgr',l,outCubic,1,3)
+			me(612+1,4,100,50,'stealthgg',l,outCubic,1,3)
+			me(612+1,4,100,25,'stealthgb',l,outCubic,1,3)
+		
+		for pn=1,2 do
+			m(584,616,'*10000 0.6x, *10000 -95 spiralxperiod, *10000 -95 spiralyperiod, *10000 -95 spiralzperiod, *1000 spiralholds',e,pn)
+			m(584,616,'*10000 no split, *10000 no alternate, *10000 no cross, *10000 no centered, *10000 no reverse',e,pn)
+			
+			m(584,616,'*1000 100 grain',e,pn)
+			
+			me(584,30,0,628,'confusionoffset','len',linear,pn)
+			me(590,2,0,314,'confusionxoffset','len',linear,pn,6)
+			me(598,2,314,0,'confusionxoffset','len',linear,pn,6)
+			me(606,2,0,314,'confusionxoffset','len',linear,pn,6)
+			me(590,2,0,314,'confusionyoffset','len',linear,pn,6)
+			me(598,2,314,0,'confusionyoffset','len',linear,pn,6)
+			me(606,2,0,-314,'confusionyoffset','len',linear,pn,6)
+		end
+		
+		me(614,2,0,300,'drunk','len',outQuad,1)
+		me(614,2,0,300,'drunk','len',outQuad,2)
+		me(614,2,0,-3000,'tinyz','len',outQuad,1)
+		me(614,2,0,300,'tipsy','len',outQuad,1)
+		me(614,2,0,300,'tipsy','len',outQuad,1)
+		me(614,2,0,-3000,'tinyz','len',outQuad,2)
+		local isk=2
+		for i=584,613,4 do
+		
+			if i > 584 then
+				me(i-2,2,100,00,'stealth',l,outQuad,isk)
+				me(i-2,2,-800*.06,400*0.6,'centered2',l,linear,isk)
+				me(i-2,2,-10000,200,'movez',l,linear,isk)
+				me(i-2,2,0,-35,'flip',l,linear,isk)
+				me(i-2,2,0,-50,'movey',l,linear,isk)
+				me(i-2,2,-60,00,'spiralx',l,outQuad,isk)
+				me(i-2,2,-60,00,'spiraly',l,outQuad,isk)
+				me(i-2,2,50,00,'reverse',l,outQuad,isk)
+				me(i-2,2,.6,2,'xmod',l,outQuad,isk)
+			end
+			me(i,5,2,0.6,'xmod',l,linear,isk)
+			me(i,5,400*0.6,0,'centered2',l,linear,isk)
+			me(i,5,0,60,'spiralx',l,inOutCirc,isk)
+			me(i,5,0,60,'spiraly',l,inOutCirc,isk)
+			me(i,3,0,50,'reverse',l,inQuad,isk,2)
+			me(i,3,200,00,'movez',l,inQuad,isk,2)
+			me(i,3,-50,00,'movez',l,inQuad,isk,2)
+			isk = math.mod(isk,2)+1
+		end
+		
+		m2(615,function()
+			for pn=1,2 do
+				local a = PrxB(pn)
+				if a then
+					a:hidden(1)
+				end
+			end
+		end,true)
+		
+		m(583,612,'*10000 dark',e,3)
+		m(583,612,'*10000 dark',e,4)
+		
+		me(612,616,100,90,'dark',e,linear,3,624)
+		me(624,632,90,100,'dark',e,inCubic,3,649)
+		
+		m(584,652,'*10000 90 rotationx, *10000 -157 confusionxoffset, *10000 100 drawsize, *10000 3x, *10000 500 zoomz, *10000 -200 z',e,3)
+		for i=0,3 do
+			local mul = 1
+			if math.mod(i,2) == 1 then mul = -1 end
+			m(584,652,'*10000 '..(100*mul)..' bumpy'..i..', *1000 400 bumpyperiod'..i,e,3)
+		end
+		m(584,652,'*10000 reverse, *10000 200 drawsize, *100 20 centered, *10000 4x, *1000 20 mini, 20 drunk, tipsy, 20 bumpy, *10000 150 bumpyperiod',e,4)
+		
+		m2(583.5,function()
+			for pn=1,4 do
+				local a = Plr(pn)
+				if a then
+					a:SetAwake(true)
+				end
+			end
+			
+				local a = Plr(3)
+				for c=0,3 do
+					if a then
+						a:SetNumArrowGradientPoints(c,2)
+						--Player:SetArrowGradientColor(point,column,r,g,b,a)
+						a:SetArrowGradientColor(0,c,1,1,1,1)
+						a:SetArrowGradientColor(1,c,0,0,0,1)
+						
+						--Player:SetArrowGradientPoint(point,column,where)
+						a:SetArrowGradientPoint(0,c,5)
+						a:SetArrowGradientPoint(1,c,10)
+					end
+				end
+				local a = Plr(4)
+				for c=0,3 do
+					if a then
+						a:SetNumArrowGradientPoints(c,2)
+						--Player:SetArrowGradientColor(point,column,r,g,b,a)
+						a:SetArrowGradientColor(0,c,1,1,1,1)
+						a:SetArrowGradientColor(1,c,0,0,0,0)
+						
+						--Player:SetArrowGradientPoint(point,column,where)
+						a:SetArrowGradientPoint(0,c,5)
+						a:SetArrowGradientPoint(1,c,15)
+					end
+				end
+			
+		end,true)
+		m2(584,function()
+			for pn=1,4 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxB(pn)
+				if a then
+					a:hidden(0)
+				end
+				
+			end
+			
+			local a = Plr(4)
+			if a then
+				a:fov(60)
+				a:y(sh/2 + 130)
+				a:z(-100)
+				a:rotationx(-65)
+				a:zoomx(.8)
+				a:zoomy(1.4)
+				a:zoomz(3)
+			end
+			
+			yin_temple:hidden(0)
+			yin_temple:z(-500)
+			yin_temple:rotationx(90)
+			yin_temple:tween(240/174,'inOutQuad(%f,0,1,1)')
+			yin_temple:rotationx(0)
+			yin_temple:z(0)
+			yin_templebgcover:hidden(0)
+			yin_templebgcover:diffusealpha(1)
+			yin_templebgcover:linear(.2)
+			yin_templebgcover:diffusealpha(.2)
+			yin_templebgcover:linear(120/174)
+			yin_templebgcover:diffusealpha(.8)
+			
+		end,true)
+		
+		for i=588,609,4 do
+			m2(i,function()
+				yin_templebgcover:diffusealpha(.2)
+				yin_templebgcover:linear(60/174)
+				yin_templebgcover:diffusealpha(.8)
+				yin_templebgcover:sleep(0)
+				yin_templebgcover:diffusealpha(.2)
+				yin_templebgcover:linear(120/174)
+				yin_templebgcover:diffusealpha(.8)
+			end)
+		end
+		
+		m2(612,function()
+			yin_templebgcover:linear(240/174)
+			yin_templebgcover:diffusealpha(0)
+		end)
+		m2(616,function()
+			yin_templebgcover:diffusealpha(0)
+		end,true)
+		
+		me(646,2,100,0,'reverse',l,inOutQuad,4)
+		me(646,2,20,0,'mini',l,inOutQuad,4)
+		me(646,2,4,2,'xmod',l,linear,4)
+		me(646,2,20,0,'centered',l,linear,4)
+		me(646,2,200,0,'drawsize',l,linear,4)
+		--me(646,2,-200*math.pi,0,'confusionxoffset',l,inOutCubic,4)
+		
+		m(646,2,'*1000 250 arrowcull',l)
+		m(648,2,'*1000 no arrowcull',l)
+		
+		m2(616,function()
+			local a = Plr(3)
+			if a then
+				a:sleep(0)
+				a:rotationz(-1440)
+				a:tween(36*60/174,'inQuart(%f,0,1,1)')
+				a:rotationz(0)
+			end
+		end)
+		me(616,652,100*math.rad(1440),0,'confusionoffset',e,inQuart,3)
+		--m(616,652,'*10000 '..(100*math.rad(-10))..' confusionoffset',e)
+		
+		
+		m2(646,function()
+			
+			local a = Plr(4)
+			if a then
+				a:rotationx(-65+360)
+				a:tween(120/174,'inOutCubic(%f,0,1,1)')
+				a:y(sh/2)
+				a:z(0)
+				a:rotationx(0)
+				a:zoomx(1)
+				a:zoomy(1)
+				a:zoomz(1)
+			end
+			
+		end)
+		
+		mpf(584,716,function(beat,deltatime)
+		
+			local offs = (beat-584)/16
+			local offs2 = (beat-584)/16
+			
+			if beat > 704 and beat < 712 then
+				offs = (704-584)/16 + .4*outQuad((beat-704)/8,0,1,1)
+			end
+			if beat >= 712 then
+				offs = (704-584)/16 + .4
+			end
+			
+			for w=1,6 do
+				local fn = math.mod(w-1,2)+1
+				local xp = 170*(fn*2-3)*(sw/640)
+				local yp = 20 + 10*((sw/640)-1)
+				local zp = math.floor((w-1)/2)*768 + 70*((sw/640)-1)
+				local a = yin_fire[w]
+					--Trace(xp)
+					--Trace(fn)
+					--Trace(tostring(a))
+				if a then
+					a:hidden(0)
+					a:x(xp)
+					a:y(yp)
+					a:zoomx(.5)
+					a:zoomy(.35)
+					a:z( zp + offs*1536 - 576 )
+					while a:GetZ() > 512 do
+						a:addz(-768*3)
+					end
+					if a:GetZ() > 400 then
+						a:aux(0)
+					end
+					if a:getaux() < 1 then
+						a:aux( a:getaux() + deltatime*0.5 )
+					end
+					a:diffusealpha(a:getaux()*.5)
+				end
+			end
+			
+			for w=1,4 do
+				local a = _G['yin_temple_wall'..w]
+				if a then
+					a:zoomz(8)
+					a:customtexturerect(0-offs,0,2-offs,1)
+				end
+			end
+			for w=1,2 do
+				local a = _G['yin_temple_floor'..w]
+				if a then
+					a:zoomz(8)
+					a:customtexturerect(0,0-offs,.75,2-offs)
+				end
+			end
+			
+			yin_temple_stream:zoomz(8)
+			yin_temple_stream:customtexturerect(0,0-(offs+offs2)*2,1,2-(offs+offs2)*2)
+			yin_temple_stream:rotationx(-95+10*math.sin(beat*math.pi*0.25))
+			
+		end)
+		
+		me(648,1,-300,0,'tiny',l,outCubic)
+		
+		for pn=3,4 do
+			for i=0,3 do
+				m(647,1,'*100000 no bumpy'..i..', *10000 no bumpyperiod'..i,l,pn)
+			end
+		end
+		
+		m2(648,function()
+		
+			for pn=1,2 do
+				local a = PrxB(pn)
+				if a then
+					a:hidden(0)
+				end
+			end
+			
+			for pn=3,4 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+					a:fov(45)
+					a:SetAwake(false)
+					for c=0,3 do
+						if a then
+						
+							a:SetArrowGradientColor(0,c,1,1,1,1)
+							a:SetArrowGradientColor(1,c,1,1,1,1)
+							
+							--Player:SetArrowGradientPoint(point,column,where)
+							a:SetArrowGradientPoint(0,c,0)
+							a:SetArrowGradientPoint(1,c,0)
+							
+						end
+					end
+				end
+				local a = PrxB(pn)
+				if a then
+					a:hidden(1)
+				end
+			end
+			
+		end,true)
+		
+		mod_wiggle(650,8,4,200,2,'drunk')
+		
+		for pn=1,2 do
+			m(648,652,'*1000 50 flip',e,pn)
+			for i=0,3 do
+				local cp = -350+(100*i)+(400*(pn-1))
+				me(648,1,cp-200*(pn*2-3),cp-200*(pn*2-3),'movex'..i,l,linear,pn)
+				me(649,.25,cp-200*(pn*2-3),cp-100*(pn*2-3),'movex'..i,l,outQuad,pn,.25)
+				me(649.5,.25,cp-100*(pn*2-3),cp,'movex'..i,l,outQuad,pn,2.25)
+			end
+		end
+		
+		---------------------------
+		-- Seeing Eye (b652-714) --
+		---------------------------
+		
+		yin_darkdelay = .4
+		yin_vpdelay = .02
+		
+		yin_dptr = 1
+		
+		yin_dark1 = {}
+		yin_dark2 = {}
+		
+		yin_darktimer = {}
+		
+		function yin_v_makedark(obj)
+			table.insert(yin_dark1,obj)
+		end
+		
+		function yin_v_makedark2(obj)
+			table.insert(yin_dark2,obj)
+			table.insert(yin_darktimer,math.random()*yin_darkdelay)
+		end
+		
+		function yin_getdark()
+			
+			local a = yin_dark2[yin_dptr]
+			
+			yin_dptr = yin_dptr+1
+			if yin_dptr > table.getn(yin_dark2) then
+				yin_dptr = 1
+			end
+			
+			return a
+			
+		end
+		
+		yin_vptr = 1
+		
+		yin_v_p1 = {}
+		yin_v_p2 = {}
+		
+		yin_v_ptimer = {}
+		
+		function yin_v_makep(obj)
+			obj:hidden(1)
+			table.insert(yin_v_p1,obj)
+		end
+		function yin_v_makep2(obj)
+			obj:hidden(1)
+			table.insert(yin_v_p2,obj)
+			table.insert(yin_v_ptimer,math.random()*yin_vpdelay)
+		end
+		
+		function yin_getvp()
+			
+			local a = yin_v_p2[yin_vptr]
+			
+			yin_vptr = yin_vptr+1
+			if yin_vptr > table.getn(yin_v_p2) then
+				yin_vptr = 1
+			end
+			
+			return a
+			
+		end
+		
+		yin_v_colpos = {-350,-250,-150,-50,50,150,250,350}
+		
+		for c=0,3 do
+			m(650,714,'*100 80 bumpyoffset'..c..', *100 80 bumpyxoffset'..c,e)
+		end
+		
+		--m(652,714,'*100000 -10000 parabolaz',e)
+		me(652,656,0,-2000,'parabolaz',e,outQuart)
+		me(656,704,-2000,-2500,'parabolaz',e,linear)
+		me(704,712,-2500,0,'parabolaz',e,inOutQuart)
+		
+		m(680-.1,1,'*10 invert',l)
+		m(680.5-.1,1,'*10 no invert',l)
+		m(681-.1,1,'*10 invert',l)
+		m(681.75-.1,1,'*10 no invert',l)
+		m(682.25-.1,1,'*10 invert',l)
+		m(683-.1,1,'*10 no invert',l)
+		m(683.5-.1,1,'*10 invert invert',l)
+		m(684-.1,1,'*10 no invert',l)
+		
+		--m(652,714,'*1 200 drunkz',e)
+		
+		local f = 1
+		for i=652,714,1 do
+			if i < 680 or i > 683 then
+				local amt = 40 + 80*math.min((i-652)/64,1)
+				
+				for c=0,3 do
+					local mp = 1
+					if math.mod(c,2) == 0 then
+						mp = -1
+					end
+					me(i-.5,.5,0,amt*mp*f*6,'bumpy'..c,l,inOutCirc)
+					me(i,.5,amt*mp*f*6,0,'bumpy'..c,l,inOutCirc)
+					
+					--me(i+1-.5,.5,0,amt*mp*f,'bumpyy'..c,l,inOutCirc)
+					--me(i+1,.5,amt*mp*f,0,'bumpyy'..c,l,inOutCirc)
+				end
+				
+				f = f*-1
+			end
+		end
+		
+		
+		
+		--TIMER_TEST = 0
+		
+		mpf(650,716,function(beat,deltatime)
+		
+			--TIMER_TEST = TIMER_TEST+deltatime
+			--Trace(TIMER_TEST)
+		
+			mod_do('*10000 50 flip')
+			
+			local eyerange = 1.25
+			
+			if beat >= 652 and beat < 656 then
+				eyerange = 1.25 - .25*linear(beat-652,0,1,4)
+			elseif beat >= 656 and beat < 676 then
+				eyerange = 1
+			elseif beat >= 676 and beat < 680 then
+				eyerange = 1 + .25*linear(beat-676,0,1,4)
+			elseif beat >= 680 and beat < 684 then
+				eyerange = 1.25
+			elseif beat >= 684 and beat < 688 then
+				eyerange = 1.25 - .25*linear(beat-684,0,1,4)
+			elseif beat > 688 then
+				eyerange = 1
+			end
+			
+			local radi = 1
+			local adder = 0
+			
+			if beat > 668 and beat < 684 then
+				radi = 1-.5*(beat-668)/16
+			elseif beat >= 684 then
+				radi = .5
+			end
+			
+			local aspw = sw/640
+			local sep = 1
+			if beat > 684 and beat < 688 then
+				sep = aspw - (aspw-.8)*inOutQuad((beat-684)/4,0,1,1)
+			elseif beat >= 688 then
+				sep = .8
+			end
+			
+			local scm = 2
+			local addt = 0
+			
+			if beat > 684 and beat < 688 then
+				adder = 80*scm*inQuad((beat-684)/4,0,1,1)
+			end
+			if beat > 688 and beat < 716 then
+				adder = 80*scm + 320*scm*5*linear((beat-688)/28,0,1,1)
+			end
+			if beat > 684 and beat < 688 then
+				addt = 1.5*inQuad((beat-684)/4,0,1,1)
+			elseif beat >= 688 then
+				addt = 1.5
+			end
+			
+			revAdd = 0
+			
+			local mainAmp = 0
+			local flyamp = 0
+			local hamp = 0
+			
+			if beat >= 652 and beat < 654 then
+				hamp = outCubic((beat-652)/2,0,1,1)
+			elseif beat >= 654 then
+				hamp = 1
+			end
+			
+			if beat > 650 and beat < 652+32 then
+				flyamp = linear((beat-650)/32,0,1,1)
+			elseif beat > 652+32 then
+				flyamp = 1
+			end
+			
+			if beat > 650 and beat < 652 then
+				
+				mainAmp = linear((beat-650)/2,0,1,1)
+				
+			elseif beat >= 652 and beat < 712 then
+				
+				mainAmp = 1
+			
+			elseif beat >= 712 and beat < 714 then
+				
+				mainAmp = 1-inOutQuad((beat-712)/2,0,1,1)
+				
+				for i=0,7 do
+					local add = 200*inOutQuad((beat-712)/2,0,1,1)
+					if i > 3 then add = add*-1 end
+					yin_v_colpos[i+1] = -350+100*i+add
+				end
+				
+			elseif beat >= 714 and beat < 715.75 then
+				mainAmp = 0
+				
+				for i=0,7 do
+					local add = 200
+					if i > 3 then add = add*-1 end
+					yin_v_colpos[i+1] = (-350+100*i+add)*(1-inCirc((beat-714)/1.75,0,1,1))
+				end
+				
+				revAdd = 50*inCirc((beat-714)/1.75,0,1,1)
+				
+			elseif beat >= 715.75 then
+				
+				mainAmp = 0
+				for i=0,7 do
+					yin_v_colpos[i+1] = 0
+				end
+				revAdd = 50
+				
+			end
+			
+			local bhz = 0
+			if beat > 650 and beat < 652 then
+				bhz = inOutQuad((beat-650)/2,0,1,1)
+			elseif beat >= 652 and beat < 712 then
+				bhz = 1
+			elseif beat >= 712 and beat < 714 then
+				bhz = 1-((beat-712)/2)
+			elseif beat >= 714 then
+				bhz = 0
+			end
+			
+			local wsep = sw
+			
+			if beat > 680 and beat < 684 then
+				wsep = sw - (sw-640)*inOutQuad(beat-680,0,1,4)
+			elseif beat > 684 then
+				wsep = 640
+			end
+			
+			
+			for i=1,table.getn(yin_v_p1) do
+				local a = yin_v_p1[i]
+				if a then
+					--a:zoomto(32,32)
+					a:zoom(.9*bhz + bhz*.1*math.sin(beat*math.pi*.8 + randomXD(i)*math.pi) )
+					a:diffusealpha(.6 + .1*math.sin(beat*math.pi*.8 + randomXD(i)*math.pi) )
+					a:blend('add')
+					a:hidden(0)
+					if beat < 684 then
+						a:x( sw/2 - wsep*sep*(i-1) + adder + radi*192*math.sin(beat*math.pi*0.25) )
+					else
+						a:x( sw/2 - wsep*sep*(i-1) + adder + radi*-40*math.sin((addt*math.pi*0.5)+beat*math.pi*1) )
+					end
+					
+					if a:GetX() > -80 and a:GetX() < sw+80 then
+						if yin_v_ptimer[i] <= 0 then
+						
+							local d = yin_getvp()
+							if d then
+								local zm = a:GetZoomX()
+								d:finishtweening()
+								d:hidden(0)
+								d:x(a:GetX())
+								d:y(a:GetY())
+								d:diffusealpha(.2)
+								d:zoomx(zm)
+								d:zoomy(zm)
+								d:linear(.4)
+								d:zoom(zm*.9)
+								d:diffusealpha(0)
+								d:queuecommand('Hide')
+							end
+						
+							yin_v_ptimer[i] = yin_vpdelay
+						else
+							yin_v_ptimer[i] = yin_v_ptimer[i]-deltatime
+						end
+					end
+					
+				end
+				local a = yin_dark1[i]
+				if a then
+					a:diffusealpha(bhz)
+					a:zoom(3*bhz + bhz*.3*math.sin(beat*math.pi*0.5 + randomXD(i+20)*math.pi) )
+					a:diffusealpha(1.1 + .1*math.sin(beat*math.pi*.2 + randomXD(i)*math.pi) )
+					a:rotationz( 360*randomXD(i+80) + 30*math.sin(beat*math.pi*0.05 + randomXD(i+100)*math.pi) )
+					a:hidden(0)
+					local b = yin_v_p1[i]
+					a:x(b:GetX())
+					a:y(b:GetY())
+					
+					if bhz == 1 and a:GetX() > -120 and a:GetX() < sw+120 then
+						if yin_darktimer[i] <= 0 then
+						
+							local d = yin_getdark()
+							if d then
+								d:finishtweening()
+								d:x(a:GetX())
+								d:y(a:GetY())
+								d:hidden(0)
+								d:diffusealpha(0)
+								d:zoom(2)
+								d:linear(.2)
+								d:zoom(2.2)
+								d:diffusealpha(1)
+								d:addy(-10)
+								d:linear(1)
+								d:zoom(3.2)
+								d:diffusealpha(0)
+								d:addy(-50)
+								d:queuecommand('Hide')
+							end
+						
+							yin_darktimer[i] = yin_darkdelay
+						else
+							yin_darktimer[i] = yin_darktimer[i]-deltatime
+						end
+					end
+				end
+			end
+			
+			for pn=1,2 do
+				local str = ''
+				local bpn = pn-1
+				for c = 0,3 do
+					str = str..'*10000 '..yin_v_colpos[bpn*4+c+1]..' movex'..c..','
+					local dist = 1
+					local side = -1
+					local oe = 1
+					for i=1,table.getn(yin_v_p1) do
+						local a = yin_v_p1[i]
+						if a then
+							local cd = math.abs(a:GetX() - (sw/2 + yin_v_colpos[bpn*4+c+1]*64/100) )/(256*eyerange)
+							if cd < dist then
+								if a:GetX() < (sw/2 + yin_v_colpos[bpn*4+c+1]*64/100) then
+									side = 1
+								end
+								if math.mod(i,2) == 0 and i > 2 then
+									oe = -1
+								end
+								dist = cd
+							end
+						end
+					end
+					local h = hamp*(1-inOutCubic(dist,0,1,1))
+					--if pn==1 then
+					--	Trace('*10000 alternate, *10000 '..(50-50*h)..' reverse'..c..', *10000 '..(200-250*h)..' tinyy'..c..',')
+					--end
+					str = str..'*10000 '..revAdd+mainAmp*(50-50*oe*h)..' reverse'..c..', *10000 '..mainAmp*(200-250*h)..' tinyy'..c..','
+							..'*10000 '..mainAmp*oe*side*(314-314*h)..' confusionoffset'..c..','
+					if beat > 700 then
+						--str = str..'*10000 split,'
+					end
+				end
+				mod_do(str,pn)
+				local a = Plr(pn)
+				if a then
+					a:rotationx( 3*mainAmp*flyamp*math.sin(beat*math.pi*0.5) )
+					a:rotationy( 3*mainAmp*flyamp*math.cos(beat*math.pi*0.5) )
+				end
+			end
+			
+		end)
+		
+		function simple_kick(be,st,mu,mo,pn)
+			me(be,mu,st,0,mo,l,outQuad,pn)
+		end
+		
+		simple_kick(666,50,3,'stealth')
+		for i=0,3 do
+			simple_kick(666+i*.5,-200,.5,'tiny')
+		end
+		simple_kick(666,50,3,'stealth')
+		
+		simple_kick(698,50,3,'stealth')
+		simple_kick(698,-200,.75,'tiny')
+		simple_kick(698.75,-200,.75,'tiny')
+		simple_kick(699.5,-200,.5,'tiny')
+		
+		me(684,8,0,200,'parabolax',l,inOutQuad)
+		me(692,16,200,-300,'parabolax',l,inOutQuad)
+		me(708,6,-300,0,'parabolax',l,inOutQuad)
+		
+		
+		simple_kick(680,-200,.5,'tiny')
+		simple_kick(680.5,-200,.5,'tiny')
+		simple_kick(681,-200,.5,'tiny')
+		
+		simple_kick(681.75,-200,.5,'tiny')
+		simple_kick(682.25,-200,.5,'tiny')
+		
+		simple_kick(683,-200,.5,'tiny')
+		simple_kick(683.5,-200,.5,'tiny')
+		
+		for i=0,3 do
+			simple_kick(708+i*.5,-200,.5,'tiny')
+		end
+		m2(710,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:vibrate()
+					a:effectmagnitude(0,30,0)
+				end
+			end
+		end)
+		m2(710.5,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:stopeffect()
+				end
+			end
+		end)
+		for i=0,5 do
+			simple_kick(710.5+i*.25,-200,.25,'tiny')
+		end
+		
+		yin_mines = {}
+		
+		function yin_add_mine(obj)
+		
+			table.insert(yin_mines,obj)
+			
+		end
+		
+		m2(714,function()
+		
+			local sw2 = sw/2
+			local sh2 = sh/2
+			
+			for i=1,6 do
+				local a = yin_mines[i]
+				local ang = math.pi*2*(i/6)
+				if a then
+					a:hidden(0)
+					local rad = math.sqrt(sw2*sw2+sh2*sh2)
+					a:x( rad*math.sin(ang) )
+					a:y( -rad*math.cos(ang) )
+					a:tween(spb*1.5,'outQuad(%f,0,1,1)')
+					a:xy(0,0)
+					a:diffusealpha(0.08)
+					a:tween(spb*1,'inQuad(%f,0,1,1)')
+					a:x( rad*.2*math.sin(ang) )
+					a:y( -rad*.2*math.cos(ang) )
+					a:diffusealpha(0)
+					a:queuecommand('Hide')
+				end
+			end
+			
+			mine_af1:linear(spb*2.5)
+			mine_af1:rotationz(360)
+			mine_af2:tween(spb*2.5,'inQuad(%f,0,1,1)')
+			mine_af2:z(500)
+			mine_af2:zoomz(50)
+			mine_af2:zoom(5)
+			
+		end)
+		
+		m2(715.75,function()
+			yin_temple:hidden(1)
+			yin_templebgcover:hidden(1)
+			
+			yin_widescreener:zoomx(SCREEN_WIDTH/640)
+			
+		end)
+		
+		m2(779.9,function()
+			yin_widescreener:zoomx(1)
+		end)
+		
+		m2(718,function()
+			for i=1,table.getn(yin_v_p1) do
+				local a = yin_v_p1[i]
+				if a then
+					a:hidden(1)
+				end
+				local a = yin_dark1[i]
+				if a then
+					a:hidden(1)
+				end
+			end
+			mine_af1:hidden(1)
+		end,true)
+		
+		----------------------------
+		-- Insert Coin (b716-780) --
+		----------------------------
+		
+		m2(714,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxA(pn)
+				if a then
+					a:hidden(0)
+				end
+			end
+		end,true)
+		
+		-- ring clouds
+		m2(715.75,function()
+			h_clouds:hidden(0)
+			h_clouds:diffusealpha(0)
+			h_clouds:decelerate(spb)
+			h_clouds:diffusealpha(.5)
+			
+			
+			yin_coinbg:hidden(0)
+			yin_coinbg:diffusealpha(0)
+			yin_coinbg:decelerate(spb)
+			yin_coinbg:diffusealpha(1)
+			
+		end,775)
+		
+		
+		me(712,2,2,1,'xmod',l,linear,nil,2)
+		m(716,1,'*1000 2x',l)
+		
+		--me(714,716,0,-3000,'mini',e,inQuart)
+		
+		m2(714,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:accelerate(105/173)
+					a:x(sw/2)
+				end
+			end
+		end)
+		m2(715.75,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:linear(15/173)
+					a:x(sw/2 - 72)
+					a:y(sh/2 - 10)
+				end
+			end
+		end,780)
+		
+		m(714,908,'stealthpastreceptors, stealthtype',e)
+		me(714,716,0,100,'hidemines',e,linear,nil,780)
+		me(780,908,100,100,'hidemines',e,linear,nil)
+		me(784,804,0,0,'hidemines',e,linear)
+		
+		m2(716,'DiscOn');
+		
+		--me(714,1.75,0,-1000,'mini',l,inExpo)
+		
+		m(716-.25,2,'*10000 no mini, *10000 no flip',l)
+		
+		--m(0,999,'arrowpath,arrowpathfadebottom|1|0|0,arrowpathgirth,fadebottom|1|0|0,fadebottomoffset|-1|-1|-1','end');
+		m(716,779.9,'arrowpath, 50 reverse','end');
+		
+		for i=720,744,4 do
+			me(i-.25,.25,100,0,'hidemines',l,linear,nil,1)
+			me(i+1,.25,0,100,'hidemines',l,linear)
+		end
+		for i=748,772,4 do
+			local scope_rope = i
+			if not slumpo then
+				m2(i,function()
+					yin_coinmines:stoptweening()
+					yin_coinmines:hidden(0)
+					yin_coinmines:linear(.2)
+					if scope_rope == 748 then
+						yin_coinmines:diffusealpha(.8)
+					else
+						yin_coinmines:diffusealpha(.4)
+					end
+					yin_coinmines:addrotationz(4)
+					yin_coinmines:linear(.4)
+					yin_coinmines:diffusealpha(0)
+					yin_coinmines:addrotationz(8)
+					yin_coinmines:queuecommand('Hide')
+				end)
+			else
+				m2(i,function()
+					yin_sheen:stoptweening()
+					yin_sheen:hidden(0)
+					yin_sheen:linear(.2)
+					yin_sheen:diffusealpha(.4)
+					yin_sheen:addrotationz(4)
+					yin_sheen:linear(.4)
+					yin_sheen:diffusealpha(0)
+					yin_sheen:addrotationz(8)
+					yin_sheen:queuecommand('Hide')
+				end)
+			end
+		end
+		
+		local str = ''
+		for i=0,3 do
+			--local act = 30
+			str = str..'*10000 0 bumpyyoffset'..i..','
+					..'*10000 25 bumpyxoffset'..i..','
+					..'*10000 '..(100*(3-i))..' movex'..i..','
+		end
+		
+		me(714,715.75,0,360,'rotationz',e,inQuart)
+		me(714,715.75,0,-200*math.pi,'confusionoffset',e,inQuart)
+		
+		m(715.75,1,'*10000 no rotationz, *10000 no confusionoffset',l)
+		
+		m(716,779.9,str,e)
+		
+		m(716,779.9,'40 tiny, *10000 -91.75 drawsize, *100 -99 drawsizeback, *1000 0.104x, *100 50 mini, spiralholds','end');
+		m(716,779.9,'*1000 -91.75 arrowpathdrawsize, *1000 -99 arrowpathdrawsizeback, stealthtype','end');
+		
+		--m(715.9,780,'*1000 236 centered2',e,2)
+		
+		--m(716,780,'*0.3 10000 centered2',e)
+		
+		local dist = 100*(64*60/173)*0.3
+		
+		me(716,779.9,0,dist,'centered2',e,linear,1)
+		me(716,779.9,236+0,236+dist,'centered2',e,linear,2)
+		
+		m(779.9,788,'*10000 no centered2',e)
+		
+		yin_ring_shrink = .8
+		yin_ring_xscale = SCREEN_WIDTH/640
+		
+		m2(715.75,function()
+			med_aft_coverquad:hidden(0)
+		end,779)
+		
+		mpf(715.75, 779.9, function(beat)
+			local amt2 = disc_aux:GetX()
+			
+			local amt = (amt2-0.5)*yin_ring_shrink*0.9 + 0.5
+			
+			local str = ''
+			for i=0,3 do
+				--local act = 30
+				str = str..'*10000 '..(360*yin_ring_shrink*0.9 + 120*(i+(3-i-i)*amt))..' bumpyy'..i..','
+						..'*10000 '..(360*yin_ring_shrink*0.9 + 120*(i+(3-i-i)*amt))..' bumpyx'..i..','
+			end
+			
+			mod_do(str)
+			
+			--disc controlled galaxy
+			
+			
+			local inner = 32
+			local looptime = 16
+			local offset = 0.5
+			local beamwidth = 1024
+			
+			inner = 64 - 48*math.clamp( (beat - 716)/64, 0, 1 )
+			beamwidth = 1024 - 640*math.clamp( (beat - 716)/64, 0, 1 )
+			
+			local amp1 = math.clamp( math.mod((beat+offset+(looptime*0.0))*(1/looptime),1)*2 - 0.5, inner/beamwidth, 1)*beamwidth
+			local amp2 = math.clamp( math.mod((beat+offset+(looptime*0.0))*(1/looptime),1)*2, inner/beamwidth, 1)*beamwidth
+			local amp3 = math.clamp( math.mod((beat+offset+(looptime*0.25))*(1/looptime),1)*2 - 0.5, inner/beamwidth, 1)*beamwidth
+			local amp4 = math.clamp( math.mod((beat+offset+(looptime*0.25))*(1/looptime),1)*2, inner/beamwidth, 1)*beamwidth
+			local amp5 = math.clamp( math.mod((beat+offset+(looptime*0.5))*(1/looptime),1)*2 - 0.5, inner/beamwidth, 1)*beamwidth
+			local amp6 = math.clamp( math.mod((beat+offset+(looptime*0.5))*(1/looptime),1)*2, inner/beamwidth, 1)*beamwidth
+			local amp7 = math.clamp( math.mod((beat+offset+(looptime*0.75))*(1/looptime),1)*2 - 0.5, inner/beamwidth, 1)*beamwidth
+			local amp8 = math.clamp( math.mod((beat+offset+(looptime*0.75))*(1/looptime),1)*2, inner/beamwidth, 1)*beamwidth
+			
+			--med_aft_coverquad:hidden(0)
+			med_disc1:hidden(0)
+			generate_disc(med_disc1,disc_total_verts,amp1,amp2);
+			med_disc2:hidden(0)
+			generate_disc(med_disc2,disc_total_verts,amp3,amp4);
+			med_disc3:hidden(0)
+			generate_disc(med_disc3,disc_total_verts,amp5,amp6);
+			med_disc4:hidden(0)
+			generate_disc(med_disc4,disc_total_verts,amp7,amp8);
+			
+			local amult = 0.25 + 0.25*math.clamp( (beat-716)/32, 0, 1 )
+			amult = amult + 0.5*math.clamp( (beat-748)/32, 0, 1 )
+			
+			
+			
+			disc_container:rotationx( amult*30*math.sin(beat*math.pi*0.125) )
+			disc_container:rotationy( amult*30*math.cos(beat*math.pi*0.125) )
+			
+			if beat > 776 then
+				disc_container:rotationz( -360*inCubic((beat-776)/4,0,1,1) )
+				disc_container:zoom( med_pulser:GetX()*(1-inCubic((beat-776)/4,0,1,1)) )
+			else
+				disc_container:zoom( med_pulser:GetX() )
+			end
+			
+			for i=1,4 do
+				local a = _G['med_disc'..i]
+				if a then
+					--a:rotationz( (math.mod(i,2)*2-1)*math.clamp(amult-0.5,0,0.5)*50*math.sin(beat*math.pi*0.125) )
+					--a:aux((math.mod(i,2)*2-1)*math.clamp(amult-0.5,0,0.5)*50*math.sin(beat*math.pi*0.125))
+					a:GetShader():uniform1f('amp',math.rad((math.mod(i,2)*2-1)*math.clamp(amult-0.5,0,0.5)*50*math.sin(beat*math.pi*0.125)))
+				end
+			end
+		end)
+		
+		local str = ''
+		for i=0,3 do
+			str = str..'*1000 no bumpyx'..i..',*10000 no bumpyy'..i..',*10000 no movex'..i..','
+		end
+		m(779.9,1,str,l)
+		
+		m2(720,function() disc_aux:tween(240/173,'inOutElastic(%f,0,1,1)') disc_aux:x(1) end)
+		m2(728,function() disc_aux:tween(240/173,'inOutElastic(%f,0,1,1)') disc_aux:x(0) end)
+		m2(736,function() disc_aux:tween(240/173,'inOutElastic(%f,0,1,1)') disc_aux:x(1) end)
+		m2(744,function() disc_aux:tween(240/173,'inOutElastic(%f,0,1,1)') disc_aux:x(0) end)
+		
+		for i=748,770,8 do
+			m2(i,function() disc_aux:tween(240/173,'inOutElastic(%f,0,1,1)') disc_aux:x(1) end)
+			m2(i+4,function() disc_aux:tween(240/173,'inOutElastic(%f,0,1,1)') disc_aux:x(0) end)
+		end
+		
+		for i=716,774,4 do
+			m2(i-.1,function()
+				med_pulser:finishtweening()
+				med_pulser:linear(.05)
+				med_pulser:x(1.1)
+				med_pulser:decelerate(60/176 - .05)
+				med_pulser:x(1.0)
+				med_pulser:sleep(0)
+				med_pulser:linear(.05)
+				med_pulser:x(1.1)
+				med_pulser:decelerate(120/176)
+				med_pulser:x(.9)
+			end)
+		end
+		
+		m2(715,function()
+			med_aft:hidden(0)
+		end)
+		
+		m2(780,'DiscOff');
+		m2(780,function()
+			med_aft:hidden(1)
+			med_aft_coverquad:hidden(1)
+			disc_container:hidden(1)
+			
+			for i=1,4 do
+				local a = _G['med_disc'..i]
+				if a then
+					a:hidden(1)
+				end
+			end
+		end,true)
+		
+		m2(776,function()
+			h_clouds:decelerate(spb*7)
+			h_clouds:diffusealpha(0)
+			yin_coinbg:decelerate(spb*7)
+			yin_coinbg:diffusealpha(0)
+		end,true)
+		
+		m2(784,function()
+			h_clouds:hidden(1)
+			yin_coinbg:hidden(1)
+		end,true)
+		
+		m2(780,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:x(sw/2)
+					a:y(sh/2)
+				end
+			end
+		end,876)
+		
+		m(779.9,.5,'*10000 no arrowpath, *1000 stealth, *1000 dark, *1000 sudden',l)
+		
+		me(779.9,2,1000,100,'zoom',l,outExpo)
+		--me(779.9,4,50,0,'flip',l,outExpo)
+		me(779.9,4,0,2,'xmod',l,outExpo)
+		me(779.9,4,50,0,'reverse',l,outExpo)
+		
+		m(780,876,'*100 -100 zbuffer',e)
+		
+		m(779.9,804,'*10 50 flip',e)
+		
+		m2(780,function()
+			yin_temple:hidden(1)
+			yin_waterfall:hidden(0)
+			yin_waterfall:z(0)
+			yin_templebgcover:hidden(0)
+			yin_templebgcover:diffusealpha(1)
+			yin_templebgcover:linear(240/174)
+			yin_templebgcover:diffusealpha(0)
+		end,true)
+		
+		mpf(780,924,function(beat)
+			
+			yin_waterfall:rotationx( 30 + 1*math.sin(beat*0.04*2*math.pi) + 2*math.sin(beat*0.05*2*math.pi) )
+			yin_waterfall:rotationy( 0 + 3*math.sin(beat*0.07*2*math.pi) + 3*math.sin(beat*0.03*2*math.pi) )
+			
+		end)
+		
+		---------------------------------------------------
+		-- Great Magic - Devil's Recitation (b808 - 876) --
+		---------------------------------------------------
+		
+		m2(808,'WhiteFlashQ')
+		m2(872,'WhiteFlash')
+		
+		for pn=1,2 do
+		
+			m(800,876,'*1000 dizzyholds',e,pn)
+			
+			for i=0,2 do
+				simple_kick(780+8*i,50,2,'stealth',pn)
+			end
+		
+			m(779.9,1,'*1000 no spiralholds',l,pn)
+			m(780,808,'dark',e,pn)
+			m(779.9,808,'*1000 60 movey',e,pn)
+			
+			m(780,908,'*10 hidden',e,pn)
+			m(780,812,'stealthtype,stealthpastreceptors',e,pn)
+			
+			me(780,788,-60,-60,'hiddenoffset',e,linear,pn)
+			me(788,804,-60,0,'hiddenoffset',e,linear,pn,808)
+			me(808,812,100,-100,'hiddenoffset',e,linear,pn,908)
+			
+			m(780,808,'*10000 200 tornadoperiod',e,pn)
+			me(780,804,-20,-100,'tornado',e,linear,pn)
+			me(804,4,-100,0,'tornado',l,inQuad,pn)
+			
+			me(780,804,0,100*(pn*2-3),'drunk',e,linear,pn)
+			me(804,808,100*(pn*2-3),0,'drunk',e,inOutQuad,pn)
+			
+			for i=790,803.75,.25 do
+				simple_kick(i-.02,200*(i-790)/13.75,.25,'tiny',pn)
+			end
+			
+			me(804,1,-400,0,'tiny',l,outQuad,pn)
+			
+			mod_wiggle(808,15,4,30,1,'drunk',pn)
+			
+			--m(808,864,'orient',e,pn)
+			me(808,840,0,60,'orient',e,linear,pn)
+			me(840,4,50,0,'orient',l,outQuad,pn)
+			me(844,864,0,60,'orient',e,linear,pn)
+			me(864,4,50,0,'orient',l,outQuad,pn)
+			
+			m(780,807,'*10000 -50 bumpyperiod, *10000 -50 bumpyxperiod, *10000 40 bumpyoffset',e,pn)
+			
+			for i=0,2 do
+				me(783+i*8,5-.25,0,200,'bumpy',l,linear,pn)
+				me(787.75+i*8,.25,200,0,'bumpy',l,linear,pn)
+				me(783+i*8,5-.25,0,100,'bumpyx',l,linear,pn)
+				me(787.75+i*8,.25,100,0,'bumpyx',l,linear,pn)
+			end
+			
+			me(780,804,0,80,'brake',e,linear,pn)
+			me(804,4,80,0,'brake',l,inOutQuad,pn)
+			
+			me(808,2,100,0,'hidden',l,linear,pn)
+		
+			me(804,3.9,0,110,'stealth1',l,linear,pn)
+			me(804,3.9,0,110,'stealth2',l,linear,pn)
+			me(808,2,100,0,'stealth1',l,outQuad,pn)
+			me(808,2,100,0,'stealth2',l,outQuad,pn)
+		
+			me(804,4,0,60,'tiny',l,linear,pn)
+			if pn == 1 then
+				me(804,4,0,130,'drawsize',l,linear,pn)
+				me(804,4,0,130,'arrowpathdrawsize',l,linear,pn)
+			end
+			
+			me(804,4,0,-400*0.28*0.5,'movex0',l,linear,pn)
+			me(804,4,0,-150*0.3*0.5,'movex1',l,linear,pn)
+			me(804,4,0,150*0.3*0.5,'movex2',l,linear,pn)
+			me(804,4,0,400*0.28*0.5,'movex3',l,linear,pn)
+			me(804,4,50,50,'flip',l,linear,pn)
+			
+			me(804,4,60,20,'movey0',l,linear,pn)
+			me(804,4,60,6,'movey1',l,linear,pn)
+			me(804,4,60,6,'movey2',l,linear,pn)
+			me(804,4,60,20,'movey3',l,linear,pn)
+			
+			--me(804,4,0,50,'reverse',l,linear,pn)
+			me(804,4,0,170,'wave',l,linear,pn)
+			me(804,4,2,1,'xmod',l,linear,pn)
+			
+			m(804,808,'*1000 spiralholds, *1000 200 grain',e,pn)
+			
+			--no pain
+			m(808,1,'*10000 no grain',l,pn)
+			
+			if pn == 1 then
+				me(808,4,0,100,'arrowpath',l,linear,pn)
+				m(812,876,'*1000 arrowpath',e,pn)
+			end
+			
+			m(808,876,'*10000 50 flip, *10000 no movey, *1000 50 reverse, *1000 -100 spiralholds',e,pn)
+			m(808,876,'*1000 60 tiny, *1000 130 drawsize, *1000 130 arrowpathdrawsize',e,pn)
+			m(808,876,'*10 170 wave, *10 0 brake',e,pn)
+			
+			--m(863,868,'*100 sudden',e,pn+2)
+			
+			me(808,4,100,50,'dark',l,outQuad,pn)
+			
+			for i=0,4 do
+				me(858+i*.5,.5,-60,60,'tiny',l,outQuad,pn)
+			end
+			for i=0,3 do
+				me(840+i*.5,.5,-60,60,'tiny',l,outQuad,pn)
+				me(868+i*.5,.5,-60,60,'tiny',l,outQuad,pn)
+				me(870+i*.25,.25,-60,60,'tiny',l,outQuad,pn)
+				me(871+i*.25,.25,-60,60,'tiny',l,outQuad,pn)
+			end
+			for i=0,2 do
+				me(842+i*.25,.25,-60,60,'tiny',l,outQuad,pn)
+			end
+			me(843,.5,-60,60,'tiny',l,outQuad,pn)
+			me(843.5,.5,-60,60,'tiny',l,outQuad,pn)
+			
+		end
+		
+		for pn=1,2 do
+			for c=0,3 do
+				m(811,908,'*100 400 grain, *10 1 bumpy, *100 300 bumpyperiod'..c..', *100 320 bumpyoffset'..c,e,pn)
+			end
+			
+			local f = 1
+			for i=812,908,1 do
+				if i < 840 or i > 843 and i < 868 then
+					local amt = 20+20*(i-811)/100
+					if i > 843 then
+						amt = amt*1.5
+					end
+					
+					for c=0,3 do
+						local mp = 1
+						if math.mod(c,2) == 0 then
+							mp = -1
+						end
+						me(i-.5,.5,1,amt*mp*f*6,'bumpy'..c,l,inOutCirc,pn)
+						me(i,.5,amt*mp*f*6,1,'bumpy'..c,l,inOutCirc,pn)
+						
+					end
+					
+					f = f*-1
+				end
+			end
+		end
+		
+		
+		m2(780,function()
+			
+			local sps = {{0,100},{200,0}}
+			
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:NoClearSplines(true)
+					for b=1,table.getn(sps) do
+						a:SetSizeSpline(b-1,-1,sps[b][2],sps[b][1],-1)
+					end
+				end
+			end
+			
+		end)
+		
+		mpf(804,808,function(beat)
+			
+			local sps = {{0,100*(1-(beat-804)/4)},{200,0}}
+			
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					for b=1,table.getn(sps) do
+						a:SetSizeSpline(b-1,-1,sps[b][2],sps[b][1],-1)
+					end
+				end
+			end
+			
+		end)
+		
+		m2(808,function()
+			
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:ResetSizeSplines()
+				end
+			end
+			
+		end)
+		
+		
+		m2(780,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxA(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxB(pn)
+				if a then
+					a:hidden(0)
+				end
+				--yin_exform_bg:hidden(0)
+			end
+		end,true)
+		
+		mpf(780,812,function(beat)
+		
+			local zm = 1
+			local alp = 1
+			local exr = 0
+			if beat >= 780 and beat < 788 then
+				zm = 1+(1-outExpo((beat-780)/8,0,1,1))
+			elseif beat >= 788 and beat < 808 then
+				zm = 1+(1.5*linear((beat-788)/20,0,1,1))
+			elseif beat >= 808 then
+				zm = 2.5+(4*linear((beat-808)/4,0,1,1))
+				alp = 1-(1*outExpo((beat-808)/4,0,1,1))
+				exr = 720*linear((beat-808)/4,0,1,1)
+			end
+			
+			local samp = 0
+			for i=0,2 do
+				if beat >= 783+8*i and beat < 788+8*i then
+					samp = linear((beat-(783+8*i))/5,0,1,1)
+				end
+			end
+			
+			yin_egg:z(-120)
+			yin_egg:x( sw/2 + 8*samp*math.sin(beat*math.pi*4) )
+			yin_egg:y(sh/2 - 100)
+			yin_egg:hidden(0)
+			yin_egg:rotationy(beat*45 + exr)
+			yin_egg:zoom(zm)
+			yin_egg:zoomz(0.05)
+			yin_egg:diffusealpha(alp*0.5)
+			yin_egg:ztest(0)
+			yin_egg:clearzbuffer(1)
+			
+			yin_egg_beholder:hidden(0)
+			yin_egg_beholder:x(yin_egg:GetX())
+			yin_egg_beholder:y(yin_egg:GetY()+20)
+			yin_egg_beholder:zoom(zm*.5)
+			yin_egg_beholder:diffusealpha((.3+.3*math.sin(beat*math.pi*0.25))*alp)
+			yin_egg_beholder:blend('add')
+			
+		end)
+		
+		m2(808,function()
+			yin_exform:hidden(0)
+		end,true)
+		
+		m2(808,function()
+			yin_exform:playcommand('Up')
+			yin_exform:addy(-20)
+			yin_exform:zoom(500/800)
+			yin_exform:tween(1,'inOutQuad(%f,0,1,1)')
+			yin_exform:addy(20)
+			yin_exform:zoom(640/800)
+			MESSAGEMAN:Broadcast('Hatch')
+		end,true)
+		
+		m2(812,function()
+			yin_egg:hidden(1)
+			yin_egg_beholder:hidden(1)
+		end,true)
+		
+		m2(832,function()
+			yin_hatchrings:hidden(1)
+		end,true)
+		
+		mpf(808,872,function(beat)
+			
+			if beat > 808 + (174/60)+.05 then
+				yin_model_thighs:y(38 + 2*math.sin((beat - (808 + (174/60)+.05))*math.pi*0.25))
+				yin_model_legs:y(93 + 4*math.sin(-.8 + (beat - (808 + (174/60)+.05))*math.pi*0.25))
+				yin_model_hairtop:skewx( .1*math.sin((beat - (808 + (174/60)+.05))*math.pi*0.125))
+				yin_model_hairtop:y( -163 + 2*math.sin( -.16 + (beat - (808 + (174/60)+.05))*math.pi*0.125 ))
+				yin_model_head:y( -131 + 2*math.sin( -.6 + (beat - (808 + (174/60)+.05))*math.pi*0.125 ))
+				yin_model_i:y( -123 + 2*math.sin( -.6 + (beat - (808 + (174/60)+.05))*math.pi*0.125 ))
+				yin_model_hairback:y( -93 + 2*math.sin( -.16 + (beat - (808 + (174/60)+.05))*math.pi*0.125 ))
+				yin_exform:y( sh/2 - 57 + 7*math.cos( (beat - (808 + (174/60)+.05))*math.pi*0.25 ))
+			end
+			
+			--hoo boy, draw wings
+			for w=1,2 do
+				
+				local a = _G['yin_winga'..w]
+				if a then
+					a:SetNumVertices(4*8)
+					
+					for q=0,7 do
+						
+						local wid = 388
+						local hei = 120
+						
+						local ang1 = 7*math.sin((q/8)*math.pi + beat*math.pi*0.25)
+						local ang2 = 7*math.sin(((q+1)/8)*math.pi + beat*math.pi*0.25)
+						
+						local xp1 = (wid/2) - ((8-q)/8)*wid*math.cos(math.rad(ang1))
+						local xp2 = (wid/2) - ((7-q)/8)*wid*math.cos(math.rad(ang2))
+						local zp1 = 0 - ((8-q)/8)*wid*math.sin(math.rad(ang1))
+						local zp2 = 0 - ((7-q)/8)*wid*math.sin(math.rad(ang2))
+						
+						local xs = wid/poly_npot(wid)
+						local ys = hei/poly_npot(hei)
+						
+						a:SetVertexPosition(q*4+0,xp1,-hei/2,zp1)
+						a:SetVertexPosition(q*4+1,xp2,-hei/2,zp2)
+						a:SetVertexPosition(q*4+2,xp2,hei/2,zp2)
+						a:SetVertexPosition(q*4+3,xp1,hei/2,zp1)
+						
+						a:SetVertexTexCoord(q*4+0,(q/8)*xs,0)
+						a:SetVertexTexCoord(q*4+1,((q+1)/8)*xs,0)
+						a:SetVertexTexCoord(q*4+2,((q+1)/8)*xs,1*ys)
+						a:SetVertexTexCoord(q*4+3,(q/8)*xs,1*ys)
+						
+					end
+					
+				end
+				
+				local a = _G['yin_wingb'..w]
+				if a then
+					a:SetNumVertices(4*8)
+					
+					for q=0,7 do
+					
+						local wid = 388
+						local hei = 120
+						
+						local ang1 = 7*math.sin(1 + (q/8)*math.pi + beat*math.pi*0.25)
+						local ang2 = 7*math.sin(1 + ((q+1)/8)*math.pi + beat*math.pi*0.25)
+						
+						local xp1 = (wid/2) - ((8-q)/8)*wid*math.cos(math.rad(ang1))
+						local xp2 = (wid/2) - ((7-q)/8)*wid*math.cos(math.rad(ang2))
+						local zp1 = 0 - ((8-q)/8)*wid*math.sin(math.rad(ang1))
+						local zp2 = 0 - ((7-q)/8)*wid*math.sin(math.rad(ang2))
+						
+						local xs = wid/poly_npot(wid)
+						local ys = hei/poly_npot(hei)
+						
+						a:SetVertexPosition(q*4+0,xp1,-hei/2,zp1)
+						a:SetVertexPosition(q*4+1,xp2,-hei/2,zp2)
+						a:SetVertexPosition(q*4+2,xp2,hei/2,zp2)
+						a:SetVertexPosition(q*4+3,xp1,hei/2,zp1)
+						
+						a:SetVertexTexCoord(q*4+0,(q/8)*xs,0)
+						a:SetVertexTexCoord(q*4+1,((q+1)/8)*xs,0)
+						a:SetVertexTexCoord(q*4+2,((q+1)/8)*xs,1*ys)
+						a:SetVertexTexCoord(q*4+3,(q/8)*xs,1*ys)
+						
+					end
+					
+				end
+				
+				local a = _G['yin_wingc'..w]
+				if a then
+					a:SetNumVertices(4*8)
+					
+					for q=0,7 do
+					
+						local wid = 316
+						local hei = 270
+						
+						local ang1 = 7*math.sin(2 + (q/8)*math.pi + beat*math.pi*0.25)
+						local ang2 = 7*math.sin(2 + ((q+1)/8)*math.pi + beat*math.pi*0.25)
+						
+						local xp1 = (wid/2) - ((8-q)/8)*wid*math.cos(math.rad(ang1))
+						local xp2 = (wid/2) - ((7-q)/8)*wid*math.cos(math.rad(ang2))
+						local zp1 = 0 - ((8-q)/8)*wid*math.sin(math.rad(ang1))
+						local zp2 = 0 - ((7-q)/8)*wid*math.sin(math.rad(ang2))
+						
+						local xs = wid/poly_npot(wid)
+						local ys = hei/poly_npot(hei)
+						
+						a:SetVertexPosition(q*4+0,xp1,-hei/2,zp1)
+						a:SetVertexPosition(q*4+1,xp2,-hei/2,zp2)
+						a:SetVertexPosition(q*4+2,xp2,hei/2,zp2)
+						a:SetVertexPosition(q*4+3,xp1,hei/2,zp1)
+						
+						a:SetVertexTexCoord(q*4+0,(q/8)*xs,0)
+						a:SetVertexTexCoord(q*4+1,((q+1)/8)*xs,0)
+						a:SetVertexTexCoord(q*4+2,((q+1)/8)*xs,1*ys)
+						a:SetVertexTexCoord(q*4+3,(q/8)*xs,1*ys)
+						
+					end
+					
+				end
+				
+			end
+			
+		end)
+		
+		--this is actually a fucking cloth simulation in itg what the fuck
+		
+		yin_defaultangs = {30,15,-15,-30}
+		yin_angs = {yin_defaultangs[1],yin_defaultangs[2],yin_defaultangs[3],yin_defaultangs[4]}
+		yin_points = 15
+		yin_laziness = 10 --how slowly cloth snaps
+		
+		yin_anglerange = 25
+		
+		yin_dposx = {-400,-150,150,400}
+		yin_dposy = {-100,-300,-300,-100}
+		
+		yin_dists = {{},{},{},{}}
+		yin_trailing_angs1 = {{},{},{},{}}
+		yin_trailing_angs2 = {{},{},{},{}}
+		
+		yin_distmult = {.5,.8,.8,.5}
+		yin_fidelity = 0.25;
+		
+		for j=0,3 do
+			
+			for i=1,yin_points do
+				table.insert(yin_dists[j+1],(i-1)*(i/yin_points)*750)
+				table.insert(yin_trailing_angs1[j+1],yin_angs[j+1])
+				table.insert(yin_trailing_angs2[j+1],yin_angs[j+1])
+			end
+				
+		end
+		
+		mpf(808,876,function(beat)
+		
+			local expandmult = 0.1
+			if beat >= 808 and beat < 811 then
+				expandmult = 0.1 + 0.9*inOutQuad((beat-808)/3,0,1,1)
+			elseif beat >= 811 then
+				expandmult = 1
+			end
+		
+			yin_pos = beat*math.pi*0.25 - math.pi*0.1
+			
+			local yadd = (100/64)*7*math.cos( (beat - (808 + (174/60)+.05))*math.pi*0.25 )
+			local yadd1 = (100/64)*10*math.sin((beat*math.pi*2)*(1/9) + (1/9)*2*math.pi)
+			local yadd2 = (100/64)*20*math.sin((beat*math.pi*2)*(1/9) + (1.5/9)*2*math.pi)
+			
+			local xadd1 = (100/64)*-10*math.sin((beat*math.pi*2)*(1/9) + (1/9)*2*math.pi)
+			local xadd2 = (100/64)*10*math.sin((beat*math.pi*2)*(1/9) + (1.5/9)*2*math.pi) + (100/64)*10*math.sin( 1 + ((4)/8)*math.pi + beat*math.pi*0.25)
+			
+			local zadd1 = (100/64)*20*math.sin( 0 + ((4)/8)*math.pi + beat*math.pi*0.25)
+			local zadd2 = (100/64)*50*math.sin( 1 + ((4)/8)*math.pi + beat*math.pi*0.25)
+			
+			yin_dposx = {-400-xadd2,-150-xadd1,150+xadd1,400+xadd2}
+			yin_dposy = {-100+yadd-yadd2,-300+yadd-yadd1,-300+yadd-yadd1,-100+yadd-yadd2}
+			yin_dposz = {-zadd2,-zadd1,-zadd1,-zadd2}
+			
+			local str = '*1000 2x,'
+			for j=0,3 do
+				str = str..'*10000 '..yin_dposz[j+1]..' movez'..j..', *10000 no movex'..j..', *10000 no movey'..j..','
+			end
+			mod_do(str,1)
+			
+			local str = '*1000 2x, stealth'
+			for j=0,3 do
+				str = str..'*10000 '..yin_dposz[j+1]..' movez'..j..', *10000 '..yin_dposx[j+1]*(0.05+0.95*expandmult)..' movex'..j..','
+					..'*10000 '..yin_dposy[j+1]*(expandmult) - 200*(1-expandmult)..' movey'..j..','
+			end
+			mod_do(str,2)
+			
+			for j=0,3 do
+			
+				for pn=1,1 do
+				
+					local m = 1
+					if math.mod(j,2) == 0 then
+						m = m*-1
+					end
+					if pn == 2 then
+						--m = m*-1
+					end
+					
+					yin_angs[j+1] = (yin_defaultangs[j+1]+m*yin_anglerange*math.sin(yin_pos))
+					--yin_angs[j+1] = yin_defaultangs[j+1]+m*25*math.tan(yin_pos)
+					
+					_G['yin_trailing_angs'..pn][j+1][1] = yin_angs[j+1]
+					
+					for i=2,yin_points do
+						_G['yin_trailing_angs'..pn][j+1][i] = expandmult * _G['yin_trailing_angs'..pn][j+1][i] + (_G['yin_trailing_angs'..pn][j+1][i-1] - _G['yin_trailing_angs'..pn][j+1][i]) / yin_laziness
+					end
+					
+					local spx = {}
+					local spy = {}
+					
+					for i=1,yin_points do
+						table.insert(spx,{yin_dists[j+1][i]*yin_fidelity, yin_dposx[j+1]*(0.05+0.95*expandmult) + yin_fidelity*yin_distmult[j+1]*yin_dists[j+1][i]*math.sin(math.rad(_G['yin_trailing_angs'..pn][j+1][i]))})
+						table.insert(spy,{yin_dists[j+1][i]*yin_fidelity, yin_dposy[j+1]*(expandmult) - 200*(1-expandmult) + yin_fidelity*yin_distmult[j+1]*yin_dists[j+1][i]*math.cos(math.rad(_G['yin_trailing_angs'..pn][j+1][i]))})
+					end
+				
+					local a = Plr(pn)
+					if a then
+					
+						local x = spx
+						local y = spy
+					
+						for b=1,table.getn(x) do
+							a:SetXSpline(b-1,j,x[b][2],x[b][1],-1)
+						end
+						for b=1,table.getn(y) do
+							a:SetYSpline(b-1,j,y[b][2],y[b][1],-1)
+						end
+						
+					end
+					
+				end
+				
+			end
+			
+		end)
+		
+		m2(872,function()
+			for pn=1,2 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxA(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxB(pn)
+				if a then
+					a:hidden(0)
+				end
+				--yin_exform_bg:hidden(0)
+				--yin_exform:hidden(1)
+			end
+		end,true)
+		
+		yin_wings = {}
+		m2(1,function()
+			
+			for w=1,2 do
+				table.insert(yin_wings,_G['yin_winga'..w])
+				table.insert(yin_wings,_G['yin_wingb'..w])
+				table.insert(yin_wings,_G['yin_wingc'..w])
+			end
+			
+		end,true)
+		
+		m2(872,function()
+			
+			for i=1,6 do
+				local a = yin_wings[i]
+				if a then
+					a:aux(.2)
+					a:diffuse(1,1,1,1)
+					a:linear(3.5*60/174)
+					a:diffuse(1,1,1,1)
+					a:aux(.7)
+				end
+			end
+		
+			yin_exform:playcommand('Kill')
+			yin_exform:addy(-10)
+			yin_exform:linear(3.5*60/174)
+			yin_exform:rotationz(-10)
+			yin_exform:addy(-10)
+			yin_exform:accelerate(30/174)
+			yin_exform:zoomx(0)
+			
+		end)
+		
+		m2(876,function()
+			
+			yin_rainbow:linear(8*60/174)
+			yin_rainbow:diffusealpha(1)
+			
+		end)
+		
+		mpf(872,876,function(beat)
+			
+			for i=1,6 do
+				local a = yin_wings[i]
+				if a then
+					a:GetShader():uniform1f( 'burn', (a:getaux()) )
+				end
+			end
+			
+		end)
+		
+		m2(876,function()
+			yin_exform:hidden(1)
+		end,true)
+		
+		m2(876,function()
+			
+			char_yin1:basezoomx(.5)
+			char_yin1:basezoomy(.5)
+			char_yin1:x(SCREEN_CENTER_X);
+			char_yin1:y(SCREEN_CENTER_Y-90);
+		
+			char_yin1:queuecommand('SpawnQ');
+			char_yin1:queuecommand('Hurt2');
+			
+			char_yin1:rotationy(360+90)
+			char_yin1:decelerate(120/174)
+			char_yin1:rotationy(0)
+			
+		end)
+		
+		m2(880,function()
+			
+			char_yin1:queuecommand('Hide');
+			
+		end)
+		
+		yin_aptr = 1
+		function yin_get_ass_ring()
+			local a = _G['yin_ass_ring'..yin_aptr]
+			yin_aptr = yin_aptr+1
+			if yin_aptr > 4 then
+				yin_aptr = 1
+			end
+			return a
+		end
+		
+		yin_ass_mines = {}
+		function yin_add_ass_mine(obj)
+			table.insert(yin_ass_mines,obj)
+		end
+		
+		for i=0,6 do
+			m2(843.5+4*i,function()
+				
+				local opx,opy = 0,0
+				if P1 then
+					opx,opy = P1:GetX(),P1:GetY()
+				elseif P2 then
+					opx,opy = P2:GetX(),P2:GetY()				
+				end
+				
+				local a = yin_get_ass_ring()
+				local col = math.mod(yin_aptr-2,4)
+				if col == -1 then col = 3 end
+				local xp = opx+GAMESTATE:GetX(0,col,0)*1.53
+				local yp = opy+GAMESTATE:GetY(0,col,0)*0.98
+				local oe = math.mod(yin_aptr,2)*2 - 1
+				if a then
+					a:stoptweening()
+					a:hidden(0)
+					a:rotationz(0)
+					a:diffusealpha(0)
+					a:sleep(30/174)
+					a:diffusealpha(1)
+					a:aux(64)
+					a:x(xp)
+					a:y(yp)
+					a:zoom(64)
+					a:linear(8*60/174)
+					a:y(sh/2)
+					a:x(sw/2)
+					a:zoom(math.sqrt(sw*sw+sh*sh))
+					a:rotationz( 720*oe )
+					a:aux(math.sqrt(sw*sw+sh*sh))
+					a:diffusealpha(1)
+					a:linear(1*60/174)
+					a:diffusealpha(0)
+					a:queuecommand('Hide')
+				end
+				
+			end)
+		end
+		
+		SCREEN_DIAMETER = math.sqrt(sw*sw+sh*sh)
+		
+		mpf(808,920,function(beat)
+			
+			local present = 0
+			if P1 then
+				present = 1
+			elseif P2 then
+				present = 2				
+			end
+			local opx,opy,opz = Plr(present):GetX(),Plr(present):GetY(),Plr(present):GetZ()
+			
+			if beat < 872 then
+				for i=1,4 do
+					local oe = math.mod(i,2)*2 - 1
+					local xp = opx+GAMESTATE:GetX(present-1,i-1,0)*1.53
+					local yp = opy+GAMESTATE:GetY(present-1,i-1,0)*0.98
+					local zp = opz+GAMESTATE:GetZ(present-1,i-1,0)
+					local a = _G['yin_lotus'..i]
+					a:x(xp)
+					a:y(yp)
+					a:z(zp)
+					a:rotationz(beat*45*oe + 90*i)
+					a:diffusealpha(.5)
+					a:hidden(0)
+					
+					local b = _G['yin_ass_ring'..i]
+					local aux = b:getaux()
+					local x = b:GetX()
+					local y = b:GetY()
+					for j=1,6 do
+						local s = (i-1)*6
+						local m = yin_ass_mines[s+j]
+						local ang = (beat*math.pi*0.125)+(j/6)*2*math.pi
+						if m then
+							m:x(x + 0.5*aux*math.sin(ang))
+							m:y(y + 0.5*aux*math.cos(ang))
+							m:rotationz(beat*360*(60/174))
+							m:zoom(.66)
+							if aux < 66 or aux > SCREEN_DIAMETER - 10 then
+								m:hidden(1)
+							else
+								m:hidden(0)
+							end
+							if aux >= 66 and aux < 130 then
+								m:diffusealpha( .6*(aux-66)/64 )
+							else
+								m:diffusealpha( .6 )
+							end
+						end
+					end
+				end
+			end
+			
+		end)
+		
+		m2(872,function()
+			for i=1,4 do
+				local a = _G['yin_lotus'..i]
+				local b = _G['yin_ass_ring'..i]
+				a:hidden(1)
+				b:hidden(1)
+			end
+			for i=1,table.getn(yin_ass_mines) do
+				local a = yin_ass_mines[i]
+				a:hidden(1)
+			end
+			
+		end,true)
+		
+		---------------------------------
+		-------- waterfall (b872-908) ---
+		---------------------------------
+		
+		for pn=1,1 do
+		
+			me(872,4,0,100,'stealth',l,linear,pn)
+			me(872,4,90,100,'dark',l,linear,pn)
+			
+		end
+		
+		me(812,816,50,90,'dark',e,linear,1,872)
+		me(872,4,100,0,'arrowpath',l,linear,1)
+		
+		m(808,876,'*10000 stealth, *10000 dark',e,2)
+		
+		m2(876,function()
+			for pn=1,4 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxA(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxB(pn)
+				if a then
+					a:hidden(1)
+				end
+			end
+			for pn=3,3 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+					a:fov(60)
+				end
+				local a = PrxC(pn)
+				if a then
+					a:hidden(0)
+				end
+			end
+		end,true)
+		
+		m2(863.5,function()
+			
+			for pn=3,3 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+					a:fov(60)
+					a:SetAwake(true)
+					a:x(sw/2)
+					a:y(sh/2 - 10)
+					a:z(130)
+					a:rotationx(0)
+					a:zoom(.4)
+					a:zoomz(.4)
+				end
+			end
+			
+		end,true)
+		
+		m2(864,function()
+			
+				local a = PrxC(3)
+				if a then
+					a:hidden(0)
+				end
+			
+		end,true)
+		
+		m2(876,function()
+			
+			for pn=3,4 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+					a:fov(60)
+					a:SetAwake(true)
+					a:x(sw/2)
+					a:y(sh/2 - 10)
+					a:z(130)
+					a:rotationx(0)
+					a:zoom(.4)
+					a:zoomz(.4)
+				end
+			end
+			
+		end,true)
+		
+		m2(880,function()
+			
+				local a = PrxC(4)
+				if a then
+					a:hidden(0)
+				end
+			
+		end,true)
+		
+		me(863,877,'*1000 stealth, *1000 dark',4)
+		
+		for pn=3,4 do
+			if pn == 3 then
+				m(863,908,'*1000 140 drawsize, *1000 250 arrowcull, *1000 2000 grain',e,pn)
+			end
+			m(863,908,'*1000 reverse, no wireframe, *1000 100 spiralholds, *100 -50 tiny, *100 -50 tinyz, *1000 -100 tinyz, *1000 0 mini, *1000 -15 flip',e,pn)
+			m(863,908,'*1000 -300 roll, *100 30 drunky, *1000 30 drunk, *1000 0 drunkperiod',e,pn)
+			m(863,908,'*1000 5.5 spiralx, *1000 -98.5 spiralxperiod,*-1 100 orient',e,pn)
+			--m(863,908,'*1000 100 arrowpath, *1000 140 arrowpathdrawsize',e,pn)
+			m(863,908,'*1000 500 zigzagzperiod, *1000 0 zigzagzoffset, *1000 750 zigzagz, *1000 -45 rotationx',e,pn)
+			
+			--me(863,
+			
+			m(863,872,'*1000 dark',e,pn)
+			if pn == 3 then
+				me(872,4,100,75,'dark',l,linear,pn)
+			end
+		end
+		
+		local function drr(beat,len)
+			m2(beat,function()
+				for pn=3,4 do
+					local a = Plr(pn)
+					if a then
+						a:vibrate()
+						a:effectmagnitude(0,32,0)
+					end
+				end
+			end)
+			m2(beat+len,function()
+				for pn=3,4 do
+					local a = Plr(pn)
+					if a then
+						a:stopeffect()
+					end
+				end
+			end)
+		end
+		
+		drr(890.5,.5)
+		drr(891.5,.5)
+		drr(900,1)
+		drr(902,1)
+		drr(904,.5)
+		drr(905,.5)
+		drr(906,2)
+		
+		mpf(863,908,function(beat)
+			
+			local str = ''
+			
+			for i=0,3 do
+				str = str..'*10000 '..(beat*60 + i*100)..' bumpyoffset'..i..', *10000 400 bumpyperiod'..i..', *10000 200 bumpy'..i..','
+						..'*10000 '..(beat*60 + i*100)..' bumpyxoffset'..i..', *10000 300 bumpyxperiod'..i..', *10000 40 bumpyx'..i..','
+						..'*10000 '..(beat*60 + i*100)..' confusionoffset'..i..','
+			end
+			
+			mod_do(str,3)
+			if beat > 876 then
+				mod_do(str,4)
+			end
+			
+		end)
+		
+		m2(876,function()
+			
+			yin_foamclimb:tween(32*60/174,'inOutQuad(%f,0,1,1)')
+			yin_foamclimb:addy(-250)
+			
+		end)
+		
+		
+		
+		--mpf(0,999,
+		
+		m2(863,function()
+			local dist = 600
+			local size = (dist/2)
+			local offset = 50
+			for pn = 3,4 do
+				local a = Plr(pn)
+				if a then
+				
+					--a:ResetYSplines()
+					
+					a:NoClearSplines(true)
+					
+					for c = 0,3 do
+					
+						a:SetNumArrowGradientPoints(c,5)
+					
+						a:SetYSpline(0,c,200,0,-1)
+						a:SetYSpline(1,c,0,299,-1)
+						
+						--a:SetStealthSpline(0,c,0,0,-1)
+						--a:SetStealthSpline(1,c,0,299+150,-1)
+						a:SetArrowGradientPoint(0,c,0);
+						a:SetArrowGradientColor(0,c,1,1,1,0.5);
+						
+						a:SetArrowGradientPoint(1,c,2.9+1.5);
+						a:SetArrowGradientColor(1,c,1,1,1,0.5);
+						
+						for i=0,24 do
+							local ang = math.pi*4*(i/24)
+							offset = 300 + 600*(i/24)
+							a:SetYSpline(i+2,c,-math.abs(100*math.sin(ang)),offset,-1)
+							--[[
+							if i < 18 then
+								a:SetStealthSpline(i+2,c,100-math.abs(100*math.sin(ang)),150+offset,-1)
+							else
+								a:SetStealthSpline(i+2,c,1,150+offset,-1)
+							end
+							]]
+							--[[
+							a:SetArrowGradientPoint(i+2,c,1.5+(offset/100));
+							a:SetArrowGradientColor(i+2,c,1,1,1,.1+.3*math.abs(math.sin(ang)));
+							]]
+						end
+						
+						a:SetArrowGradientPoint(2,c,3+1.5);
+						a:SetArrowGradientColor(2,c,1,1,1,0.06);
+						
+						a:SetArrowGradientPoint(3,c,10);
+						a:SetArrowGradientColor(3,c,1,1,1,0.06);
+						
+						a:SetArrowGradientPoint(4,c,11);
+						a:SetArrowGradientColor(4,c,1,1,1,0.5);
+					
+					end
+
+				end
+			end
+		end,true)
+		
+		
+		
+		m2(908,function()
+			for pn=3,4 do
+				local a = Plr(pn)
+				if a then
+					a:hidden(1)
+				end
+				local a = PrxC(pn)
+				if a then
+					a:hidden(1)
+				end
+			end
+		end,true)
+		
+		
+		if table.getn(mod_actions) > 1 then table.sort(mod_actions, modtable_compare) end
+		
+	end"/>
+	
+	
+	
+	<Layer Type="ActorFrame" Var="yin_widescreener" OnCommand="x,scx;"><children>
+	<Layer Type="ActorFrame" OnCommand="x,-scx"><children>
+	
+	<Layer File="coin_tex" Var="yin_coinbg" OnCommand="hidden,1;xy,scx,scy;" />
+	
+	<Layer Type="Sprite" Texture="_black.png" Frag="clouds.frag" Var="h_clouds"
+		OnCommand="hidden,1;xy,scx,scy;basezoomx,sw/640;basezoomy,-sh/480;zoom,1;diffusealpha,0;"
+	/>
+	
+	<Layer File="oh no" Var="yin_coinmines" OnCommand="hidden,1;diffusealpha,0.2;xy,scx,scy;zoom,5;customtexturerect,0,0,8,8;texcoordvelocity,1,1" HideCommand="hidden,1" />
+	<Layer File="sheen" Var="yin_sheen" OnCommand="hidden,1;diffusealpha,0.2;xy,scx,scy;zoom,4;customtexturerect,0,0,8,8;texcoordvelocity,1,1" HideCommand="hidden,1" />
+	
+	<Layer Type="ActorFrame" OnCommand="xy,sw/2,sh/2;hidden,1;" Var="t_starbg" ><children>
+		<Layer Type="Quad" OnCommand="zoomto,sw,sh;diffuse,0,0,0,1;" />
+		<Layer File="stars" InitCommand="%function(self) self:SetTextureFiltering(true) end"
+		OnCommand="zoom,6;basezoomx,sw/640;customtexturerect,0,0,3,4;texcoordvelocity,0,-.125;blend,add" />
+		<Layer File="stars" InitCommand="%function(self) self:SetTextureFiltering(true) end"
+		OnCommand="zoom,6;basezoomx,sw/640;customtexturerect,0,0,6,8;texcoordvelocity,0,-.375;blend,add" />
+		
+		<Layer File="_green aurora" OnCommand="zoomx,6;zoomy,8;customtexturerect,0,0,3,1;texcoordvelocity,.3,0;fadebottom,0.2;blend,add;diffusealpha,0.7" />
+		<Layer File="_pink aurora" OnCommand="zoomx,6;zoomy,8;customtexturerect,0,0,3,1;texcoordvelocity,-.3,0;fadebottom,0.5;blend,add;diffusealpha,0.7" />
+		
+	</children></Layer>
+	
+	<Layer File="temple" />
+	<Layer File="waterfall" />
+	
+	<Layer Type="Quad" Var="yin_templebgcover" OnCommand="hidden,1;clearzbuffer,1;diffuse,0,0,0,0;stretchto,0,0,sw,sh" />
+	
+	<Layer Type="ActorProxy" OnCommand="hidden,1;" Var="Proxy1A" GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1) end end" />
+	<Layer Type="ActorProxy" OnCommand="hidden,1;" Var="Proxy2A" GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2) end end" />
+	
+	</children></Layer>
+	</children></Layer>
+	
+	<Layer
+		Type="ActorFrameTexture"
+		InitCommand="%function(self)
+			self:SetWidth( dw );
+			self:SetHeight( dh );
+			self:EnableDepthBuffer( true );
+			self:EnableAlphaBuffer( false );
+			self:EnableFloat( false );
+			self:EnablePreserveTexture( true );        
+			self:hidden(0);
+			self:Create();
+			med_aft=self
+			
+		end"
+	/>
+	
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark2(self) end" />
+	
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	<Layer File="dark" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makedark(self) end" />
+	
+	<Layer Type="Quad" Var="med_aft_coverquad" OnCommand="hidden,1;diffuse,0,0,0,1;stretchto,0,0,sw,sh" />
+	
+	<Layer Type="Sprite" Var="t_starbg_sprite" Frag="kaleido.frag" OnCommand="texturewrapping,1;x,sw/2;y,sh/2;diffuse,.5,.5,.5,1;hidden,1;basezoomy,-1;sleep,.1;queuecommand,RM"
+	RMCommand="%function(self) self:SetTexture(med_aft:GetTexture()) end" />
+	
+	<Layer Type="Quad" Var="yin_exform_bg" OnCommand="hidden,1;diffuse,.3,0,.3,1;stretchto,0,0,sw,sh" />
+	
+	<Layer File="EXBao" Var="yin_exform" OnCommand="hidden,1;x,SCREEN_WIDTH/2;y,SCREEN_HEIGHT/2-50;zoom,640/800;" />
+	
+	<Layer Type="ActorFrame" Var="yin_lotus_frame" OnCommand="fov,45;" ><children>
+		<Layer File="lotus" Var="yin_lotus1" OnCommand="hidden,1;" />
+		<Layer File="lotus" Var="yin_lotus2" OnCommand="hidden,1;" />
+		<Layer File="lotus" Var="yin_lotus3" OnCommand="hidden,1;" />
+		<Layer File="lotus" Var="yin_lotus4" OnCommand="hidden,1;" />
+	</children></Layer>
+	
+	<Layer File="sphere" Var="yin_egg" OnCommand="hidden,1;x,sw/2;y,sh/2;basezoomx,1.5;basezoomy,1.5*1.2;" />
+	<Layer File="beholder" Var="yin_egg_beholder" OnCommand="hidden,1;x,sw/2;y,sh/2;basezoomx,1.5;basezoomy,1.5;" />
+	
+	
+	
+	<Layer Type="Quad" Var="yin_eggcover" OnCommand="hidden,0;diffuse,0,0,0,0;clearzbuffer,1;stretchto,0,0,sw,sh" />
+	
+	<Layer Type="ActorFrame" Var="yin_hatchrings" OnCommand="fov,60;" ><children>
+		<Layer File="hatch" OnCommand="xy,sw/2,sh/2-40;rotationx,20;rotationy,20;diffusealpha,0;blend,add;"
+		HatchMessageCommand="sleep,0;zoom,1.2;diffusealpha,.5;linear,.4;zoom,1.8*2;zoomz,1.8*2;diffusealpha,0;" />
+		<Layer File="hatch" OnCommand="xy,sw/2,sh/2-40;rotationx,-30;rotationy,-30;diffusealpha,0;blend,add;"
+		HatchMessageCommand="sleep,.05;zoom,1.2;diffusealpha,.5;linear,.4;zoom,1.8*2;zoomz,1.8*2;diffusealpha,0;" />
+		<Layer File="hatch" OnCommand="xy,sw/2,sh/2-40;rotationx,-60;rotationy,30;diffusealpha,0;blend,add;"
+		HatchMessageCommand="sleep,.1;zoom,1.5;diffusealpha,.5;linear,.4;zoom,2.6*2;zoomz,2.6*2;diffusealpha,0;" />
+		
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.8;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.8;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.8;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.8;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.8;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.8;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.5;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.5;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.5;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.5;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.5;diffusealpha,0;addy,10+math.random()*10" />
+		<Layer File="sparkle" OnCommand="diffuseshift;effectperiod,1/20;effectclock,timer;diffusealpha,0;effectcolor1,1,1,1,0;effectcolor2,1,.8,.8,1;blend,add;"
+		HatchMessageCommand="x,sw/2-240+math.random()*480;y,sh/2-50-180+math.random()*360;basezoomx,.8+math.random()*.4;basezoomx,.8+math.random()*.4;
+		sleep,math.random()*.3;diffusealpha,1;accelerate,1.5+math.random()*1.5;zoom,.5;diffusealpha,0;addy,10+math.random()*10" />
+		
+	</children></Layer>
+	
+	<Layer Type="ActorProxy" OnCommand="hidden,1;zoom,1;" Var="Proxy1B" GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1) end end" />
+	<Layer Type="ActorProxy" OnCommand="hidden,1;zoom,1;" Var="Proxy2B" GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2) end end" />
+	<Layer Type="ActorProxy" OnCommand="hidden,1;zoom,1;" Var="Proxy3B" GetProxyMessageCommand="%function(self) if P3 then self:SetTarget(P3) end end" />
+	<Layer Type="ActorProxy" OnCommand="hidden,1;zoom,1;" Var="Proxy4B" GetProxyMessageCommand="%function(self) if P4 then self:SetTarget(P4) end end" />
+	
+	
+
+	<CODE Type="Quad" InitCommand="hidden,1"
+		OnCommand="%function(self)
+			
+			local function magpow(n,pow)
+				local mag = math.pow(math.abs(n),pow)
+				if n < 0 then return -mag
+				elseif n >= 0 then return mag end
+			end
+			
+			function generate_disc(obj,verts,r1,r2)
+			
+				r1 = math.clamp(r1,0,256)
+				r2 = math.clamp(r2,0,256)
+			
+				obj:cullmode('none')
+				
+				for i=0,verts+1,2 do
+			
+					local ang = (i/verts)*2*math.pi
+					local r = r2
+					
+					local roundness = 0.3 + 0.7*(r/256)
+					--roundness = 5
+					
+					--outer
+					--obj:SetVertexPosition(i,r*math.cos(ang),r*math.sin(ang),0)
+					obj:SetVertexPosition( i, r*magpow(math.cos(ang),roundness),r*magpow(math.sin(ang),roundness),0)
+					--obj:SetVertexTexCoord( i, (0.5 + (256/sw)*math.cos(ang))*(dw/poly_npot(dw)), (0.5 + (256/sh)*math.sin(ang))*(dh/poly_npot(dh)) )
+					obj:SetVertexTexCoord( i, (0.5 + yin_ring_xscale*yin_ring_shrink*(256/sw)*magpow(math.cos(ang),roundness))*(dw/poly_npot(dw)), (0.5 + yin_ring_shrink*(256/sh)*magpow(math.sin(ang),roundness))*(dh/poly_npot(dh)) )
+					
+					local r = r1
+					
+					roundness = 0.3 + 0.7*(r/256)
+					--roundness = 5
+					
+					
+					--inner
+					--obj:SetVertexPosition(i+1,r*math.cos(ang),r*math.sin(ang),0)
+					obj:SetVertexPosition( i+1,r*magpow(math.cos(ang),roundness),r*magpow(math.sin(ang),roundness),0)
+					obj:SetVertexTexCoord( i+1, (0.5 + yin_ring_xscale*yin_ring_shrink*(64/sw)*magpow(math.cos(ang),roundness))*(dw/poly_npot(dw)), (0.5 + yin_ring_shrink*(64/sh)*magpow(math.sin(ang),roundness))*(dh/poly_npot(dh)) )
+					
+				end
+				
+			end
+		end"
+	/>
+	
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	<Layer File="blur" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep2(self) end" />
+	
+	<Layer File="beholder" OnCommand="hidden,1;x,sw/2;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	<Layer File="beholder" OnCommand="hidden,1;x,-9999;y,sh/2;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_v_makep(self) end" />
+	
+	<Layer Type="Quad" OnCommand="stretchto,0,0,sw,sh;diffuse,0,0,0,1;hidden,1;" DiscOnMessageCommand="hidden,0;" DiscOffMessageCommand="hidden,1;" />
+	
+	<Layer Type="ActorFrame" InitCommand="%function(self) disc_container = self end" OnCommand="fov,80;x,sw/2;y,sh/2;" ><children>
+	<Layer Type="Polygon"
+		Var="med_disc1"
+		Shader="rotate.frag"
+		DrawMode="QuadStrip"
+		OnCommand="diffusealpha,1;hidden,1;texturewrapping,1;basezoomy,-1;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			local verts = disc_total_verts
+			
+			self:SetNumVertices(verts+2)
+			
+			self:SetTexture(med_aft:GetTexture())
+			
+			--
+			generate_disc(self,verts,64,256)
+			
+		end"
+	/>
+	<Layer Type="Polygon"
+		Var="med_disc2"
+		DrawMode="QuadStrip"
+		Shader="rotate.frag"
+		OnCommand="diffusealpha,1;hidden,1;texturewrapping,1;basezoomy,-1;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			local verts = disc_total_verts
+			
+			self:SetNumVertices(verts+2)
+			
+			self:SetTexture(med_aft:GetTexture())
+			
+			--
+			generate_disc(self,verts,64,256)
+			
+		end"
+	/>
+	<Layer Type="Polygon"
+		Var="med_disc3"
+		DrawMode="QuadStrip"
+		Shader="rotate.frag"
+		OnCommand="diffusealpha,1;hidden,1;texturewrapping,1;basezoomy,-1;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			local verts = disc_total_verts
+			
+			self:SetNumVertices(verts+2)
+			
+			self:SetTexture(med_aft:GetTexture())
+			
+			--
+			generate_disc(self,verts,64,256)
+			
+		end"
+	/>
+	<Layer Type="Polygon"
+		Var="med_disc4"
+		DrawMode="QuadStrip"
+		Shader="rotate.frag"
+		OnCommand="diffusealpha,1;hidden,1;texturewrapping,1;basezoomy,-1;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			local verts = disc_total_verts
+			
+			self:SetNumVertices(verts+2)
+			
+			self:SetTexture(med_aft:GetTexture())
+			
+			--
+			generate_disc(self,verts,64,256)
+			
+		end"
+	/>
+	</children></Layer>
+	
+	<Layer Type="ActorFrame" Var="mine_af1" OnCommand="xy,sw/2,sh/2;fov,60" ><children>
+		<Layer Type="ActorFrame" Var="mine_af2" OnCommand="fov,60" ><children>
+			<Layer File="mine/_mine.model" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_mine(self) end" />
+			<Layer File="mine/_mine.model" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_mine(self) end" />
+			<Layer File="mine/_mine.model" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_mine(self) end" />
+			<Layer File="mine/_mine.model" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_mine(self) end" />
+			<Layer File="mine/_mine.model" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_mine(self) end" />
+			<Layer File="mine/_mine.model" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_mine(self) end" />
+		</children></Layer>
+	</children></Layer>
+	
+	<Layer Type="Polygon" OnCommand="hidden,1;diffuse,1,0,0,1;blend,add;queuecommand,Make;"
+		DrawMode="linestrip" HideCommand="hidden,1" Var="yin_ass_ring1"
+		MakeCommand="%function(self)
+			
+			self:SetNumVertices(34)
+			
+			for i=0,32,2 do
+				local ang = i/32
+				local ang2 = (i+1)/32
+				self:SetVertexPosition(i,0.5*math.sin(ang*math.pi*2),0.5*math.cos(ang*math.pi*2),0)
+				self:SetVertexPosition(i+1,0.5*math.sin(ang2*math.pi*2),0.5*math.cos(ang2*math.pi*2),0)
+			end
+			
+		end"
+	/>
+	<Layer Type="Polygon" OnCommand="hidden,1;diffuse,1,0,0,1;blend,add;queuecommand,Make;"
+		DrawMode="linestrip" HideCommand="hidden,1" Var="yin_ass_ring2"
+		MakeCommand="%function(self)
+			
+			self:SetNumVertices(34)
+			
+			for i=0,32,2 do
+				local ang = i/32
+				local ang2 = (i+1)/32
+				self:SetVertexPosition(i,0.5*math.sin(ang*math.pi*2),0.5*math.cos(ang*math.pi*2),0)
+				self:SetVertexPosition(i+1,0.5*math.sin(ang2*math.pi*2),0.5*math.cos(ang2*math.pi*2),0)
+			end
+			
+		end"
+	/>
+	<Layer Type="Polygon" OnCommand="hidden,1;diffuse,1,0,0,1;blend,add;queuecommand,Make;"
+		DrawMode="linestrip" HideCommand="hidden,1" Var="yin_ass_ring3"
+		MakeCommand="%function(self)
+			
+			self:SetNumVertices(34)
+			
+			for i=0,32,2 do
+				local ang = i/32
+				local ang2 = (i+1)/32
+				self:SetVertexPosition(i,0.5*math.sin(ang*math.pi*2),0.5*math.cos(ang*math.pi*2),0)
+				self:SetVertexPosition(i+1,0.5*math.sin(ang2*math.pi*2),0.5*math.cos(ang2*math.pi*2),0)
+			end
+			
+		end"
+	/>
+	<Layer Type="Polygon" OnCommand="hidden,1;diffuse,1,0,0,1;blend,add;queuecommand,Make;"
+		DrawMode="linestrip" HideCommand="hidden,1" Var="yin_ass_ring4"
+		MakeCommand="%function(self)
+			
+			self:SetNumVertices(34)
+			
+			for i=0,32,2 do
+				local ang = i/32
+				local ang2 = (i+1)/32
+				self:SetVertexPosition(i,0.5*math.sin(ang*math.pi*2),0.5*math.cos(ang*math.pi*2),0)
+				self:SetVertexPosition(i+1,0.5*math.sin(ang2*math.pi*2),0.5*math.cos(ang2*math.pi*2),0)
+			end
+			
+		end"
+	/>
+	
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	<Layer File="oh yes" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) yin_add_ass_mine(self) end" />
+	
+	
+	
+	
+	
+</children></Layer>

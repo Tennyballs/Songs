@@ -1,0 +1,111 @@
+<ActorFrame> <children>
+
+
+	<ActorFrame OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+50;z,200;diffusealpha,0.5;zoom,0;" ActivateOrbMessageCommand="playcommand,A;decelerate,4/3;Zoom,2;"
+	EndOrbMessageCommand="accelerate,4/3;zoom,0;queuecommand,Hide" HideCommand="hidden,1;" > <children>
+
+		<!-- Outer Layer -->
+		<ActorFrame ACommand="accelerate,53;rotationz,-5400;rotationy,-2700;rotationx,-1350;decelerate,53;rotationz,-10800;rotationy,-5400;rotationx,-2700;"> <children>
+			
+			<!-- main points -->
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="y,100;rotationx,90"
+			/>
+			
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="y,-100;rotationx,-90"
+			/>
+			
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,100;rotationy,90"
+			/>
+			
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,-100;rotationy,-90"
+			/>
+			
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="z,-100;rotationz,90"
+			/>
+			
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="z,100;rotationz,-90"
+			/>
+			
+			
+			<!-- z-axis -->
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,67;y,-67;rotationy,45;rotationx,90;rotationz,-90"
+			/>
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,67;y,67;rotationy,45;rotationx,-90;rotationz,90"
+			/>
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,-67;y,-67;rotationy,45;rotationx,-90;rotationz,-90"
+			/>
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,-67;y,67;rotationy,45;rotationx,90;rotationz,90"
+			/>
+			
+			<!-- y-axis -->
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,67;z,-67;rotationy,45;rotationz,-90"
+			/>
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,67;z,67;rotationy,-45;rotationz,90"
+			/>
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,-67;z,-67;rotationy,-45;rotationz,-90"
+			/>
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="x,-67;z,67;rotationy,45;rotationz,90"
+			/>
+			
+			
+			<!-- x-axis -->
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="y,67;z,-67;rotationz,0;rotationx,-45"
+			/>
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="y,67;z,67;rotationz,180;rotationx,45"
+			/>
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="y,-67;z,-67;rotationz,0;rotationx,45"
+			/>
+			<Layer
+				File="arrow.model" InitCommand="diffuseshift;effectclock,bgm;effectperiod,8;effectcolor1,1,1,1,.05;effectcolor2,1,1,1,.2;"
+				OnCommand="y,-67;z,67;rotationz,180;rotationx,-45"
+			/>
+			
+		</children> </ActorFrame>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+	</children> </ActorFrame>
+	
+</children> </ActorFrame>

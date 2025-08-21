@@ -1,0 +1,68 @@
+<ActorFrame InitCommand="%function(self)
+
+
+end"><children>
+
+	<Layer 
+		Type="ActorFrameTexture" 
+		Var="ill_kecak_funny_aft_top1" 
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:SetWidth(DISPLAY:GetDisplayWidth())
+			self:SetHeight(DISPLAY:GetDisplayHeight())
+			self:EnableDepthBuffer(true)
+			self:EnableAlphaBuffer(true)
+			self:EnableFloat(false)
+			self:EnablePreserveTexture(true)
+			self:Create()
+		end"
+		GimmeTheMpegMessageCommand="hidden,0;"
+		GoAwayMpegMessageCommand="sleep,0.5;queuecommand,Hide;"
+		HideCommand="hidden,1;"
+	/>
+
+	<Layer Type="Sprite" Texture="black" Frag="displace.frag" Var="ill_kecak_displace"
+	    OnCommand="hidden,1;xy,scx,scy;basezoomx,sw/DISPLAY:GetDisplayWidth();basezoomy,-(sh/DISPLAY:GetDisplayHeight());zoom,1;diffusealpha,0;queuecommand,Render;"
+	    RenderCommand="%function(self) self:SetTexture(ill_kecak_funny_aft_top1:GetTexture()) end"
+	    GimmeTheMpegMessageCommand="hidden,0;linear,1;diffusealpha,0.9;"
+	    GoAwayMpegMessageCommand="linear,0.5;diffusealpha,0;queuecommand,Hide;"
+	    HideCommand="hidden,1;"
+	/>
+
+	<Layer 
+		Type="ActorFrameTexture" 
+		Var="ill_kecak_funny_aft_top2" 
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:SetWidth(DISPLAY:GetDisplayWidth())
+			self:SetHeight(DISPLAY:GetDisplayHeight())
+			self:EnableDepthBuffer(true)
+			self:EnableAlphaBuffer(true)
+			self:EnableFloat(false)
+			self:EnablePreserveTexture(true)
+			self:Create()
+		end"
+		GimmeTheMpegMessageCommand="hidden,0;"
+		GoAwayMpegMessageCommand="sleep,0.5;queuecommand,Hide;"
+		GimmeTheFuuuuckMessageCommand="hidden,0;"
+		GoAwayFuuuuckMessageCommand="sleep,0.5;queuecommand,Hide;"
+		HideCommand="hidden,1;"
+	/>
+
+	<Layer Type="Sprite" Texture="black" Frag="mpeg.frag" Var="ill_kecak_mpeg"
+	    OnCommand="hidden,1;xy,scx,scy;basezoomx,sw/DISPLAY:GetDisplayWidth();basezoomy,-(sh/DISPLAY:GetDisplayHeight());zoom,1;diffusealpha,0;queuecommand,Render;"
+	    RenderCommand="%function(self) self:SetTexture(ill_kecak_funny_aft_top2:GetTexture()) end"
+	    GimmeTheMpegMessageCommand="hidden,0;linear,0.5;diffusealpha,1;"
+	    GoAwayMpegMessageCommand="linear,0.5;diffusealpha,0;queuecommand,Hide;"
+	    HideCommand="hidden,1;"
+	/>
+
+	<Layer Type="Sprite" Texture="black" Frag="fuuuuck.frag" Var="ill_kecak_fuuuuck"
+	    OnCommand="hidden,1;xy,scx,scy;basezoomx,sw/DISPLAY:GetDisplayWidth();basezoomy,-(sh/DISPLAY:GetDisplayHeight());zoom,1;diffusealpha,0;queuecommand,Render;"
+	    RenderCommand="%function(self) self:SetTexture(ill_kecak_funny_aft_top2:GetTexture()) end"
+	    GimmeTheFuuuuckMessageCommand="hidden,0;linear,0.25;diffusealpha,1;"
+	    GoAwayFuuuuckMessageCommand="linear,0.5;diffusealpha,0;queuecommand,Hide;"
+	    HideCommand="hidden,1;"
+	/>
+
+</children></ActorFrame>

@@ -1,0 +1,332 @@
+<ActorFrame><children>
+
+	<Layer Type="ActorFrame" OnCommand="%function (self) char_scold=self; 
+	self:zoom(0); self:zoomx(3); self:bob() self:effectmagnitude(0,4,0) end" HideQCommand="zoomy,0;zoomx,3;"
+	HideCommand="bouncebegin,0.2;zoomy,0;zoomx,3;" SpawnCommand="bounceend,0.3;zoom,1;" SpawnQCommand="zoom,1;" > <children>
+		
+		<Layer Type="ActorFrame" OnCommand="%function(self) self:zoom(0.8); self:fov(60) end" ><children>
+		
+		<Layer
+			File="newidle.sprite"
+			OnCommand="diffusealpha,1;ztest,1;"
+			IdleCommand="diffusealpha,1;"
+			Attack1Command="diffusealpha,0;"
+			Attack2Command="diffusealpha,0;"
+			HurtCommand="diffusealpha,0;"
+		/>
+		
+		<Layer
+			File="newhurt.sprite"
+			OnCommand="diffusealpha,0;ztest,1;"
+			IdleCommand="diffusealpha,0;"
+			Attack1Command="diffusealpha,0;"
+			Attack2Command="diffusealpha,0;"
+			HurtCommand="setstate,0;diffusealpha,1;"
+		/>
+		
+		<Layer
+			File="attack1.sprite"
+			OnCommand="diffusealpha,0;ztest,1;"
+			IdleCommand="diffusealpha,0;"
+			Attack1Command="diffusealpha,1;zoom,1.1;linear,.1;zoom,1;"
+			Attack2Command="diffusealpha,0;"
+			HurtCommand="diffusealpha,0;"
+		/>
+		
+		<Layer
+			File="attack2.sprite"
+			OnCommand="diffusealpha,0;ztest,1;"
+			IdleCommand="diffusealpha,0;"
+			Attack1Command="diffusealpha,0;"
+			Attack2Command="vibrate;effectmagnitude,2,2,0;diffusealpha,1;zoom,1.1;linear,.1;zoom,1;"
+			HurtCommand="diffusealpha,0;"
+		/>
+		
+		<Layer File="blink.sprite" OnCommand="y,-83;x,-1;"
+			ChangeFaceCommand="hidden,1"
+			IdleFaceCommand="hidden,1"
+			IdleCommand="hidden,0"
+			HurtCommand="hidden,1"
+			Attack1Command="hidden,1"
+			Attack2Command="hidden,1"
+		/>
+		
+		<Layer File="blink2.sprite" OnCommand="y,-83;x,-1;hidden,1;"
+			Attack1ACommand="hidden,0;addy,83*-0.05;linear,.1;addy,83*0.05;"
+			ChangeFaceCommand="hidden,1"
+			IdleFaceCommand="hidden,1"
+			HurtCommand="hidden,1"
+			Attack2Command="hidden,1"
+			IdleCommand="hidden,1"
+		/>
+		
+		<Layer File="face" Var="scold_face" OnCommand="y,-83;x,-1;hidden,1;animate,0;setstate,1;"
+			ChangeFaceCommand="hidden,0"
+			Attack2Command="hidden,1"
+			Attack1BCommand="hidden,0;addy,83*-0.05;linear,.1;addy,83*0.05;"
+		/>
+		
+		<00Layer Type="ActorFrame" OnCommand="zoom,2.5;spin;effectmagnitude,0,0,90;"><children>
+			<Layer File="ring1"
+			OnCommand="basezoomx,.7;basezoomy,.7;blend,add;diffuse,0,1,.2,0;"
+			CastCommand="%function (self)
+				self:zoom(1.1);
+				self:linear(0.8);
+				self:zoom(0.9);
+				self:diffusealpha(1);
+				self:linear(0.8);
+				self:zoom(0.7);
+				self:linear(0.8);
+				self:diffusealpha(0);
+				self:zoom(0.5);
+			end"
+			/>
+		</children> </00Layer>
+		
+		<00Layer Type="ActorFrame" OnCommand="zoom,2.5;spin;effectmagnitude,0,0,-60;"><children>
+			<Layer File="ring2"
+			OnCommand="basezoomx,.7;basezoomy,.7;blend,add;diffuse,0,1,.2,0;"
+			CastCommand="%function (self)
+				self:zoom(1.1);
+				self:linear(0.8);
+				self:zoom(0.9);
+				self:diffusealpha(1);
+				self:linear(0.8);
+				self:zoom(0.7);
+				self:linear(0.8);
+				self:diffusealpha(0);
+				self:zoom(0.5);
+			end"
+			/>
+		</children> </00Layer>
+		
+		<00Layer Type="ActorFrame" OnCommand="zoom,2.5;spin;effectmagnitude,0,0,40;"><children>
+			<Layer File="ring3"
+			OnCommand="basezoomx,.7;basezoomy,.7;blend,add;diffuse,0,1,.2,0;"
+			CastCommand="%function (self)
+				self:zoom(1.1);
+				self:linear(0.8);
+				self:zoom(0.9);
+				self:diffusealpha(1);
+				self:linear(0.8);
+				self:zoom(0.7);
+				self:linear(0.8);
+				self:diffusealpha(0);
+				self:zoom(0.5);
+			end"
+			/>
+		</children> </00Layer>
+		
+		
+		
+		<0Layer Type="ActorFrame" CastCommand="%function(self) self:playcommand('Inner'); chara_drand = math.random(0,360);
+		chara_dspd = (math.random(0,600)/100)-3; self:playcommand('Turn') end"
+		TurnCommand="rotationz,chara_drand;
+		linear,0.1;rotationz,chara_drand+(60*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(110*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(150*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(180*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(200*chara_dspd);
+		linear,1.0;rotationz,chara_drand+(350*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(370*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(400*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(440*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(490*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(550*chara_dspd);"
+		><children>
+		<Layer File="triangle"
+		OnCommand="vertalign,top;blend,add;diffusealpha,0;fadetop,0.2;fadebottom,0.2;
+		diffuseblink;effectcolor1,0,1,.2,0.3;effectcolor2,0,1,.2,1;effectperiod,0.066"
+		InnerCommand="zoom,1;diffusealpha,0;linear,0.5;diffusealpha,1;zoomy,5;zoomx,3;linear,1.5;
+		zoomy,8;zoomx,3;linear,0.6;zoomy,20;zoomx,0;sleep,0;diffusealpha,0;"
+		/>
+		</children> </0Layer>
+		<0Layer Type="ActorFrame" CastCommand="%function(self) self:playcommand('Inner'); chara_drand = math.random(0,360);
+		chara_dspd = (math.random(0,600)/100)-3; self:playcommand('Turn') end"
+		TurnCommand="rotationz,chara_drand;
+		linear,0.1;rotationz,chara_drand+(60*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(110*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(150*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(180*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(200*chara_dspd);
+		linear,1.0;rotationz,chara_drand+(350*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(370*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(400*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(440*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(490*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(550*chara_dspd);"
+		><children>
+		<Layer File="triangle"
+		OnCommand="vertalign,top;blend,add;diffusealpha,0;fadetop,0.2;fadebottom,0.2;
+		diffuseblink;effectcolor1,0,1,.2,0.3;effectcolor2,0,1,.2,1;effectperiod,0.066"
+		InnerCommand="zoom,1;diffusealpha,0;linear,0.5;diffusealpha,1;zoomy,5;zoomx,3;linear,1.5;
+		zoomy,8;zoomx,3;linear,0.6;zoomy,20;zoomx,0;sleep,0;diffusealpha,0;"
+		/>
+		</children> </0Layer>
+		<0Layer Type="ActorFrame" CastCommand="%function(self) self:playcommand('Inner'); chara_drand = math.random(0,360);
+		chara_dspd = (math.random(0,600)/100)-3; self:playcommand('Turn') end"
+		TurnCommand="rotationz,chara_drand;
+		linear,0.1;rotationz,chara_drand+(60*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(110*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(150*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(180*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(200*chara_dspd);
+		linear,1.0;rotationz,chara_drand+(350*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(370*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(400*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(440*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(490*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(550*chara_dspd);"
+		><children>
+		<Layer File="triangle"
+		OnCommand="vertalign,top;blend,add;diffusealpha,0;fadetop,0.2;fadebottom,0.2;
+		diffuseblink;effectcolor1,0,1,.2,0.3;effectcolor2,0,1,.2,1;effectperiod,0.066"
+		InnerCommand="zoom,1;diffusealpha,0;linear,0.5;diffusealpha,1;zoomy,5;zoomx,3;linear,1.5;
+		zoomy,8;zoomx,3;linear,0.6;zoomy,20;zoomx,0;sleep,0;diffusealpha,0;"
+		/>
+		</children> </0Layer>
+		<0Layer Type="ActorFrame" CastCommand="%function(self) self:playcommand('Inner'); chara_drand = math.random(0,360);
+		chara_dspd = (math.random(0,600)/100)-3; self:playcommand('Turn') end"
+		TurnCommand="rotationz,chara_drand;
+		linear,0.1;rotationz,chara_drand+(60*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(110*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(150*chara_dspd);
+		linear,0.1;rotationz,chara_drand+(180*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(200*chara_dspd);
+		linear,1.0;rotationz,chara_drand+(350*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(370*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(400*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(440*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(490*chara_dspd);
+		linear,0.2;rotationz,chara_drand+(550*chara_dspd);"
+		><children>
+		<Layer File="triangle"
+		OnCommand="vertalign,top;blend,add;diffusealpha,0;fadetop,0.2;fadebottom,0.2;
+		diffuseblink;effectcolor1,0,1,.2,0.3;effectcolor2,0,1,.2,1;effectperiod,0.066"
+		InnerCommand="zoom,1;diffusealpha,0;linear,0.5;diffusealpha,1;zoomy,5;zoomx,3;linear,1.5;
+		zoomy,8;zoomx,3;linear,0.6;zoomy,20;zoomx,0;sleep,0;diffusealpha,0;"
+		/>
+		</children> </0Layer>
+		
+		<0Layer Type="ActorFrame"
+		InitCommand="%function(self)
+			
+			gf2_binary = {}
+			function gf2_add_number(obj)
+				obj:GetChild(''):diffuse(0,1,0,1)
+				obj:GetChild(''):setstate(math.random(0,3))
+				table.insert(gf2_binary,obj)
+			end
+			
+		end"
+		CastCommand="%function(self)
+			
+			for i=1,table.getn(gf2_binary) do
+				local a = gf2_binary[i]
+				if a then
+					local zm = math.random(500,900)/1000
+					local slp = math.random(0,600)/1000
+					a:finishtweening()
+					a:hidden(0)
+					a:basezoomx(zm)
+					a:basezoomy(zm)
+					a:GetChild(''):diffuse(0,1,0,0.7)
+					a:GetChild(''):glowshift()
+					a:GetChild(''):effectcolor2(1,1,1,1)
+					a:GetChild(''):effectcolor1(1,1,1,0)
+					a:GetChild(''):effectperiod(0.1)
+					a:GetChild(''):effectdelay(math.random(800,1600)/2000)
+					a:xy(math.random(-40,40),math.random(-60,60))
+					a:sleep(slp)
+					a:tween(1,'outQuad(%f, 0, 1, 1)')
+					local ang = math.atan2(a:GetY(),a:GetX())
+					local dist = math.random(60,200)
+					a:addx( dist*math.cos(ang) )
+					a:addy( dist*math.sin(ang) )
+					a:GetChild(''):zoomx(2)
+					a:GetChild(''):zoomy(0)
+					a:GetChild(''):sleep(slp)
+					a:GetChild(''):bounceend(0.2)
+					a:GetChild(''):zoom(1)
+					a:GetChild(''):sleep(0.5)
+					a:GetChild(''):linear(0.5)
+					a:GetChild(''):diffuse(0,1,0,0)
+					a:sleep(.5)
+					a:queuecommand('Hide')
+				end
+			end
+			
+		end"
+		><children>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers1" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers2" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gf2_add_number(self) end" ><children>
+			<Layer File="numbers3" /> </children></Layer>
+		</children></0Layer>
+		
+		</children> </Layer>
+		
+		<Layer Type="Quad" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,0" DimBGMessageCommand="linear,1;diffusealpha,0.5;" UnDimBGMessageCommand="linear,1;diffusealpha,0" />
+		
+	</children>	</Layer>
+	
+	
+	
+	
+</children></ActorFrame>

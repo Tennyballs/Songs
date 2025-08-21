@@ -1,0 +1,166 @@
+<Layer Type="ActorFrame" InitCommand="%function(self) yin_waterfall = self; self:hidden(1) self:SetFarDist(10000) end"
+OnCommand="x,sw/2;y,sh/2;fov,60;rotationx,30;" ><children>
+	
+	<Layer Var="yin_mizutex" File="wf-mizu" OnCommand="hidden,1;" />
+	
+	<Layer File="wf-mizu" OnCommand="valign,1;y,0;z,-200;zoomto,200,300;
+	customtexturerect,0,0,1,1;texcoordvelocity,0,-1.3;diffuse,.9*.5,.8*.5,.6*.5,1;" />
+	
+	<Layer File="cube-wb-l.txt" OnCommand="x,-120;y,100;z,0;zoomx,15/25;zoomy,200/25;zoomz,200/25;rotationx,0;" />
+	<Layer File="cube-wb-r.txt" OnCommand="x,120;y,100;z,0;zoomx,15/25;zoomy,200/25;zoomz,200/25;rotationx,0;" />
+	<Layer File="cube-under.txt" OnCommand="x,-420;y,90;z,-50;zoomx,300/25;zoomy,150/25;zoomz,150/25;rotationx,0;" />
+	<Layer File="cube-under.txt" OnCommand="x,420;y,90;z,-50;zoomx,300/25;zoomy,150/25;zoomz,150/25;rotationx,0;" />
+	
+	<Layer File="cube-floor.txt" OnCommand="x,-420;y,-50;z,-50;zoomx,300/25;zoomy,15/25;zoomz,200/25;rotationx,0;" />
+	<Layer File="cube-floor.txt" OnCommand="x,420;y,-50;z,-50;zoomx,300/25;zoomy,15/25;zoomz,200/25;rotationx,0;" />
+	
+	<Layer File="cube-wall.txt" OnCommand="x,-420;y,-245;z,-80;zoomx,200/25;zoomy,200/25;zoomz,160/25;rotationx,0;" />
+	<Layer File="cube-wall.txt" OnCommand="x,420;y,-245;z,-80;zoomx,200/25;zoomy,200/25;zoomz,160/25;rotationx,0;" />
+	
+	<Layer File="fire" OnCommand="ztest,1;blend,add;setstate,1;zoom,.4;zoomy,.25;diffusealpha,.5;x,-180;y,-110;z,-140;" />
+	<Layer File="fire" OnCommand="ztest,1;blend,add;setstate,7;zoom,.4;zoomy,.25;diffusealpha,.5;x,180;y,-110;z,-140;" />
+	<Layer File="fire" OnCommand="ztest,1;blend,add;setstate,5;zoom,.4;zoomy,.25;diffusealpha,.5;x,-180;y,-110;z,50;" />
+	<Layer File="fire" OnCommand="ztest,1;blend,add;setstate,3;zoom,.4;zoomy,.25;diffusealpha,.5;x,180;y,-110;z,50;" />
+	
+	<Layer Type="Quad" OnCommand="hidden,1;sleep,.1;queuecommand,Water"
+		InitCommand="%function(self)
+		
+			function modulo(a, b)
+				return a - math.floor(a/b)*b;
+			end
+			
+			function randomXD(t)
+				if t == 0 then return 0.5 else
+				return modulo(math.sin(t * 3229.3) * 43758.5453, 1) end
+			end
+			
+		end"
+		WaterCommand="%function(self)
+		
+			local offsets = {0,.25,.75,.5}
+			
+			for cyl=1,4 do
+				local a = _G['yin_waterCylinder'..cyl]
+				
+				--a:SetTextureFiltering(false)
+				
+				a:rotationx(cyl*30)
+				
+				a:effectmagnitude(360,0,0)
+				
+				a:z((cyl-3)*80)
+				a:y(0)
+				--a:y((cyl-1)*30 - 60)
+				
+				--a:rotationz((4-cyl)*5*(-0.5+1*randomXD(cyl/4)))
+				a:rotationz((4-cyl)*15*(-0.5+1*randomXD(cyl/4)))
+				
+				a:diffuse(.9*(0.5 + 0.5*0.25*(cyl-1)),.8*(0.5 + 0.5*0.25*(cyl-1)),.6*(0.5 + 0.5*0.25*(cyl-1)),1)
+				
+				local seed = (cyl-1)*24
+				
+				a:cullmode('back')
+				
+				a:SetPolygonMode(0)
+				--a:clearzbuffer(1)
+				a:ztest(1)
+				
+				local hstrips = 5
+				local vstrips = 10
+				
+				a:SetNumVertices(4*hstrips*vstrips)
+				
+				local wid = 240
+				local rad = 50
+				--local wid = 800
+				--local rad = 50
+				
+				local radmin = .7
+				local rngadd = .8
+				
+				local offs = offsets[cyl]
+				
+				a:SetTexture(yin_mizutex:GetTexture())
+				
+				a:texturewrapping(1)
+				
+				for i=0,vstrips-1 do
+				
+					for j=0,hstrips-1 do
+					
+						local p = (i+(j*vstrips))*4
+					
+						local ang1 = (i/vstrips)*2*math.pi
+						local ang2 = ((i+1)/vstrips)*2*math.pi
+						
+						local i2a = math.mod(i,vstrips)
+						local i2b = math.mod(i+1,vstrips)
+						
+						local rng = {randomXD(seed+100*(i2a)+(j)),randomXD(seed+100*(i2a)+(j+1)),randomXD(seed+100*(i2b)+(j+1)),randomXD(seed+100*(i2b)+(j))}
+						
+						a:SetVertexPosition(p+0,-wid/2 + wid*(j/hstrips),-rad*(radmin+rngadd*rng[1])*math.cos(ang1),rad*(radmin+rngadd*rng[1])*math.sin(ang1))
+						a:SetVertexPosition(p+3,-wid/2 + wid*((j+1)/hstrips),-rad*(radmin+rngadd*rng[2])*math.cos(ang1),rad*(radmin+rngadd*rng[2])*math.sin(ang1))
+						a:SetVertexPosition(p+2,-wid/2 + wid*((j+1)/hstrips),-rad*(radmin+rngadd*rng[3])*math.cos(ang2),rad*(radmin+rngadd*rng[3])*math.sin(ang2))
+						a:SetVertexPosition(p+1,-wid/2 + wid*(j/hstrips),-rad*(radmin+rngadd*rng[4])*math.cos(ang2),rad*(radmin+rngadd*rng[4])*math.sin(ang2))
+						
+						a:SetVertexTexCoord(p+0,offs+(j/hstrips),offs+(i+0)/vstrips)
+						a:SetVertexTexCoord(p+3,offs+((j+1)/hstrips),offs+(i+0)/vstrips)
+						a:SetVertexTexCoord(p+2,offs+((j+1)/hstrips),offs+(i+1)/vstrips)
+						a:SetVertexTexCoord(p+1,offs+(j/hstrips),offs+(i+1)/vstrips)
+					
+					end
+					
+				end
+				
+			end
+			
+		end"
+	/>
+	
+	<Layer Type="Polygon"
+		DrawMode="quads"
+		Var="yin_waterCylinder1"
+		OnCommand="spin;effectmagnitude,90,0,0;"
+	/>
+	<Layer Type="Polygon"
+		DrawMode="quads"
+		Var="yin_waterCylinder2"
+		OnCommand="spin;effectmagnitude,90,0,0;"
+	/>
+	<Layer Type="Polygon"
+		DrawMode="quads"
+		Var="yin_waterCylinder3"
+		OnCommand="spin;effectmagnitude,90,0,0;"
+	/>
+	<Layer Type="Polygon"
+		DrawMode="quads"
+		Var="yin_waterCylinder4"
+		OnCommand="spin;effectmagnitude,90,0,0;"
+	/>
+	
+	<!--Layer Type="Quad"
+		OnCommand="stretchto,-sw,100,sw,500"
+	/-->
+	
+	<Layer File="wf-mizu" OnCommand="valign,0;y,-20;z,130;rotationx,-30;ztest,1;fadetop,.1;zoomto,240,300;
+	customtexturerect,0,0,1,1;texcoordvelocity,0,-1.3;diffuse,.9*.875,.8*.875,.6*.875,1;wag;effectmagnitude,10,0,0;effectperiod,1;" />
+	
+	<Layer Type="ActorProxy" OnCommand="hidden,1;zoom,1;x,-sw/2;y,-sh/2;" Var="Proxy3C" GetProxyMessageCommand="%function(self) if P3 then self:SetTarget(P3) end end" />
+	<Layer Type="ActorProxy" OnCommand="hidden,1;zoom,1;x,-sw/2;y,-sh/2;" Var="Proxy4C" GetProxyMessageCommand="%function(self) if P4 then self:SetTarget(P4) end end" />
+
+	<Layer File="foam" OnCommand="z,140;y,150;x,-60;zoom,1.5;spin;effectmagnitude,0,0,30;" />
+	<Layer File="foam" OnCommand="z,140;y,150+20;x,50;zoom,1.5;spin;effectmagnitude,0,0,28;" />
+	
+	<Layer Type="ActorFrame" Var="yin_foamclimb" OnCommand="y,-200" ><children>
+	<Layer File="foam" OnCommand="z,140;y,150+300;x,-80;zoom,2;spin;effectmagnitude,0,0,math.random()*20+20;" />
+	<Layer File="foam" OnCommand="z,140;y,150+350;x,60;zoom,2;spin;effectmagnitude,0,0,math.random()*20+20;" />
+	<Layer File="foam" OnCommand="z,140;y,150+400;x,-10;zoom,2;spin;effectmagnitude,0,0,math.random()*20+20;" />
+	<Layer File="foam" OnCommand="z,140;y,150+450;x,-70;zoom,2;spin;effectmagnitude,0,0,math.random()*20+20;" />
+	<Layer File="foam" OnCommand="z,140;y,150+520;x,50;zoom,2;spin;effectmagnitude,0,0,math.random()*20+20;" />
+	<Layer File="foam" OnCommand="z,140;y,150+560;x,-10;zoom,2;spin;effectmagnitude,0,0,math.random()*20+20;" />
+	<Layer File="foam" OnCommand="z,140;y,150+600;x,-60;zoom,2;spin;effectmagnitude,0,0,math.random()*20+20;" />
+	</children></Layer>
+	
+	<Layer File="naturesbeauty" Var="yin_rainbow" OnCommand="y,100;zoom,1.5;blend,add;diffusealpha,0;" />
+	
+</children></Layer>

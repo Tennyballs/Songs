@@ -1,0 +1,57 @@
+<ActorFrame> <children>
+	
+	<Layer Type="ActorFrame" NameCommand="%function(self) dys_citybg = self end" OnCommand="playcommand,Name;hidden,1;" ><children>
+		<Layer File="skygrad" NameCommand="%function(self) dys_citysky = self end" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+		<Layer File="skydark" NameCommand="%function(self) dys_skydark = self end" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0;" />
+		<Layer File="stars" NameCommand="%function(self) dys_stars = self end"
+		OnCommand="blend,add;diffusealpha,0;basezoomx,SCREEN_WIDTH/640;basezoomy,SCREEN_HEIGHT/480;zoom,3;customtexturerect,0,0,3,3;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;texcoordvelocity,0,0;" />
+		
+		<!--here's one from ken-->
+		<Layer
+			File="_pink aurora" NameCommand="%function(self) dys_auror1 = self end"
+			OnCommand="queuecommand,Make;draworder,100;blend,add;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-60;rotationx,45;zoomx,4;zoomy,3;fadebottom,0.25;diffuseshift;EffectColor1,#FFFFFFAA;EffectColor2,#FFFFFF55;EffectPeriod,9"
+			MakeCommand="customtexturerect,0,0,1,1;texcoordvelocity,0.25,0;diffusealpha,0;"
+		/>
+		<Layer
+			File="_pink aurora" NameCommand="%function(self) dys_auror2 = self end"
+			OnCommand="queuecommand,Make;draworder,100;blend,add;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-60;rotationx,45;zoomx,4;zoomy,3;fadebottom,0.25;diffuseshift;EffectColor1,#FFFFFFAA;EffectColor2,#FFFFFF55;EffectPeriod,7"
+			MakeCommand="customtexturerect,0,0,1,1;texcoordvelocity,-0.15,0;diffusealpha,0;"
+		/>
+		
+		<Layer
+			File="_green aurora" NameCommand="%function(self) dys_auror3 = self end"
+			OnCommand="queuecommand,Make;draworder,100;blend,add;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-60;rotationx,45;zoomx,4;zoomy,3;fadebottom,0.25;diffuseshift;EffectColor1,#FFFFFFAA;EffectColor2,#FFFFFF55;EffectPeriod,9"
+			MakeCommand="customtexturerect,0,0,1,1;texcoordvelocity,0.25,0;diffusealpha,0;"
+		/>
+		<Layer
+			File="_green aurora" NameCommand="%function(self) dys_auror4 = self end"
+			OnCommand="queuecommand,Make;draworder,100;blend,add;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-60;rotationx,45;zoomx,4;zoomy,3;fadebottom,0.25;diffuseshift;EffectColor1,#FFFFFFAA;EffectColor2,#FFFFFF55;EffectPeriod,7"
+			MakeCommand="customtexturerect,0,0,1,1;texcoordvelocity,-0.15,0;diffusealpha,0;"
+		/>
+		
+		<Layer File="backlayer" NameCommand="%function(self) dys_backlayer = self end" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+		
+		<Layer File="chazo" NameCommand="%function(self) dys_chazo = self end" OnCommand="playcommand,Name;hidden,1;diffusealpha,1;animate,0;setstate,0;x,SCREEN_WIDTH*0.05;y,SCREEN_HEIGHT*0.23;zoom,0.4;rotationx,20;" />
+		<Layer File="forelayer" NameCommand="%function(self) dys_forelayer = self end" OnCommand="zoomx,SCREEN_WIDTH/640;zoomy,SCREEN_HEIGHT/480;vertalign,bottom;y,SCREEN_BOTTOM;x,SCREEN_CENTER_X" />
+		
+		<Layer File="static.sprite" NameCommand="%function(self) dys_static = self end" OnCommand="blend,add;diffusealpha,.03;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+	</children></Layer>
+	
+	<Layer Type="Quad" NameCommand="%function(self) dys_quad = self end" OnCommand="playcommand,Name;diffuse,0,0,0,0;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+
+	<Layer
+		File="background"
+		NameCommand="%function(self) dys_bg = self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.5,.5,.5,1;"
+	/>
+	
+	<Layer
+		File="video"
+		NameCommand="%function(self) dys_video = self end"
+		OnCommand="playcommand,Name;hibernate,58.188;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,.6,.6,.6,1;"
+		HideCommand="hidden,1;hibernate,999"
+	/>
+
+	<Layer File="chara"/>
+	
+</children> </ActorFrame>

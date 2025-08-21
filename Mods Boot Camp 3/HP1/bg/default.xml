@@ -1,0 +1,72 @@
+<ActorFrame> <children>
+
+	<Layer
+		File="background" NameCommand="%function(self) hp_bg1 = self end" 
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0.5"
+	/>
+	
+	<Layer Type="ActorFrame" NameCommand="%function(self) hp_rpgbg = self end" OnCommand="playcommand,Name" ><children>
+	<Layer File="rpg1" NameCommand="%function(self) hp_rpg1 = self end" OnCommand="playcommand,Name;diffusealpha,0;stretchto,0,0,sw,sh" />
+	<Layer File="rpg2" NameCommand="%function(self) hp_rpg2 = self end" OnCommand="playcommand,Name;diffusealpha,0;stretchto,sw,0,sw*2,sh" />
+	</children></Layer>
+	
+	<Layer Type="Quad" NameCommand="%function(self) hp_wave3 = self end" OnCommand="playcommand,Name;stretchto,0,0,sw,sh;diffuse,0,0,0,0;" />
+	
+	<Layer Type="ActorFrame" NameCommand="%function(self) hp_wavebg = self end" OnCommand="playcommand,Name;fov,60" ><children>
+		<Layer File="wave1" NameCommand="%function(self) hp_wave1 = self end" OnCommand="playcommand,Name;diffusealpha,0;stretchto,0,0,sw,sh" />
+		<Layer File="wave2" NameCommand="%function(self) hp_wave2 = self end" OnCommand="playcommand,Name;diffusealpha,0;stretchto,0,0,sw,sh" />
+		<Layer
+			File="arena"
+			NameCommand="%function(self) hp_wave4 = self end"
+			OnCommand="playcommand,Name;x,SCREEN_WIDTH-256;y,SCREEN_HEIGHT;diffusealpha,0;rotationx,90;zoomx,2;zoomz,1.8;z,256*1.8"
+		/>
+		
+	</children></Layer>
+	
+	<Layer Type="Quad" NameCommand="%function(self) hp_top = self end" OnCommand="playcommand,Name;diffuse,0,0,0,0;stretchto,0,0,sw,90*(sh/480)" />
+	<Layer Type="Quad" NameCommand="%function(self) hp_bottom = self end" OnCommand="playcommand,Name;diffuse,0,0,0,0;stretchto,0,sh-90*(sh/480),sw,sh" />
+	
+	<Layer File="chan1" NameCommand="%function(self) hp_chan = self end" OnCommand="playcommand,Name;hidden,1;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-60;zoom,0.8;"
+	 />
+	
+	<Layer File="laer_face" NameCommand="%function(self) hp_laer = self end" OnCommand="playcommand,Name;hidden,1;animate,0;setstate,0;"
+	ShakeCommand="finishtweening;setstate,1;addy,15;spring,0.3;addy,-15;sleep,2;queuecommand,Reset" ResetCommand="setstate,0;" />
+	
+	<Layer File="laer_card" NameCommand="%function(self) hp_card1 = self end" OnCommand="playcommand,Name;animate,0;setstate,0;diffusealpha,0;"
+	ShakeCommand="finishtweening;setstate,1;diffuse,1,0,0,1;addy,15;spring,0.3;addy,-15;diffuse,1,1,1,1;" />
+	<Layer File="card" NameCommand="%function(self) hp_card2 = self; if not GAMESTATE:IsHumanPlayer(0) then self:hidden(1) end end" OnCommand="playcommand,Name;diffusealpha,0;"
+	ShakeCommand="finishtweening;diffuse,1,0,0,1;addy,15;spring,0.2;addy,-15;diffuse,1,1,1,1;" />
+	<Layer File="card" NameCommand="%function(self) hp_card3 = self; if not GAMESTATE:IsHumanPlayer(1) then self:hidden(1) end end" OnCommand="playcommand,Name;diffusealpha,0;"
+	ShakeCommand="finishtweening;diffuse,1,0,0,1;addy,15;spring,0.2;addy,-15;diffuse,1,1,1,1;" />
+	
+	<Layer Type="ActorFrame" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-120;"><children>
+		<ActorFrame FOV="121" ><children>
+			<Layer
+				Type="Quad" NameCommand="%function(self) fucky_bg3 = self end"
+				OnCommand="playcommand,Name;x,0;y,0;zoomtowidth,SCREEN_WIDTH*2;diffusealpha,0;zoomtoheight,SCREEN_HEIGHT*2;rainbow;effectperiod,8"
+			/>
+			<Layer
+				File="fucky" NameCommand="%function(self) fucky_bg1 = self end"
+				OnCommand="playcommand,Name;x,0;y,100;z,25;customtexturerect,0,0,4,1;diffusealpha,0;zoomx,4*(SCREEN_WIDTH/640);zoomz,2;texcoordvelocity,0,-1;rotationx,-30;fadetop,0.5"
+				OffCommand="vibrate;effectmagnitude,2,2,2;accelerate,4;addy,400"
+			/>
+			<Layer
+				File="fucky" NameCommand="%function(self) fucky_bg2 = self end"
+				OnCommand="playcommand,Name;x,0;hidden,1;y,-10000;z,25;customtexturerect,0,0,4,1;diffusealpha,0;zoomx,6;texcoordvelocity,0,1;rotationx,50;fadebottom,0.5"
+				OffCommand="vibrate;effectmagnitude,2,2,2;accelerate,4;addy,-400"
+			/>
+		</children></ActorFrame>
+	</children></Layer>
+	
+	<Layer Type="Quad" NameCommand="%function(self) fucky_bg4 = self end" OnCommand="playcommand,Name;stretchto,0,0,sw,sh;diffuse,0,0,0,0;" />
+	
+	<Layer File="ground" NameCommand="%function(self) hp_ground1 = self end" OnCommand="playcommand,Name;diffusealpha,0" />
+	<Layer File="ground" NameCommand="%function(self) hp_ground2 = self end" OnCommand="playcommand,Name;diffusealpha,0;zoom,0.8;zoomy,0.7;" />
+	
+	<Layer File="chan3" NameCommand="%function(self) hp_chan3 = self end" OnCommand="playcommand,Name;vertalign,bottom;zoom,0.9;hidden,1;
+	pulse;effectmagnitude,1,1,1;effectcolor2,0.96,1.02,1,1;effectcolor1,1.04,0.98,1,1;"
+	 />
+	
+	<Layer File="gameoverbg" NameCommand="%function(self) hp_gameover = self end" OnCommand="playcommand,Name;diffusealpha,0;stretchto,0,0,sw,sh" />
+
+</children> </ActorFrame>

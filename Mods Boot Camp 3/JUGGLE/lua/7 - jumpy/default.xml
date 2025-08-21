@@ -1,0 +1,33 @@
+<ActorFrame><children>
+
+	<Layer Type="ActorFrame" LeftCommand="hidden,0;x,-5;basezoomx,-1;" RightCommand="hidden,0;x,5;basezoomx,1;" FrontCommand="hidden,1" BackCommand="hidden,1" ><children>
+	
+		<Layer File="_side_idle" OnCommand="diffusealpha,1;zoom,.9;y,10;effectclock,bgm" PushCommand="diffusealpha,0;sleep,0.23;queuecommand,Idle" IdleCommand="diffusealpha,1;" />
+		
+		<Layer File="_side_push" OnCommand="diffusealpha,0;" PushCommand="diffusealpha,1;setstate,0;sleep,0.23;queuecommand,Idle" IdleCommand="diffusealpha,0;" />
+	
+	</children> </Layer>
+
+	<Layer Type="ActorFrame" FrontCommand="hidden,0;x,5" BackCommand="hidden,1;x,5" LeftCommand="hidden,1" RightCommand="hidden,1" ><children>
+	
+		<Layer File="_front_idle"  OnCommand="diffusealpha,1;pulse;effectclock,bgm;effectmagnitude,1,1.1,1;effectdelay,0.5;effectperiod,0.5;"
+		PushCommand="diffusealpha,0;sleep,0.23;queuecommand,Idle" IdleCommand="diffusealpha,1;" />
+	
+		<Layer File="_front_push" OnCommand="diffusealpha,0;x,5;"
+		PushCommand="diffusealpha,1;setstate,0;sleep,0.23;queuecommand,Idle" IdleCommand="diffusealpha,0;" />
+	
+	</children> </Layer>
+	
+	<Layer Type="ActorFrame" FrontCommand="hidden,1;x,5" BackCommand="hidden,0;x,5" LeftCommand="hidden,1" RightCommand="hidden,1" ><children>
+	
+		<Layer File="_back_idle" OnCommand="diffusealpha,1;x,5;pulse;effectclock,bgm;effectmagnitude,1,1.1,1;effectdelay,0.5;effectperiod,0.5;"
+		PushCommand="diffusealpha,0;sleep,0.23;queuecommand,Idle" IdleCommand="diffusealpha,1;" />
+		
+		<Layer File="_back_push" OnCommand="diffusealpha,0;x,5;"
+		PushCommand="diffusealpha,1;setstate,0;sleep,0.23;queuecommand,Idle" IdleCommand="diffusealpha,0;" />
+	
+	</children> </Layer>
+	
+	<Layer File="../box" OnCommand="y,100;" />
+	
+</children></ActorFrame>

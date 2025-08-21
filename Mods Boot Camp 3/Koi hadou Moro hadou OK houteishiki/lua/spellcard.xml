@@ -1,0 +1,37 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {20,52,'Yeah! Science!',3,{1,1,1,1}},
+                {52,56,'Passionate Research I',3,{0,0,0,1}},
+                {72,104,'AMA48 -Light Rotation-',3,{.5,.5,.5,1}},
+                {104,120,'POSSESSION DSP',3,{1,1,1,1}},
+                {120,136,'Drop Distortion Splitter',2,{.5,.5,.5,1}},
+                {136,156,'Fizzy Lifting Juice',2,{1,1,1,1}},
+                {160,192,'I have no idea what I\'m doing!',4,{.5,.5,.5,1}},
+                {192,204,'Passionate Research II',3,{0,0,0,1}},
+                {204,237,'Citing Sources',3,{1,1,1,1}},
+                {238,239,'Ama In The Way? Kekeke',2,{1,1,1,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

@@ -1,0 +1,3317 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	--shoutouts to MBC2 tbh, there's quite a lot of directly pilfered code here owo
+	--also jesus christ some wonky pilfers holy crap
+
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT --shortcuts
+	
+			
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+	function GetJud(pn)
+		return _G['jud'..pn]
+	end
+	function GetCom(pn)
+		return _G['com'..pn]
+	end
+	
+	function mod_do(str,pn)
+		GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+	end
+	
+	function taro_Sound(str)
+		local met = GAMESTATE:GetCurrentSong():GetSongDir();
+		SOUND:PlayOnce(met..'lua/'..str..'.ogg');
+	end
+	
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers.xml" />
+	<Layer File="easing.xml" />
+	<Layer File="spellcard.xml" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+			local me=mod_ease
+			ssk_lmaoflicker = 1
+			slumpo = false
+			for pn=1,2 do
+				if GAMESTATE:IsPlayerEnabled(pn-1) then
+					if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 5 then
+						slumpo = true
+					end
+				end
+			end
+			
+			local l = 'len'
+			local e = 'end'
+			
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_shader(beat,key,which)
+				--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+				
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_onebeat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--use a variable called 'switcheroo_width' to change how much space is between each column
+			--e.g. switcheroo_width = 2 for ayakashi
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+				
+			--function doSpline(spd, axis, path, col)
+				--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+				
+			--function doSplineAll(spd, axis, path)
+				--same as above, but for all columns
+				--(faster performance than using doSpline 4 times due to more efficient concat)
+			
+			--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+				--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+			
+			
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local m = mod_insert
+			local m2 = mod_message
+
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*100000 -999999 cover, *2 1x, *100 C300, *10000 no beat','end'},
+			
+			}
+			
+			--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+				--{0,200.345,'3x','end',1},
+			}
+			--beat-based ease mods
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--valid ease types are:
+				--linear
+				--inQuad    outQuad    inOutQuad    outInQuad
+				--inCubic   outCubic   inOutCubic   outInCubic
+				--inQuart   outQuart   inOutQuart   outInQuart
+				--inQuint   outQuint   inOutQuint   outInQuint
+				--inSine    outSine    inOutSine    outInSine
+				--inExpo    outExpo    inOutExpo    outInExpo
+				--inCirc    outCirc    inOutCirc    outInCirc
+				--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+				--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+				--inBounce  outBounce  inOutBounce  outInBounce
+				
+			mods_ease = {
+				-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+				--{32,40,0,1.75,'xmod','end',outInBounce},
+			}
+			
+			
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 32
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {	}
+			
+			for i=1,14,1 do
+				m2(i,'KickBack')
+			end
+			m2(1,function()
+				if SongOptions then
+					SongOptions:hidden(1)
+				end
+			end ,true)
+			m2(14.667,'ResetFades',true)
+			m2(464,function()
+				if SongOptions then
+					SongOptions:hidden(0)
+					SongOptions:sleep(180/250)
+					SongOptions:rotationz(10)
+					SongOptions:x(sw*0.7)
+					SongOptions:y(-100)
+					SongOptions:zoom(.8)
+					SongOptions:bouncebegin(120/250)
+					SongOptions:x(sw*0.8)
+					SongOptions:y(80)
+					SongOptions:rotationz(10)
+				end
+			end)
+			
+			m(1,14,'*1 100 centered,*1 200 drunk,*1 200 brake,*100 stealth, *1 -50 flip,*1 dark','end')
+			m(1,15,'*1 C200','end')
+			m(6,14.75,'*10000 100.01 reverse','end',2)
+			me(0,6,0,100,'centered','end',outQuad)
+			me(0,6,0,-50,'flip','end',outQuad)
+			me(0,6,0,200,'drunk','end',outQuad)
+			me(0,7,0,100,'dark','end',outQuad)
+			
+			me(14,15,100,0,'centered','end',inOutQuad,1)
+			me(14,15,100,200,'centered','end',inOutQuad,2)
+			me(14.667,15,177.8222,0,'centered','end',inOutQuad,2)
+			me(14.667,15,100,0,'reverse','end',inOutQuad,2)
+			me(14,15,-50,20,'flip','end',inOutQuad)
+			me(14,15,200,0,'drunk','end',inOutQuad)
+			me(14,15,100,70,'dark','end',inOutQuad)
+			me(14,15,200,100,'brake','end',inOutQuad)
+			me(14,15,100,0,'stealth','end',inOutQuad)
+			me(15,21,20,0,'flip','end',inQuart)
+			me(14,15,0,-500,'mini','end',inOutQuad)
+			me(15,21,-500,0,'mini','end',inQuart)
+			me(15,21,100,0,'brake','end',outQuad)
+			
+			me(15,8,70,0,'dark','len',inQuad)
+			
+			m2(0,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(72/13)
+						a:x(SCREEN_CENTER_X);
+					end
+					local a = GetJud(pn)
+					if a then
+						a:decelerate(72/13)
+						a:x(160*(pn*2-3));
+					end
+					local a = GetCom(pn)
+					if a then
+						a:decelerate(72/13)
+						a:x(160*(pn*2-3));
+					end
+				end
+			end)
+			m2(15,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(SCREEN_CENTER_X);
+					end
+					local a = GetJud(pn)
+					if a then
+						a:x(160*(pn*2-3));
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(160*(pn*2-3));
+					end
+				end
+			end)
+			
+			m2(15,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:vibrate()
+						a:effectmagnitude(15,15,0)
+					end
+				end
+			end)
+			m2(16,function()
+				for pn=1,2 do local a = Plr(pn) if a then 
+						a:effectmagnitude(0,0,0)
+				end end end)
+			m2(17,function()
+				for pn=1,2 do local a = Plr(pn) if a then 
+						a:effectmagnitude(15,15,0)
+				end end end)
+			m2(18,function()
+				for pn=1,2 do local a = Plr(pn) if a then 
+						a:effectmagnitude(0,0,0)
+				end end end)
+			m2(18.5,function()
+				for pn=1,2 do local a = Plr(pn) if a then 
+						a:effectmagnitude(15,15,0)
+				end end end)
+			m2(19.5,function()
+				for pn=1,2 do local a = Plr(pn) if a then 
+						a:effectmagnitude(0,0,0)
+				end end end)
+			m2(20,function()
+				for pn=1,2 do local a = Plr(pn) if a then 
+						a:effectmagnitude(15,15,0)
+				end end end)
+			m2(21,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:stopeffect()
+					end
+				end
+			end)
+			
+			m(21-.1,2,'*15 flip',l)
+			m(23-.1,2,'*15 no flip',l)
+			
+			m(15-.2,6,'*50 400 bumpy',l,1)
+			m(15-.2,6,'*50 -400 bumpy',l,2)
+			m(21-.2,5,'*50 no bumpy',l,1)
+			m(21-.2,5,'*50 no bumpy',l,2)
+			
+			m(15-.2,5,'*25 150 drunk',l,1)
+			m(15-.2,5,'*25 -150 drunk',l,2)
+			
+			m(16-.2,5,'*50 -150 drunk',l,1)
+			m(16-.2,5,'*50 150 drunk',l,2)
+			m(16.5-.2,5,'*50 150 drunk',l,1)
+			m(16.5-.2,5,'*50 -150 drunk',l,2)
+			
+			m(17-.2,5,'*50 -150 drunk',l,1)
+			m(17-.2,5,'*50 150 drunk',l,2)
+			
+			m(18-.2,5,'*50 150 drunk',l,1)
+			m(18-.2,5,'*50 -150 drunk',l,2)
+			m(18.5-.2,5,'*50 -150 drunk',l,1)
+			m(18.5-.2,5,'*50 150 drunk',l,2)
+			
+			m(19.5-.2,5,'*50 150 drunk',l,1)
+			m(19.5-.2,5,'*50 -150 drunk',l,2)
+			m(20-.2,5,'*50 -150 drunk',l,1)
+			m(20-.2,5,'*50 150 drunk',l,2)
+			
+			m(21-.2,5,'*25 no drunk',l,1)
+			m(21-.2,5,'*25 no drunk',l,2)
+			
+			m(20.5,1,'*10000 800 beat',l,1)
+			m(20.5,1,'*10000 -800 beat',l,2)
+			m(21.5,1,'*10000 no beat',l,1)
+			m(21.5,1,'*10000 no beat',l,2)
+			
+			
+			for i=8,13,1 do
+				me(i+(1/6),(1/6),0,314,'dizzy','len',inCirc)
+				me(i+(2/6),(1/6),314,0,'dizzy','len',outCirc)
+				me(i+(3/6),(1/6),0,-314,'dizzy','len',inCirc)
+				me(i+(4/6),(1/6),-314,0,'dizzy','len',outCirc)
+			end
+			
+			m2(22-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						--a:x(SCREEN_CENTER_X-260*-d);
+						a:x(SCREEN_CENTER_X);
+					end
+				end
+			end)
+			
+			for pn=1,2 do
+				m(22,34.9,'*25 '..(250*(pn*2-3))..' invert','end',pn);
+			end
+			
+			m(35,4,'*25 no invert','len')
+			
+			m2(23-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(-45*(pn*2-3));
+						a:zoomz(1);
+						a:vibrate();
+						a:effectmagnitude(20,20,0)
+					end
+				end
+				if screen:GetChild('SongBackground') and ssk_all_bg then
+					ssk_all_bg:fov(60)
+					screen:GetChild('SongBackground'):z(-0.1);
+				end
+				ssk_bg0:linear(.05)
+				ssk_bg0:rotationy(20)
+			end)
+			m2(26-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(0);
+						a:zoomz(1);
+						a:effectmagnitude(0,0,0)
+					end
+				end
+				ssk_bg0:linear(.05)
+				ssk_bg0:rotationy(0)
+			end)
+			
+			m2(27-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(45*(pn*2-3));
+						a:zoomz(1);
+						a:effectmagnitude(20,20,0)
+					end
+				end
+				ssk_bg0:linear(.05)
+				ssk_bg0:rotationy(-20)
+			end)
+			m2(30-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(0);
+						a:zoomz(1);
+						a:effectmagnitude(0,0,0)
+					end
+				end
+				ssk_bg0:linear(.05)
+				ssk_bg0:rotationx(0)
+				ssk_bg0:rotationy(0)
+			end)
+			
+			m2(31-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(45*(pn*2-3));
+						a:zoomz(1);
+						a:effectmagnitude(20,20,0)
+					end
+				end
+				ssk_bg0:linear(.05)
+				ssk_bg0:rotationy(20)
+			end)
+			m2(32.5-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(-45*(pn*2-3));
+						a:zoomz(1);
+					end
+				end
+				ssk_bg0:linear(.05)
+				ssk_bg0:rotationy(-20)
+			end)
+			m2(34-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(45*(pn*2-3));
+						a:zoomz(1);
+					end
+				end
+				ssk_bg0:linear(.05)
+				ssk_bg0:rotationx(-20)
+				ssk_bg0:rotationy(0)
+			end)
+			m2(35-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:finishtweening();
+						a:linear(0.05);
+						a:rotationy(0);
+						a:zoomz(1);
+						a:effectmagnitude(0,0,0)
+						a:x(SCREEN_CENTER_X);
+					end
+				end
+				ssk_bg0:linear(.05)
+				ssk_bg0:rotationx(0)
+				ssk_bg0:rotationy(0)
+			end)
+
+			m(35-.1,4,'*25 no invert',l,1);
+			m(35-.1,4,'*25 no invert',l,2);
+
+			m(22.5,26.5,'*10000 1000 beat',e)
+			m(26.5,30.5,'*10000 -1000 beat',e)
+			m(30.5,33.5,'*10000 1000 beat',e)
+			m(33.5,38.5,'*10000 -1000 beat',e)
+			m(38.5,39.5,'*10000 no beat',e)
+			--m(35.5,39.5,'*10000 no beat',e)
+			
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--outElastic
+			
+			--[[
+			m(23, 3, '*100 1000 bumpy', l );
+			me(26, 1, 1000, 0, 'bumpy', l, outQuad);
+			m(27, 3, '*100 1000 bumpy', l );
+			me(30, 1, 1000, 0, 'bumpy', l, outQuad);
+			m(31, 4, '*100 1000 bumpy', l );
+			me(35, 3, 1000, 0, 'bumpy', l, outQuad);
+			]]
+			
+			m(23, 3, '*100 1000 bumpy', l );
+			m(26, 1, '*100 no bumpy', l );
+			m(27, 3, '*100 1000 bumpy', l );
+			m(30, 1, '*100 no bumpy', l );
+			m(31, 4, '*100 1000 bumpy', l );
+			m(35, 3, '*20 no bumpy', l );
+			
+			me(35, 3, 0, -2000, 'mini', l, inQuart );
+			me(38, 1, -2000, 0, 'mini', l, outElastic );
+			
+			--[[
+			me(35, 3, 0, 50, 'flip', l, inQuart );
+			me(38, 1, 50, 0, 'flip', l, outElastic );
+			]]
+			
+			m(35,3,'*1 50 flip, *2 C100',l);
+			m(38,3,'*10 no flip',l);
+			
+			--m(22,39,'*50 500 invert','end');
+			
+			--[[
+			m(23-.1,4,'*5 50 bumpy,*5 50 drunk','len');
+			m(26-.1,4,'*5 no bumpy,*5 no drunk','len');
+			m(27-.1,4,'*5 50 bumpy,*5 50 drunk','len');
+			m(30-.1,4,'*5 no bumpy,*5 no drunk','len');
+			
+			m(31-.1,4,'*5 50 bumpy,*5 50 drunk','len');
+			m(32.5-.1,4,'*10 -50 bumpy,*5 50 drunk','len');
+			m(34-.1,4,'*10 50 bumpy,*5 50 drunk','len');
+			m(35-.1,4,'*10 -50 bumpy,*5 50 drunk','len');
+			m(38-.1,4,'*5 no bumpy,*5 no drunk','len');
+			
+			m(23-.1,4,'*10 -100 mini, *3 30 reverse','len',1);
+			m(26-.1,4,'*10 no mini, *3 no reverse','len',1);
+			m(27-.1,4,'*10 -100 mini, *3 30 reverse','len',2);
+			m(30-.1,4,'*10 no mini, *3 no reverse','len',2);
+			
+			m(31-.1,4,'*10 -100 mini, *3 30 reverse','len',1);
+			m(32.5-.1,4,'*10 no mini, *3 no reverse','len',1);
+			m(32.5-.1,4,'*10 -100 mini, *3 30 reverse','len',2);
+			m(34-.1,4,'*10 no mini, *3 no reverse','len',2);
+			m(34-.1,4,'*10 -100 mini, *3 30 reverse','len',1);
+			m(35-.1,4,'*10 no mini, *3 no reverse','len',1);
+			
+			m(35-.1,4,'*10 -100 mini, *3 30 reverse','len');
+			m(38-.1,4,'*10 no mini, *3 no reverse','len');
+			]]
+
+			-----aaaaaa-----
+			
+			m2(35,'ThreeTwoOne')
+			m2(355,'WheeDoPun')
+			
+			local ssk_bbbbbb = {{39.000,0,1},{39.500,0,1},{40.000,0,1},{40.500,0,1},{40.750,0,1},{41.000,0,1},{41.500,0,1},{42.000,0,1},{42.250,0,1},{42.500,0,1},{42.750,0,1},{43.000,0,1},{43.500,0,1},{44.000,0,1},{44.500,0,1},{44.750,0,1},{45.000,0,1},{45.750,0,1},{46.500,0,1},{47.000,0,1},{47.250,0,1},{47.500,0,1},{47.750,0,1},{48.000,0,1},{48.500,0,1},{48.750,0,1},{49.000,0,1},{49.500,0,1},{49.750,0,1},{50.000,0,1},{50.500,0,1},{51.000,0,1},{52.000,0,1},{53.000,0,1},{54.000,0,1},{55.000,0,1},{55.500,0,1},{56.000,0,1},{56.500,0,1},{56.750,0,1},{57.000,0,1},{57.500,0,1},{58.000,0,1},{58.250,0,1},{58.500,0,1},{58.750,0,1},{59.000,0,1},{59.500,0,1},{60.000,0,1},{60.500,0,1},{60.750,0,1},{61.000,0,1},{61.750,0,1},{62.250,0,1},{62.500,0,1},{63.500,0,1},{63.750,0,1},{64.000,0,1},{65.000,0,1},{65.250,0,1},{65.500,0,1},{65.750,0,1},{66.000,0,1},{66.167,0,1},{66.333,0,1},{66.500,0,1},{66.750,0,1},{67.000,0,1},{68.000,0,1},{69.000,0,1},{70.000,0,1},{71.000,0,1}}
+
+			m(39,75,'*50 500 invert','end');
+			--m(38,999,'*50 C375','end');
+			
+			dai_parity = 1
+			
+			function pnFuck(length,buff)
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = dai_parity;
+					if pn==2 then d=dai_parity*-1 end
+					if a then
+						a:zoom(1.75)
+						if buff then
+							a:rotationy(d*45)
+							a:rotationz(-45*d)
+							a:zoomz(1)
+						end
+						a:decelerate(length*.9);
+						a:x(SCREEN_CENTER_X-320*d);
+						a:zoom(1)
+						if buff then
+							a:rotationz(0)
+							a:rotationy(0)
+							a:zoomz(10)
+						end
+					end
+				end
+				dai_parity = dai_parity*-1
+			end
+			m2(71,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomz(1)
+					end
+				end
+			end)
+			local spb = 6/25
+			for i=1,table.getn(ssk_bbbbbb)-1,1 do
+				local length = ssk_bbbbbb[i+1][1]-ssk_bbbbbb[i][1]
+				if ssk_bbbbbb[i][1] < 51 then length = .8*length/.9 end
+				if slumpo then
+					m2(ssk_bbbbbb[i][1],function()
+						pnFuck(length*spb,1)
+					end)
+				else
+					m2(ssk_bbbbbb[i][1],function()
+						pnFuck(length*spb)
+					end)
+				end
+			end
+			
+			local sayonaraParity = 1
+			local sayonaraLOL = {71,71.75,72.5,73,73.5,74,74.5,80}
+			m(39,70,'*10 50 stealth','end',1)
+			m(70,75,'*10 100 stealth','end')
+			for i=1,table.getn(sayonaraLOL)-1,1 do
+				m(sayonaraLOL[i],.1,'*10000 '.. sayonaraParity*25+75 ..' stealth,*10000 '.. sayonaraParity*50+50 ..' dark','len',2)
+				m(sayonaraLOL[i],.1,'*10000 '.. sayonaraParity*-25+75 ..' stealth,*10000 '.. sayonaraParity*50+50 ..' dark','len',1)
+				sayonaraParity=sayonaraParity*-1
+			end
+			
+			m2(74.875,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(6/25*.125);
+						a:x(SCREEN_CENTER_X);
+						a:rotationz(90)
+					end
+				end
+				ssk_bg0:linear(6/25*.125);
+				ssk_bg0:rotationz(90)
+				ssk_bg0:zoom(2)
+			end)
+			
+			m(74.875,82,'*10000 -400 mini,*100000 no invert,*100000 30 flip','end')
+			m(75,82,'*1000 C150','end')
+			m(91,98,'*1000 C150','end')
+			me(82,1,-400,0,'mini','len',linear)
+			m2(82,function()
+				ssk_bg0:linear(6/25*1);
+				ssk_bg0:zoom(1)
+				ssk_bg0:decelerate(6/25*(8-.125));
+				ssk_bg0:rotationz(-90)
+			end)
+			
+
+			--me(82,1,100,0,'brake','len',linear)
+			me(82,1,30,0,'flip','len',linear)
+			me(81.5,1,3000,0,'beat','len',linear)
+			me(82,1,3000,0,'bumpy','len',linear)
+			
+			m2(83,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(6/25*8);
+						a:rotationz(-90)
+					end
+				end
+			end)
+			
+			m2(90.875,function()
+				ssk_bg0:linear(6/25*.125);
+				ssk_bg0:zoom(2)
+			end)
+			
+			m(90.875,97,'*10000 -400 mini,*100000 no invert,*100000 30 flip','end')
+			me(97,2,-400,0,'mini','len',linear)
+			me(97,2,30,0,'flip','len',linear)
+			me(96.5,2,3000,0,'beat','len',inQuad)
+			me(97,1,3000,0,'bumpy','len',linear)
+			me(98,1,3000,0,'bumpy','len',linear)
+			m2(97,function()
+				ssk_bg0:decelerate(6/25);
+				ssk_bg0:zoom(0)
+				ssk_bg0:decelerate(6/25);
+				ssk_bg0:zoomx(-1)
+				ssk_bg0:zoomy(1)
+			end)
+			m2(99,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(270)
+						a:decelerate(6/25*6);
+						a:rotationz(30)
+					end
+				end
+				ssk_bg0:rotationz(-270)
+				ssk_bg0:decelerate(6/25*6);
+				ssk_bg0:rotationz(-30)
+			end)
+			m2(105,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(30)
+					end
+				end
+			end,true)
+			
+			local ssk_wan = {{83.000,0,1},{83.500,0,1},{84.000,0,1},{84.500,0,1},{85.000,0,1},{85.250,0,1},{85.500,0,1},{86.000,0,1},{86.500,0,1},{86.750,0,1},{87.000,0,1},{87.250,0,1},{87.500,0,1},{87.750,0,1},{88.000,0,1},{88.250,0,1},{88.500,0,1},{88.750,0,1},{89.000,0,1},{89.750,0,1},{90.500,0,1},{91.000,0,1},{91.000,0,1}}
+			local wanparity = 1
+			for i=1,table.getn(ssk_wan)-2,1 do
+				me(ssk_wan[i][1],ssk_wan[i+2][1],-2000,0,'mini','end',outQuad,wanparity)
+				me(ssk_wan[i][1],ssk_wan[i+2][1],50,0,'flip','end',outCirc,wanparity)
+				me(ssk_wan[i][1],ssk_wan[i+2][1],50,0,'reverse','end',outCirc,wanparity)
+				me(ssk_wan[i][1],ssk_wan[i+2][1],50,0,'stealth','end',outCirc,wanparity)
+				wanparity = math.mod(wanparity,2)+1
+			end
+			
+			local ssk_too = {{99.000,0,1},{99.500,0,1},{100.000,0,1},{100.500,0,1},{101.000,0,1},{101.250,0,1},{101.500,0,1},{102.000,0,1},{102.500,0,1},{102.750,0,1},{103.000,0,1},{103.250,0,1},{103.500,0,1},{103.750,0,1},{104.000,0,1},{104.250,0,1},{104.500,0,1},{104.750,0,1},{105.000,0,1},{105.000,0,1}}
+			for i=1,table.getn(ssk_too)-2,1 do
+				me(ssk_too[i][1],ssk_too[i+2][1],-1500,0,'mini','end',outQuad,wanparity)
+				me(ssk_too[i][1],ssk_too[i+2][1],50,0,'flip','end',outCirc,wanparity)
+				me(ssk_too[i][1],ssk_too[i+2][1],50,0,'reverse','end',outCirc,wanparity)
+				me(ssk_too[i][1],ssk_too[i+2][1],20,0,'stealth','end',outCirc,wanparity)
+				wanparity = math.mod(wanparity,2)+1
+			end
+			
+			me(105,2,0,500,'invert','len',linear)
+			me(107,119,0,500,'drunk','end',linear,1)
+			me(107,119,0,-500,'drunk','end',linear,2)
+			m(105,127,'*1000000 500 invert','end')
+			local amp = 320
+			local wang = math.pi/6
+			m2(105,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = 1;
+					if pn==2 then d=-1 end
+					if a then
+						a:decelerate(6/25*2);
+						a:x(SCREEN_CENTER_X+d*amp*math.cos(wang))
+						a:y(SCREEN_CENTER_Y+d*amp*math.sin(wang))
+					end
+					
+					
+					local a = GetJud(pn)
+					if a then
+						a:x(480*(pn*2-3));
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(480*(pn*2-3));
+					end
+					
+				end
+			end)
+			
+			local ssk_hallparity = 1
+			for i=107.5,118.5,1 do
+				local ssk_fuckscope = ssk_hallparity
+				m2(i-.5,function()
+					local a = Plr(ssk_fuckscope)
+					if a then
+						a:bouncebegin(60/125*.666);
+						a:rotationz(30+30*(ssk_fuckscope*-2+3))
+						a:bouncebegin(60/125*.333)
+						a:rotationz(30)
+					end
+					
+				end)
+				me(i,.5,200*(ssk_hallparity*2-3),0,'dizzy','len',linear)
+				ssk_hallparity = math.mod(ssk_hallparity,2)+1
+			end
+			me(119,1,500,0,'drunk','len',linear)
+			m(120,2,'*100 -100 mini,*50 400 invert','len')
+			m(122,2,'*100 -200 mini,*50 300 invert','len')
+			m(124,2,'*100 -300 mini,*50 200 invert','len')
+			m(126,1,'*100 -400 mini,*50 100 invert','len')
+			
+			me(120,126.9,300,130,'cmod',e,linear)
+			me(126.9,127.3,130,300,'cmod',e,linear)
+			
+			--[[
+			simple_m0d2(121-.05,120,.4,'brake')
+			simple_m0d2(123-.05,120,.4,'brake')
+			simple_m0d2(125-.05,120,.4,'brake')
+			simple_m0d2(127-.05,120,.4,'brake')
+			]]
+			
+			
+			me(126,1,100,0,'invert','len',linear)
+			me(126,1,-400,0,'mini','len',linear)
+			
+			for i=119,125,2 do
+				m2(i,function()
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationy(60);
+							a:bounceend(60/250*.25)
+							a:rotationy(0)
+							
+							a:rotationy(-60);
+							a:bounceend(60/250*.25)
+							a:rotationy(0)
+							
+							a:rotationy(60);
+							a:bounceend(60/250*.25)
+							a:rotationy(0)
+							a:sleep(60/250*.1)
+							a:zoomy(1);
+							a:decelerate(60/250*.3)
+							a:zoomy(4)
+							a:accelerate(60/250*.6)
+							a:zoomy(1)
+						end
+					end
+					ssk_bg0:rotationy(-60);
+					ssk_bg0:bounceend(60/250*.25)
+					ssk_bg0:rotationy(0)
+					
+					ssk_bg0:rotationy(60);
+					ssk_bg0:bounceend(60/250*.25)
+					ssk_bg0:rotationy(0)
+					
+					ssk_bg0:rotationy(-60);
+					ssk_bg0:bounceend(60/250*.25)
+					ssk_bg0:rotationy(0)
+					ssk_bg0:sleep(60/250*.1)
+					ssk_bg0:zoomy(1);
+					ssk_bg0:decelerate(60/250*.3)
+					ssk_bg0:zoomy(4)
+					ssk_bg0:accelerate(60/250*.6)
+					ssk_bg0:zoomy(1)
+				end)
+			end
+			m2(125.1,function()
+					ssk_bg0:zoomx(1)
+				end)
+			m2(126,function()
+				for pn=1,2 do
+					
+					local a = GetJud(pn)
+					if a then
+						a:linear(60/125)
+						a:x(160*(pn*2-3));
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(60/125)
+						a:x(160*(pn*2-3));
+					end
+					
+				end
+			end)
+			
+			m2(127,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(SCREEN_CENTER_X)
+						a:y(SCREEN_CENTER_Y)
+						a:rotationz(0)
+					end
+				end
+			end,true)
+			
+			-----beat 127 bullshit-----
+			local ssk_turnparity = -1
+			for i=127,140.5,.5 do
+				local ssk_fuckscope = ssk_turnparity
+				local bgrotmod = 1
+				if slumpo then bgrotmod = -1 end
+				m2(i,function()
+					for pn=1,2,1 do
+						local a = Plr(pn)
+						if a then
+							if ssk_fuckscope==1 then
+								a:zoomx(3)
+							else
+								a:zoomy(3)
+							end
+							a:bounceend(60/250*.4);
+							a:rotationz(30*ssk_fuckscope)
+							a:zoomx(1)
+							a:zoomy(1)
+						end
+					end
+					if ssk_fuckscope==1 then
+						ssk_bg0:zoomx(3)
+					else
+						ssk_bg0:zoomy(3)
+					end
+					ssk_bg0:bounceend(60/250*.4);
+					ssk_bg0:rotationz(30*ssk_fuckscope*bgrotmod)
+					ssk_bg0:zoomx(1)
+					ssk_bg0:zoomy(1)
+				end)
+				ssk_turnparity = ssk_turnparity*-1
+			end
+			
+			m2(141,function()
+				for pn=1,2,1 do
+				local a = Plr(pn)
+					if a then
+						a:bounceend(60/250*.5);
+						a:x(SCREEN_CENTER_X*1.25)
+						a:y(SCREEN_CENTER_Y*.875)
+						a:zoom(.83)
+						a:rotationz(5)
+					end
+				end
+			end)
+			m2(141.75,function()
+				for pn=1,2,1 do
+				local a = Plr(pn)
+					if a then
+						a:bounceend(60/250*.5);
+						a:x(SCREEN_CENTER_X*.75)
+						a:y(SCREEN_CENTER_Y*.75)
+						a:zoom(.66)
+						a:rotationz(-10)
+					end
+				end
+			end)
+			m2(142.5,function()
+				for pn=1,2,1 do
+				local a = Plr(pn)
+					if a then
+						a:bounceend(60/250*.3);
+						a:x(SCREEN_CENTER_X*1.5)
+						a:y(SCREEN_CENTER_Y*.625)
+						a:zoom(.49)
+						a:rotationz(15)
+					end
+				end
+				if screen:GetChild('SongBackground') and ssk_all_bg then
+					ssk_all_bg:fov(0)
+					screen:GetChild('SongBackground'):z(0);
+				end
+			end)
+			m2(143,function()
+				for pn=1,2,1 do
+				local a = Plr(pn)
+					if a then
+						a:bounceend(60/250*.25);
+						a:x(SCREEN_CENTER_X*.5)
+						a:y(SCREEN_CENTER_Y*.5)
+						a:zoom(.32)
+						a:rotationz(-20)
+					end
+				end
+				
+				if screen:GetChild('SongBackground') and ssk_all_bg then
+					ssk_all_bg:fov(0)
+					screen:GetChild('SongBackground'):z(-999);
+				end
+				
+			end)
+			ssk_turnparity = ssk_turnparity*-1
+			m2(141,'Delicious')
+			m2(150,'Delectable')
+			m2(157,'Dentures')
+			m2(163,'Dead')
+			m2(168,'Durian')
+			m2(183,'Darian')
+			
+			me(141,.75,-500,0,'mini','len',outQuad)
+			me(141,.75,50,0,'flip','len',outQuad)
+			
+			me(141.75,.75,-500,0,'mini','len',outQuad)
+			me(141.75,.75,50,0,'flip','len',outQuad)
+			
+			me(142.5,.5,-500,0,'mini','len',outQuad)
+			me(142.5,.5,50,0,'flip','len',outQuad)
+			
+			me(145-.1,.5,0,300,'tipsy','len',linear)
+			me(145.5-.1,.5,300,-300,'tipsy','len',linear)
+			me(146-.1,1,-300,0,'tipsy','len',outCirc)
+			
+			m(143,147,'*10000 100 stealth, *1000 -100 centered, *1000 50 reverse','end')
+			me(147,3,100,0,'stealth','len',linear)
+			me(147,3,50,0,'reverse','len',linear)
+			me(147,3,-100,0,'centered','len',linear)
+			me(147,3,-50,0,'dizzy','len',linear)
+			
+			me(147,.5,0,100,'invert','len',linear)
+			me(147.5,.5,100,0,'invert','len',linear)
+			me(148,.5,0,100,'flip','len',linear)
+			me(148.5,1.5,100,0,'flip','len',outCirc)
+			
+			me(151.5,.5,0,700,'drunk','len',linear)
+			me(152,1,700,0,'drunk','len',outCirc)
+			
+			me(153-.1,.5,0,100,'tornado','len',linear)
+			me(153.5-.1,.5,100,-100,'tornado','len',linear)
+			me(154-.1,1,-100,0,'tornado','len',outCirc)
+			me(155-.1,.5,0,-100,'tornado','len',outCirc)
+			me(155.5-.1,1,-100,100,'tornado','len',outCirc)
+			me(155.5-.1,1,0,-100,'mini','len',outCirc)
+			me(155.5-.1,1,0,10,'flip','len',outCirc)
+			me(156.5-.1,1,100,0,'tornado','len',outCirc)
+			me(156.5-.1,1,-100,0,'mini','len',outCirc)
+			me(156.5-.1,1,10,0,'flip','len',outCirc)
+			
+			me(167,183,0,-100,'flip','end',linear)
+			me(167,183,0,100,'mini','end',linear)
+			m(185,186,'*1000 no mini, *1000 no flip','end')
+			me(185,191,100,0,'dark','end',linear)
+			
+			m2(183,function()
+				for pn=1,2,1 do
+				local a = Plr(pn)
+					if a then
+						a:decelerate(60/250*.5);
+						a:y(SCREEN_HEIGHT*.25)
+						a:rotationz(-5)
+						a:accelerate(60/250*1.5);
+						a:y(SCREEN_HEIGHT*1.5)
+						a:rotationz(-90)
+						a:sleep(0)
+						a:y(SCREEN_CENTER_Y)
+						a:rotationz(0)
+					end
+				end
+				
+				if screen:GetChild('SongBackground') and ssk_all_bg then
+					ssk_all_bg:fov(60)
+					screen:GetChild('SongBackground'):z(-0.1);
+				end
+				
+			end)
+			
+			m2(182,function()
+				char_condor:x(sw/2)
+				char_condor:y(sh/2)
+				char_condor:playcommand('Spawn');
+				
+				ssk_spearo:x(500)
+				ssk_spearo:decelerate(2.5*60/250)
+				ssk_spearo:x(-200)
+				ssk_spearo:accelerate(2.5*60/250)
+				ssk_spearo:x(0)
+				
+				ssk_spear:hidden(0)
+				ssk_spear:x(sw/2)
+				ssk_spear:y(sh+100)
+				ssk_spear:decelerate(2.5*60/250)
+				ssk_spear:y(sh*0.1)
+				ssk_spear:accelerate(2.5*60/250)
+				ssk_spear:y(sh*0.5-100)
+				ssk_spear:queuecommand('Hide')
+				
+				ssk_spear_inner:zoom(2)
+				ssk_spear_inner:linear(5*60/250)
+				ssk_spear_inner:rotationz(1080-10)
+				ssk_spear_inner:zoom(0.4)
+				
+			end)
+			
+			m2(186.2,function()
+				taro_Sound('spell')
+			end)
+			
+			m2(186.8,function()
+				char_condor:playcommand('Cast');
+				
+				ssk_screenvib:x(15)
+				ssk_screenvib:linear(4*60/250)
+				ssk_screenvib:x(0)
+			end)
+			
+			m2(187,function()
+				for pn=1,2 do
+					
+					local a = GetJud(pn)
+					if a then
+						a:linear(60/125)
+						a:x(160*(pn*2-3));
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(60/125)
+						a:x(160*(pn*2-3));
+					end
+					
+				end
+			end)
+			
+			m2(191,function()
+				char_condor:playcommand('Hide');
+			end)
+			
+			-----XROSSTOSS-----
+			
+			m2(190,function()
+				for pn=1,2,1 do
+				local a = Plr(pn)
+					if a then
+						a:decelerate(60/250*1);
+						a:y(SCREEN_HEIGHT*1.15)
+						
+					end
+				end
+			end)
+			me(190,191,0,50,'reverse','end',outQuad)
+			m(190,238.5,'*1000 50 reverse','end')
+			me(191,4,50,0,'reverse','len',outQuad)
+			me(191+4,4,0,50,'reverse','len',inQuad)
+			me(199,4,50,0,'reverse','len',outQuad)
+			me(199+4,4,0,50,'reverse','len',inQuad)
+			
+			m2(193,function()
+				if ssk_bg0 then
+					ssk_bg0:decelerate(60/250*.5)
+					ssk_bg0:zoomy(2)
+					ssk_bg0:bouncebegin(60/250*7.5)
+					ssk_bg0:zoomy(1)
+				end
+			end)
+			m2(201,function()
+				if ssk_bg0 then
+					ssk_bg0:decelerate(60/250*.5)
+					ssk_bg0:zoomy(2)
+					ssk_bg0:bouncebegin(60/250*5.5)
+					ssk_bg0:zoomy(1)
+				end
+			end)
+			
+			m2(206.5,function()
+				for pn=1,2,1 do
+				local a = Plr(pn)
+					if a then
+						a:decelerate(60/250*.5)
+						a:rotationx(0);
+						a:rotationz(0);
+						a:y(SCREEN_HEIGHT*.5)
+						a:rotationy(0)
+						a:zoomy(1)
+						a:skewx(0)
+						a:zoomx(1)
+						a:zoomz(1)
+						a:effectmagnitude(0,0,0)
+					end
+				end
+			end)
+			me(206.5,.5,50,0,'reverse','len',outQuad)
+			m(207,222,'*1000 no reverse','end')
+			
+			m2(222,function()
+				for pn=1,2,1 do
+				local a = Plr(pn)
+					if a then
+						a:rotationz(1080)
+						a:decelerate(60/250*1);
+						a:y(SCREEN_HEIGHT*1.15)
+						a:rotationz(0)
+					end
+				end
+			end)
+			me(222,1,0,50,'reverse','len',outQuad)
+			me(223,4,50,0,'reverse','len',outQuad)
+			me(223+4,4,0,50,'reverse','len',inQuad)
+			me(231,4,50,0,'reverse','len',outQuad)
+			me(231+4,4,0,50,'reverse','len',inQuad)
+			if slumpo then
+				m(231,237.5,'*1000 100 flip','end',1)
+				m(231,237.5,'*1000 100 invert','end',2)
+			end
+			m2(225,function()
+				if ssk_bg0 then
+					ssk_bg0:decelerate(60/250*.5)
+					ssk_bg0:zoomy(2)
+					ssk_bg0:bouncebegin(60/250*7.5)
+					ssk_bg0:zoomy(1)
+				end
+			end)
+			m2(233,function()
+				if ssk_bg0 then
+					ssk_bg0:decelerate(60/250*.5)
+					ssk_bg0:zoomy(2)
+					ssk_bg0:bouncebegin(60/250*5.5)
+					ssk_bg0:zoomy(1)
+				end
+			end)
+			m2(238.5,function()
+				for pn=1,2,1 do
+				local a = Plr(pn)
+					if a then
+						a:decelerate(60/250*.5)
+						a:rotationx(0);
+						a:rotationz(0);
+						a:y(SCREEN_HEIGHT*.5)
+						a:rotationy(0)
+						a:zoomy(1)
+						a:skewx(0)
+						a:zoomx(1)
+						a:zoomz(1)
+						a:effectmagnitude(0,0,0)
+					end
+				end
+			end)
+			me(238.5,.5,50,0,'reverse','len',outQuad)
+			if slumpo then
+				me(238.5,.5,100,0,'flip','len',outQuad)
+				me(238.5,.5,100,0,'invert','len',outQuad)
+			end
+			m(239,240,'*1000 no reverse, *1000 no flip, *1000 no invert','end')
+			
+			
+			m2(251.5,'Shiawase')
+			m2(256,'ScreenHit1')
+			
+			function preserveSwap(length, parity)
+				for pn=1,2,1 do
+					local a = Plr(pn)
+					local d = 0;
+					if pn==2 then d=2 end
+					if a then
+						a:x(SCREEN_CENTER_X*(d-parity));
+						a:accelerate(6/25*(length/2));
+						a:x(SCREEN_CENTER_X*d);
+						a:decelerate(6/25*(length/2));
+						a:x(SCREEN_CENTER_X*(d+parity));
+					end
+				end
+			end
+			--m2(207 to 209)
+			--m2(209 to 210.5)
+			--m2(210.5 to 213)
+			--m2(213 to 214 reset)
+			m2(207,function() preserveSwap(2,1) end)
+			m2(209,function() preserveSwap(1.5,-1) end)
+			m2(210.5,function() preserveSwap(2.5,1) end)
+			m2(213,function()
+				if P1 then
+					P1:decelerate(45/250)
+					P1:zoom(3)
+					P1:accelerate(45/250)
+					P1:zoom(1)
+				end
+				if P2 then
+					P2:zoom(0)
+					P2:x(SCREEN_CENTER_X);
+					P2:decelerate(90/250)
+					P2:zoom(1)
+				end
+			end)
+			
+			m(208.5,212,'*1000 100 invert','end',2)
+			m(212,213,'*1000 no invert','end',2)
+			
+			m(215.5,3,'*10000 400 beat',l);
+			
+			m2(210-.2,function() ssk_bg0:linear(.1) ssk_bg0:zoomx(3) ssk_bg0:linear(.3) ssk_bg0:zoomx(1) end)
+			m2(214-.2,function() ssk_bg0:linear(.1) ssk_bg0:zoomy(3) ssk_bg0:linear(.3) ssk_bg0:zoomy(1) end)
+			
+			simple_m0d2(219-.2,500,.5,'drunk');
+			simple_m0d2(219-.2,500,.5,'tipsy');
+			simple_m0d2(220.5-.2,-500,.5,'drunk');
+			simple_m0d2(220.5-.2,500,.5,'tipsy');
+			
+			m(213,6,'*10 400 hidden, *2 20 hiddenoffset',l,1)
+			m(213,6,'*10 400 sudden, *2 20 suddenoffset',l,2)
+			
+			me(214.5,1.5,20,200,'hiddenoffset',l,inSine,1)
+			me(214.5,1.5,20,200,'suddenoffset',l,inSine,2)
+			
+			me(216,1,-100,150,'suddenoffset',l,linear,1)
+			me(216,1,-100,150,'hiddenoffset',l,linear,2)
+			
+			me(217,1,-100,150,'hiddenoffset',l,linear,1)
+			--me(217,1,-100,150,'siddenoffset',l,linear,2) --OOPS
+			
+			me(218,1,-100,150,'suddenoffset',l,linear,1)
+			me(218,1,-100,150,'hiddenoffset',l,linear,2)
+			
+			me(219,1,-100,150,'hiddenoffset',l,linear,1)
+			--me(219,1,-100,150,'siddenoffset',l,linear,2) --OOPS
+			
+			m(216,1,'*10000 sudden, *10000 no hidden',l,1)
+			m(217,1,'*10000 no sudden, *10000 hidden',l,1)
+			m(218,1,'*10000 sudden, *10000 no hidden',l,1)
+			m(219,1,'*10000 no sudden, *10000 hidden',l,1)
+			
+			m(216,1,'*10000 no sudden, *10000 hidden',l,2)
+			m(217,1,'*10000 sudden, *10000 no hidden',l,2)
+			m(218,1,'*10000 no sudden, *10000 hidden',l,2)
+			m(219,1,'*10000 sudden, *10000 no hidden',l,2)
+			
+			m(220,3,'*3 no sudden, *3 no hidden',l,1)
+			m(220,3,'*3 no sudden, *3 no hidden',l,2)
+			
+			
+			
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			me(213,1.5,0,-300,'mini',l,inOutQuad,1,4.5)
+			me(219,3,-300,0,'mini',l,inOutQuad,1)
+			
+			me(213,1.5,300,125,'cmod',l,inOutQuad,1,4.5)
+			me(219,3,125,300,'cmod',l,inOutQuad,1)
+			
+			me(213,1.5,0,100,'mini',l,inOutQuad,2,4.5)
+			me(219,3,100,0,'mini',l,inOutQuad,2)
+			
+			me(213,1.5,300,625,'cmod',l,inOutQuad,2,4.5)
+			me(219,3,625,300,'cmod',l,inOutQuad,2)
+			
+			me(213,1.5,0,-200,'flip',l,inOutQuad,2,4.5)
+			me(219,3,-200,0,'flip',l,inOutQuad,2)
+			
+			
+			m2(223,function()
+				for pn=1,2 do
+					
+					local a = GetJud(pn)
+					if a then
+						a:linear(60/125)
+						a:x(160);
+						a:basezoomx((pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(60/125)
+						a:x(160);
+						a:basezoomx((pn*2-3))
+					end
+					
+				end
+			end)
+			
+			m2(239,function()
+				for pn=1,2 do
+					
+					local a = GetJud(pn)
+					if a then
+						a:linear(60/125)
+						a:x(160*(pn*2-3));
+						a:basezoomx(1)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(60/125)
+						a:x(160*(pn*2-3));
+						a:basezoomx(1)
+					end
+					
+				end
+			end)
+			
+			m2(255,function()
+				for pn=1,2 do
+					
+					local a = GetJud(pn)
+					if a then
+						a:linear(60/125)
+						a:x(0);
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(60/125)
+						a:x(0);
+					end
+					
+				end
+			end)
+			
+			m2(256,function()
+				local a = GetJud(2)
+				if a then
+					a:basezoomx(0)
+					a:basezoomy(0)
+				end
+				local a = GetCom(2)
+				if a then
+					a:basezoomx(0)
+					a:basezoomy(0)
+				end
+			end)
+			
+			m2(264,function()
+				local a = GetJud(2)
+				if a then
+					a:basezoomx(1)
+					a:basezoomy(1)
+				end
+				local a = GetCom(2)
+				if a then
+					a:basezoomx(1)
+					a:basezoomy(1)
+				end
+			end)
+			
+			m2(287,function()
+				for pn=1,2 do
+					
+					local a = GetJud(pn)
+					if a then
+						a:linear(180/125)
+						a:x(160*(pn*2-3));
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(180/125)
+						a:x(160*(pn*2-3));
+					end
+					
+				end
+			end)
+			
+			m2(239,function() preserveSwap(2,-1) end)
+			m2(241,function() preserveSwap(1.5,1) end)
+			m2(242.5,function() preserveSwap(2.5,-1) end)
+			m2(245,function()
+				if P2 then
+					P2:decelerate(45/250)
+					P2:zoom(3)
+					P2:accelerate(45/250)
+					P2:zoom(1)
+				end
+				if P1 then
+					P1:zoom(0)
+					P1:x(SCREEN_CENTER_X);
+					P1:decelerate(90/250)
+					P1:zoom(1)
+				end
+			end)
+			--m(241,244,'*1000 100 flip','end',1)
+			--m(244,245,'*1000 no flip','end',1)
+			m(239,242,'*1000 100 flip','end',2)
+			m(242,245,'*1000 no flip','end',2)
+			
+			m(32+215.5,3,'*10000 400 beat',l);
+			
+			m(32+213,6,'*10 400 hidden, *2 20 hiddenoffset',l,1)
+			m(32+213,6,'*10 400 sudden, *2 20 suddenoffset',l,2)
+			
+			m2(32+210-.2,function() ssk_bg0:linear(.1) ssk_bg0:zoomx(3) ssk_bg0:linear(.3) ssk_bg0:zoomx(1) end)
+			m2(32+214-.2,function() ssk_bg0:linear(.1) ssk_bg0:zoomy(3) ssk_bg0:linear(.3) ssk_bg0:zoomy(1) end)
+			
+			me(32+214.5,1.5,20,200,'hiddenoffset',l,inSine,1)
+			me(32+214.5,1.5,20,200,'suddenoffset',l,inSine,2)
+			
+			me(32+216,1,-100,150,'suddenoffset',l,linear,1)
+			me(32+216,1,-100,150,'hiddenoffset',l,linear,2)
+			
+			me(32+217,1,-100,150,'hiddenoffset',l,linear,1)
+			--me(32+217,1,-100,150,'siddenoffset',l,linear,2) --OOPS
+			
+			me(32+218,1,-100,150,'suddenoffset',l,linear,1)
+			me(32+218,1,-100,150,'hiddenoffset',l,linear,2)
+			
+			me(32+219,1,-100,150,'hiddenoffset',l,linear,1)
+			--me(32+219,1,-100,150,'siddenoffset',l,linear,2) --OOPS
+			
+			m(32+216,1,'*10000 sudden, *10000 no hidden',l,1)
+			m(32+217,1,'*10000 no sudden, *10000 hidden',l,1)
+			m(32+218,1,'*10000 sudden, *10000 no hidden',l,1)
+			m(32+219,1,'*10000 no sudden, *10000 hidden',l,1)
+			
+			m(32+216,1,'*10000 no sudden, *10000 hidden',l,2)
+			m(32+217,1,'*10000 sudden, *10000 no hidden',l,2)
+			m(32+218,1,'*10000 no sudden, *10000 hidden',l,2)
+			m(32+219,1,'*10000 sudden, *10000 no hidden',l,2)
+			
+			m(32+220,3,'*3 no sudden, *3 no hidden',l,1)
+			m(32+220,3,'*3 no sudden, *3 no hidden',l,2)
+			
+			
+			
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			me(32+213,1.5,0,-300,'mini',l,inOutQuad,1,4.5)
+			me(32+219,4,-300,0,'mini',l,inOutQuad,1)
+			
+			me(32+213,1.5,300,125,'cmod',l,inOutQuad,1,4.5)
+			me(32+219,4,125,300,'cmod',l,inOutQuad,1)
+			
+			me(32+213,1.5,0,100,'mini',l,inOutQuad,2,4.5)
+			me(32+219,4,100,0,'mini',l,inOutQuad,2)
+			
+			me(32+213,1.5,300,625,'cmod',l,inOutQuad,2,4.5)
+			me(32+219,4,625,300,'cmod',l,inOutQuad,2)
+			
+			me(32+213,1.5,0,-200,'flip',l,inOutQuad,2,4.5)
+			me(32+219,3,-200,0,'flip',l,inOutQuad,2)
+			
+			m(251-.2,5,'*15 stealth',l,2)
+			m(256-.2,1,'*15 no stealth',l,2)
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+			switcheroo_add(251-.2,'invert',15,2,1)
+			switcheroo_add(251.5-.2,'flip',15,2,1)
+			switcheroo_add(252.25-.2,'urld',15,2,1)
+			switcheroo_add(253-.2,'flip',15,2,1)
+			switcheroo_add(253.75-.2,'invert',15,2,1)
+			switcheroo_add(254.5-.2,'normal',15,2,1)
+			
+			m(187,256,'*10 C300',e);
+			me(187,4,300,200,'cmod',l,linear)
+			me(219,4,300,200,'cmod',l,linear)
+			
+			--m(256,286.9,'*10000 reverse',e,2);
+			
+			
+			m(256,8,'*10 100 reverse, *5 -50 split, *5 -50 cross, *5 -50 alternate',l)
+			m(257,8,'*1 100 reverse, *5 -100 split, *5 no cross, *5 no alternate',l)
+			m(258,8,'*1 100 reverse, *5 -50 split, *5 50 cross, *5 -50 alternate',l)
+			m(259,8,'*1 100 reverse, *5 no split, *5 no cross, *5 no alternate',l)
+			
+			m(262,286.9,'*10000 no reverse',e,1);
+			m(262,286.9,'*10000 reverse',e,2);
+			
+			m(258-.2,1,'*10 -200 drunk',l)
+			m(259-.2,1,'*20 200 drunk',l)
+			m(260-.2,1,'*20 -200 drunk',l)
+			m(260.5-.2,1,'*20 200 drunk',l)
+			m(261.5-.2,1,'*20 -200 drunk',l)
+			m(262.5-.2,8,'*20 200 drunk',l)
+			m(269-.2,8,'*5 no drunk',l)
+			
+			m(278.5-.2,8,'*10 -200 drunk',l)			
+			m(284-.2,8,'*5 no drunk',l)
+			
+			m2(261,function()
+				for i,v in (mod_plr) do
+					if v then
+						v:zoom(1)
+						v:x(SCREEN_CENTER_X);
+						v:y(SCREEN_CENTER_Y);
+						v:rotationz(0);
+					end
+				end
+			end)
+			m2(261.5,function() preserveSwap(1,1) end)
+			m2(262,function() preserveSwap(2.5,-1) end)
+			m2(265,function() preserveSwap(1.5,1) end)
+			m2(266.5,function() preserveSwap(2.5,-1) end)
+			m2(269,function() preserveSwap(.75,1) end)
+			m2(269.75,function() preserveSwap(.75,-1) end)
+			m2(270.5,function() preserveSwap(1.5,1) end)
+			m2(272,function() preserveSwap(1,-1) end)
+			m2(273,function() preserveSwap(1,1) end)
+			m2(274,function() preserveSwap(1,-1) end)
+			m2(275,function() preserveSwap(1,1) end)
+			m2(276,function() preserveSwap(.5,-1) end)
+			m2(276.5,function() preserveSwap(1,1) end)
+			m2(277.5,function() preserveSwap(1,-1) end)
+			m2(278.5,function() preserveSwap(2.5,1) end)
+			m2(281,function() preserveSwap(1.5,-1) end)
+			m2(282.5,function() preserveSwap(1,1) end)
+			m2(283.5,function() preserveSwap(.5,-1) end)
+			m2(284,function() preserveSwap(1,1) end)
+			m2(285,function() preserveSwap(1,-1) end)
+			m2(286,function() preserveSwap(1,1) end)
+			m2(287,function()
+				if P1 then
+					P1:decelerate(90/250)
+					P1:zoom(3)
+					P1:accelerate(90/250)
+					P1:zoom(1)
+				end
+				if P2 then
+					P2:zoom(0)
+					P2:x(SCREEN_CENTER_X);
+					P2:decelerate(180/250)
+					P2:zoom(1)
+				end
+			end)
+			
+			
+			function condor_screenmotion(zm,ang,len,tween,x,y)
+				
+				if not x then x = sw/2 end
+				if not y then y = sh/2 end
+				
+				screen[tween](screen,len*60/250)
+				screen:x(x+(condor_const1*zm*math.cos((ang+condor_const2)/180*math.pi)));
+				screen:y(y+(condor_const1*zm*math.sin((ang+condor_const2)/180*math.pi)));
+				screen:rotationz(ang)
+				screen:zoom(zm)
+				
+			end
+			
+			m2(262.5,function() condor_screenmotion(1.4,40,1.25,'decelerate') end)
+			m2(263.75,function() condor_screenmotion(.6,0,1.25,'accelerate') end)
+			m2(265,function() condor_screenmotion(1.4,0,.75,'decelerate') end)
+			m2(265.75,function() condor_screenmotion(.6,0,.75,'accelerate') end)
+			m2(266.5,function() condor_screenmotion(1.4,-40,1.25,'decelerate') end)
+			m2(267.75,function() condor_screenmotion(.6,0,1.05,'accelerate') end)
+			
+			m2(269-.2,function() condor_screenmotion(.73,0,.5,'decelerate') end)
+			m2(269.75-.2,function() condor_screenmotion(.86,0,.5,'decelerate') end)
+			m2(270.5-.2,function() condor_screenmotion(1,0,.5,'decelerate') end)
+			
+			m2(272,function() condor_screenmotion(1.25,25,.5,'decelerate') end)
+			m2(272.5,function() condor_screenmotion(.6,0,.5,'accelerate') end)
+			m2(273,function() condor_screenmotion(1.25,-25,.5,'decelerate') end)
+			m2(273.5,function() condor_screenmotion(.6,0,.5,'accelerate') end)
+			m2(274,function() condor_screenmotion(1.25,25,.5,'decelerate') end)
+			m2(274.5,function() condor_screenmotion(.6,0,.5,'accelerate') end)
+			m2(275,function() condor_screenmotion(1.3,-25,.75,'decelerate') end)
+			m2(275.75,function() condor_screenmotion(.5,0,.75,'accelerate') end)
+			m2(276.5,function() condor_screenmotion(1.3,25,.5,'decelerate') end)
+			m2(277,function() condor_screenmotion(.5,0,.5,'accelerate') end)
+			m2(277.5,function() condor_screenmotion(1.2,0,.5,'decelerate') end)
+			m2(278,function() condor_screenmotion(.5,0,.5,'accelerate') end)
+			
+			m2(278.5,function() condor_screenmotion(1.4,-40,1.25,'decelerate') end)
+			m2(279.75,function() condor_screenmotion(.6,0,1.25,'accelerate') end)
+			m2(281,function() condor_screenmotion(1.4,0,.75,'decelerate') end)
+			m2(281.75,function() condor_screenmotion(.6,0,.75,'accelerate') end)
+			m2(282.5,function() condor_screenmotion(1.4,45,1.5,'decelerate') end)
+			
+			m2(284-.1,function() condor_screenmotion(1.25,-30,.5,'decelerate') end)
+			m2(285-.1,function() condor_screenmotion(1.1,15,.5,'decelerate') end)
+			m2(286-.1,function() condor_screenmotion(1,0,.5,'decelerate') end)
+			
+			m2(290-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						--a:x(SCREEN_CENTER_X-260*-d);
+						a:x(SCREEN_CENTER_X);
+					end
+				end
+			end)
+			
+			m2(303,function()
+				ssk_bg0:stopeffect()
+				ssk_bg0:decelerate(240/250)
+				ssk_bg0:rotationz(360)
+				ssk_bg0:rotationx(0)
+				ssk_bg0:rotationy(0)
+				ssk_bg0:sleep(0)
+				ssk_bg0:rotationz(0)
+			end)
+			
+			m(294-.1,10,'*15 flip',l)
+			
+			for pn=1,2 do
+				m(290,302.9,'*25 '..(250*(pn*2-3))..' invert','end',pn);
+			end
+			
+			m(303,4,'*25 no invert','len')
+			
+			m2(290,function()
+				if screen:GetChild('SongBackground') and ssk_all_bg then
+					ssk_all_bg:fov(60)
+					screen:GetChild('SongBackground'):z(-0.1);
+				end
+			end,true)
+			m2(291-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(0.05);
+						a:rotationy(-45*(pn*2-3));
+						a:zoomz(1);
+						a:vibrate();
+						a:effectmagnitude(20,20,0)
+					end
+					local a = GetJud(pn)
+					if a then
+						a:linear(0.05)
+						a:x(160*(pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(0.05)
+						a:x(160*(pn*2-3))
+					end
+				end
+				
+				ssk_bg0:vibrate()
+				ssk_bg0:effectmagnitude(20,20,0)
+				ssk_bg0:rotationy(20)
+			end)
+			m2(294-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(0);
+						a:zoomz(1);
+						a:effectmagnitude(0,0,0)
+					end
+				end
+				ssk_bg0:effectmagnitude(0,0,0)
+				ssk_bg0:rotationy(0)
+			end)
+			
+			m2(295-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(45*(pn*2-3));
+						a:zoomz(1);
+						a:effectmagnitude(20,20,0)
+					end
+				end
+				ssk_bg0:effectmagnitude(20,20,0)
+				ssk_bg0:rotationy(-20)
+			end)
+			m2(298-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(0);
+						a:zoomz(1);
+						a:effectmagnitude(0,0,0)
+					end
+				end
+				ssk_bg0:effectmagnitude(0,0,0)
+				ssk_bg0:rotationx(0)
+				ssk_bg0:rotationy(0)
+			end)
+			
+			m2(299-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(45*(pn*2-3));
+						a:zoomz(1);
+						a:effectmagnitude(20,20,0)
+					end
+				end
+				ssk_bg0:effectmagnitude(20,20,0)
+				ssk_bg0:rotationy(20)
+			end)
+			m2(300.5-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(-45*(pn*2-3));
+						a:zoomz(1);
+					end
+				end
+				ssk_bg0:rotationy(-20)
+			end)
+			m2(302-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(45*(pn*2-3));
+						a:zoomz(1);
+					end
+				end
+				ssk_bg0:rotationx(-20)
+				ssk_bg0:rotationy(0)
+			end)
+			m2(303-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:finishtweening();
+						a:linear(0.05);
+						a:rotationy(0);
+						a:zoomz(1);
+						a:effectmagnitude(0,0,0)
+						a:x(SCREEN_CENTER_X);
+					end
+				end
+			end)
+			
+			m(303-.1,4,'*25 no invert',l,1);
+			m(303-.1,4,'*25 no invert',l,2);
+			
+			m(290.5,4,'*10000 1000 beat',l)
+			m(294.5,4,'*10000 -1000 beat',l)
+			m(298.5,3,'*10000 1000 beat',l)
+			m(301.5,6,'*10000 -1000 beat',l)
+			m(307.5,1,'*10000 no beat',l)
+			--m(35.5,39.5,'*10000 no beat',e)
+			
+			--[[
+			m2(303,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:bounce()
+						a:effectperiod(1)
+						a:effectclock('bgm')
+						a:effectmagnitude(0,-64,0)
+					end
+				end
+			end)
+			m2(304,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:effectmagnitude(0,-80,0)
+					end
+				end
+			end)
+			m2(305,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:effectmagnitude(0,-100,0)
+					end
+				end
+			end)
+			m2(306,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:effectmagnitude(0,-150,0)
+					end
+				end
+			end)
+			m2(307,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:stopeffect();
+					end
+				end
+			end)
+			]]
+			
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--outElastic
+			
+			--[[
+			m(23, 3, '*100 1000 bumpy', l );
+			me(26, 1, 1000, 0, 'bumpy', l, outQuad);
+			m(27, 3, '*100 1000 bumpy', l );
+			me(30, 1, 1000, 0, 'bumpy', l, outQuad);
+			m(31, 4, '*100 1000 bumpy', l );
+			me(35, 3, 1000, 0, 'bumpy', l, outQuad);
+			]]
+			
+			m(291, 3, '*100 1000 bumpy', l );
+			m(294, 1, '*100 no bumpy', l );
+			m(295, 3, '*100 1000 bumpy', l );
+			m(298, 1, '*100 no bumpy', l );
+			m(299, 4, '*100 1000 bumpy', l );
+			m(303, 4, '*20 no bumpy', l );
+			
+			me(303, 4, 0, -5000, 'mini', l, inQuart );
+			me(307, 1, -5000, 0, 'mini', l, outElastic );
+			me(303, 4, -157, 0, 'dizzy', l, outQuad );
+			
+			--[[
+			me(35, 3, 0, 50, 'flip', l, inQuart );
+			me(38, 1, 50, 0, 'flip', l, outElastic );
+			]]
+			
+			m(304,3,'*0.75 50 flip, *2 C100',l);
+			m(307,3,'*10 no flip',l);
+			
+			----------ayaxyhatte shitfucks-----------
+			
+			
+			
+			m2(307,function()
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:bounceend(.25*60/250)
+						v:x(SCREEN_CENTER_X + (i*2-3)*32)
+						v:linear(4.489)
+						v:zoom(1.25)
+					end
+				end
+			end)
+			switcheroo_width = 2
+			local ssk_swak = {{311,4},{315,2},{317,2},{319,2},{321,2},{323,.5},{323.5,1},{324.5,.5},{325,.5},{325.5,1},{326.5,.5},{327,1},{328,1},{329,1},{330,1}}
+			switcheroo_add(307,'normal',15,24)
+			local swaptable1 = {'dlru','normal','rudl','normal'}
+			local swaptable2 = {'normal','urld','normal','rdul'}
+			local swapindex = 1
+			m(307,331,'*10 no stealth','end')
+			m(307,4,'*10 80 stealth','len',1)
+			for i,v in pairs(ssk_swak) do
+				switcheroo_add(v[1],swaptable2[swapindex],(2/v[2])*15,v[2],1)
+				switcheroo_add(v[1],swaptable1[swapindex],(2/v[2])*15,v[2],2)
+				swapindex = math.mod(swapindex,4)+1
+				m(v[1],v[2],'*10 '.. ((math.mod(swapindex,2)*2-1)*(1*2-3))*-40+40 ..' stealth','len',1)
+				m(v[1],v[2],'*10 '.. ((math.mod(swapindex,2)*2-1)*(2*2-3))*-40+40 ..' stealth','len',2)
+				me(v[1],v[2],(math.mod(swapindex,2)*2-1)*50+50,(math.mod(swapindex,2)*2-1)*-50+50,'reverse','len',outCirc)
+
+				me(v[1],.5,1000,0,'hallway','len',outQuad)
+				print(((math.mod(swapindex,2)*2-1)*(i*2-3))*40+40 .. ' '.. i)
+			end
+			
+			m(315,331,'*10 100 alternate','end')
+			--m(307,331,'*10 250 wave, *100 C250, *10 -50 brake','end')
+			m(307,331,'*.5 50 boost, *10 100 bumpy','end',1)
+			me(307,331,300,400,'cmod','end',linear)
+			m(307,331,'*.5 50 brake, *10 100 bumpy','end',2)
+			switcheroo_width = 1
+			switcheroo_add(331,'normal',1,24,1)
+			switcheroo_add(331,'normal',1,24,2)
+			me(331,344,0,50,'reverse','end',outQuad,nil,354)
+			me(331,344,0,20,'flip','end',outQuad,nil,355)
+			me(331,344,0,-100,'mini','end',outQuad,nil,355)
+			--me(307,331,0,-300,'mini','end',linear)
+			m2(331,function()
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:rotationz(6840)
+						v:accelerate(.58)
+						v:x(SCREEN_CENTER_X)
+						v:zoom(1)
+						v:rotationz(5600)
+						v:linear(2+60/499.5)
+						v:rotationz(360)
+						v:decelerate(.24)
+						v:rotationz(0)
+					end
+				end
+				if ssk_bg0 then
+						ssk_bg0:rotationz(6840)
+						ssk_bg0:accelerate(.58)
+						ssk_bg0:x(SCREEN_CENTER_X)
+						ssk_bg0:zoom(1)
+						ssk_bg0:rotationz(5600)
+						ssk_bg0:linear(2+60/499.5)
+						ssk_bg0:rotationz(360)
+						ssk_bg0:zoom(.6)
+						ssk_bg0:decelerate(.24)
+						ssk_bg0:rotationz(0)
+						ssk_bg0:zoom(.5)
+					end
+			end)
+			m2(355,function()
+				if ssk_bg0 then
+						ssk_bg0:zoom(1)
+						ssk_bg0:diffuse(1,0,0,1)
+						ssk_bg0:sleep(60/499.5)
+						ssk_bg0:sleep(60/499.5)
+						ssk_bg0:diffuse(1,1,0,1)
+						ssk_bg0:sleep(60/499.5)
+						ssk_bg0:zoom(1.5)
+						ssk_bg0:diffuse(0,1,0,1)
+						ssk_bg0:sleep(60/499.5)
+						ssk_bg0:diffuse(.5,1,.5,1)
+						ssk_bg0:zoom(1)
+					end
+			end)
+			
+			m2(423,function()
+				if ssk_bg0 then
+						ssk_bg0:diffuse(.5,.5,.5,1)
+						ssk_bg0:zoom(1)
+					end
+			end)
+			
+			
+			
+			--- this section's too easy - TaroNuke
+			--- have you FC-ed it yet? - Daikyi
+			--- I said it was easy and thought i was hitting the notes, but realized that i actually missed every single one of them - TaroNuke
+			m(354,3,'*5 0 reverse, *10000 100 mini','len')
+			m(355-.1,1,'*10000 150 mini','len')
+			m(356-.1,1,'*10000 100 mini','len')
+			m(357-.1,1,'*10000 50 mini','len')
+			m(358-.1,1,'*10000 0 mini','len')
+			me(355,358,300,375,'cmod','end',linear)
+			m(359,423,'*10000 -50 mini, *1000 C350','end')
+			if FUCK_EXE then
+				m(359,423,'*10000 -99 drawsizeback, *1000 dizzyholds','end')
+				m(359,423,'*10000 hidenoteflash, *100 dark','end',2)
+			end
+			
+			
+			
+			m(358,423,'*10000 100 hidden, *1000 20 hiddenoffset, *1 120 brake, *10000 dark','end',2)
+			local ssk_gmod = {359.000,360.000,361.000,362.000,363.000,364.000,365.000,366.000,367.000,368.000,369.000,370.000,371.000,372.000,373.000,374.000,375.000,376.000,377.000,378.000,379.000,380.000,381.000,382.000,383.000,385.000,387.000,389.000,391.000,392.000,393.000,394.000,395.000,396.000,397.000,398.000,399.000,400.000,401.000,402.000,403.000,404.000,405.000,406.000,407.000,408.000,409.000,410.000,411.000,412.000,413.000,414.000,415.000,417.000,419.000,421.000}
+			for i,v in pairs(ssk_gmod) do
+				me(v,1,200,0,'hallway','len',outCirc)
+				me(v,1,628,0,'dizzy','len',outCirc)
+				me(v,1,-50,0,'flip','len',outCirc)
+				me(v,1,-100,-50,'mini','len',outCirc)
+			end
+			
+			m(358,423,'*10000 100 sudden, *1000 -20 suddenoffset','end',1)
+			
+			
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+			
+			--sugaroo_add(beat,len,speed,stealthvalmain,stealthvalsec,pn)
+			sugaroo_add(358,423-358,.25,60,60,1)
+			--m(358,423,'*','end')
+			
+			me(383,2,0,100,'hallway','len',outCirc)
+			me(385,2,100,-100,'hallway','len',outCirc)
+			me(387,2,-100,100,'hallway','len',outCirc)
+			me(389,2,100,-100,'hallway','len',outCirc)
+			me(391,1,-100,0,'hallway','len',outCirc)
+			
+			me(383+32,2,0,-100,'hallway','len',outCirc)
+			me(385+32,2,-100,100,'hallway','len',outCirc)
+			me(387+32,2,100,-100,'hallway','len',outCirc)
+			me(389+32,2,-100,100,'hallway','len',outCirc)
+			me(391+32,1,100,0,'hallway','len',outCirc)
+			m(423,1,'*10000 no drunk,*10000 no mini, *10000 no tipsy, *10000 no flip, *10000 no invert, *10000 no stealth, *10000 no hidden, *100000 no sudden, *10000 no brake,*1000 no hallway','len')
+			
+			
+			---spw---
+			
+			m2(423,function()
+				ssk_bg0:stopeffect()
+				ssk_bg0:fadetop(0)
+				ssk_bg0:croptop(0)
+				ssk_bgt:hidden(1)
+			end)
+			
+			m(423,437,'*1000 100 stealth','end')
+			local ssk_spew = {423,424.5,426,427,428,429,430,431,431.5,432,432.5,433,433.5,434,434.5,435}
+			local swapshit = {'normal','dlru','urld','rudl','drlu','rdul','ulrd','normal','dlru','urld','rudl','drlu','rdul','ulrd','normal'}
+			m(423,437,'*1000 C350,*1000 100 stealth','end')
+			for i=1,table.getn(ssk_spew)-1,1 do
+				m(ssk_spew[i],(ssk_spew[i+1]-ssk_spew[i])/3,'*1000 50 stealth','len')
+				switcheroo_add(ssk_spew[i]-.1,swapshit[i],100,(ssk_spew[i+1]-ssk_spew[i]))
+			end
+			m(435,438,'*1000 no stealth','end')
+			me(423,435,350,550,'cmod','end',linear)
+			me(435,437,550,300,'cmod','end',linear)
+			
+			--haunt--
+			m2(463.5,function()
+				if P1 then
+					P1:rotationy(0)
+					P1:rotationz(90)
+					P1:x(SCREEN_CENTER_X+48)
+					
+				end
+				if P2 then
+					P2:x(SCREEN_CENTER_X)
+					P2:y(SCREEN_CENTER_Y)
+					P2:rotationy(0)
+					P2:sleep(.08)
+					P2:decelerate(.089)
+					P2:addy(-30)
+					P2:accelerate(.35)
+					P2:addy(SCREEN_CENTER_Y*2.2)
+					P2:sleep(0)
+				end
+				
+				auxvar:x(SCREEN_CENTER_Y*2.1)
+				auxvar:decelerate(.447)
+				auxvar:x(SCREEN_CENTER_Y*1.5)
+			end)
+			
+			m2(464,function()
+				ssk_haunting_ground:sleep(.1)
+				ssk_haunting_ground:accelerate(.3)
+				ssk_haunting_ground:x(0)
+			end)
+			--m(464,5,'*1.25 no flip, *2.5 invert',l,1)
+			--me(464,2,50,0,
+			
+			m(464,1,'*1000 100 stealth, *1000 no dark','len',2)
+			me(465,24,100,0,'reverse','len',outQuad)
+			
+			m(454,464,'*1000 100 sudden','end')
+			m(464,465,'*1000 no sudden','end')
+			me(464,1,0,-200,'mini','len',outCirc)
+			me(454,465,90,-175,'suddenoffset','end',linear)
+			m(465,1,'*1000 100 invert, *10000 no split, *1000 no cross, *1000 no dark, *1000 no flip','len')
+			m(459,465,'*1000 blind','end')
+			m2(465,function()
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:rotationz(0)
+						v:x(SCREEN_CENTER_X)
+						v:y(SCREEN_CENTER_Y)
+					end
+				end
+			end)
+			
+			---condor alpha---
+			
+			condor_alpha = .4
+			
+			
+			if slumpo then
+				m2(383,function()
+					ssk_condorbig:playcommand('BadeIn');
+					ssk_condorbig:linear(5)
+					ssk_condorbig:addx(-50)
+					ssk_condorbig:addy(-20)
+				end)
+				m2(407,function()
+					ssk_condoralb:diffusealpha(condor_alpha)
+					ssk_condoralb:sleep(30/499.5)
+					ssk_condoralb:diffusealpha(condor_alpha*0.25)
+				end)
+				
+				for i=408,414.5,0.5 do
+					m2(i,function()
+						ssk_condoralb:diffusealpha(condor_alpha)
+						ssk_condoralb:sleep(15/499.5)
+						ssk_condoralb:diffusealpha(condor_alpha*0.25)
+					end)
+				end
+				
+				m2(415,function()
+					ssk_condoralb:sleep(0)
+					ssk_condoralb:diffusealpha(condor_alpha)
+					ssk_condoralb:playcommand('BadeOut');
+				end)
+			else
+				m2(383,function()
+					ssk_condorbig:playcommand('FadeIn');
+					ssk_condorbig:linear(5)
+					ssk_condorbig:addx(-50)
+					ssk_condorbig:addy(-20)
+				end)
+				m2(407,function()
+					ssk_condoralp:diffusealpha(condor_alpha)
+					ssk_condoralp:sleep(30/499.5)
+					ssk_condoralp:diffusealpha(condor_alpha*0.25)
+				end)
+				
+				for i=408,414.5,0.5 do
+					m2(i,function()
+						ssk_condoralp:diffusealpha(condor_alpha)
+						ssk_condoralp:sleep(15/499.5)
+						ssk_condoralp:diffusealpha(condor_alpha*0.25)
+					end)
+				end
+				
+				m2(415,function()
+					ssk_condoralp:sleep(0)
+					ssk_condoralp:diffusealpha(condor_alpha)
+					ssk_condorbig:playcommand('FadeOut');
+				end)
+			end
+			m2(437-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						--a:x(SCREEN_CENTER_X-260*-d);
+						a:x(SCREEN_CENTER_X);
+					end
+				end
+			end)
+			
+			--sbeebstar condor syndrome
+			me(383,399,0,30,'stealth',e,linear,2,415)
+			for i=408,414.5,0.5 do
+				me(i,.25,100,100,'stealth',l,linear,2)
+			end
+			me(415,420,30,0,'stealth',e,linear,2)
+			
+			for pn=1,2 do
+				m(437,451.9,'*25 '..(250*(pn*2-3))..' invert','end',pn);
+			end
+			
+			m(452,4,'*25 no invert','len')
+			m(454,3,'*25 invert','len')
+			m(457,3,'*25 no invert','len')
+			m(460,5,'*25 invert','len')
+			m2(439-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(-45*(pn*2-3));
+						a:zoomz(1);
+						a:vibrate();
+						a:effectmagnitude(20,20,0)
+					end
+				end
+				
+				
+				ssk_bg0:vibrate()
+				ssk_bg0:effectmagnitude(20,20,0)
+				ssk_bg0:linear(0.05)
+				ssk_bg0:rotationy(20)
+				
+			end)
+			m2(444-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(0);
+						a:zoomz(1);
+						a:effectmagnitude(0,0,0)
+					end
+				end
+				
+				ssk_bg0:effectmagnitude(0,0,0)
+				ssk_bg0:linear(0.05)
+				ssk_bg0:rotationy(0)
+				
+			end)
+			
+			m2(446-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(45*(pn*2-3));
+						a:zoomz(1);
+						a:effectmagnitude(20,20,0)
+					end
+				end
+				
+				ssk_bg0:effectmagnitude(20,20,0)
+				ssk_bg0:linear(0.05)
+				ssk_bg0:rotationy(-20)
+				
+			end)
+			m2(452-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					local d = -1;
+					if pn==2 then d=1 end
+					if a then
+						a:linear(0.05);
+						a:rotationy(0);
+						a:zoomz(1);
+						a:effectmagnitude(0,0,0)
+						a:x(SCREEN_CENTER_X)
+					end
+				end
+				
+				ssk_bg0:effectmagnitude(0,0,0)
+				ssk_bg0:linear(0.05)
+				ssk_bg0:rotationy(0)
+				
+			end)
+			
+			m2(454-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:effectmagnitude(20,20,0)
+					end
+				end
+				
+				ssk_bg0:effectmagnitude(20,20,0)
+				ssk_bg0:linear(0.05)
+				ssk_bg0:rotationy(-20)
+				
+			end)
+			
+			m2(457-.1,function()
+				ssk_bg0:effectmagnitude(20,20,0)
+				ssk_bg0:linear(0.05)
+				ssk_bg0:rotationy(20)
+			end)
+			
+			m2(460-.1,function()
+				ssk_bg0:effectmagnitude(20,20,0)
+				ssk_bg0:linear(0.05)
+				ssk_bg0:rotationy(0)
+				ssk_bg0:rotationx(-20)
+			end)
+			
+			m2(464-.1,function()
+				ssk_bg0:effectmagnitude(4,4,4)
+				ssk_bg0:rotationy(0)
+				ssk_bg0:rotationx(0)
+				ssk_bg0:decelerate(60/250)
+				ssk_bg0:rotationz(-10)
+				ssk_bg0:zoom(.1)
+				ssk_bg0:accelerate(60/250)
+				ssk_bg0:rotationz(20)
+				ssk_bg0:zoom(1)
+				ssk_bg0:sleep(0)
+				ssk_bg0:zoom(2)
+				ssk_bg0:accelerate(240/250)
+				ssk_bg0:addy(sh/2)
+				ssk_bg0:rotationz(10)
+				ssk_bg0:rotationx(-120)
+				ssk_bg0:zoom(1)
+				ssk_bg0:sleep(0)
+				ssk_bg0:zoom(0)
+			end)
+			
+			m(438.5,5,'*200 1000 drunk',l)
+			m(443.5,5,'*200 no drunk',l)
+			m(445.5,5,'*200 -1000 drunk',l)
+			m(450.5,5,'*200 no drunk',l)
+			
+			m(453.5,5,'*200 -1000 drunk',l)
+			m(456.5,5,'*400 1000 drunk',l)
+			m(459.5,5,'*200 no drunk',l)
+			
+			m2(460,function()
+				for i,v in pairs(mod_plr) do
+					v:vibrate()
+					v:effectmagnitude(100,100,100)
+				end
+			end)
+			m2(464,function()
+				for i,v in pairs(mod_plr) do
+					v:stopeffect()
+				end
+			end)
+			
+			--m(35.5,39.5,'*10000 no beat',e)
+			
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--outElastic
+			
+			--[[
+			m(23, 3, '*100 1000 bumpy', l );
+			me(26, 1, 1000, 0, 'bumpy', l, outQuad);
+			m(27, 3, '*100 1000 bumpy', l );
+			me(30, 1, 1000, 0, 'bumpy', l, outQuad);
+			m(31, 4, '*100 1000 bumpy', l );
+			me(35, 3, 1000, 0, 'bumpy', l, outQuad);
+			]]
+			
+			m(439, 3, '*100 1000 bumpy', l );
+			m(444, 1, '*100 no bumpy', l );
+			m(446, 3, '*100 1000 bumpy', l );
+			m(452, 1, '*100 no bumpy', l );
+			m(454, 3, '*100 1000 bumpy', l );
+			m(457, 4, '*50 no bumpy', l );
+			
+			--m(465,486,'*100 invert',e)
+			
+			m2(464,'Ohhh')
+			m2(465,'HauntedHit')
+			
+			me(465,486,100,0,'invert','end',outElastic)
+			
+			--ending
+			me(486,512,0,75,'cmod','end',outQuad)
+			me(486,512,0,78.5,'dizzy','end',inCirc,1)
+			me(486,512,0,-78.5,'dizzy','end',inCirc,2)
+			m(486,518,'*100000 500 invert','end')
+			if FUCK_EXE then
+				m(486,517,'*1 dizzyholds','end')
+			end
+			m(512,599,'*100000 C75,*.20 400 centered','end')
+			m(512,599,'*1 78.5 dizzy','end',1)
+			m(512,599,'*1 -78.5 dizzy','end',2)
+			m(465,1,'*100000 no bumpy','len')
+			me(512,514,0,100,'stealth','end',outQuad)
+			--me(512,515,0,-50,'flip','end',outQuad)
+			me(512,515,0,100,'dark','end',outQuad)
+			m(514,1,'*100000 100 stealth','len')
+			m2(512,'DrivenDrift')
+			
+			m2(486,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(SCREEN_CENTER_X+320*(pn*2-3));
+					end
+				end
+			end)
+			
+			m2(500,function()
+				for pn=1,2 do
+					
+					local a = GetJud(pn)
+					if a then
+						a:x(-120*(pn*2-3));
+						a:basezoomx(1)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(-120*(pn*2-3));
+						a:basezoomx(1)
+					end
+					
+				end
+			end)
+			
+			--fuck you  mini
+			me(105,1,0,0,'mini','len',linear)
+			
+			
+			
+			--some random bg shenanigans
+			m2(0,function()
+				ssk_stars:playcommand('Away')
+			end,true)
+			m2(315,function()
+				ssk_stars:z(0)
+				ssk_stars:playcommand('Up')
+			end)
+			m2(348,function()
+				ssk_stars:playcommand('Away')
+			end)
+			
+			m2(0,function()
+				condor_headL:hidden(1)
+				condor_headR:hidden(1)
+				condor_splat:hidden(1)
+			end,true)
+			
+			local function lerp(b,s,e,fun,dir)
+				if dir == 1 or not dir then
+					return fun((b-s)/(e-s),0,1,1)
+				else
+					return 1-fun((b-s)/(e-s),0,1,1)
+				end
+			end
+			
+			m2(193,function()
+				condor_headL:hidden(0)
+				condor_headL:x(sw/2 - 140)
+				condor_headL:linear(6*60/250)
+				condor_headL:addx(-60)
+				condor_headL:queuecommand('Hide')
+			end)
+			
+			m2(201,function()
+				condor_headR:hidden(0)
+				condor_headR:x(sw/2 + 140)
+				condor_headR:linear(6*60/250)
+				condor_headR:addx(60)
+				condor_headR:queuecommand('Hide')
+			end)
+			
+			m2(209.5,function()
+				condor_headL:hidden(0)
+				condor_headL:setstate(0)
+				condor_headL:animate(0)
+				condor_headL:x(sw/2 - 140)
+				condor_headL:sleep(120/250)
+				condor_headL:queuecommand('Hide')
+			end)
+			m2(213.5,function()
+				condor_headR:hidden(0)
+				condor_headR:setstate(0)
+				condor_headR:animate(0)
+				condor_headR:x(sw/2 + 140)
+				condor_headR:sleep(120/250)
+				condor_headR:queuecommand('Hide')
+			end)
+			
+			m2(225,function()
+				condor_headL:animate(1)
+				condor_headL:setstate(0)
+				condor_headL:hidden(0)
+				condor_headL:x(sw/2 - 150)
+				condor_headL:linear(6*60/250)
+				condor_headL:addx(-60)
+				condor_headL:queuecommand('Hide')
+			end)
+			
+			m2(233,function()
+				condor_headR:animate(1)
+				condor_headR:setstate(0)
+				condor_headR:hidden(0)
+				condor_headR:x(sw/2 + 150)
+				condor_headR:linear(6*60/250)
+				condor_headR:addx(60)
+				condor_headR:queuecommand('Hide')
+			end)
+			m2(241.5,function()
+				condor_headR:hidden(0)
+				condor_headR:setstate(0)
+				condor_headR:animate(0)
+				condor_headR:x(sw/2 + 140)
+				condor_headR:sleep(120/250)
+				condor_headR:queuecommand('Hide')
+			end)
+			
+			function condor_jump(beat,b)
+				if beat > b+5 then
+					condor_bangerz:y(sh)
+				else
+					if beat > b and beat < b+3 then
+						condor_bangerz:y( sh - 220*lerp(beat,b,b+3,outQuart,1) )
+					end
+					if beat > b+3 and beat < b+5 then
+						condor_bangerz:y( sh - 220*lerp(beat,b+3,b+5,inQuart,-1) )
+					end
+				end
+			end
+			
+			function condor_jumpq(beat,b)
+				if beat > b+1.5 then
+					condor_bangerz:y(sh)
+				else
+					if beat > b-.5 and beat < b+.5 then
+						condor_bangerz:y( sh - 220*lerp(beat,b-.5,b+.5,outQuart,1) )
+					end
+					if beat > b+.5 and beat < b+1.5 then
+						condor_bangerz:y( sh - 220*lerp(beat,b+.5,b+1.5,inQuart,-1) )
+					end
+				end
+			end
+			
+			m2(245.5,function()
+				condor_bangerz:decelerate(90/250)
+				condor_bangerz:y(sh-220)
+				condor_headL:hidden(0)
+				condor_headL:animate(0)
+				condor_headL:setstate(0)
+				condor_headL:diffusealpha(1)
+				condor_headL:x(sw/2-140)
+			end)
+			
+			m2(247,function()
+				condor_headL:animate(1)
+				condor_headL:accelerate(9*60/250)
+				condor_headL:x(sw/2)
+			end)
+			
+			m2(251.5,function()	condor_headL:animate(0)	end)
+			m2(251.75,function() condor_headL:animate(1) end)
+			m2(252.25,function() condor_headL:animate(0) end)
+			m2(252.5,function() condor_headL:animate(1) end)
+			m2(253,function() condor_headL:animate(0) end)
+			m2(253.25,function() condor_headL:animate(1) end)
+			m2(253.75,function() condor_headL:animate(0) end)
+			m2(254,function() condor_headL:animate(1) end)
+			
+			m2(256,function()
+				condor_headL:hidden(1)
+			end)
+			
+			function update_CondorPos(beat)
+				
+				if beat > 193 and beat < 244 then
+					condor_jump(beat,193)
+					condor_jump(beat,201)
+					condor_jumpq(beat,210)
+					condor_jumpq(beat,214)
+					condor_jump(beat,225)
+					condor_jump(beat,233)
+					condor_jumpq(beat,242)
+				end
+				
+			end
+			
+			m2(512,function()
+				
+				ssk_finalbg:diffusealpha(1)
+				ssk_finalsky:linear(6)
+				ssk_finalsky:diffusealpha(1)
+				ssk_finalstars:linear(6)
+				ssk_finalstars:diffusealpha(.8)
+				ssk_treeline:diffusealpha(1)
+				
+			end)
+			
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			self:queuecommand('Update');
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay','SongOptions'}
+				local ThingsToHide = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				
+				screen = SCREENMAN:GetTopScreen();
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = screen:GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,screen:GetChild('PlayerP1'));
+				table.insert(mod_plr,screen:GetChild('PlayerP2'));
+				
+				--name players, judgment and combo
+				for pn=1,2 do
+					_G['P'..pn] = screen:GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+				end
+				
+				checked = true; --let this only run once
+				
+				screen:SetDrawByZPosition(true);
+				screen:GetChild('SongBackground'):z(-999);
+				screen:GetChild('SongForeground'):z(1);
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and checked then
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i=1,2 do
+						mod_do('clearall',i)
+					end
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+
+					for i,v in pairs(mods) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if beat >=v[1] then
+								if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+									mod_do(v[3],v[5]);
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = '';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+						end
+					end
+
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+
+					for i,v in pairs(mods2) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if mod_time >=v[1] then
+								if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+									mod_do(v[3],v[5]);
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = 'error';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+						end
+					end
+
+				
+				
+				---------------------------------------------------
+				-- ease mod reader v2                            --
+				-- friendship ended with if wall                 --
+				-- now functions as parameters is my best friend --
+				---------------------------------------------------
+					for i,v in pairs(mods_ease) do
+						if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+							if beat >=v[1] then
+								if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+									
+									local duration = v[2];
+									if v[6] == 'end' then duration = v[2] - v[1] end
+									local curtime = beat - v[1]
+									local diff = v[4] - v[3]
+									local startstrength = v[3]
+									local curve = v[7]
+									local mod = v[5]
+									
+									local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+									
+									local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+									mod_do('*10000 '..modstr,v[8]);
+									
+								elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+								
+									local strength = v[4]
+									
+									local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+									mod_do('*10000 '..modstr,v[8]);
+									
+								end
+							end
+						else
+							SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+						end
+					end
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				update_CondorPos(beat)
+				
+				if beat > 126 and beat < 127 then
+				
+					local amp = 320*(127-beat)
+					local wang = math.pi/6
+					for pn=1,2 do
+						local a = Plr(pn)
+						local d = 1;
+						if pn==2 then d=-1 end
+						if a then
+							a:x(SCREEN_CENTER_X+d*amp*math.cos(wang))
+							a:y(SCREEN_CENTER_Y+d*amp*math.sin(wang))
+						end
+					end
+				elseif beat > 168 and beat < 183 then
+					local vibrotable = {ssk_bg0,P1,P2}
+					local vibrointens = (beat-168)*5
+					for i,v in pairs(vibrotable) do
+						if v then
+							v:effectmagnitude(vibrointens,vibrointens,vibrointens)
+						end
+					end
+				elseif beat > 183 and beat < 184 then
+					local vibrotable = {ssk_bg0,P1,P2}
+					for i,v in pairs(vibrotable) do
+						if v then
+							v:stopeffect()
+						end
+					end
+				elseif (beat > 191 and beat < 206.5) or (beat > 223 and beat < 238.5) then
+					for i,v in pairs(mod_plr) do
+						local multi = -1; if i == 2 then multi = 1; end
+						local beatmod = math.mod(beat+1,8)
+						if v then
+							v:rotationx((8-beatmod)*22.5-90);
+							v:rotationz(beatmod*2);
+							v:y(math.sin(beatmod/8*math.pi+.1)*-1.5*SCREEN_HEIGHT + SCREEN_HEIGHT*1.75)
+							if beat > 223 then
+								v:rotationy(math.mod(beatmod*180 + ((i-1)*180),360))
+							end
+							v:zoomy(math.sin(beatmod/8*math.pi+1)+1)
+								
+							if beatmod > 2 then
+								v:zoomz(((8-beatmod)/3)*3+1)
+							end
+							
+							local damp = math.mod(beat,8);
+							v:skewx(math.sin(beat*math.pi)*1/damp);
+								
+							v:vibrate();
+							v:effectmagnitude(20,20,0);
+						end
+					end
+				elseif (beat > 206.5 and beat < 214) or (beat > 238.5 and beat < 246)then
+					GAMESTATE:ApplyGameCommand('mod,*10000 '.. math.sin(beat*math.pi*.5)*-100 ..' hallway')
+					for i,v in pairs(mod_plr) do
+						v:zoomz(math.abs(math.sin(beat*math.pi*.5)*10)+1)
+					end
+				elseif beat > 256 and beat < 258 then
+					screen:vibrate();
+					screen:effectmagnitude(auxvar:getaux(),auxvar:getaux(),0);
+				elseif beat > 287 and beat < 291 then
+					mod_do('*10000 '..-math.sin((beat)*math.pi)*40 ..' alternate,*10000 '..-math.sin((beat)*math.pi)*20 ..' split,*10000 '..-math.sin((beat)*math.pi)*-30 ..' reverse');
+					mod_do('*10000 '..math.cos((beat)*math.pi)*50+50 ..' flip');
+				elseif beat > 359 and beat < 423 then
+					local modstring = 'mod,'
+					if math.random(1,3)==1 then
+						modstring = modstring .. '*100000 '.. math.random(-500,200) ..' mini,'
+					else
+						modstring = modstring .. '*100 no mini,'
+					end
+					if math.random(1,3)==1 then
+						modstring = modstring .. '*100000 '.. math.random(-500,500) ..' drunk,'
+					else
+						modstring = modstring .. '*100 no drunk,'
+					end
+					if math.random(1,3)==1 then
+						modstring = modstring .. '*100000 '.. math.random(-500,500) ..' tipsy,'
+					else
+						modstring = modstring .. '*100 no tipsy,'
+					end
+					GAMESTATE:ApplyGameCommand(modstring,1)
+					
+					if ssk_bgt then
+						ssk_bgt:hidden(0)
+						ssk_bgt:zoomx(math.random()*4-2)
+						ssk_bgt:diffuse(math.random(),math.random(),math.random(),1)
+					end
+					if ssk_bg0 then
+						ssk_bg0:fadetop(.5)
+						ssk_bg0:croptop(.2)
+						ssk_bg0:vibrate()
+						ssk_bg0:effectmagnitude(10,10,0)
+					end
+				elseif beat > 454 and beat < 460 then
+					GAMESTATE:ApplyGameCommand('mod, *100000 '.. ssk_lmaoflicker*2500 ..' bumpy, *10000 ' .. math.random(-50,50) .. ' hallway')
+					for i,v in pairs(mod_plr) do
+						if v then
+							v:rotationy(math.random(-5,5))
+						end
+					end
+					ssk_lmaoflicker = ssk_lmaoflicker *-1
+				elseif beat > 512 then
+					
+				end
+				
+				if beat > 303 and beat < 307 then
+					
+					local hei = -64
+					
+					if beat > 304 then
+						hei = -80
+					end
+					if beat > 305 then
+						hei = -128
+					end
+					if beat > 306 then
+						hei = -160
+					end
+					
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:y( sh/2 - math.abs(hei*math.sin(beat*math.pi)) )
+						end
+					end
+					
+				end
+				
+				if beat > 463.5 and beat < 465 then
+					--[[
+						m(463,465,'*10000 23 split, *10000 -5000 cross,*10000 100 dark, *10000 50 flip, *10000 50 reverse, *100000 C1, *100000 no invert','end',1)
+						m(463,465,'*10000 no split, *10000 -5000 cross, *10000 100 dark, *10000 no flip, *10000 50 reverse, *100000 C1, *100000 invert','end',1)
+					]]
+					local intens = math.sin(math.rad(ssk_haunting_ground:GetX()))
+					local nintens = math.cos(math.rad(ssk_haunting_ground:GetX()))
+					mod_do('*10000 -5000 cross, *10000 100 dark, *10000 50 reverse, *100000 C1',1)
+					mod_do('*10000 '..(100*nintens)..' invert',1)
+					mod_do('*10000 '..(23*intens)..' split',1)
+					mod_do('*10000 '..(50*intens)..' flip',1)
+					if P1 then
+						P1:x( SCREEN_CENTER_X + 48*intens )
+						P1:y( auxvar:GetX() )
+						P1:rotationz(ssk_haunting_ground:GetX())
+					end
+				end
+				
+				
+				if beat > 187 and beat < 200 then
+					screen:vibrate();
+					screen:effectmagnitude(ssk_screenvib:GetX(),ssk_screenvib:GetX(),0)
+				end
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				
+					while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+						if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+							if type(mod_actions[curaction][2]) == 'function' then
+								mod_actions[curaction][2]()
+							elseif type(mod_actions[curaction][2]) == 'string' then
+								MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+							end
+						end
+						curaction = curaction+1;
+					end
+				end	--end beat > mod_firstseenbeat+.01
+			end --end disable~= true
+			
+			self:sleep(0.02);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	
+	<!--Handling messages here is still fun and profitable-->
+	<CODE Type="Quad" OnCommand="hidden,1"
+	ShareArrowsMessageCommand="%function(self)
+		for pn=1,2 do
+			local a = _G['P'..pn]
+			if a then
+				
+			end
+		end
+	end"
+	ReturnArrowsMessageCommand="%function(self)
+	
+	end"
+	DrivenDriftMessageCommand="%function()
+			for i,v in pairs(mod_plr) do
+				local multi = -1; if i == 2 then multi = 1; end
+				if v then
+					--v:finishtweening();
+					v:rotationz(0);
+					v:linear(3.931);
+					v:rotationz((math.random()*10+45)*-multi);
+				end
+			end
+		end"
+	DeliciousMessageCommand="%function(self)
+		if ssk_bg0 then
+			ssk_bg0:bounceend(60/250 * .5)
+			ssk_bg0:x(SCREEN_CENTER_X*1.25)
+			ssk_bg0:y(SCREEN_CENTER_Y*.875)
+			ssk_bg0:zoom(.83)
+			ssk_bg0:rotationz(5)
+			ssk_bg0:sleep(60/250 * .25)
+			
+			ssk_bg0:bounceend(60/250 * .5)
+			ssk_bg0:x(SCREEN_CENTER_X*.75)
+			ssk_bg0:y(SCREEN_CENTER_Y*.75)
+			ssk_bg0:zoom(.66)
+			ssk_bg0:rotationz(-10)
+			ssk_bg0:sleep(60/250 * .25)
+			
+			ssk_bg0:bounceend(60/250 * .25)
+			ssk_bg0:x(SCREEN_CENTER_X*1.5)
+			ssk_bg0:y(SCREEN_CENTER_Y*.625)
+			ssk_bg0:zoom(.49)
+			ssk_bg0:rotationz(15)
+			ssk_bg0:sleep(60/250 * .25)
+			
+			ssk_bg0:bounceend(60/250 * .5)
+			ssk_bg0:x(SCREEN_CENTER_X*.5)
+			ssk_bg0:y(SCREEN_CENTER_Y*.5)
+			ssk_bg0:zoom(.32)
+			ssk_bg0:rotationz(-20)
+		end
+	end"
+	DelectableMessageCommand="%function(self)
+		local delectabletable = {ssk_bg0,P1,P2}
+		for i,v in pairs(delectabletable) do
+			if v then
+				v:bounceend(60/250 * .5)
+				v:x(SCREEN_CENTER_X*1.5)
+				v:y(SCREEN_CENTER_Y*.5)
+				v:zoom(.32)
+				v:rotationz(20)
+				v:sleep(60/250 * .5)
+				
+				v:bounceend(60/250 * .5)
+				v:x(SCREEN_CENTER_X*.5)
+				v:y(SCREEN_CENTER_Y*1.5)
+				v:zoom(.32)
+				v:rotationz(20)
+			end
+		end
+		if ssk_bg1 then
+			ssk_bg1:queuecommand('Show')
+		end
+		if ssk_bg2 then
+			ssk_bg2:sleep(60/250)
+			ssk_bg2:queuecommand('Show')
+		end
+	end"
+	DenturesMessageCommand="%function(self)
+		local denturestable = {ssk_bg0,P1,P2}
+		for i,v in pairs(denturestable) do
+			if v then
+				v:bounceend(60/250 * (1/3))
+				v:x(SCREEN_CENTER_X*.75)
+				v:y(SCREEN_CENTER_Y*1.5)
+				v:zoom(.32)
+				v:rotationz(20)
+				v:sleep(60/250 * (1/3))
+				
+				v:bounceend(60/250 * (1/3))
+				v:x(SCREEN_CENTER_X*1)
+				v:y(SCREEN_CENTER_Y*1.5)
+				v:zoom(.32)
+				v:rotationz(20-(40/3))
+				v:sleep(60/250 * (1/3))
+				
+				v:bounceend(60/250 * (1/3))
+				v:x(SCREEN_CENTER_X*1.25)
+				v:y(SCREEN_CENTER_Y*1.5)
+				v:zoom(.32)
+				v:rotationz(20-(80/3))
+				v:sleep(60/250 * (1/3))
+				
+				v:bounceend(60/250 * (1/3))
+				v:x(SCREEN_CENTER_X*1.5)
+				v:y(SCREEN_CENTER_Y*1.5)
+				v:zoom(.32)
+				v:rotationz(-20)
+			end
+		end
+		if ssk_bg3 then
+			ssk_bg3:queuecommand('Show')
+		end
+		if ssk_bg4 then
+			ssk_bg4:sleep(60/250 * 2)
+			ssk_bg4:queuecommand('Show')
+		end
+	end"
+	DeadMessageCommand="%function(self)
+		local denturestable = {ssk_bg0,P1,P2}
+		for i,v in pairs(denturestable) do
+			if v then
+				v:bounceend(60/250 * .75)
+				v:x(SCREEN_CENTER_X*1.375)
+				v:y(SCREEN_CENTER_Y*1.375)
+				v:zoom(.25)
+				v:rotationz(-15)
+				v:sleep(60/250 * .75)
+				
+				v:bounceend(60/250 * .75)
+				v:x(SCREEN_CENTER_X*1.25)
+				v:y(SCREEN_CENTER_Y*1.25)
+				v:rotationz(-10)
+				v:zoom(.18)
+				v:sleep(60/250 * .75)
+				
+				v:bounceend(60/250 * .5)
+				v:x(SCREEN_CENTER_X*1.125)
+				v:y(SCREEN_CENTER_Y*1.125)
+				v:rotationz(-5)
+				v:zoom(.11)
+				v:sleep(60/250 * .5)
+				
+				v:bounceend(60/250 * .25)
+				v:x(SCREEN_CENTER_X)
+				v:y(SCREEN_CENTER_Y)
+				v:rotationz(0)
+				v:zoom(.07)
+				
+				v:decelerate(60/250 * 14.75)
+				v:x(SCREEN_CENTER_X)
+				v:y(SCREEN_CENTER_Y)
+				v:zoom(1)
+			end
+		end
+		if ssk_bg3 then
+			ssk_bg3:queuecommand('Show')
+		end
+		if ssk_bg4 then
+			ssk_bg4:sleep(60/250 * 2)
+			ssk_bg4:queuecommand('Show')
+		end
+	end"
+	DurianMessageCommand="%function(self)
+		local duriantable = {ssk_bg1,ssk_bg2,ssk_bg3,ssk_bg4}
+		for i,v in pairs(duriantable) do
+			if v then
+				v:decelerate(60/250 * 15)
+				v:zoom(1)
+				v:rotationz(0)
+				if i < 3 then
+				v:addy(64)
+				else
+				v:addy(32)
+				end
+				v:vibrate()
+			end
+		end
+		local extratable = {ssk_bg0,P1,P2}
+		for i,v in pairs(extratable) do
+			if v then
+				v:vibrate()
+			end
+		end
+	end"
+	DarianMessageCommand="%function(self)
+		local dariantable = {ssk_bg1,ssk_bg2,ssk_bg3,ssk_bg4}
+		for i,v in pairs(dariantable) do
+			if v then
+				v:hidden(1)
+			end
+		end
+	end"
+	ScreenHit1MessageCommand="%function(self)
+		for i,v in pairs(mod_plr) do
+			local multi = -1; if i == 2 then multi = 1; end
+			if v then
+				if i == 2 then
+					v:zoomx(2);
+					v:zoomy(2);
+					v:rotationz(30);
+					v:accelerate(240/210/2);
+					v:x(SCREEN_CENTER_X);
+					v:addy(condor_const1*3)
+					v:rotationz(60);
+					v:sleep(0)
+					v:z(0)
+				end
+			end
+		end
+	end"
+		
+	ShiawaseMessageCommand="%function(self)
+		for i,v in pairs(mod_plr) do
+			if v then
+				if i == 2 then
+					v:z(2);
+				end
+				
+			end
+		end
+		screen:bounceend(60/250*.75);
+		screen:zoom(0.8);
+		screen:x(SCREEN_CENTER_X*0.2);
+		screen:y(SCREEN_CENTER_Y*0.2);
+		screen:rotationz(-10)
+		screen:bounceend(60/250*.75);
+		screen:zoom(0.6);
+		screen:x(SCREEN_CENTER_X*0.4);
+		screen:y(SCREEN_CENTER_Y*0.4);
+		screen:rotationz(-20)
+		screen:bounceend(60/250*.75);
+		screen:zoom(0.4);
+		screen:x(SCREEN_CENTER_X*0.6);
+		screen:y(SCREEN_CENTER_Y*0.6);
+		screen:rotationz(-30)
+		screen:bounceend(60/250*.75);
+		screen:zoom(0.2);
+		screen:x(SCREEN_CENTER_X*0.8);
+		screen:y(SCREEN_CENTER_Y*0.8);
+		screen:rotationz(-40)
+		screen:bounceend(60/250*.5);
+		screen:zoom(0.0);
+		screen:x(SCREEN_CENTER_X*1);
+		screen:y(SCREEN_CENTER_Y*1);
+		--screen:sleep(60/250*1);
+		screen:accelerate(60/250);
+		screen:zoom(2);
+		--screen:zoomy(2*((SCREEN_HEIGHT/SCREEN_WIDTH)/1.333333));
+		screen:x(SCREEN_CENTER_X+(condor_const1*2*math.cos((30+condor_const2)/180*math.pi)));
+		screen:y(SCREEN_CENTER_Y+(condor_const1*2*math.sin((30+condor_const2)/180*math.pi)));
+		screen:rotationz(30);
+		screen:sleep(0);
+		screen:x(0);
+		screen:y(0);
+		screen:zoom(1);
+		screen:rotationz(0);
+	end"
+	/>
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<Layer Type="Quad" InitCommand="%function(self) ssk_screenvib = self end" OnCommand="hidden,1" />
+	<Layer Type="Quad" InitCommand="%function(self) ssk_haunting_ground = self end" OnCommand="hidden,1;x,90;" />
+	
+	<ActorFrame OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,2;hidden,1" OneMessageCommand="hidden,0;sleep,60/250;queuemessage,Done" DoneMessageCommand="hidden,1;"
+	PunMessageCommand="hidden,0;sleep,60/499.5;queuemessage,Done" ><children>
+		<Layer File="characters/rorone" OnCommand="vibrate;diffuse,#FFFF00AA;effectmagnitude,10,10,0;blend,add" />
+		<Layer File="characters/rorone" OnCommand="vibrate;diffuse,#00FFFFAA;effectmagnitude,10,20,0;blend,add" />
+		<Layer File="characters/rorone" OnCommand="vibrate;diffuse,#FF00FFAA;effectmagnitude,10,30,0;blend,add" />
+	</children></ActorFrame>
+	
+	<ActorFrame OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,2;hidden,1" TwoOneMessageCommand="hidden,0;sleep,60/250;queuemessage,One" DoPunMessageCommand="hidden,0;sleep,60/499.5;queuemessage,Pun" OneMessageCommand="hidden,1;" PunMessageCommand="hidden,1;"><children>
+		<Layer File="characters/rortwo" OnCommand="vibrate;diffuse,#FFFF00AA;effectmagnitude,10,30,0;blend,add" />
+		<Layer File="characters/rortwo" OnCommand="vibrate;diffuse,#00FFFFAA;effectmagnitude,10,10,0;blend,add" />
+		<Layer File="characters/rortwo" OnCommand="vibrate;diffuse,#FF00FFAA;effectmagnitude,10,20,0;blend,add" />
+	</children></ActorFrame>
+	
+	<ActorFrame OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,2;hidden,1" ThreeTwoOneMessageCommand="hidden,0;sleep,60/250;queuemessage,TwoOne" WheeDoPunMessageCommand="hidden,0;sleep,60/499.5;queuemessage,DoPun" TwoOneMessageCommand="hidden,1;" DoPunMessageCommand="hidden,1;" DoneMessageCommand="hidden,1;" ><children>
+		<Layer File="characters/rorthree" OnCommand="vibrate;diffuse,#FFFF00AA;effectmagnitude,10,20,0;blend,add" />
+		<Layer File="characters/rorthree" OnCommand="vibrate;diffuse,#00FFFFAA;effectmagnitude,10,30,0;blend,add" />
+		<Layer File="characters/rorthree" OnCommand="vibrate;diffuse,#FF00FFAA;effectmagnitude,10,10,0;blend,add" />
+	</children></ActorFrame>
+	
+	
+	<0MATH Type="Quad"
+		InitCommand="%function(self)
+			condor_const1 = math.sqrt(math.pow(SCREEN_WIDTH/2,2)+math.pow(SCREEN_HEIGHT/2,2))
+			condor_const2 = 180+math.deg(math.atan(SCREEN_HEIGHT/SCREEN_WIDTH))
+			self:hidden(1)
+		end"
+	/>
+	
+	<Layer Type="ActorFrame"
+		OnCommand=""
+		ScreenHit1MessageCommand="%function(self)
+			self:playcommand('SH1')
+			self:x(SCREEN_CENTER_X+(condor_const1*2*math.cos((30+condor_const2)/180*math.pi)))
+			self:y(SCREEN_CENTER_Y+(condor_const1*1.5*math.sin((30+condor_const2)/180*math.pi)))
+			self:rotationz(30);
+			self:accelerate(120/250);
+			self:x(SCREEN_CENTER_X+(condor_const1*2*math.cos((60+condor_const2)/180*math.pi)))
+			self:addy(condor_const1*3)
+			self:rotationz(60);
+			self:sleep(0);
+		end"
+		ScreenResetMessageCommand="%function(self)
+		end"
+	><children>
+	<Layer
+		File="foreground"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0"
+		SH1Command="%function(self)
+			self:diffusealpha(1);
+			self:zoomto(SCREEN_WIDTH*2,SCREEN_HEIGHT*2);
+			self:accelerate(120/250);
+			self:sleep(0);
+			self:diffusealpha(0);
+		end"
+		SRCommand="%function(self)
+		end"
+		
+	/>
+		
+	</children></Layer>
+	
+	<Layer File="splat" NameCommand="%function(self) condor_splat=self end"
+	OnCommand="playcommand,Name;x,sw/2-60;y,sh-220*1.8;zoom,2;rotationz,30;vertalign,top;effectclock,bgm;vibrate;effectmagnitude,0,0,0;hidden,1;"
+	ScreenHit1MessageCommand="hidden,0;sleep,60/250;accelerate,120/250;addy,440;queuecommand,Hide" HideCommand="hidden,1" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand=""
+		InitCommand="%function(self) auxvar = self; self:hidden(1) end"
+		ScreenHit1MessageCommand="finishtweening;aux,150;linear,60/250;aux,0"
+	/>
+
+	<Layer File="chara1" />
+	
+	<Layer InitCommand="%function(self) ssk_spearo = self end" Type="ActorFrame" ><children>
+	<Layer InitCommand="%function(self) ssk_spear = self end" Type="ActorFrame" OnCommand="hidden,1" HideCommand="hidden,1" ><children>
+		<Layer InitCommand="%function(self) ssk_spear_inner = self end" File="hildr" />
+	</children></Layer>
+	</children></Layer>
+
+	<Layer Type="ActorFrame" NameCommand="%function(self) ssk_condorbig=self end" OnCommand="playcommand,Name;" ><children>
+		<Layer File="speedstar" NameCommand="%function(self) ssk_condoralp=self end"
+			OnCommand="playcommand,Name;vertalign,bottom;horizalign,right;x,SCREEN_WIDTH+50;y,SCREEN_HEIGHT+20;diffusealpha,0;"
+			FadeInCommand="linear,1;diffusealpha,condor_alpha;" FadeOutCommand="linear,1;diffusealpha,0;"
+		/>
+		<Layer File="sbeebstar" NameCommand="%function(self) ssk_condoralb=self end"
+			OnCommand="playcommand,Name;vertalign,bottom;horizalign,right;x,SCREEN_WIDTH+50;y,SCREEN_HEIGHT+20;diffusealpha,0;"
+			BadeInCommand="linear,1;diffusealpha,condor_alpha;" BadeOutCommand="linear,1;diffusealpha,0;"
+		/>
+	</children></Layer>
+	
+	<Layer
+		Type="Quad"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_TOP;vertalign,bottom;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT*2;diffuse,#000000;fadebottom,0.25;linear,7;addy,1000"
+		KickBackMessageCommand="stoptweening;diffusealpha,1;linear,0.1;addy,-100;linear,7;addy,1000"
+		ResetFadesMessageCommand="stoptweening;accelerate,0.2;y,SCREEN_TOP;sleep,0.1;diffusealpha,0"
+	/>
+	<Layer
+		Type="Quad"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_BOTTOM;vertalign,top;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT*2;diffuse,#000000;fadetop,0.25;linear,7;addy,-1000"
+		KickBackMessageCommand="stoptweening;diffusealpha,1;linear,0.1;addy,100;linear,7;addy,-1000"
+		ResetFadesMessageCommand="stoptweening;accelerate,0.2;y,SCREEN_BOTTOM;sleep,0.1;diffusealpha,0"
+	/>
+	
+	<Layer Type="Quad" OnCommand="x,sw/2;y,sh*0.8;zoomto,sw,6;blend,add;diffuse,1,0,0,0" OhhhMessageCommand="decelerate,.45;diffusealpha,1;" HauntedHitMessageCommand="linear,1;diffusealpha,0;" />
+	
+	
+	
+</children></ActorFrame>

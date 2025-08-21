@@ -1,0 +1,17 @@
+<ActorFrame> <children>
+
+	<Layer Type="ActorFrame" NameCommand="%function(self) cir_bg2=self end" OnCommand="playcommand,Name;fov,80;x,SCREEN_WIDTH/2;y,SCREEN_HEIGHT/2;" ><children>
+		<Layer File="lake" OnCommand="customtexturerect,0,0,4,4;zoom,8;y,0;rotationx,-40;zoomz,8;z,0;texcoordvelocity,.1,-.04;diffuse,.6,1,1,1;diffusealpha,0.5;" />
+		<Layer File="lake" OnCommand="basezoomx,-1;customtexturerect,0,0,4,4;zoom,8;y,0;rotationx,-40;zoomz,8;z,0;texcoordvelocity,.1,-.04;diffuse,.6,1,1,1;diffusealpha,0.5;" />
+		<!--Layer File="hdlake" OnCommand="customtexturerect,0,0,4,4;zoom,8;y,0;rotationx,-40;zoomz,8;z,0;texcoordvelocity,.1,-.04;diffuse,1,1,1,1;diffusealpha,0.5;" />
+		<Layer File="hdlake" OnCommand="basezoomx,-1;customtexturerect,0,0,4,4;zoom,8;y,0;rotationx,-40;zoomz,8;z,0;texcoordvelocity,.1,-.04;diffuse,1,1,1,1;diffusealpha,0.5;" /-->
+		<Layer Type="Quad" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT*0.4;addx,-SCREEN_WIDTH*0.5;addy,-SCREEN_HEIGHT*0.5;fadebottom,1;diffuse,0,0,.4,.8;" />
+	</children></Layer>
+
+	<Layer
+		File="background"
+		NameCommand="%function(self) cir_bg=self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.5,.5,.5,1;"
+	/>
+
+</children> </ActorFrame>

@@ -1,0 +1,149 @@
+<ActorFrame> <children>
+	<Layer
+		File="cockbg.png"
+		OnCommand="%function(self)
+			fd_LFD_cockTower = self
+			self:diffuse(.2,.2,.2,1)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+		end"
+	/>
+	
+	<Layer Type="ActorFrame"
+		OnCommand="%function(self)
+			fd_LFD_cock = self
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:zoom(1)
+		end"
+	> <children>
+		<Layer
+			File="cock.png"
+			OnCommand="%function(self)
+				fd_LFD_cockface = self
+				self:diffuse(.5,.5,.5,1)
+				self:diffuseramp()
+				self:effectclock('bgm')
+				self:effectperiod(2)
+				self:effectcolor1(.6,.48,.48,1)
+				self:effectcolor2(.8,.75,.75,1)
+			end"
+		/>
+		<Layer
+			File="cock_arrow.png"
+			OnCommand="%function(self)
+				self:diffuse(.5,.5,.5,1)
+				fd_LFD_cockMin = self
+				self:shadowlength(2)
+				self:spin()
+				self:effectclock('bgm')
+				self:effectmagnitude(0,0,60) --4320
+			end"
+		/>
+		<Layer
+			File="cock_sarrow.png"
+			OnCommand="%function(self)
+				self:zoom(.85)
+				self:diffuse(.5,.5,.5,1)
+				fd_LFD_cockHr = self
+				self:shadowlength(2)
+				self:spin()
+				self:effectclock('bgm')
+				self:effectmagnitude(0,0,-43)
+			end"
+		/>
+	</children></Layer>
+	<Layer
+		File="cogbig.png"
+		OnCommand="%function(self)
+			self:diffuse(.3,.25,.25,1)
+			self:x(0)
+			self:hidden(0)
+			self:y(SCREEN_HEIGHT)
+			fd_LFD_cogIn = self
+			self:shadowlength(2)
+		end"
+	/>
+	
+	
+	
+	
+	
+	
+	
+	<Layer
+		File="../lua/chain.png"
+        InitCommand="hidden,0"
+		OnCommand="%function(self)
+			fd_lfd_chain1 = self
+			self:x(SCREEN_WIDTH*.925)
+			self:diffuse(.25,.25,.25,.75)
+			self:shadowlength(5)
+		end"
+	/>
+	<Layer
+		File="../lua/chain.png"
+        InitCommand="hidden,0"
+		OnCommand="%function(self)
+			fd_lfd_chain2 = self
+			self:x(SCREEN_WIDTH*.85)
+			self:diffuse(.25,.25,.25,.75)
+			self:shadowlength(5)
+		end"
+	/>
+	<Layer
+		File="../lua/chain.png"
+        InitCommand="hidden,0"
+		OnCommand="%function(self)
+			fd_lfd_chain3 = self
+			self:x(SCREEN_WIDTH*.1)
+			self:diffuse(.25,.25,.25,.75)
+			self:shadowlength(5)
+		end"
+	/>
+	<Layer
+		File="../lua/cog1.png"
+        InitCommand="hidden,0"
+		OnCommand="%function(self)
+			fd_lfd_cog1 = self
+			self:x(SCREEN_WIDTH*.2)
+			self:y(0)
+			self:diffuse(.25,.25,.25,.75)
+			self:shadowlength(5)
+		end"
+	/>
+
+	<Layer
+		File="../lua/cog3.png"
+        InitCommand="hidden,0"
+		OnCommand="%function(self)
+			fd_lfd_cog3 = self
+			self:x(0)
+			self:y(SCREEN_HEIGHT*.1)
+			self:diffuse(.25,.25,.25,.75)
+			self:shadowlength(5)
+		end"
+	/>
+	<Layer
+		File="../lua/cog4.png"
+        InitCommand="hidden,0"
+		OnCommand="%function(self)
+			fd_lfd_cog4 = self
+			self:x(SCREEN_WIDTH)
+			self:y(SCREEN_HEIGHT*.9)
+			self:diffuse(.25,.25,.25,.75)
+			self:shadowlength(5)
+		end"
+	/>
+		<Layer
+		File="../lua/cog2.png"
+        InitCommand="hidden,1"
+		OnCommand="%function(self)
+			fd_lfd_cog2 = self
+			self:x(SCREEN_WIDTH*.8)
+			self:y(SCREEN_HEIGHT)
+			self:diffuse(.25,.25,.25,.75)
+			self:shadowlength(5)
+		end"
+	/>
+</children></ActorFrame>

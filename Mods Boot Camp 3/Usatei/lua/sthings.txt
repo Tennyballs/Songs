@@ -1,0 +1,34 @@
+beat 70,2 page1,1
+beat 82,.5 page1,2
+beat 90,1 page 1,3
+beat 106,1 page 1,4
+beat 113,1 page 1,5
+beat 115,.5 page 1,6
+beat 119,1 page 1,7
+
+beat 123,1 page 2,1
+beat 128.5,1 page 2,2
+beat 139,1 page 2,3
+beat 143.5,1 page 2,4
+beat 156.5,.5 page 2,5
+beat 161,1 page 2,6
+
+beat 168,.5 page 3,1
+beat 175.5,.5 page 3,2
+beat 180,.5 page 3,3
+beat 193.5,.5 page LLOL
+
+198 game stato
+
+top right, top left, mid right, mid left, horiz, bot right, bot left
+
+top right, mid right, top left, bot up right, bot down right, bot left
+
+top right, top left, mid, LLOL
+
+staple
+sea
+sweet
+drink
+veg
+meet

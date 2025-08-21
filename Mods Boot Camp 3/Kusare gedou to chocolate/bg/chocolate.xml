@@ -1,0 +1,21 @@
+<ActorFrame> <children>
+
+	<Layer
+		File="background"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0.5"
+	/>
+	
+	<Layer
+		File="goop1" NameCommand="%function(self) kus_goop1=self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,0;vertalign,top;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;hidden,1;"
+	/>
+	<Layer
+		File="goop2" NameCommand="%function(self) kus_goop2=self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,0;vertalign,top;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;hidden,1;"
+	/>
+	<Layer
+		File="goop3" NameCommand="%function(self) kus_goop3=self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,0;vertalign,top;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;hidden,1;"
+	/>
+
+</children> </ActorFrame>

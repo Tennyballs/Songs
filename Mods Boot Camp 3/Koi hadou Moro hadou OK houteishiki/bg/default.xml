@@ -1,0 +1,109 @@
+<ActorFrame> <children>
+
+	<Layer
+		File="background"
+		NameCommand="%function(self) ama_graybg = self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;basezoomx,SCREEN_WIDTH/640;basezoomy,SCREEN_HEIGHT/480;diffuse,.5,.5,.5,1;"
+	/>
+	<Layer
+		File="normal"
+		NameCommand="%function(self) ama_normalbg = self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;basezoomx,SCREEN_WIDTH/640;basezoomy,SCREEN_HEIGHT/480;diffuse,.5,.5,.5,0;"
+	/>
+	
+	<Layer Type="ActorFrame" OnCommand="%function(self) ama_ddr = self; self:hidden(1) end" > <children>
+		<Layer File="ddr/color" OnCommand="zoomto,SCREEN_WIDTH*1.5,SCREEN_WIDTH*1.5;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;spin;effectmagnitude,0,0,6;" />
+		<Layer File="ddr/effect" OnCommand="blend,add;diffusealpha,.3;zoomto,SCREEN_WIDTH*1.5,SCREEN_WIDTH*1.5;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;spin;effectmagnitude,0,0,10;" />
+		<Layer File="ddr/effect" OnCommand="blend,add;diffusealpha,.5;zoomto,SCREEN_WIDTH*1.5,SCREEN_WIDTH*1.5;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;spin;effectmagnitude,0,0,15;" />
+		<Layer File="ddr/effect" OnCommand="blend,add;diffusealpha,.3;zoomto,SCREEN_WIDTH*1.5,SCREEN_WIDTH*1.5;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;spin;effectmagnitude,0,0,-5;" />
+		<Layer File="ddr/overlay" OnCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;" />
+		<Layer Type="Quad" OnCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;diffuse,0,0,0,.5;" />
+	</children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="%function(self) ama_bubble_container_af = self end" > <children>
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" /> 
+		<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+		MakeCommand="%function(self) ama_make_bubble(self,2) end" />
+	</children> </Layer>
+	
+	<Layer
+		File="normal"
+		NameCommand="%function(self) ama_bubblecover = self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;basezoomx,SCREEN_WIDTH/640;basezoomy,SCREEN_HEIGHT/480;diffuse,.5,.5,.5,0;"
+	/>
+	
+	<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+	MakeCommand="%function(self) ama_make_bubble(self,1) end" /> 
+	<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+	MakeCommand="%function(self) ama_make_bubble(self,1) end" /> 
+	<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+	MakeCommand="%function(self) ama_make_bubble(self,1) end" /> 
+	<Layer File="bubble" OnCommand="hidden,1;animate,0;setstate,0;queuecommand,Make" HideCommand="hidden,1"
+	MakeCommand="%function(self) ama_make_bubble(self,1) end" />
+
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	<Layer File="belt.sprite" MakeCommand="%function(self) ama_add_belt(self) end"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.7;hidden,1;animate,0;sleep,0.02;queuecommand,Make" HideCommand="hidden,1" />
+	
+	<Layer File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) curl_setbox(self) end" />
+	<Layer File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) curl_setbox(self) end" />
+	<Layer File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) curl_setbox(self) end" />
+	<Layer File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) curl_setbox(self) end" />
+	
+	<Layer Type="Quad" NameCommand="%function(self) ama_bgcover = self end" OnCommand="playcommand,Name;diffuse,0,0,0,1;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT" />
+	
+</children> </ActorFrame>

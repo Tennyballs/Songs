@@ -1,0 +1,34 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {0,32,'Shock',1,{1,.7,0,1}},
+                {32,72,'Denial -Tunnel Vision-',4,{1,.4,0,1}},
+                {72,136,'Anger -Wild Cleave-',8,{.6,0,0,1}},
+                {136,168,'Bargaining -A Brief Respite-',7,{.3,0,.6,1}},
+                {168,232,'Depression -Four Corners of Loneliness-',7,{.4,0,.8,1}},
+                {232,304,'Testing -Paroxysmal Struggle-',8,{.8,0,0,1}},
+                {304,376,'Acceptance -Peaceful Resolution-',9,{1,0,0,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

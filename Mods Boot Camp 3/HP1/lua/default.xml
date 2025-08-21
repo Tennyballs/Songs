@@ -1,0 +1,1525 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT --shortcuts
+	
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+	function GetJud(pn)
+		return _G['jud'..pn]
+	end
+	function GetCom(pn)
+		return _G['com'..pn]
+	end
+	
+	function mod_do(str,pn)
+		if pn then
+			GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+		else
+			GAMESTATE:ApplyGameCommand('mod,'..str)
+		end
+	end
+	
+	function taro_Sound(str)
+		local met = GAMESTATE:GetCurrentSong():GetSongDir();
+		SOUND:PlayOnce(met..'lua/'..str..'.ogg');
+	end
+	
+	hp_tilex = 32 * sw/640
+	hp_tiley = 32 * sh/480
+	
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers.xml" />
+	<Layer File="spellcard.xml" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+		
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_shader(beat,key,which)
+				--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+				
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_onebeat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--use a variable called 'switcheroo_width' to change how much space is between each column
+			--e.g. switcheroo_width = 2 for ayakashi
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+				
+			--function doSpline(spd, axis, path, col)
+				--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+				
+			--function doSplineAll(spd, axis, path)
+				--same as above, but for all columns
+				--(faster performance than using doSpline 4 times due to more efficient concat)
+			
+			--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+				--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+			
+			
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local m = mod_insert
+			local m2 = mod_message
+			
+			
+			local l = 'len'
+			local e = 'end'
+			
+			
+			
+			
+			
+			
+			
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*2 1.8x, *1000 no beat, *10000 -999999 cover','end'},
+			}
+			
+			--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+			
+			--TODO:
+			--[[
+			
+				sounds!!
+				spellcast anim
+				arrow confuser anim
+			
+				Phase 1
+					Ambushed!
+					Possessed Chan used PSI simple_m0d alpha
+					Laer took heavy damage!
+					PlayerP1 became confused!
+					PlayerP2 could not stop driven dropping!
+					
+				Phase 2
+					Tornadora
+					PlayerP1: I know you're in there somewhere!
+					
+				Phase 3
+					CHAN used HIDDEN POWER!
+					PLAYFIELD is gathering energy!
+					PLAYFIELD used SELF:ROTATIONY
+					CHAN became purified!
+			]]
+			
+			
+			
+			
+			
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+				--{0,200.345,'3x','end',1},
+			}
+			
+			
+			
+			
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 32
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {
+			
+			
+				
+			}
+			
+			m(0,999,'*10000 150 sudden, *10000 90 suddenoffset',e);
+			
+			m2(6,'FadeOut');
+			m2(8,'Open',true);
+			m2(8,'AFTOn',true);
+			
+			m2(6,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoom(0.55)
+						a:x(hp_tilex*6.5)
+						a:y(sh*0.7)
+					end
+					local a = {GetJud(pn),GetCom(pn)}
+					if a[1] then
+						a[1]:addx(160*(pn*2-3))
+					end
+					if a[2] then
+						a[2]:addx(160*(pn*2-3))
+					end
+				end
+			end,true)
+			
+			m2(8,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:wag()
+						a:effectmagnitude(0,0,10)
+						a:effectclock('bgm');
+						a:effectperiod(2)
+						a:effectoffset(0)
+					end
+				end
+				
+				hp_rpg1:diffusealpha(1)
+				hp_rpg2:diffusealpha(1)
+				
+			end,true)
+			
+			hp_walkspeed = 60/111
+			
+			local walk = function(a,dir,tiles,sync)
+				if dir == 0 then
+					a:sleep(0)
+					a:rotationy(20)
+					a:linear(hp_walkspeed*tiles)
+					a:addx(hp_tilex*-tiles)
+					hp_rpgbgt:sleep(hp_walkspeed*tiles)
+				elseif dir == 3 then
+					a:sleep(0)
+					a:rotationy(-20)
+					
+					if sync then
+						hp_rpgbgt:linear(hp_walkspeed*tiles)
+						hp_rpgbgt:addx(-hp_tilex*tiles)
+						a:sleep(hp_walkspeed*tiles)
+					else
+						hp_rpgbgt:sleep(hp_walkspeed*tiles)
+						a:linear(hp_walkspeed*tiles)
+						a:addx(hp_tilex*tiles)
+					end
+				elseif dir == 1 then
+					a:sleep(0)
+					a:rotationy(0)
+					a:linear(hp_walkspeed*tiles)
+					a:addy(hp_tiley*tiles)
+					hp_rpgbgt:sleep(hp_walkspeed*tiles)
+				elseif dir == 2 then
+					a:sleep(0)
+					a:rotationy(0)
+					a:linear(hp_walkspeed*tiles)
+					a:addy(hp_tiley*-tiles)
+					hp_rpgbgt:sleep(hp_walkspeed*tiles)
+				end
+			end
+			
+			m2(8.01,function()
+			
+				for pn=1,2 do
+					local sync = 0
+					local a = Plr(pn)
+					if pn == 2 then sync = 1 end
+					if a then
+						a:sleep(120/111);
+						hp_rpgbgt:sleep(120/111)
+						walk(a,1,2)
+						walk(a,3,5.5)
+						walk(a,2,5.5,sync)
+						walk(a,3,8,sync)
+						walk(a,1,5.5,sync)
+						walk(a,3,9,sync)
+						walk(a,2,5.5,sync)
+						walk(a,3,10,sync)
+					end
+				end
+				
+			end)
+			
+			m(0,44,'bumpy',e);
+			
+			m2(43.5,function()
+			
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:stopeffect()
+						a:stoptweening()
+						a:rotationz(-10)
+					end
+				end
+				
+				hp_rpgbgt:stoptweening()
+					
+				MESSAGEMAN:Broadcast('ToBattle');
+				
+			end,true)
+			
+			m(8,240,'*1000 15 flip, *1000 20 reverse',e)
+			m(240,999,'*1000 no flip, *1000 no reverse',e)
+			
+			m(75-.1,112,'*25 no centered',e,2)
+			for i=75,109,2 do
+				m(i,1.75,'*2.7 200 centered',l,2)
+			end
+			
+			if not FUCK_EXE then
+				m(73,110,'*30 628 dizzy',e,1)
+			else
+				m(0,999,'dizzyholds',e)
+			end
+			m(73,110,'*2 150 wave',e,1)
+			
+			m(38.666,.333,'*1000 '..(628*3)..' dizzy',l);
+			m(39,.333,'*1000 no dizzy',l);
+			
+			m2(71,function() hp_card1:playcommand('Shake') hp_laer:playcommand('Shake'); end)
+			m2(73,function() hp_card2:playcommand('Shake') if P1 then P1:addy(15); P1:spring(0.2) P1:addy(-15) end end)
+			m2(75,function() hp_card3:playcommand('Shake') if P2 then P2:addy(15); P2:spring(0.2) P2:addy(-15) end end)
+			
+			m2(46,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(0)
+						a:zoom(0.6)
+						a:x(SCREEN_CENTER_X + 64*(pn*2-3))
+						a:y(SCREEN_HEIGHT*1.5)
+					end
+				end
+			end,true)
+			
+			m2(47,function()
+				hp_top:diffusealpha(1)
+				hp_bottom:diffusealpha(1)
+			end,true)
+			
+			m2(47,'ShowBattle',true);
+			
+			m2(47,function()
+			
+				hp_rpgbg:hidden(1)
+				hp_rpgbg2:hidden(1)
+			
+				hp_chan:hidden(0)
+			
+				hp_card1:diffusealpha(1)
+				hp_card1:x(SCREEN_CENTER_X - 192)
+				hp_card1:y(SCREEN_HEIGHT+75)
+				hp_card1:linear(120/193)
+				hp_card1:y(SCREEN_HEIGHT*0.8)
+				
+				hp_laer:hidden(0)
+				hp_laer:x(SCREEN_CENTER_X - 192)
+				hp_laer:y(SCREEN_HEIGHT+75)
+				hp_laer:linear(120/193)
+				hp_laer:y(SCREEN_HEIGHT*0.8 - 96)
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						_G['hp_card'..(pn+1)]:diffusealpha(1)
+						_G['hp_card'..(pn+1)]:x(SCREEN_CENTER_X + 64*(pn*2-3))
+						_G['hp_card'..(pn+1)]:y(SCREEN_HEIGHT+75)
+						_G['hp_card'..(pn+1)]:linear(120/193)
+						_G['hp_card'..(pn+1)]:y(SCREEN_HEIGHT*0.8)
+						a:linear(120/193)
+						a:y(SCREEN_HEIGHT*0.8)
+						a:rotationy(0)
+					end
+					local a = {GetJud(pn),GetCom(pn)}
+					if a[1] then
+						a[1]:x(0)
+						a[1]:bob();
+						a[1]:effectmagnitude(0,-100,0);
+						a[1]:effectperiod(100000)
+						a[1]:effectoffset(25000)
+					end
+					if a[2] then
+						a[2]:x(0)
+						a[2]:effectmagnitude(0,80,0);
+						a[2]:effectperiod(100000)
+						a[2]:effectoffset(25000)
+					end
+				end
+			end,true)
+			
+			m2(49,function()
+				hp_eb_textbg:diffusealpha(1)
+				hp_eb_text:setstate(0)
+				hp_eb_text:diffusealpha(1)
+			end)
+			
+			m2(57,function()
+				hp_eb_textbg:diffusealpha(0)
+				hp_eb_text:diffusealpha(0)
+			end)
+			
+			hp_dirs = {90,0,180,-90}
+			hp_spacing = 128
+			
+			m2(63,function()
+				hp_eb_textbg:diffusealpha(1)
+				hp_eb_text:setstate(1)
+				hp_eb_text:diffusealpha(1)
+				taro_Sound('psi')
+				
+				for i=1,4 do
+					_G['hp_eb_arrow'..i]:hidden(0)
+					_G['hp_eb_arrow'..i]:diffuseramp()
+					_G['hp_eb_arrow'..i]:effectclock('bgm')
+					_G['hp_eb_arrow'..i]:effectperiod(0.8)
+					_G['hp_eb_arrow'..i]:effectdelay(0.2)
+					_G['hp_eb_arrow'..i]:effectcolor1(.5,.5,.5,1)
+					_G['hp_eb_arrow'..i]:effectcolor2(1,1,1,1)
+					
+					_G['hp_eb_arrow'..i]:diffusealpha(0)
+					_G['hp_eb_arrow'..i]:zoom(0.5)
+					_G['hp_eb_arrow'..i]:x(SCREEN_CENTER_X + (hp_spacing*-1.5)+hp_spacing*(i-1))
+					_G['hp_eb_arrow'..i]:y(SCREEN_CENTER_Y-30)
+					_G['hp_eb_arrow'..i]:rotationz(hp_dirs[i]-180)
+					_G['hp_eb_arrow'..i]:bounceend(0.4)
+					_G['hp_eb_arrow'..i]:rotationz(hp_dirs[i])
+					_G['hp_eb_arrow'..i]:zoom(0.7)
+					_G['hp_eb_arrow'..i]:diffusealpha(1)
+				end
+				
+			end)
+			
+			m2(67,function()
+				taro_Sound('scroll')
+				
+				for i=1,4 do
+					_G['hp_eb_arrow'..i]:linear(0.5)
+					if math.mod(i,2) == 1 then
+						_G['hp_eb_arrow'..i]:addx(hp_spacing)
+					else
+						_G['hp_eb_arrow'..i]:addx(-hp_spacing)
+					end
+					_G['hp_eb_arrow'..i]:sleep(0.7)
+					_G['hp_eb_arrow'..i]:linear(0.4)
+					_G['hp_eb_arrow'..i]:diffusealpha(0)
+				end
+				
+			end)
+			
+			m2(70,function()
+				hp_eb_textbg:diffusealpha(0)
+				hp_eb_text:diffusealpha(0)
+			end)
+			
+			m2(70.6,function() taro_Sound('wound') end)
+			m2(72.6,function() taro_Sound('ailment') end)
+			m2(74.6,function() taro_Sound('ailment') end)
+			
+			m2(71,function()
+				hp_eb_textbg:diffusealpha(1)
+				hp_eb_text:setstate(2)
+				hp_eb_text:diffusealpha(1)
+			end)
+			m2(76.5,function()
+				hp_eb_textbg:diffusealpha(0)
+				hp_eb_text:diffusealpha(0)
+			end)
+			m2(77,function()
+				hp_eb_textbg:diffusealpha(1)
+				hp_eb_text:setstate(3)
+				hp_eb_text:diffusealpha(1)
+			end)
+			m2(82.5,function()
+				hp_eb_textbg:diffusealpha(0)
+				hp_eb_text:diffusealpha(0)
+			end)
+			m2(83,function()
+				hp_eb_textbg:diffusealpha(1)
+				hp_eb_text:setstate(4)
+				hp_eb_text:diffusealpha(1)
+			end)
+			m2(88.5,function()
+				hp_eb_textbg:hidden(1)
+				hp_eb_text:hidden(1)
+			end)
+			
+			m2(110,function()
+				hp_card1:bouncebegin(0.3)
+				hp_card1:zoom(0)
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						_G['hp_card'..(pn+1)]:bouncebegin(0.3)
+						_G['hp_card'..(pn+1)]:zoom(0)
+						a:accelerate(60/193)
+						a:x(SCREEN_WIDTH*0.625 + 32*(pn*2-3) )
+						a:y(SCREEN_HEIGHT*0.65)
+						a:zoom(0.8)
+						a:decelerate(60/193)
+						a:x(SCREEN_WIDTH*0.75 )
+						a:y(SCREEN_HEIGHT*0.5)
+						a:zoom(1.0)
+					end
+					local a = {GetJud(pn),GetCom(pn)}
+					if a[1] then
+						a[1]:accelerate(60/193)
+						a[1]:addx(60*(pn*2-3))
+						a[1]:decelerate(60/193)
+						a[1]:addx(60*(pn*2-3))
+					end
+					if a[2] then
+						a[2]:accelerate(60/193)
+						a[2]:addx(60*(pn*2-3))
+						a[2]:decelerate(60/193)
+						a[2]:addx(60*(pn*2-3))
+					end
+				end
+				
+				hp_chan:accelerate(60/193);
+				hp_chan:addx(-70);
+				hp_chan:zoom(1)
+				hp_chan:addz(100)
+				hp_chan:diffusealpha(0.5)
+				hp_chan:decelerate(60/193);
+				hp_chan:addx(-70);
+				hp_chan:zoom(1.2)
+				hp_chan:addz(100)
+				hp_chan:diffusealpha(0)
+				
+				hp_zoom:linear(120/193)
+				hp_zoom:x(1)
+				
+				hp_aux1:accelerate(60/193)
+				hp_aux1:x(-40)
+				hp_aux1:decelerate(60/193)
+				hp_aux1:x(20)
+				hp_aux2:accelerate(60/193)
+				hp_aux2:x(30)
+				hp_aux2:decelerate(60/193)
+				hp_aux2:x(-20)
+				
+				
+				hp_laer:linear(60/193)
+				hp_laer:diffusealpha(0)
+				
+				hp_wavebg:accelerate(60/193)
+				hp_wavebg:addz(-300)
+				hp_wavebg:addx(80)
+				hp_wavebg:addy(-90)
+				hp_wavebg:rotationy(15)
+				hp_wavebg:rotationx(5)
+				hp_wavebg:decelerate(60/193)
+				hp_wavebg:addz(-300)
+				hp_wavebg:addx(80)
+				hp_wavebg:addy(-90)
+				hp_wavebg:rotationy(30)
+				hp_wavebg:rotationx(10)
+				
+				hp_wavebg2:accelerate(60/193)
+				hp_wavebg2:addz(-300)
+				hp_wavebg2:addx(80)
+				hp_wavebg2:addy(-90)
+				hp_wavebg2:rotationy(15)
+				hp_wavebg2:rotationx(5)
+				hp_wavebg2:decelerate(60/193)
+				hp_wavebg2:addz(-300)
+				hp_wavebg2:addx(80)
+				hp_wavebg2:addy(-90)
+				hp_wavebg2:rotationy(30)
+				hp_wavebg2:rotationx(10)
+				
+				hp_chan2:hidden(0)
+				hp_chan2:diffusealpha(0)
+				hp_chan2:x(SCREEN_WIDTH*0.5)
+				hp_chan2:y(SCREEN_CENTER_Y+50)
+				hp_chan2:z(200)
+				hp_chan2:zoom(50)
+				hp_chan2:zoomz(50)
+				hp_chan2:rotationy(90)
+				hp_chan2:accelerate(60/193)
+				hp_chan2:diffusealpha(0.5)
+				hp_chan2:x(SCREEN_WIDTH*0.4)
+				hp_chan2:y(SCREEN_HEIGHT*0.75 + 25)
+				hp_chan2:z(300)
+				hp_chan2:zoom(70)
+				hp_chan2:zoomz(70)
+				hp_chan2:rotationy(45)
+				hp_chan2:decelerate(60/193)
+				hp_chan2:diffusealpha(1)
+				hp_chan2:x(SCREEN_WIDTH*0.3)
+				hp_chan2:y(SCREEN_HEIGHT-0)
+				hp_chan2:z(400)
+				hp_chan2:zoom(90)
+				hp_chan2:zoomz(90)
+				hp_chan2:rotationy(0)
+				
+				hp_wave4:linear(120/193)
+				hp_wave4:diffusealpha(0.5)
+				
+				hp_top:accelerate(60/193)
+				hp_top:addy(-45*sh/480)
+				hp_top:decelerate(60/193)
+				hp_top:addy(-45*sh/480)
+				hp_bottom:accelerate(60/193)
+				hp_bottom:addy(45*sh/480)
+				hp_bottom:decelerate(60/193)
+				hp_bottom:addy(45*sh/480)
+				
+			end,true)
+			
+			m2(111,function()
+				hp_wavebg:wag()
+				hp_wavebg:effectmagnitude(0,3,0)
+				hp_wavebg:effectperiod(32)
+				hp_wavebg:effectoffset(8)
+				hp_wavebg:effectclock('bgm');
+				
+				hp_wavebg2:wag()
+				hp_wavebg2:effectmagnitude(0,3,0)
+				hp_wavebg2:effectperiod(32)
+				hp_wavebg2:effectoffset(8)
+				hp_wavebg2:effectclock('bgm');
+				
+			end,true)
+			
+			m2(127,function()
+				taro_Sound('spell')
+				MESSAGEMAN:Broadcast('ChargeSpell');
+				
+				hp_ff_text1:hidden(0)
+				
+			end)
+			
+			m2(135,function() hp_ff_text1:hidden(1) end)
+			
+			
+			
+			m2(175,function()
+				hp_ff_text2:hidden(0)
+				hp_ff_text2:animate(0);
+				hp_ff_text2:setstate(0);
+				hp_ff_text2:zoomx(2);
+				hp_ff_text2:zoomy(0);
+				hp_ff_text2:decelerate(0.5)
+				hp_ff_text2:zoom(1)
+			end)
+			
+			m2(199,function()
+				hp_ff_text2:linear(1)
+				hp_ff_text2:diffusealpha(0)
+			end)
+			
+			m2(207,function()
+				hp_ff_text2:hidden(0)
+				hp_ff_text2:diffusealpha(1)
+				hp_ff_text2:animate(0);
+				hp_ff_text2:setstate(1);
+				hp_ff_text2:zoomx(2);
+				hp_ff_text2:zoomy(0);
+				hp_ff_text2:decelerate(0.5)
+				hp_ff_text2:zoom(1)
+			end)
+			
+			m2(223,function()
+				hp_ff_text2:linear(1)
+				hp_ff_text2:diffusealpha(0)
+			end)
+			
+			function hp_flash(beat,num)
+				for i=0,num-1 do
+					m(beat+i*0.25,0.5,'*10000 50 stealth',l)
+					m(beat+0.125+i*0.25,0.5,'*10000 no stealth',l)
+				end
+			end
+			
+			m(251,271,'hidden',e)
+			
+			hp_flash(95,5)
+			hp_flash(96.5,5)
+			hp_flash(99,9)
+			
+			hp_flash(103,5)
+			hp_flash(104.5,5)
+			hp_flash(107,9)
+			
+			hp_flash(159,5)
+			hp_flash(160.5,5)
+			hp_flash(163,9)
+			
+			hp_flash(167,5)
+			hp_flash(168.5,5)
+			hp_flash(171,9)
+			
+			
+			
+			switcheroo_width = 0.7
+			
+			--switcheroo_add(beat,which,speed,len,pn)
+			--[[
+			switcheroo_add(95,'dlru',10000,1)
+			switcheroo_add(95.25,'urld',10000,1)
+			switcheroo_add(95.5,'rudl',10000,1)
+			switcheroo_add(95.75,'ldur',10000,1)
+			switcheroo_add(96,'dlru',10000,1)
+			
+			switcheroo_add(96.5,'ldur',10000,1)
+			switcheroo_add(96.75,'rudl',10000,1)
+			switcheroo_add(97,'urld',10000,1)
+			switcheroo_add(97.25,'dlru',10000,1)
+			switcheroo_add(97.5,'ldur',10000,1)
+			]]
+			
+			mod_wiggle(95,4,4,150,10,'hallway')
+			mod_wiggle(96.5,4,4,150,10,'hallway')
+			
+			for i=99,100.75,.5 do
+				m(i,1,'*10000 30 reverse',l)
+				m(i+.25,1,'*10000 20 reverse',l)
+			end
+			m(101,1,'*10000 30 reverse',l)
+			m(101.5,1,'*1 20 reverse',l)
+			
+			--[[
+			switcheroo_add(8+95,'rudl',10000,1)
+			switcheroo_add(8+95.25,'urld',10000,1)
+			switcheroo_add(8+95.5,'dlru',10000,1)
+			switcheroo_add(8+95.75,'ldur',10000,1)
+			switcheroo_add(8+96,'rudl',10000,1)
+			
+			switcheroo_add(8+96.5,'ldur',10000,1)
+			switcheroo_add(8+96.75,'dlur',10000,1)
+			switcheroo_add(8+97,'urld',10000,1)
+			switcheroo_add(8+97.25,'rudl',10000,1)
+			switcheroo_add(8+97.5,'ldur',10000,1)
+			]]
+			
+			mod_wiggle(8+95,4,4,150,10,'hallway')
+			mod_wiggle(8+96.5,4,4,150,10,'hallway')
+			
+			for i=99,100.75,.5 do
+				m(8+i,1,'*10000 30 reverse',l)
+				m(8+i+.25,1,'*10000 20 reverse',l)
+			end
+			m(8+101,1,'*10000 30 reverse',l)
+			m(8+101.5,1,'*1 20 reverse',l)
+			
+			switcheroo_add(64+95,'dlru',10000,1)
+			switcheroo_add(64+95.25,'urld',10000,1)
+			switcheroo_add(64+95.5,'rudl',10000,1)
+			switcheroo_add(64+95.75,'ldur',10000,1)
+			switcheroo_add(64+96,'dlru',10000,1)
+			
+			switcheroo_add(64+96.5,'ldur',10000,1)
+			switcheroo_add(64+96.75,'rudl',10000,1)
+			switcheroo_add(64+97,'urld',10000,1)
+			switcheroo_add(64+97.25,'dlru',10000,1)
+			switcheroo_add(64+97.5,'ldur',10000,1)
+			
+			for i=99,100.75,.5 do
+				m(64+i,1,'*10000 30 reverse',l)
+				m(64+i+.25,1,'*10000 20 reverse',l)
+			end
+			m(64+101,1,'*10000 30 reverse',l)
+			m(64+101.5,1,'*1 20 reverse',l)
+			
+			switcheroo_add(64+8+95,'rudl',10000,1)
+			switcheroo_add(64+8+95.25,'urld',10000,1)
+			switcheroo_add(64+8+95.5,'dlru',10000,1)
+			switcheroo_add(64+8+95.75,'ldur',10000,1)
+			switcheroo_add(64+8+96,'rudl',10000,1)
+			
+			switcheroo_add(64+8+96.5,'ldur',10000,1)
+			switcheroo_add(64+8+96.75,'dlur',10000,1)
+			switcheroo_add(64+8+97,'urld',10000,1)
+			switcheroo_add(64+8+97.25,'rudl',10000,1)
+			switcheroo_add(64+8+97.5,'ldur',10000,1)
+			
+			for i=99,100.75,.5 do
+				m(64+8+i,1,'*10000 30 reverse',l)
+				m(64+8+i+.25,1,'*10000 20 reverse',l)
+			end
+			m(64+8+101,1,'*10000 30 reverse',l)
+			m(64+8+101.5,1,'*1 20 reverse',l)
+			
+			
+			m(136,3.5,'*0.5 tornado, bumpy',l);
+			m(139.5,3.5,'*0.5 no tornado, no bumpy',l);
+			
+			m(143,4,'*0.5 tornado, bumpy',l);
+			m(147,4,'*0.5 no tornado, no bumpy',l);
+			
+			function hp_dohallway(beat)
+				m2(beat,function()
+					hp_hallway:linear(90/193)
+					hp_hallway:x(-100)
+					hp_hallway:linear(90/193)
+					hp_hallway:x(100)
+					hp_hallway:linear(60/193)
+					hp_hallway:x(-100)
+					hp_hallway:linear(90/193)
+					hp_hallway:x(100)
+					hp_hallway:linear(90/193)
+					hp_hallway:x(-100)
+					hp_hallway:linear(60/193)
+					hp_hallway:x(100)
+					hp_hallway:linear(8*60/193)
+					hp_hallway:x(0)
+				end)
+			end
+			
+			hp_dohallway(127)
+			hp_dohallway(143)
+			
+			simple_m0d2(151,70,.4,'brake');
+			simple_m0d2(153,70,.4,'brake');
+			simple_m0d2(155,70,.4,'brake');
+			simple_m0d2(151,-20,.4,'tornado');
+			simple_m0d2(153,-20,.4,'tornado');
+			simple_m0d2(155,-20,.4,'tornado');
+			simple_m0d2(151,-30,.4,'mini');
+			simple_m0d2(153,-50,.4,'mini');
+			simple_m0d2(155,-70,.4,'mini');
+			
+			mod_wiggle(159,4,4,150,2,'drunk');
+			mod_wiggle(160.5,4,4,150,2,'drunk');
+			mod_wiggle(163,9,4,150,2,'drunk');
+			
+			mod_wiggle(167,4,4,150,2,'drunk');
+			mod_wiggle(168.5,4,4,150,2,'drunk');
+			mod_wiggle(171,9,4,150,2,'drunk');
+			
+			m(175,231,'60 drunk, wave, 20 tornado, 1 bumpy',e)
+			
+			simple_m0d(111,-100,.3,'mini');
+			simple_m0d(112.5,-100,.3,'mini');
+			simple_m0d(114,-100,.3,'mini');
+			simple_m0d(115.5,-100,.3,'mini');
+			simple_m0d(117,-100,.3,'mini');
+			simple_m0d(118,-100,.3,'mini');
+			
+			simple_m0d(119,-100,.3,'mini');
+			
+			mod_wiggle(120-.1,6,2,100,1.6,'drunk');
+			mod_wiggle(123-.1,4,2,100,1.6,'tipsy');
+			mod_wiggle(125-.1,4,2,100,1.6,'drunk');
+			
+			m(111,240,'no sudden',e)
+			
+			m(175.9,176+15,'*1000 -100 hidden,*1000 -100 sudden, *10000 50 stealth',e)
+			
+			m(175.9,176+15,'*10000 -160 hiddenoffset, *10000 -140 suddenoffset',e)
+			
+			for i=176,176+15,4 do
+				m(i-.5,3.5,'*8 200 hiddenoffset, *8 220 suddenoffset',l);
+			end
+			
+			simple_m0d(200,-60,.1,'mini');
+			simple_m0d(200.333,-60,.1,'mini');
+			simple_m0d(200.666,-60,.1,'mini');
+			simple_m0d(201,-60,.1,'mini');
+			
+			simple_m0d(204,-60,.1,'mini');
+			simple_m0d(204.333,-60,.1,'mini');
+			simple_m0d(204.666,-60,.1,'mini');
+			simple_m0d(205,-60,.1,'mini');
+			
+			m2(207,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:wag()
+						a:effectmagnitude(0,0,10)
+						a:effectoffset(1)
+						a:effectperiod(4)
+						a:effectclock('bgm');
+					end
+				end
+			end)
+			
+			
+			
+			m(222.5,231.5,'*0.25 beat',e)
+			m(231.5,238.5,'*1000 300 beat, 1 bumpy',e)
+			
+			m(246.5,270.5,'*1000 beat',e)
+			
+			m(257,2,'*1000 '..(628*2)..' dizzy',l);
+			m(259,2,'*1000 no dizzy',l);
+			
+			m(270.5,1,'*1000 1000 beat',l)
+			m(272.5,1,'*1000 -1000 beat',l)
+			m(274.5,1,'*1000 1000 beat',l)
+			
+			simple_m0d2(271-.2,-50,1,'mini');
+			simple_m0d2(273-.2,-80,1,'mini');
+			simple_m0d2(275-.2,-110,1,'mini');
+			
+			m(292.4,6,'*10000 no dizzy',l);
+			m(292.5,.5,'*10000 1256 dizzy',l);
+			m(293.5,.5,'*10000 1256 dizzy',l);
+			m(294.5,.5,'*10000 1256 dizzy',l);
+			
+			m(279,16,'*3 300 bumpy,wave',l)
+			m(295,6,'*3 no bumpy',l)
+			mod_wiggle(279,32,2,80,1.5,'drunk');
+			
+			m(294.5,302.5,'*1000 100 beat',e);
+			m(302.5,309.5,'*1000 200 beat',e);
+			m(303,4,'*0.8 tornado',l)
+			m(307,4,'*0.8 no tornado',l)
+			
+			m2(231,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:stopeffect();
+					end
+				end
+			end)
+			
+			m(126.5,158.5,'*1000 beat',e)
+			
+			m2(195,function()
+			
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(2*60/193)
+						a:rotationy(720)
+						a:sleep(0)
+						a:rotationy(0)
+					end
+				end
+				
+			end)
+			
+			m2(231,function()
+				hp_card1:linear(8*60/193)
+				hp_card1:addy(200)
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						_G['hp_card'..(pn+1)]:linear(8*60/193)
+						_G['hp_card'..(pn+1)]:addy(200)
+						a:linear(8*60/193)
+						a:addx(SCREEN_WIDTH*0.5)
+					end
+				end
+				hp_chan2:linear(8*60/193)
+				hp_chan2:diffusealpha(0)
+			end)
+			
+			
+			
+			m2(241,function()
+				hp_card1:addy(200)
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						_G['hp_card'..(pn+1)]:linear(8*60/193)
+						_G['hp_card'..(pn+1)]:addy(200)
+						a:rotationz(0)
+						a:y(SCREEN_HEIGHT*0.5)
+						a:zoom(0.8)
+						a:x(-128)
+						a:decelerate(120/193)
+						a:x(SCREEN_WIDTH*0.3)
+					end
+					local a = {GetJud(pn),GetCom(pn)}
+					if a[1] then
+						a[1]:x(160*(pn*2-3))
+						a[1]:stopeffect()
+					end
+					if a[2] then
+						a[2]:x(160*(pn*2-3))
+						a[2]:stopeffect()
+					end
+				end
+				
+				hp_chan2:hidden(1)
+				
+				hp_ground1:diffusealpha(1)
+				hp_ground1:x(-128)
+				hp_ground1:y(SCREEN_HEIGHT*0.85)
+				hp_ground1:decelerate(120/193)
+				hp_ground1:x(SCREEN_WIDTH*0.3)
+				
+				hp_ground2:sleep(1)
+				hp_ground2:diffusealpha(1)
+				hp_ground2:x(SCREEN_WIDTH+128)
+				hp_ground2:y(SCREEN_HEIGHT*0.5)
+				hp_ground2:decelerate(120/193)
+				hp_ground2:x(SCREEN_WIDTH*0.75)
+				
+				hp_chan3:hidden(0)
+				hp_chan3:diffusealpha(0)
+				hp_chan3:sleep(1)
+				hp_chan3:diffusealpha(1)
+				hp_chan3:x(SCREEN_WIDTH+128+10)
+				hp_chan3:y(SCREEN_HEIGHT*0.5+10)
+				hp_chan3:decelerate(120/193)
+				hp_chan3:x(SCREEN_WIDTH*0.75+10)
+				
+			end,true)
+			
+			m2(244,function()
+				fucky_bg1:linear(180/193)
+				fucky_bg1:diffusealpha(1)
+				fucky_bg2:linear(180/193)
+				fucky_bg2:diffusealpha(1)
+				fucky_bg3:linear(180/193)
+				fucky_bg3:diffusealpha(1)
+				fucky_bg4:linear(180/193)
+				fucky_bg4:diffusealpha(.3)
+			end,true)
+			
+			for i=279,294,1 do
+				simple_m0d(i-.05,50,.1,'stealth');
+			end
+			
+			for i=311,325,3 do
+				m2(i,function()
+					hp_chan3:vibrate()
+					hp_chan3:glow(1,0,0,0.5)
+					hp_chan3:linear(120/386)
+					hp_chan3:glow(1,0,0,0)
+					
+					hp_chanvib:x(20)
+					hp_chanvib:linear(180/386)
+					hp_chanvib:x(0)
+				end)
+			end
+			
+			m2(310,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:accelerate(60/193)
+						a:rotationy(180)
+						a:sleep(0)
+						a:rotationy(0)
+					end
+				end
+			end)
+			
+			m2(311,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(16*60/386)
+						a:rotationy(360*16)
+						a:sleep(0)
+						a:rotationy(0)
+					end
+				end
+			end)
+			
+			m2(324,function()
+				fucky_bg1:finishtweening()
+				fucky_bg1:linear(180/193)
+				fucky_bg1:diffusealpha(0)
+				fucky_bg2:finishtweening()
+				fucky_bg2:linear(180/193)
+				fucky_bg2:diffusealpha(0)
+				fucky_bg3:finishtweening()
+				fucky_bg3:linear(180/193)
+				fucky_bg3:diffusealpha(0)
+				fucky_bg4:finishtweening()
+				fucky_bg4:linear(180/193)
+				fucky_bg4:diffusealpha(0)
+			end,true)
+			
+			m2(326.3,function() taro_Sound('fainted') end)
+			m2(327,function() hp_chan3:cropbottom(0.05) hp_chan3:accelerate(0.4); hp_chan3:addy(240); hp_chan3:cropbottom(1.05) end)
+			
+			m2(327.5,'FadeOut');
+			
+			m(330.6,30,'*1000 0.1x, *1000 flip, *1000 -100 tornado',l)
+			m(330.7,30,'*3 100x',l)
+			
+			m2(251,'PkmText1');
+			m2(267,'PkmTextOff');
+			
+			m2(279,'PkmText2');
+			m2(293,'PkmTextOff');
+			
+			m2(310,'PkmText3');
+			m2(323,'PkmTextOff');
+			
+			m2(327,'PkmText4');
+			m2(330.5,'PkmTextOffQ');
+			
+			m2(330.8,'Open');
+			m2(330.8,'GameOver');
+			m2(330.8,function()
+				hp_gameover:diffusealpha(1)
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2);
+						a:y(sh*0.6);
+						a:rotationz(-60);
+						a:rotationx(-40);
+					end
+				end
+			end);
+			
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			self:queuecommand('Update');
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				
+				--name players, judgment and combo
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				checked = true; --let this only run once
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i=1,2 do
+						mod_do('clearall',i)
+					end
+				end
+				
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if beat >=v[1] then
+								if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = '';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+						end
+					end
+				end
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods2) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if mod_time >=v[1] then
+								if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = 'error';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+						end
+					end
+				end
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				if beat > 47 then
+					hp_bg1:diffusealpha(0)
+					hp_wave1:diffusealpha(0.33)
+					hp_wave2:diffusealpha(0.33)
+					hp_wave3:diffusealpha(1)
+					
+					hp_wave1:x( sw/2 + 50*math.sin(beat*math.pi*0.125) )
+					hp_wave1:skewx( 0.3*math.sin(beat*math.pi*0.0625) )
+					hp_wave2:x( sw/2 - 50*math.sin(beat*math.pi*0.125) )
+					hp_wave2:skewx( -0.3*math.sin(beat*math.pi*0.0625) )
+					
+					local alp = 1;
+					if beat > 238.5 then
+						alp = math.max((240.5-beat)/2,0)
+						hp_wave1:diffusealpha(alp*0.33)
+						hp_wave2:diffusealpha(alp*0.33)
+						
+						hp_wave4:diffusealpha(alp*0.5)
+						
+					end
+					
+					if beat < 95 or beat > 110 then
+						mod_do('*10000 '..hp_hallway:GetX()..' hallway');
+					end
+				end
+				
+				
+				
+				hp_rpgbg:x(math.floor(hp_rpgbgt:GetX()/2)*2)
+				hp_rpgbg2:x(math.floor(hp_rpgbgt:GetX()/2)*2)
+				
+				if FUCK_EXE then
+					hp_aftsprite_main:zoom(1/hp_zoom:GetX())
+					hp_aftsprite_main2:zoom(hp_zoom:GetX())
+				end
+				
+				if beat > 251 and beat < 290 then
+					mod_do('*10000 '..(0+30*math.sin(beat*math.pi*0.5))..' hiddenoffset');
+				end
+				
+				if FUCK_EXE and beat>73 and beat<110 then
+					mod_do('*10000 '..(math.rad(beat*360)*100)..' confusionoffset',1)
+				end
+				if FUCK_EXE and beat > 110 and beat < 112 then
+					mod_do('*10000 no confusionoffset',1)
+				end
+				if not FUCK_EXE and beat > 110 and beat < 112 then
+					mod_do('*10 no dizzy',1)
+				end
+				
+				if beat > 110 then
+					for pn=1,2 do
+						local a = {GetJud(pn),GetCom(pn)}
+						if a[1] then
+							a[1]:effectmagnitude(0,hp_aux1:GetX(),0)
+						end
+						if a[2] then
+							a[2]:effectmagnitude(0,hp_aux2:GetX(),0)
+						end
+					end
+				end
+				
+				if beat > 311 then
+					hp_chan3:effectmagnitude(hp_chanvib:GetX(),hp_chanvib:GetX(),0)
+				end
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+						if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+							if type(mod_actions[curaction][2]) == 'function' then
+								mod_actions[curaction][2]()
+							elseif type(mod_actions[curaction][2]) == 'string' then
+								MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+							end
+						end
+						curaction = curaction+1;
+					end
+				end
+				
+			end
+			
+			self:sleep(0.02);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	
+	<!--Handling messages here is still fun and profitable-->
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) rb_aux = self end"
+	/>
+	
+	<Layer Type="Quad" InitCommand="%function(self) hp_aux1 = self end" OnCommand="hidden,1;x,-100" />
+	<Layer Type="Quad" InitCommand="%function(self) hp_aux2 = self end" OnCommand="hidden,1;x,80" />
+	<Layer Type="Quad" InitCommand="%function(self) hp_zoom = self end" OnCommand="hidden,1;x,2" />
+	<Layer Type="Quad" InitCommand="%function(self) hp_rpgbgt = self end" OnCommand="hidden,1;x,0" />
+	<Layer Type="Quad" InitCommand="%function(self) hp_hallway = self end" OnCommand="hidden,1;x,0" />
+	<Layer Type="Quad" InitCommand="%function(self) hp_chanvib = self end" OnCommand="hidden,1;x,0" />
+	
+	<Layer Type="ActorFrame" InitCommand="%function(self) hp_rpgbg2=self end" ><children>
+		<Layer File="conifer" OnCommand="x,hp_tilex*16;y,SCREEN_HEIGHT*0.56;" />
+	</children></Layer>
+	
+	<Layer File="pkmtext" InitCommand="%function(self) hp_pkm_text=self end" OnCommand="basezoomx,0.9;basezoomy,0.9;x,sw*0.4;y,80;hidden,1;animate,0;"
+	PkmText1MessageCommand="hidden,0;setstate,0;diffusealpha,1;zoomx,2;zoomy,0;x,sw*0.75;y,sh*0.65;linear,0.3;zoom,1;"
+	PkmText4MessageCommand="hidden,0;setstate,3;diffusealpha,1;zoomx,2;zoomy,0;x,sw*0.75;y,sh*0.65;linear,0.3;zoom,1;"
+	PkmText2MessageCommand="hidden,0;setstate,1;diffusealpha,1;zoomx,2;zoomy,0;x,sw*0.33;y,sh*0.12;linear,0.3;zoom,1;"
+	PkmText3MessageCommand="hidden,0;setstate,2;diffusealpha,1;zoomx,2;zoomy,0;x,sw*0.33;y,sh*0.12;linear,0.3;zoom,1;"
+	PkmTextOffQMessageCommand="hidden,1"
+	PkmTextOffMessageCommand="linear,0.5;diffusealpha,0;queuecommand,Hide" HideCommand="hidden,1" />
+	
+	<Layer Type="ActorFrame" InitCommand="%function(self) hp_world=self end" ><children>
+	
+		<Layer File="title" OnCommand="stretchto,0,0,sw,sh" OpenMessageCommand="hidden,1;" />
+		
+		<Layer File="start" OnCommand="stretchto,0,0,sw,sh;diffuseblink;effectcolor1,1,.25,.5,1;effectcolor2,1,.25,.5,.5;"
+		FadeOutMessageCommand="stopeffect;diffuse,1,0,0,1" OpenMessageCommand="hidden,1;" />
+		
+		<Layer Type="Quad" OnCommand="zoom,sw*2;x,sw/2;y,sh/2;diffuse,0,0,0,1;cropleft,0.5;blend,noeffect;zwrite,1;"
+		ShowBattleMessageCommand="sleep,75/193;queuecommand,Hide" HideCommand="hidden,1" />
+		
+		<Layer Type="Quad" OnCommand="zoom,sw*2;x,sw/2;y,sh/2;diffuse,0,0,0,1;cropleft,0.5;ztest,1;" ShowBattleMessageCommand="linear,0.3;diffusealpha,0;sleep,75/193;queuecommand,Hide"
+		ToBattleMessageCommand="linear,75/193;rotationz,-180;" HideCommand="hidden,1" />
+		<Layer Type="Quad" OnCommand="zoom,sw*2;x,sw/2;y,sh/2;diffuse,0,0,0,0;cropright,0.5;" ShowBattleMessageCommand="linear,0.3;diffusealpha,0;sleep,75/193;queuecommand,Hide"
+		ToBattleMessageCommand="sleep,75/193;diffusealpha,1;linear,75/193;rotationz,-180;" HideCommand="hidden,1" />
+		
+		<Layer File="gameover" OnCommand="x,sw/2;y,sh/2;diffusealpha,0;" GameOverMessageCommand="diffusealpha,1" />
+		
+		<Layer Type="Quad" OnCommand="stretchto,0,0,sw,sh;diffuse,0,0,0,0" OpenMessageCommand="linear,30/111;diffusealpha,0;"
+		FadeOutMessageCommand="diffusealpha,0.25;sleep,30/111;diffusealpha,0.5;sleep,30/111;diffusealpha,0.75;sleep,30/111;diffusealpha,1;" />
+	
+	</children></Layer>
+	
+	<Layer Type="ActorFrame" InitCommand="%function(self) hp_wavebg2 = self end" OnCommand="fov,60;" ><children>
+		<LAER File="chan2" InitCommand="%function(self) hp_chan2 = self end"
+		OnCommand="diffusealpha,1;y,SCREEN_BOTTOM;x,SCREEN_CENTER_X;hidden,1;diffusealpha,0;rotationy,90;zoomz,50;zoom,50;z,-100;
+		pulse;effectmagnitude,1,1,1;effectcolor2,0.96,1.02,0.96,1;effectcolor1,1.04,0.98,1.04,1;"/>
+		<LAER File="ffpowerup" OnCommand="x,SCREEN_WIDTH*0.3 + 30;y,SCREEN_HEIGHT+20;z,420;rotationy,-30;vertalign,bottom;diffusealpha,0;"
+		ChargeSpellMessageCommand="sleep,0.3*0;zoomy,0.6;zoomx,1;linear,0.2;diffusealpha,1;zoomy,1;zoomx,1.2;linear,0.4;zoomy,0.4;zoomx,2;diffusealpha,0;" />
+		<LAER File="ffpowerup" OnCommand="x,SCREEN_WIDTH*0.3 + 30;y,SCREEN_HEIGHT+20;z,420;rotationy,-30;vertalign,bottom;diffusealpha,0;"
+		ChargeSpellMessageCommand="sleep,0.3*1;zoomy,0.6;zoomx,1;linear,0.2;diffusealpha,1;zoomy,1;zoomx,1.2;linear,0.4;zoomy,0.4;zoomx,2;diffusealpha,0;" />
+		<LAER File="ffpowerup" OnCommand="x,SCREEN_WIDTH*0.3 + 30;y,SCREEN_HEIGHT+20;z,420;rotationy,-30;vertalign,bottom;diffusealpha,0;"
+		ChargeSpellMessageCommand="sleep,0.3*2;zoomy,0.6;zoomx,1;linear,0.2;diffusealpha,1;zoomy,1;zoomx,1.2;linear,0.4;zoomy,0.4;zoomx,2;diffusealpha,0;" />
+		<LAER File="ffpowerup" OnCommand="x,SCREEN_WIDTH*0.3 + 30;y,SCREEN_HEIGHT+20;z,420;rotationy,-30;vertalign,bottom;diffusealpha,0;"
+		ChargeSpellMessageCommand="sleep,0.3*3;zoomy,0.6;zoomx,1;linear,0.2;diffusealpha,1;zoomy,1;zoomx,1.2;linear,0.4;zoomy,0.4;zoomx,2;diffusealpha,0;" />
+		<LAER File="ffpowerup" OnCommand="x,SCREEN_WIDTH*0.3 + 30;y,SCREEN_HEIGHT+20;z,420;rotationy,-30;vertalign,bottom;diffusealpha,0;"
+		ChargeSpellMessageCommand="sleep,0.3*4;zoomy,0.6;zoomx,1;linear,0.2;diffusealpha,1;zoomy,1;zoomx,1.2;linear,0.4;zoomy,0.4;zoomx,2;diffusealpha,0;" />
+		<LAER File="ffpowerup" OnCommand="x,SCREEN_WIDTH*0.3 + 30;y,SCREEN_HEIGHT+20;z,420;rotationy,-30;vertalign,bottom;diffusealpha,0;"
+		ChargeSpellMessageCommand="sleep,0.3*5;zoomy,0.6;zoomx,1;linear,0.2;diffusealpha,1;zoomy,1;zoomx,1.2;linear,0.4;zoomy,0.4;zoomx,2;diffusealpha,0;" />
+	</children> </Layer>
+	
+	<Layer File="ebtextbg" InitCommand="%function(self) hp_eb_textbg=self end" OnCommand="x,sw/2+.5;y,48.5;diffusealpha,0;" />
+	
+	<Layer File="ebarrow" InitCommand="%function(self) hp_eb_arrow1=self end" OnCommand="diffusealpha,0;" />
+	<Layer File="ebarrow" InitCommand="%function(self) hp_eb_arrow2=self end" OnCommand="diffusealpha,0;" />
+	<Layer File="ebarrow" InitCommand="%function(self) hp_eb_arrow3=self end" OnCommand="diffusealpha,0;" />
+	<Layer File="ebarrow" InitCommand="%function(self) hp_eb_arrow4=self end" OnCommand="diffusealpha,0;" />
+	
+	<Layer Type="ActorFrame" Condition="FUCK_EXE" ><children>
+	<Layer
+        Type="ActorFrameTexture"
+        InitCommand="%function(self)
+            self:SetWidth( DISPLAY:GetDisplayWidth() );
+            self:SetHeight( DISPLAY:GetDisplayHeight() );
+            self:EnableDepthBuffer( true );
+            self:EnableAlphaBuffer( false );
+            self:EnableFloat( false );
+            self:EnablePreserveTexture( true );        
+            self:hidden(0);
+            self:Create();
+            hp_aft=self
+        end"
+    />
+	
+	<Layer Type="Quad" OnCommand="x,sw/2;y,sh/2;zoomto,sw*16,sh*16;diffuse,0,0,0,1;hidden,1;" AFTOnMessageCommand="hidden,0" AFTOffMessageCommand="hidden,1"
+	InitCommand="%function(self) hp_aftcover = self end"/>
+	
+	<Layer
+        Type="Sprite"
+		InitCommand="%function(self)
+            self:x(0)
+            self:y(0)
+            self:halign(0)
+            self:valign(1)
+            hp_aftsprite_main=self;
+        end"
+        OnCommand="%function(self)
+			self:SetTextureFiltering(false)
+            self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth()));
+            self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()));
+            self:SetTexture(hp_aft:GetTexture())
+            self:hidden(1);
+            self:diffuse(1,1,1,1);
+			self:blend('add');
+        end"
+		AFTOnMessageCommand="hidden,0" AFTOffMessageCommand="hidden,1"
+    />
+	
+	<Layer
+        Type="ActorFrameTexture"
+        InitCommand="%function(self)
+            self:SetWidth( DISPLAY:GetDisplayWidth() );
+            self:SetHeight( DISPLAY:GetDisplayHeight() );
+            self:EnableDepthBuffer( true );
+            self:EnableAlphaBuffer( false );
+            self:EnableFloat( false );
+            self:EnablePreserveTexture( true );        
+            self:hidden(0);
+            self:Create();
+            hp_aft2=self
+        end"
+    />
+	
+	<Layer Type="Quad" OnCommand="x,sw/2;y,sh/2;zoomto,sw*16,sh*16;diffuse,0,0,0,1;hidden,1;" AFTOnMessageCommand="hidden,0" AFTOffMessageCommand="hidden,1"
+	InitCommand="%function(self) hp_aftcover2 = self end"/>
+	
+	<Layer
+        Type="Sprite"
+		InitCommand="%function(self)
+            self:x(0)
+            self:y(0)
+            self:halign(0)
+            self:valign(1)
+            hp_aftsprite_main2=self;
+        end"
+        OnCommand="%function(self)
+			self:SetTextureFiltering(false)
+            self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth()));
+            self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()));
+            self:SetTexture(hp_aft2:GetTexture())
+            self:hidden(1);
+            self:diffuse(1,1,1,1);
+			self:blend('add');
+        end"
+		AFTOnMessageCommand="hidden,0" AFTOffMessageCommand="hidden,1"
+    />
+	</children></Layer>
+	
+	<Layer File="ebtext 1x5" InitCommand="%function(self) hp_eb_text=self end" OnCommand="x,sw/2;y,48;animate,0;diffusealpha,0;" />
+	<Layer File="fftext1" InitCommand="%function(self) hp_ff_text1=self end" OnCommand="x,sw/2;y,32;hidden,1;" />
+	<Layer File="fftext2" InitCommand="%function(self) hp_ff_text2=self end" OnCommand="x,sw*0.4;y,80;hidden,1;animate,0;" />
+	
+	
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+</children></ActorFrame>

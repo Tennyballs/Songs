@@ -1,0 +1,9 @@
+<ActorFrame> <children>
+	
+	<Layer
+		File="damage.sprite"
+		OnCommand="diffusealpha,0"
+		DamageCommand="zoom,1.25;setstate,0;sleep,1;linear,0.5;diffusealpha,0"
+	/>
+	
+</children> </ActorFrame>

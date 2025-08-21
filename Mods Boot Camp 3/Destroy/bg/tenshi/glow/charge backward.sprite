@@ -1,0 +1,13 @@
+[Sprite]
+Texture=_chargeglow 7x1.png
+
+Frame0000=6
+Delay0000=0.08
+Frame0001=3
+Delay0001=0.08
+Frame0002=2
+Delay0002=0.08
+Frame0003=1
+Delay0003=0.08
+Frame0004=0
+Delay0004=999

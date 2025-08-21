@@ -1,0 +1,27 @@
+<ActorFrame><children>	
+
+		<Layer File="ocean"
+			OnCommand="%function(self)
+				self:hidden(1)
+				self:diffuse(.6,.4,.5,1)
+				self:x(SCREEN_WIDTH*.5)
+				self:y(SCREEN_HEIGHT*.5)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomtoheight(SCREEN_HEIGHT)
+				sf_bgoc = self;
+			end"
+		/>
+		
+		<Layer Type="ActorFrame" FOV="45" OnCommand="%function(self) prefix_bgactor = self; self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y);  self:hidden(0); end" ShowCommand="hidden,0" HideCommand="hidden,1" ><children>
+			<ActorFrame OnCommand="rotationx,-30" ><children>
+					<Layer File="stars" OnCommand="diffusealpha,0;zoomto,SCREEN_WIDTH*1.5,SCREEN_HEIGHT*1.5;customtexturerect,0,0,12,8;texcoordvelocity,0,2;fadebottom,0.75;blend,add;queuecommand,Update2" Update2Command="%function(self) sf_stars1 = self; self:queuecommand('Update'); end"
+					UpdateCommand="texcoordvelocity,math.sin(GAMESTATE:GetSongBeat()*math.pi/8)*.45,((GAMESTATE:GetSongBeat()-136)/14)^3*-1-2;sleep,.02;queuecommand,Update"/>
+					<Layer File="stars" OnCommand="diffusealpha,0;zoomto,SCREEN_WIDTH*1.5,SCREEN_HEIGHT*1.5;customtexturerect,0,0,9,6;texcoordvelocity,0,-1;fadebottom,0.75;blend,add;queuecommand,Update2" Update2Command="%function(self) sf_stars2 = self; self:queuecommand('Update'); end"
+					UpdateCommand="texcoordvelocity,math.sin(GAMESTATE:GetSongBeat()*math.pi/6)*-.85,((GAMESTATE:GetSongBeat()-136)/14)^4*-1-2;sleep,.02;queuecommand,Update" />
+					<Layer File="stars" OnCommand="diffusealpha,0;zoomto,SCREEN_WIDTH*1.5,SCREEN_HEIGHT*1.5;customtexturerect,0,0,6,4;texcoordvelocity,0,2;fadebottom,0.75;blend,add;queuecommand,Update2" Update2Command="%function(self) sf_stars3 = self; self:queuecommand('Update'); end"
+					UpdateCommand="texcoordvelocity,math.sin(GAMESTATE:GetSongBeat()*math.pi/8)*-.45,((GAMESTATE:GetSongBeat()-136)/14)^5*-1-2;sleep,.02;queuecommand,Update" />
+			</children></ActorFrame>
+		</children></Layer>	
+		
+		
+</children></ActorFrame>

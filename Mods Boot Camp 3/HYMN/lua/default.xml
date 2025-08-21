@@ -1,0 +1,3994 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT --shortcuts
+	
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+	function Jud(pn)
+		return _G['jud'..pn]
+	end
+	function Com(pn)
+		return _G['com'..pn]
+	end
+	
+	function mod_do(str,pn)
+		if pn then
+			GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+		else
+			GAMESTATE:ApplyGameCommand('mod,'..str)
+		end
+	end
+	
+	mbc3_shaders = true
+	
+	if not FUCK_EXE or tonumber(GAMESTATE:GetVersionDate()) < 20180000 then
+		mbc3_shaders = false
+	end
+	
+	if FUCK_EXE then
+		dw = DISPLAY:GetDisplayWidth()
+		dh = DISPLAY:GetDisplayHeight()
+	end
+	
+	ease_janked = false;
+	
+	hymn_framerate = 1/60
+	
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers.xml" />
+	<Layer File="easing.xml" />
+	<Layer File="spellcard.xml" />
+	<Layer File="../wallfuck.xml" />
+	<Layer File="../hymn_spawns.xml" />
+	<Layer File="../hymn_dings.xml" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+			
+			slumpo = false
+			for pn=1,2 do
+				if GAMESTATE:IsPlayerEnabled(pn-1) then
+					if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 5 then
+						slumpo = true
+					end
+				end
+			end
+		
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_shader(beat,key,which)
+				--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+				
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_onebeat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--use a variable called 'switcheroo_width' to change how much space is between each column
+			--e.g. switcheroo_width = 2 for ayakashi
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+				
+			--function doSpline(spd, axis, path, col)
+				--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+				
+			--function doSplineAll(spd, axis, path)
+				--same as above, but for all columns
+				--(faster performance than using doSpline 4 times due to more efficient concat)
+			
+			--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+				--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+			
+			
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local m = mod_insert
+			local m2 = mod_message
+			local me = mod_ease
+			
+			
+			local l = 'len'
+			local e = 'end'
+			
+			
+			
+			
+			
+			
+			
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+			
+			
+			
+			
+			--raindrops
+			--don't worry about it
+			
+			function SawTooth(t)
+				return math.cos(t+math.cos(t))+math.sin(2.*t)*.2+math.sin(4.*t)*.02;
+			end
+
+			function DeltaSawTooth(t)
+				return 0.4*math.cos(2.*t)+0.08*math.cos(4.*t) - (1.-math.sin(t))*math.sin(t+math.cos(t));
+			end 
+			
+			
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*2 2x, *1000 no beat,-999999% Cover','end'},
+			}
+			
+			--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+			
+			
+			
+			
+			
+			
+			
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+				--{0,200.345,'3x','end',1},
+			}
+			
+			
+			
+			--beat-based ease mods
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--valid ease types are:
+				--linear
+				--inQuad    outQuad    inOutQuad    outInQuad
+				--inCubic   outCubic   inOutCubic   outInCubic
+				--inQuart   outQuart   inOutQuart   outInQuart
+				--inQuint   outQuint   inOutQuint   outInQuint
+				--inSine    outSine    inOutSine    outInSine
+				--inExpo    outExpo    inOutExpo    outInExpo
+				--inCirc    outCirc    inOutCirc    outInCirc
+				--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+				--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+				--inBounce  outBounce  inOutBounce  outInBounce
+				
+			mods_ease = {
+				-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+				--{0,4,360,0,'rotationz','end',inOutBack},
+			}
+			
+			
+			
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 32
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {
+			
+			}
+			
+			m2(96,'Rain395_1',true)
+			m2(200,'Rain395_2',true)
+			m2(248,'Rain395_3',true)
+			m2(298,'Rain395_4',true)
+			
+			m2(0,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(30/158)
+						a:zoom(0)
+					end
+				end
+			end)
+			
+			m2(0,function()
+				for pn=1,2 do
+					local a = Jud(pn)
+					if a then
+						
+						a:bob()
+						a:effectmagnitude(0,0,0)
+						a:effectperiod(1000000)
+						a:effectoffset(250000)
+						
+					end
+				end
+			end,true)
+			
+			local function lerp(t,s,e)
+				return (s + t*(e-s))
+			end
+			
+			hymn_raindelay = 0.3
+			hymn_raintimer = 0
+			hymn_partdelay = 0.5
+			hymn_parttimer = 0
+				
+			function hymn_update_bg(beat)
+			
+				hymn_bg_container:rotationz( 3*math.sin(mod_time*2*math.pi*0.1) + hymn_camrot:GetX() )
+				hymn_fg_container:rotationz( 3*math.sin(mod_time*2*math.pi*0.1) + hymn_camrot:GetX() )
+				
+				hymn_treeline1:y(230 + 24*math.sin(mod_time*2*math.pi*0.125) + hymn_heightaux:GetY()*8 )
+				hymn_treeline2:y(190 + 10*math.sin(mod_time*2*math.pi*0.125) + hymn_heightaux:GetY()*3.33 )
+				hymn_treeline3:y(170 + 3*math.sin(mod_time*2*math.pi*0.125) + hymn_heightaux:GetY()*1 )
+				
+				if beat > 200 then
+				
+					local lerpr = { lerp(1-hymn_thunderbg:GetX(),.6*.6,.8*32/255), lerp(1-hymn_thunderbg:GetX(),.3*.6,.5*32/255), 0 }
+					local lerpg = { lerp(1-hymn_thunderbg:GetX(),.6*.4,.8*30/255), lerp(1-hymn_thunderbg:GetX(),.3*.4,.5*30/255), 0 }
+					local lerpb = { lerp(1-hymn_thunderbg:GetX(),0,.8*47/255), lerp(1-hymn_thunderbg:GetX(),0,.5*47/255),0 }
+				
+					hymn_treeline3:diffuse(lerpr[1],lerpg[1],lerpb[1],1)
+					hymn_treeline2:diffuse(lerpr[2],lerpg[2],lerpb[2],1)
+					hymn_treeline1:diffuse(0,0,0,1)					
+				end
+				
+				if beat > 96 and beat < 198 then
+					hymn_raintimer = hymn_raintimer-0.02
+					if hymn_raintimer <=0 then
+						for i=0,3 do
+							hymn_spawn_drop(2)
+						end
+						for i=0,5 do
+							hymn_spawn_drop(1)
+						end						
+						hymn_raintimer = hymn_raindelay
+					end
+				end
+				
+				if beat > 96 and beat < 190 or beat > 348 and beat < 372 then
+					hymn_parttimer = hymn_parttimer-0.02
+					if hymn_parttimer <=0 then
+						for i=0,1 do
+							hymn_spawn_particle(2)
+						end					
+						local m = 1
+						if beat > 300 then m = 2 end
+						hymn_parttimer = hymn_partdelay*m
+					end
+				end
+				
+				if beat > 245 and beat < 296 then
+					hymn_raintimer = hymn_raintimer-0.02
+					if hymn_raintimer <=0 then
+						for i=0,2 do
+							hymn_spawn_drop(2)
+						end
+						for i=0,3 do
+							hymn_spawn_drop(1)
+						end
+						hymn_raintimer = hymn_raindelay
+					end
+				end
+				
+				for i=1,table.getn(hymn_emitters) do
+					local a = hymn_emitters[i]
+					if a then
+						local b = a.actor
+						if b then
+							if b:getaux() > 0 then
+								a.cooldown = a.cooldown - 0.02
+								if a.cooldown <= 0 then
+									for i=0,a.ammo do
+										hymn_spawn_sparkle(b:GetX(),b:GetY(),a.rangex,a.rangey,b:GetZoomX(),b:GetZoomY())
+									end
+									a.cooldown = a.maxcooldown
+								end
+							end
+						end
+					end
+				end
+				
+			end
+			
+			hymn_rain = {{},{}}
+			hymn_rptr = {0,0}
+			
+			function hymn_makerain(obj,w)
+				table.insert(hymn_rain[w],obj)
+			end
+			
+			function hymn_getrain(w)
+				hymn_rptr[w] = hymn_rptr[w]+1
+				return hymn_rain[w][math.mod(hymn_rptr[w],table.getn(hymn_rain[w]))+1]
+			end
+			
+			function hymn_spawn_drop(w)
+				local a = hymn_getrain(w)
+				if a then
+					a:finishtweening();
+					a:hidden(0)
+					a:zoom(0.7)
+					a:diffusealpha(0.8)
+					if w == 1 then a:zoom(0.4) a:diffusealpha(0.5) end
+					local del = math.random( 100,200 )/240
+					if w == 1 then del = math.random( 200,300 )/300 end
+					a:x(math.random(-sw*0.7,sw*0.7))
+					a:y(-50+math.random(-30,30) - sh/2)
+					local ang = 10
+					a:rotationz(ang)
+					a:linear( del )
+					a:addx( -sw*math.sin(math.rad(ang)) )
+					a:addy( sw*math.cos(math.rad(ang)) )
+					a:queuecommand('Hide')
+				end
+			end
+			
+			
+			
+			
+			hymn_particles = {{},{},{},{},{},{},{}}
+			hymn_pptr = {0,0,0,0,0,0,0}
+			
+			function hymn_makeparticle(obj,w)
+				table.insert(hymn_particles[w],obj)
+			end
+			
+			function hymn_getparticle(w)
+				hymn_pptr[w] = hymn_pptr[w]+1
+				return hymn_particles[w][math.mod(hymn_pptr[w],table.getn(hymn_particles[w]))+1]
+			end
+			
+			function hymn_spawn_particle(w)
+				--if not slumpo and w == 3 then w = 4 end
+				local a = hymn_getparticle(w)
+				if a then
+					a:finishtweening()
+					a:hidden(0)
+					local b = a:GetChild('');
+					if w == 1 then
+					
+					elseif w == 2 then
+						
+						local siz = math.random()*0.5 + 1
+						
+						local len = math.random()*2 + 3
+						
+						a:y(sh + math.random()*32 + 64 )
+						a:x(math.random(-64,sw+64))
+						
+						a:linear(len)
+						a:addy( math.random()*-120 - 120 )
+						
+						b:diffuse(1,math.random()*0.5+0.5,math.random()*0.5,1)
+						b:blend('add')
+						b:zoom(siz)
+						b:accelerate(len)
+						b:zoom(siz*.5)
+						b:addx( math.random(-80,80) )
+						b:diffusealpha(0)
+						
+						a:queuecommand('Hide')
+						
+					elseif w == 3 or w == 4 then
+						
+						b:x(sw/2)
+						b:zoom(1.4)
+						b:blend('add')
+						b:y(-100)
+						
+						if not slumpo then
+							b:diffusealpha(.8)
+						else
+							b:diffusealpha(1)
+						end
+						
+						b:linear(.5)
+						b:y(sh*1.5)
+						
+						
+						a:sleep(.5)
+						a:queuecommand('Hide')
+						
+					end
+				end
+			end
+			
+			function hymn_spawn_sparkle(x,y,rangex,rangey,scale,scalerand)
+				local a = hymn_getparticle(5)
+				if a then
+					a:finishtweening()
+					a:hidden(0)
+					
+					local size = scale + (math.random()*scalerand) - scalerand/2
+					
+					a:basezoomx( size )
+					a:basezoomy( size )
+					
+					a:x(x + math.random(-rangex,rangex) )
+					a:y(y + math.random(-rangey,rangey) )
+					
+					local b = a:GetChild('');
+					b:zoomx(4);
+					b:zoomy(.75);
+					
+					b:linear(.1);
+					
+					b:zoomx(0)
+					b:zoomy(2)
+					
+					a:sleep(.1)
+					a:queuecommand('Hide')
+				end
+			end
+			
+			function hymn_splash(w)
+				for i=0,(8*w)-1 do
+					local a = hymn_getparticle(6)
+					if a then
+						a:finishtweening()
+						a:hidden(0)
+						
+						local rwait = math.random()*.2
+						
+						local size = 0.4 + (math.random()*0.4)
+						
+						a:basezoomx( size )
+						a:basezoomy( size )
+						
+						a:zoom(0)
+						a:sleep(rwait)
+						a:zoom(1)
+						
+						a:x(math.random()*sw)
+						a:y(sh+32+math.random()*80)
+						
+						local b = a:GetChild('');
+						b:x(0)
+						b:y(0)
+						b:diffusealpha(1)
+						b:sleep(rwait)
+						b:linear(.9)
+						b:diffusealpha(0)
+						b:addx(-30+math.random()*60)
+						b:addy(20+math.random()*20)
+						
+						a:decelerate(.6)
+						a:addy( -120 - 180*math.random() )
+						a:accelerate(.3)
+						a:addy( 30+30*math.random())
+						a:queuecommand('Hide')
+					end
+				end
+				MESSAGEMAN:Broadcast('Splash'..w)
+			end
+			
+			hymn_emitters = {}
+			
+			function hymn_makeemitter(obj)
+				table.insert(hymn_emitters,{actor=obj,rangex=80,rangey=80,cooldown=0,maxcooldown=0.2,ammo=1})
+			end
+			
+			function hymn_get_emitter(w,rx,ry,cool,ammo)
+				if hymn_emitters[w] then
+					hymn_emitters[w].rangex = rx
+					hymn_emitters[w].rangey = ry
+					hymn_emitters[w].maxcooldown = cool
+					hymn_emitters[w].ammo = ammo
+					return hymn_emitters[w].actor
+				else
+					return nil
+				end
+			end
+			
+			hymn_395rtimer = 0
+			hymn_395rdelay = .2
+			
+			function hymn_395rain()
+			
+				for i=0,1 do
+				
+					local a = hymn_getparticle(7)
+					if a then
+						a:finishtweening()
+						a:hidden(0)
+						
+						local zm = .6+math.random()*.4
+						
+						a:blend('add')
+						a:rotationz(math.random()*10 - 5)
+						
+						a:diffusealpha(.8)
+						a:basezoomx(zm)
+						a:basezoomy(zm)
+						a:x( sw*.05 + sw*math.random()*.9 )
+						a:y( sh*.05 + sh*math.random()*.9 )
+						
+						a:zoom(1)
+						
+						a:linear(.4)
+						
+						a:addy( 30+math.random()*10 )
+						a:addx( -10 + math.random()*20 )
+						a:zoom(.8)
+						a:diffusealpha(0)
+						
+						a:queuecommand('Hide')
+					end
+				
+				end
+				
+			end
+			
+			simple_m0d2(160-.1,200,1,'drunk');
+			simple_m0d2(168-.1,-200,1,'drunk');
+			simple_m0d2(176-.1,200,1,'drunk');
+			simple_m0d2(184-.1,-200,1,'drunk');
+			
+			for i=0,3 do
+				simple_m0d2(160+8*i,200,1,'tipsy')
+				m2(160+8*i,'WhiteFlash')
+			end
+			
+			
+			
+			m2(1,function()
+				if FUCK_EXE and hymn_aft_sprite2 then
+					hymn_aft_sprite2:GetShader():uniformTexture( 'sampler1', sampler_1:GetTexture() )
+					hymn_aft_sprite2:GetShader():uniformTexture( 'sampler2', sampler_2:GetTexture() )
+				end
+			end,true)
+			
+			
+			
+			m2(200,function()
+				hymn_rainfall1:diffusealpha(0.3)
+				hymn_rainfall2:diffusealpha(0)
+				
+				if FUCK_EXE and hymn_aft_sprite2 then
+					hymn_aft_sprite2:GetShader():uniform1f('much',1.5)
+				end
+				
+			end)
+			
+			m2(245,function()
+				hymn_rainfall1:linear(1)
+				hymn_rainfall1:diffusealpha(0)
+				hymn_rainfall2:linear(1)
+				hymn_rainfall2:diffusealpha(0)
+				
+				if FUCK_EXE and hymn_aft_sprite2 then
+					hymn_aft_sprite2:GetShader():uniform1f('much',0.5)
+				end
+				
+			end)
+			
+			for i=0,6 do
+				
+				m2(205+6*i,function()
+					hymn_camrot:accelerate(60/200)
+					hymn_camrot:addx(90)
+					hymn_camrot:decelerate(180/200)
+					hymn_camrot:addx(90)
+				end)
+				
+			end
+			
+			for i=0,3 do
+				m2(200+12*i,function() hymn_bg_container:playcommand('Thund1') end)
+				m2(206+12*i,function() hymn_bg_container:playcommand('Thund2') end)
+			end
+			
+			for i=0,7 do
+				m2(200+6*i,function()
+					hymn_thunderbg:x(1)
+					hymn_thunderbg:linear(180/200)
+					hymn_thunderbg:x(0)
+					
+					hymn_bgquad2:diffusebottomedge(1,1,0,.6);
+					hymn_bgquad2:diffusetopedge(1,1,0,.3);
+					hymn_bgquad2:linear(180/200)
+					hymn_bgquad2:diffusetopedge(1,0,0,0);
+					hymn_bgquad2:diffusebottomedge(1,0,0,0);
+					
+					char_laer:x(sw/2);
+					char_laer:y(sh/2);
+					char_laer:playcommand('SpawnQ');
+					char_laer:queuecommand('BlackFlash');
+				end)
+			end
+			
+			m2(246.5,function()
+				hymn_camrot:accelerate(60/200)
+				hymn_camrot:addx(90)
+				hymn_camrot:decelerate(150/200)
+				hymn_camrot:addx(90)
+			end)
+			
+			m2(298,function()
+				hymn_bgcover:accelerate(180/200)
+				hymn_bgcover:diffusealpha(1)
+			end)
+			m2(301,function()
+			
+				hymn_treeline1:hidden(0)
+				hymn_treeline2:hidden(0)
+				hymn_treeline3:hidden(0)
+			
+				hymn_bgcover:diffusealpha(1)
+			end,true)
+			
+			m2(0,function()
+				char_laer:x(sw/2)
+				char_laer:y(sh/2)
+				char_laer:playcommand('Spawn');
+			end)
+			m2(44,function()
+				char_laer:playcommand('Fading');
+			end)
+			
+			m2(251.8,function()
+				char_laer:basezoomx(.3)
+				char_laer:basezoomy(.3)
+				char_laer:x(sw/2 - 220)
+				char_laer:y(sh/2)
+				char_laer:playcommand('SpawnQ')
+				char_laer_idle:diffuse(1,1,1,0)
+				char_laer_idle:linear(.1)
+				char_laer_idle:diffusealpha(.4)
+				char_laer_idle:linear(.1)
+				char_laer_idle:diffusealpha(.2)
+				char_laer_idle:linear(.3)
+				char_laer_idle:diffusealpha(.6)
+				char_laer_idle:linear(.6)
+				char_laer_idle:diffusealpha(0)
+			end)
+			
+			m2(255,function()
+				char_laer:basezoomx(.3)
+				char_laer:basezoomy(.3)
+				char_laer:x(sw/2 + 220)
+				char_laer:y(sh/2)
+				char_laer:playcommand('SpawnQ')
+				char_laer_idle:diffuse(1,1,1,0)
+				char_laer_idle:linear(.1)
+				char_laer_idle:diffusealpha(.4)
+				char_laer_idle:linear(.1)
+				char_laer_idle:diffusealpha(.2)
+				char_laer_idle:linear(.3)
+				char_laer_idle:diffusealpha(.6)
+				char_laer_idle:linear(.6)
+				char_laer_idle:diffusealpha(0)
+			end)
+			
+			m2(260,function()
+				char_laer:basezoomx(.3)
+				char_laer:basezoomy(.3)
+				char_laer:x(sw/2 - 220)
+				char_laer:y(sh/2)
+				char_laer:playcommand('SpawnQ')
+				char_laer_idle:diffuse(1,1,1,0)
+				char_laer_idle:linear(.3)
+				char_laer_idle:diffusealpha(1)
+			end)
+			
+			m2(261,function()
+				char_laer:x(sw/2 - 220)
+				char_laer:accelerate(120/158)
+				char_laer:addy(-sh*0.375)
+				char_laer:decelerate(120/158)
+				char_laer:addy(-sh*0.375)
+				
+				char_laer_idle:accelerate(240/158)
+				char_laer_idle:addx(330)
+				char_laer_idle:sleep(1)
+				char_laer_idle:x(0)
+			end)
+			
+			simple_m0d2(72,50,.2,'stealth')
+			simple_m0d2(72.75,50,.2,'stealth')
+			simple_m0d2(73.5,50,.3,'stealth')
+			
+			me(72,8,1200,0,'dizzy',l,outQuart)
+			
+			hymn_ang = 0
+			
+			
+			m2(80,function()
+			
+				
+			
+				hymn_heightaux:accelerate(8*60/200)
+				hymn_heightaux:addy(sh/2)
+				hymn_heightaux:decelerate(8*60/200)
+				hymn_heightaux:addy(sh/2)
+				
+				hymn_clouds1:accelerate(8*60/200)
+				hymn_clouds1:y( 228 - sh/2 + sh*0.5*0.1 )
+				hymn_clouds1:diffusealpha(0.25)
+				hymn_clouds1:decelerate(8*60/200)
+				hymn_clouds1:y( 228 - sh/2 + sh*1*0.1 )
+				hymn_clouds1:diffusealpha(0)
+				
+				hymn_introbg2:accelerate( 480/200 )
+				hymn_introbg2:cropbottom( 0.5 )
+				hymn_introbg2:decelerate( 480/200 )
+				hymn_introbg2:cropbottom( -0.5 )
+				
+				hymn_stars:accelerate( 480/200 )
+				hymn_stars:cropbottom( 0.25 )
+				hymn_stars:diffusealpha( 0.25 )
+				hymn_stars:decelerate( 480/200 )
+				hymn_stars:cropbottom( 0 )
+				hymn_stars:diffusealpha( 0 )
+				
+				hymn_clouds2:sleep(8*60/200)
+				hymn_clouds2:linear(8*60/200)
+				hymn_clouds2:diffusealpha(.4)
+				hymn_clouds3:sleep(8*60/200)
+				hymn_clouds3:linear(8*60/200)
+				hymn_clouds3:diffusealpha(.4)
+				
+			end)
+			
+			m2(96,function()
+				hymn_clouds1:hidden(1)
+				hymn_clouds2:diffusealpha(.6)
+				hymn_clouds3:diffusealpha(.6)
+				
+				hymn_stars:cropbottom( 0 )
+				hymn_stars:diffusealpha( 0 )
+				
+				hymn_clouds1:y( 228 - sh/2 + sh*0.1 )
+				hymn_clouds1:diffusealpha(0)
+				
+				hymn_heightaux:y(sh)
+				
+				hymn_introbg2:cropbottom( -0.5 )
+				
+				hymn_treeline3:diffuse(.8*32/255,.8*30/255,.8*47/255,1)
+				hymn_treeline2:diffuse(.5*32/255,.5*30/255,.5*47/255,1)
+				hymn_treeline1:diffuse(0,0,0,1)
+				
+				hymn_treeline1:hidden(1)
+				hymn_treeline2:hidden(1)
+				hymn_treeline3:hidden(1)
+				
+				hymn_introbg:hidden(1)
+				
+			end,true)
+			
+			m2(190,function()
+			
+				hymn_treeline1:hidden(0)
+				hymn_treeline2:hidden(0)
+				hymn_treeline3:hidden(0)
+			
+				hymn_clouds2:cropleft(-0.4)
+				hymn_clouds2:fadeleft(0.4)
+				hymn_clouds2:accelerate(240/200)
+				hymn_clouds2:cropleft(0.2)
+				hymn_clouds2:addy(-80)
+				hymn_clouds2:decelerate(240/200)
+				hymn_clouds2:cropleft(0.4)
+				hymn_clouds2:addy(-80)
+				
+				hymn_clouds3:cropleft(-0.4)
+				hymn_clouds3:fadeleft(0.4)
+				hymn_clouds3:accelerate(240/200)
+				hymn_clouds3:cropleft(0.15)
+				hymn_clouds3:addy(-50)
+				hymn_clouds3:decelerate(240/200)
+				hymn_clouds3:cropleft(0.3)
+				hymn_clouds3:addy(-50)
+			
+				hymn_heightaux:accelerate(4*60/200)
+				hymn_heightaux:addy(-sh/2)
+				hymn_heightaux:decelerate(4*60/200)
+				hymn_heightaux:addy(-sh/2)
+			end)
+			
+			m2(200,function()
+				
+				hymn_treeline1:hidden(0)
+				hymn_treeline2:hidden(0)
+				hymn_treeline3:hidden(0)
+				
+				hymn_clouds2:fadeleft(0.4)
+				hymn_clouds2:cropleft(0.2)
+				hymn_clouds2:cropleft(0.4)
+				hymn_clouds2:addy(-160)
+				
+				hymn_clouds3:fadeleft(0.4)
+				hymn_clouds3:cropleft(0.15)
+				hymn_clouds3:addy(-100)
+				
+				hymn_heightaux:y(0)
+			end,true)
+			
+			
+			m(0.5,58,'*10000 46 reverse,*10000 -11 split,*10000 11 alternate,*10000 25 flip,*10000 -25 invert,*10000 2000% Bumpy,*10000 1200% Sudden,*10000 100 mini',e)
+			
+			
+			--158*0.08
+			if slumpo then
+				m(0.5,58,'*10000 -96.5 suddenoffset, *10000 C9')
+			else
+				m(0.5,58,'*10000 -96.5 suddenoffset, *10000 C8.3')
+			end
+			
+			me(58,62,2000,0,'bumpy',e,inOutQuad)
+			me(58,62,100,0,'mini',e,inOutQuad)
+			me(58,64,9,158*1.5,'cmod',e,inOutQuad)
+			me(58,62,1200,0,'sudden',e,outExpo)
+			me(58,62,25,0,'flip',e,inOutQuad)
+			me(58,62,50,0,'reverse',e,inOutQuad)
+			
+			me(64,80,1.5,2,'xmod',e,inOutQuad)
+			
+			hymn_isize = 0
+			hymn_iflicker = 1
+			hymn_rotspeed = 0
+			
+			if slumpo then
+				for i=16,58,(4/3) do
+					m(i-.1,1,'*10 50 stealth',l,1)
+					m(i-.1+(2/3),1,'*10 no stealth',l,1)
+					m(i-.1+(2/3),1,'*10 50 stealth',l,2)
+					m(i-.1+(4/3),1,'*10 no stealth',l,2)
+				end
+			else
+				
+			end
+
+			m2(0,function()
+				for i=1,4 do
+					_G['hymn_aux_introding'..i]:x(1)
+				end
+			end)
+			
+			function hymn_intro_update(beat)
+				
+				if beat > 0.5 and beat < 4 then
+					hymn_isize = hymn_isize+(1-hymn_isize)/10;
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:zoom(hymn_isize)
+						end
+					end
+				end
+				
+				if beat > 0.5 and beat < 64 then
+					local hymn_rotspeed = 0
+					if beat > 16 then
+						hymn_rotspeed = math.min((beat-16)/16,1)
+					end
+					
+					local nmult = 0.5
+					if slumpo then
+						nmult = 1
+					end
+					
+					nmult = nmult*(60*hymn_framerate)
+					
+					hymn_ang = hymn_ang + hymn_rotspeed*nmult
+					
+					--hymn_ang = hymn_ang + 45
+					
+					local hymn_ang2 = hymn_ang + 90*hymn_iflicker
+					
+					
+					
+					for pn=1,2 do
+						hymn_ang2 = hymn_ang2+(45*pn)
+						local a = Plr(pn)
+						local w = pn
+						if hymn_iflicker == -1 then
+							w = w+2
+						end
+						if a then
+							if beat < 58 then
+								--a:hidden(1)
+								a:x(sw/2 + hymn_aux5:GetX()*math.sin(math.rad(hymn_ang2)))
+								a:y(sh/2 + hymn_aux5:GetY()*math.cos(math.rad(hymn_ang2)))
+								a:rotationz(0 + _G['hymn_aux_introspin'..w]:GetX() + (pn*2-3)*nmult*0.3*hymn_aux5:GetZ()*math.cos( beat*math.pi*(1/8) ))
+								if not slumpo then
+									--a:zoomz( 1*math.cos(math.rad(_G['hymn_aux_introspin'..w]:GetX())) )
+								end
+								--[[
+								local b = _G['hymn_mask'..w]
+								b:x(a:GetX())
+								b:y(a:GetY())
+								b:diffuse( 1,0,0, 0.5-0.5*math.cos(math.rad(_G['hymn_aux_introspin'..w]:GetX()) ) )
+								]]
+							end
+							if beat > 4 then
+								a:zoom(_G['hymn_aux_introding'..w]:GetX())
+							end
+						end
+					end
+					
+					hymn_iflicker = hymn_iflicker*-1
+				
+				end
+				
+				if beat > 64 and beat < 80 then
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:x(sw/2 + 160*(pn*2-3))
+							a:z((pn*2-3)*hymn_aux5:GetZ()*math.sin(beat*math.pi))
+							a:y(sh/2 + (pn*2-3)*hymn_aux5:GetY()*math.cos(beat*math.pi))
+							a:rotationz(0)
+							a:zoom(1)
+						end
+					end
+				end
+				
+			end
+			
+			hymn_dingzoom = 2.5
+			
+			if slumpo then hymn_dingzoom = 4 end
+			
+			for i=1,table.getn(hymn_dings) do
+				local a = hymn_dings[i]
+				local n = a[2]+1
+				if tostring(a[3]) ~= 'M' then
+					m2(a[1],function()
+						_G['hymn_aux_introding'..n]:finishtweening()
+						_G['hymn_aux_introding'..n]:x(hymn_dingzoom)
+						_G['hymn_aux_introding'..n]:decelerate(90/158)
+						_G['hymn_aux_introding'..n]:x(1)
+					end)
+				end
+			end
+			
+			me(58,63.9,0,250,'invert',e,outQuad)
+			m2(58,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(25.560-23.600)
+						a:x(sw/2 + 160*(pn*2-3))
+					end
+				end
+			end)
+			
+			m(64-.1,1,'*50 -250 invert',l)
+			m(65-.1,1,'*50 250 invert',l)
+			m(66-.1,8,'*50 -250 invert',l)
+			
+			m(72-.1,1,'*50 250 invert',l)
+			m(73-.1,1,'*50 -250 invert',l)
+			m(74-.1,8,'*50 250 invert',l)
+			
+			m2(64,function()
+				hymn_aux5:z(250)
+			end)
+			m2(72,function()
+			
+				local mult = 0.5
+				if slumpo then
+					mult = 1
+				end
+			
+				hymn_aux5:z(350)
+				hymn_aux5:linear(6*60/200)
+				hymn_aux5:y(80*mult)
+				hymn_aux5:accelerate(60/200)
+				hymn_aux5:y(40*mult)
+				hymn_aux5:decelerate(60/200)
+				hymn_aux5:y(0)
+				hymn_aux5:sleep(0)
+				hymn_aux5:z(0)
+			end)
+			
+			m2(80,function()
+				hymn_aux5:x(0)
+				hymn_aux5:y(0)
+				hymn_aux5:z(0)
+				
+			end,true)
+			
+			me(76,4,250,0,'invert',l,inOutQuad)
+			
+			hymn_introspinbeats = 1.5;
+			
+			if slumpo then
+				hymn_introspinbeats = 2
+			end
+			
+			for i=0,3 do
+				if i==0 then
+					m2(0,function()
+						hymn_aux_introspin1:x(180)
+						hymn_aux_introspin1:decelerate(hymn_introspinbeats*60/158)
+						hymn_aux_introspin1:x(360)
+					end)
+				else
+					m2(16*i+0-hymn_introspinbeats,function()
+						hymn_aux_introspin1:accelerate(hymn_introspinbeats*60/158)
+						hymn_aux_introspin1:x(180)
+						hymn_aux_introspin1:decelerate(hymn_introspinbeats*60/158)
+						hymn_aux_introspin1:x(360)
+					end)
+				end
+				
+				m2(16*i+4-hymn_introspinbeats,function()
+					hymn_aux_introspin2:accelerate(hymn_introspinbeats*60/158)
+					hymn_aux_introspin2:x(180)
+					hymn_aux_introspin2:decelerate(hymn_introspinbeats*60/158)
+					hymn_aux_introspin2:x(360)
+				end)
+				m2(16*i+6-hymn_introspinbeats,function()
+					hymn_aux_introspin3:accelerate(hymn_introspinbeats*60/158)
+					hymn_aux_introspin3:x(180)
+					hymn_aux_introspin3:decelerate(hymn_introspinbeats*60/158)
+					hymn_aux_introspin3:x(360)
+				end)
+				m2(16*i+8-hymn_introspinbeats,function()
+					hymn_aux_introspin4:accelerate(hymn_introspinbeats*60/158)
+					hymn_aux_introspin4:x(180)
+					hymn_aux_introspin4:decelerate(hymn_introspinbeats*60/158)
+					hymn_aux_introspin4:x(360)
+				end)
+				
+				if i<3 then
+					m2(16*i+14-hymn_introspinbeats*0.5,function()
+						for w=1,4 do
+							_G['hymn_aux_introspin'..w]:accelerate(hymn_introspinbeats*30/158)
+							_G['hymn_aux_introspin'..w]:x(180)
+							_G['hymn_aux_introspin'..w]:decelerate(hymn_introspinbeats*45/158)
+							_G['hymn_aux_introspin'..w]:x(0)
+						end
+					end)
+				else
+					m2(16*i+14-0,function()
+						for w=1,4 do
+							_G['hymn_aux_introspin'..w]:x(0)
+						end
+					end)
+				end
+				
+			end
+			
+			m2(0,function()
+				hymn_aux5:x(200)
+				hymn_aux5:y(160)
+			end,true)
+			
+			m2(16,function()
+				hymn_aux5:linear(32*60/158)
+				hymn_aux5:z(100)
+			end)
+			
+			m2(52,function()
+				hymn_aux5:accelerate(180/158)
+				hymn_aux5:x(100)
+				hymn_aux5:y(80)
+				hymn_aux5:z(50)
+				hymn_aux5:decelerate(180/158)
+				hymn_aux5:x(0)
+				hymn_aux5:y(0)
+				hymn_aux5:z(0)
+			end)
+			
+			m2(58,function()
+				hymn_aux5:finishtweening();
+				hymn_aux5:x(0)
+				hymn_aux5:y(0)
+				hymn_aux5:z(0)
+			end,true)
+			
+			me(80,96,0,0,'invert',e,linear)
+			
+			
+			
+			
+			--mod_wiggle(80,24,(4/3),100,2,'drunk');
+			
+			m2(80,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2 + 160*(pn*2-3) )
+						a:y(sh/2)
+						a:z(0)
+					end
+				end
+			end,true)
+			
+			m(77,1,'*100 50 dark',l)
+			m(78,92,'*2 dark',e)
+			m(80,92,'*2.4 200 centered, *2.5 stealth',e)
+			
+			hymn_fl2 = 1
+			
+			for i=80,90,2 do
+				m(i-.1,.2,'*1000 -30 centered',l)
+				m(i-.1,.4,'*15 10 stealth',l)
+				me(i,2,0,200,'drunk',l,outQuad)
+				me(i,2,0,-30,'flip',l,outQuad)
+				local p = i
+				m2(i,function()
+					hymn_aux2:decelerate(120/200)
+					hymn_aux2:x((10 + 20*(p-80) / 12)*hymn_fl2)
+					hymn_fl2 = hymn_fl2*-1
+				end)
+			end
+			
+			if slumpo then
+				me(94,2,-60,-10,'stealth',l,linear)
+			end
+			
+			m(92.2,4,'*5 -100 stealth',l)
+			
+			for i=80,96,(2/3) do
+				simple_m0d(i,200,.1,'bumpy')
+			end
+			
+			for i=80,91,(4/3) do
+			
+				
+				
+				m2(i,function()
+					hymn_aux:decelerate(40/200)
+					hymn_aux:addx(30)
+					hymn_aux:decelerate(40/200)
+					hymn_aux:addx(-15)
+					
+					--hymn_aux2:sleep(40/200)
+					--hymn_aux2:x(-10 - 20*(p-80) / 12 )
+					
+				end)
+				
+			end
+			
+			for i=58,63.5,(4/3) do
+				simple_m0d(i,50,.1,'stealth',1)
+				simple_m0d(i+(2/3),50,.1,'stealth',2)
+				simple_m0d(i,-5,.1,'mini',1)
+				simple_m0d(i+(2/3),-5,.1,'mini',2)
+				simple_m0d(i,20,.1,'dizzy',1)
+				simple_m0d(i+(2/3),20,.1,'dizzy',2)
+			end
+			
+			m2(80,function()
+				hymn_aux3:linear(12*60/200)
+				hymn_aux3:x(6)
+			end)
+			
+			m2(92,function()
+				hymn_aux:linear(240/200)
+				hymn_aux:x(0)
+				hymn_aux3:linear(240/200)
+				hymn_aux3:x(3)
+				
+				hymn_aux2:linear(40/200)
+				hymn_aux2:x(30)
+				hymn_aux2:linear(40/200)
+				hymn_aux2:x(-24)
+				hymn_aux2:linear(40/200)
+				hymn_aux2:x(18)
+				hymn_aux2:linear(40/200)
+				hymn_aux2:x(-12)
+				hymn_aux2:linear(40/200)
+				hymn_aux2:x(6)
+				hymn_aux2:linear(40/200)
+				hymn_aux2:x(0)
+				
+			end)
+			
+			--[[
+			m(108.0-.1,1,'*15 invert, *15 no flip',l)
+			m(108.5-.1,1,'*15 no invert, *15 flip',l)
+			m(109.0-.1,1,'*15 -100 invert, *15 flip',l)
+			m(109.5-.1,1,'*15 no invert, *15 no flip',l)
+			]]
+			
+			m2(96,function()
+				hymn_aux3:x(0)
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(0)
+						a:zoomz(3)
+						a:linear(61.5*60/200)
+						a:zoomz(6)
+					end
+					--[[
+					local b = Jud(pn)
+					if b then
+						b:x(100*(pn*2-3))
+					end
+					local b = Com(pn)
+					if b then
+						b:x(100*(pn*2-3))
+					end
+					]]
+				end
+			end)
+			m2(157.5,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(2.5*60/200)
+						a:zoomz(1)
+					end
+					--[[
+					local b = Jud(pn)
+					if b then
+						b:linear(2.5*60/200)
+						b:x(0)
+					end
+					local b = Com(pn)
+					if b then
+						b:linear(2.5*60/200)
+						b:x(0)
+					end
+					]]
+				end
+			end)
+			
+			
+			
+			m2(200,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2 + 32*(pn*2-3))
+					end
+				end
+			end,true)
+			
+			m2(200.01,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(45*60/200)
+						a:zoomz(2)
+					end
+				end
+			end)
+			
+			m2(200,function()
+				for pn=1,2 do
+					
+					local b = Jud(pn)
+					if b then
+						b:x(160*(pn*2-3))
+					end
+					local b = Com(pn)
+					if b then
+						b:x(160*(pn*2-3))
+					end
+				end
+			end,true)
+			
+			m(200,245,'*10000 -50 flip',e);
+			
+			for i=200,240,6 do
+				m2(i,function()
+					hymn_aux:linear(90/200)
+					hymn_aux:x(200)
+					hymn_aux:linear(90/200)
+					hymn_aux:x(-200)
+					hymn_aux:linear(90/200)
+					hymn_aux:x(200)
+					hymn_aux:linear(90/200)
+					hymn_aux:x(-200)
+					
+					hymn_aux2:linear(180/200)
+					hymn_aux2:x(-100)
+					hymn_aux2:linear(180/200)
+					hymn_aux2:x(200)
+				end)
+			end
+			
+			function hymn_wallfuck_motion(beat)
+			
+				local amp = math.sin((beat-200)*1*math.pi*(1/6))
+				
+				local amp2 = 0
+				if beat > 224 and beat < 242 then
+					amp2 = 64*outQuad(beat-224,0,1,18)
+				elseif beat >= 242 and beat < 246.5 then
+					amp2 = 64*(1-inQuad(beat-242,0,1,4.5))
+				end
+				
+				if slumpo then amp3 = .2 else amp3 = 0 end
+				
+				if beat < 246.5 then
+					for pn=1,2 do
+						
+						local a = Plr(pn)
+						if a then
+							a:x( sw/2 + 32*(pn*2-3) + hymn_flicker*amp*amp2*amp3*math.sin(beat*math.pi*0.5) )
+							a:y( sh/2 + (pn*2-3)*hymn_flicker*0.5*amp*amp2*amp3*math.sin(beat*math.pi*0.5) )
+						end						
+						
+					end
+				end
+				
+			end
+			
+			local fluct = 1
+			for i=0,3 do
+				for j=1,table.getn(wallfuck) do
+					local a = wallfuck[j]
+					for pn=1,2 do
+						local amt = (60+(20*i))*fluct*(pn*2 - 3)
+						spd = math.abs(amt)*0.4
+						m(a[1]-.1 + i*12,0.5,'*'..spd..' '..amt..' drunk','len',pn);
+					end
+					fluct = fluct*-1
+				end
+			end
+			
+			m2(242,function()
+				hymn_aux:linear(90/200)
+				hymn_aux:x(200)
+				hymn_aux:linear(90/200)
+				hymn_aux:x(-200)
+				hymn_aux:linear(90/200)
+				hymn_aux:x(100)
+				hymn_aux:linear(90/200)
+				hymn_aux:x(0)
+				
+				hymn_aux2:linear(180/200)
+				hymn_aux2:x(-100)
+				hymn_aux2:linear(180/200)
+				hymn_aux2:x(0)
+				
+			end)
+			
+			switcheroo_width = 2
+			--switcheroo_add(beat,which,speed,len,pn)
+			switcheroo_add(200,'flip',10000,6,2)
+			
+			function hymn_other(pn)
+				if pn == 1 then return 2 end
+				if pn == 2 then return 1 end
+				return 0
+			end
+			
+			local fluct = 0
+			function hymn_crash(beat,main,switch1,switch2,stealth1,stealth2)
+				switcheroo_add(beat,switch1,10000,6,main)
+				switcheroo_add(beat,switch2,10000,6,hymn_other(main))
+				m(beat,6,'*10000 '..stealth1..' stealth, *10000 '..fluct..' reverse','len',main)
+				if fluct == 0 then
+					fluct = 100
+				else
+					fluct = 0
+				end
+				m(beat,6,'*10000 '..(90)..' stealth, *10000 '..fluct..' reverse','len',hymn_other(main))
+			end
+			
+			--hymn_crash(beat,main,switch1,switch2,stealth1,stealth2)
+			hymn_crash(200,1,'normal','invert',0,95)
+			hymn_crash(206,2,'normal','flip',0,95)
+			hymn_crash(212,1,'normal','invert',0,90)
+			hymn_crash(218,2,'normal','flip',0,90)
+			hymn_crash(224,1,'normal','invert',0,85)
+			hymn_crash(230,2,'normal','flip',0,85)
+			hymn_crash(236,1,'normal','invert',0,80)
+			hymn_crash(242,2,'normal','flip',0,80)
+			
+			local dfl = 1
+			for i=200,242,6 do
+				
+				local amt = 0.05+inQuad((i-200)/42,0,1,1)
+				if slumpo then amt = (amt*1.5)+0.25 end
+				
+				if not slumpo then
+					me(i,5,1200*amt*dfl,0,'dizzy',l,outCubic)
+				else
+					me(i,5,0,1200*amt*dfl,'dizzy',l,inCubic)
+				end
+				
+				dfl = dfl*-1
+				
+			end
+			
+			if slumpo then
+				me(248,4,600,0,'dizzy',l,outQuad)
+			end
+			
+			me(224,230,0,150,'wave',e,linear,nil,245)
+			me(245,248,150,0,'wave',e,linear,nil)
+			
+			me(200,245,0,50,'tornado',e,linear,nil,245)
+			me(245,248,50,0,'tornado',e,linear,nil)
+			
+			
+			m(92,4,'*0.5 1x, *10 -62 SuddenOffset,*10 -73 HiddenOffset',l);
+			if slumpo then
+				m(96,157.5,'*1000 150 Wave,*4 1x,*2 Mini,*1.3 -62 SuddenOffset,*1.3 -73 HiddenOffset',e);
+			else
+				m(96,108+16,'*1000 150 Wave,*4 1x,*2 Mini,*0.75 -62 SuddenOffset,*1.5 -80 HiddenOffset',e);
+				m(108+16,157.5,'*1000 150 Wave,*4 1x,*2 Mini,*1.3 -62 SuddenOffset,*1.3 -73 HiddenOffset',e);
+			end
+			m(92,157.5,'*1 200 Hidden,*1 200% Sudden',e);
+			m(96,160,'*5 no tornado',e);
+			
+			me(157.5,1.5,200,0,'hidden',l,linear,nil,1)
+			me(157.5,1.5,200,0,'sudden',l,linear,nil,1)
+			
+			for i=96,156,16 do
+				if i < 128 then
+					if i == 96 or i == 112 then
+						m(i,9,'*1 8x,*.4 400 HiddenOffset,*.4 400 SuddenOffset',l);
+					else
+						m(i,12,'*1 8x,*.4 400 HiddenOffset,*.4 400 SuddenOffset',l);
+					end
+				else
+					m(i,12,'*1 8x,*.4 400 HiddenOffset,*.4 400 SuddenOffset',l);
+					m(i,12,'*0.25 tornado',l)
+				end
+				
+				local p = i
+				m2(i+8,function()
+					hymn_aux:decelerate(90/200)
+					hymn_aux:x(-120)
+					hymn_aux:decelerate(150/200)
+					hymn_aux:x(0)
+					
+					if slumpo then
+						if p == 144 then
+							hymn_aux4:linear(90/200)
+							hymn_aux4:x(100)
+							hymn_aux4:decelerate(150/200)
+							hymn_aux4:x(0)
+						else
+							hymn_aux4:decelerate(60/200)
+							hymn_aux4:x(100)
+							hymn_aux4:sleep(30/200)
+							hymn_aux4:decelerate(60/200)
+							hymn_aux4:y(-100)
+							hymn_aux4:sleep(84/200)
+							
+							hymn_aux4:linear(10/200)
+							hymn_aux4:x(0)
+							hymn_aux4:y(100)
+							hymn_aux4:sleep(20/200)
+							hymn_aux4:linear(10/200)
+							hymn_aux4:x(100)
+							hymn_aux4:y(0)
+							hymn_aux4:sleep(20/200)
+							hymn_aux4:linear(10/200)
+							hymn_aux4:x(100)
+							hymn_aux4:y(0)
+							hymn_aux4:sleep(20/200)
+							hymn_aux4:linear(10/200)
+							hymn_aux4:x(0)
+							hymn_aux4:y(0)
+							
+							if p == 112 then
+								hymn_aux4:sleep(50/200)
+								hymn_aux4:linear(10/200)
+								hymn_aux4:x(0)
+								hymn_aux4:y(100)
+								hymn_aux4:sleep(20/200)
+								hymn_aux4:linear(10/200)
+								hymn_aux4:x(0)
+								hymn_aux4:y(0)
+							end
+							
+						end
+					else
+						--Trace(p)
+						if p == 96 or p == 112 then
+							
+							hymn_aux4:sleep(224/200)
+							
+							hymn_aux4:linear(10/200)
+							hymn_aux4:x(0)
+							hymn_aux4:y(100)
+							hymn_aux4:sleep(20/200)
+							hymn_aux4:linear(10/200)
+							hymn_aux4:x(100)
+							hymn_aux4:y(0)
+							hymn_aux4:sleep(20/200)
+							hymn_aux4:linear(10/200)
+							hymn_aux4:x(100)
+							hymn_aux4:y(-100)
+							hymn_aux4:sleep(20/200)
+							hymn_aux4:linear(10/200)
+							hymn_aux4:x(0)
+							hymn_aux4:y(0)
+							
+							if p == 112 then
+								hymn_aux4:sleep(50/200)
+								hymn_aux4:linear(10/200)
+								hymn_aux4:x(0)
+								hymn_aux4:y(100)
+								hymn_aux4:sleep(20/200)
+								hymn_aux4:linear(10/200)
+								hymn_aux4:x(0)
+								hymn_aux4:y(0)
+							end
+							
+						end
+					end
+					
+				end)
+				
+			end
+			
+			m(96+14.5-.1,1,'*20 no mini',l)
+			m(96+15.5-.1,1,'*20 mini',l)
+			m(128+14.5-.1,1,'*20 no mini',l)
+			m(128+15-.1,2,'*3.33 mini',l)
+			m(128+15,1,'*1000 1256 dizzy',l)
+			m(128+16,1,'*1000 no dizzy',l)
+			
+			m(96,191.5,'*1000 200 beat',e);
+			
+			mod_wiggle(192-.1,8,2,200,2,'drunk');
+			mod_wiggle(196-.1,8,4,800,3,'bumpy');
+			
+			m(196,4,'1x',l);
+			m(198,2,'*10000 stealth, *1000 invert',l);
+			m(198.5-.05,.13,'*10000 50 stealth',l);
+			m(199.00-.05,.13,'*10000 50 stealth',l);
+			m(199.25-.05,.13,'*10000 50 stealth',l);
+			m(199.60-.05,.13,'*10000 50 stealth',l);
+			m(199.75-.05,.13,'*10000 50 stealth',l);
+			m(200,.25,'*10000 0 stealth, *10000 no invert',l);
+			
+			--mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+			mod_sugarkiller(157.5,2.5,2,50,85);
+			
+			m(157.5,2.5,'*1.5 no mini',l);
+			
+			for i=1,table.getn(mods) do
+				Trace(mods[i][3]);
+			end
+			
+			m2(96,'WhiteFlash');
+			m2(96,'AFTOn',true);
+			m2(200,'AFTOffQ',true);
+			
+			m2(200,function()
+				if FUCK_EXE and hymn_aft_sprite then
+					hymn_aft_sprite:SetShader(hymn_nop:GetShader())
+				end
+			end)
+			
+			m2(200,'AFT2On',true);
+			m2(298,'AFT2Off',true);
+			
+			m2(301,'AFT2OffQ',true);
+			
+			m2(301,function()
+				if FUCK_EXE and hymn_aft_sprite2 then
+					hymn_aft_sprite2:SetShader(hymn_nop:GetShader())
+				end
+			end)
+			
+			m2(200,function()
+				hymn_blackbg:diffusealpha(1)
+			end,true)
+			
+			for i=200,242,6 do
+				m2(i,'WhiteFlash');
+			end
+			
+			local fluct = 1;
+			
+			if slumpo then
+				m(160,195,'*10 50 stealth, *5 200 hidden, *5 200 sudden','end');
+			else
+				m(160,195,'*5 200 hidden, *5 200 sudden','end');
+			end
+			
+			for i=160,195,3 do
+				mod_sugarkiller(i,1,2,50,85);
+				simple_m0d(i+2,200*fluct,.25,'dizzy');
+				fluct = fluct*-1;
+			end
+			
+			for i=160,189,4 do
+				simple_m0d(i+1,-120,.1,'mini');
+				simple_m0d(i+1.5,-120,.1,'mini');
+				simple_m0d(i+3,200*fluct,.1,'hallway');
+				fluct = fluct*-1;
+			end
+			
+			m2(160,function()
+				hymn_aux:finishtweening()
+				hymn_aux:x(-68)
+				hymn_aux:linear(120/200)
+				hymn_aux:x(80)
+				hymn_aux:linear(33*60/200)
+				hymn_aux:x(0)
+				
+				--if slumpo then
+					hymn_aux2:finishtweening()
+					hymn_aux2:x(80)
+					hymn_aux2:linear(120/200)
+					hymn_aux2:x(20)
+					hymn_aux2:linear(26*60/200)
+					hymn_aux2:x(0)
+					hymn_aux2:linear(4*60/200)
+					hymn_aux2:x(30)
+				
+				--[[
+				else
+					hymn_aux2:finishtweening()
+					hymn_aux2:x(100)
+					hymn_aux2:linear(120/200)
+					hymn_aux2:x(40)
+					hymn_aux2:linear(26*60/200)
+					hymn_aux2:x(0)
+					hymn_aux2:linear(4*60/200)
+					hymn_aux2:x(40)
+				end
+				]]
+			end)
+			
+			m(196,4,'*10 no hidden, *10 no sudden','len');
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			me(246.5,247.5,150,50,'flip',e,linear,1,248)
+			me(246.5,247.5,-50,50,'flip',e,linear,2,248)
+			me(246.5,247.5,0,100,'centered',e,linear,nil,248)
+			
+			me(247.5,250,50,0,'flip',e,outQuad,nil)
+			me(247.5,250,50,0,'reverse',e,outQuad,nil)
+			me(247.5,250,0,0,'centered',e,linear,nil)
+			me(247.5,250,100,-100,'drunk',e,inQuad,nil)
+			me(247.75,250,-100,0,'drunk',e,inQuad,nil)
+			me(247.5,250,0,-100,'tornado',e,inQuad,nil)
+			me(247.75,250,-100,0,'tornado',e,inQuad,nil)
+			
+			me(247.75,250,2,1.25,'xmod',e,inQuad,nil,262)
+			
+			m(248,294,'hidden',e,1)
+			m(248,294,'sudden',e,2)
+			
+			m(264,294,'95 hidden',e,1)
+			m(264,294,'100 sudden',e,2)
+			
+			mod_onebeat(250,1000)
+			
+			--[[
+			m(248,294,'flip',e,2)
+			m(248,294,'',e,1)
+			]]
+			
+			m2(246.5,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(60/200)
+						a:zoomz(1)
+						a:x(sw/2+320*(pn*2-3))
+						a:y(sh/2)
+					end
+					
+					local b = Jud(pn)
+					if b then
+						b:decelerate(90/200)
+						b:x(-160*(pn*2-3))
+					end
+					local b = Com(pn)
+					if b then
+						b:decelerate(90/200)
+						b:x(-160*(pn*2-3))
+					end
+				
+				end
+			end)
+			
+			m2(247.5-.1,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(.05)
+						a:rotationz(40*(pn*2-3))
+						a:accelerate(150/158 - .1)
+						a:rotationz(0)
+					end
+				end
+			end)
+			
+			m2(250,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomz(1)
+						a:x(sw/2+320*(pn*2-3))
+					end
+					
+					local b = Jud(pn)
+					if b then
+						b:x(-160*(pn*2-3))
+					end
+					local b = Com(pn)
+					if b then
+						b:x(-160*(pn*2-3))
+					end
+					
+				end
+			end,true)
+			
+			me(246.5,247.5,0,500,'invert',e,outQuad,nil,262)
+			me(262,2,500,0,'invert',l,inOutQuad)
+			
+			m2(262,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:accelerate(60/200)
+						a:x(sw/2+160*(pn*2-3))
+						a:decelerate(60/200)
+						a:x(sw/2)
+					end
+					
+					local b = Jud(pn)
+					if b then
+						b:accelerate(60/200)
+						b:x(0)
+						b:decelerate(60/200)
+						b:x(160*(pn*2-3))
+					end
+					local b = Com(pn)
+					if b then
+						b:accelerate(60/200)
+						b:x(0)
+						b:decelerate(60/200)
+						b:x(160*(pn*2-3))
+					end
+					
+				end
+			end)
+			
+			m2(264,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2)
+					end
+					
+					local b = Jud(pn)
+					if b then
+						b:decelerate(60/200)
+						b:x(160*(pn*2-3))
+					end
+					local b = Com(pn)
+					if b then
+						b:x(160*(pn*2-3))
+					end
+					
+				end
+			end,true)
+			
+			
+			m2(248,function()
+				hymn_aux:x(0)
+				hymn_aux2:x(0)
+				hymn_aux3:x(0)
+			end,true)
+			
+			m2(250,function()
+				hymn_aux2:linear(12*60/158)
+				hymn_aux2:x(100)
+				hymn_aux2:linear(2*60/158)
+				hymn_aux2:x(0)
+			end)
+			
+			m2(258,function()
+				hymn_aux3:z(150)
+			end)
+			m2(262,function()
+				hymn_aux3:z(300)
+			end)
+			m2(264,function()
+				hymn_aux3:z(0)
+			end)
+			
+			mod_onebeat(262,200)
+			mod_onebeat(263,-200)
+			mod_onebeat(264,200)
+			
+			function crashcrash(beat)
+				local mult = 0.5
+				if beat >= 280 then
+					--mult = 0.75
+				end
+				
+				if slumpo then
+					mult = mult*2
+				end
+				
+				mult = mult*(1.2)
+				
+				--[[
+				simple_m0d2(beat-.07,mult*300,.2,'drunk')
+				simple_m0d2(beat+.75-.07,mult*-300,1,'drunk')
+				
+				simple_m0d2(beat-.07,mult*130,.2,'tipsy')
+				simple_m0d2(beat+.75-.07,mult*-130,1,'tipsy')
+				]]
+				
+				local mult2 = 1
+				if beat >= 280 then
+					mult2 = 1.2
+				end
+				
+				if slumpo then mult2 = mult2*1.2 end
+				
+				simple_m0d2(beat-.07,50,.2*mult2,'stealth',2)
+				simple_m0d2(beat+.75-.07,50,.3*mult2,'stealth',2)
+				
+				if beat >= 280 then
+					simple_m0d2(beat-.07,120*mult,.2,'dizzy')
+					simple_m0d2(beat+.75-.07,-120*mult,.8,'dizzy')
+				end
+				
+			end
+			
+			me(272,1.5,0,1000,'dizzy',l,outQuad,2)
+			me(273.5,1.5,1000,0,'dizzy',l,outQuad,2)
+			
+			--m(266,280,'mini',e)
+			
+			--[[
+			me(264,266,0,40,'mini',e,inOutCirc,nil,294)
+			me(294,296,40,0,'mini',e,inOutCirc)
+			]]
+			
+			
+			hymn_xmod = 2.25
+			
+			me(262,266,1.25,hymn_xmod,'xmod',e,linear,nil,294)
+			me(294,2,hymn_xmod,2,'xmod',l,linear)
+			
+			m(269,.75,'*1000 dizzy',l,2)
+			m(269,.75,'*1000 no dizzy',l,2)
+			
+			function dunk(beat,sus)
+				local r = beat
+				
+				m2(beat+.7,function()
+					hymn_splash(2)
+				end)
+				
+				m2(beat,function()
+				
+					hymn_spawn_particle(3)
+					
+					local a = hymn_get_emitter(5,sw/2 - 50,40,0.08,1)
+					if a then
+						a:finishtweening()
+						a:aux(1)
+						a:zoomx(.6)
+						a:zoomy(.6)
+						a:y(0)
+						a:x(sw/2)
+						a:linear(0.4)
+						a:y(sh)
+						a:sleep(0)
+						a:aux(0)
+					end
+					
+					MESSAGEMAN:Broadcast('Aurora')
+				
+					hymn_aux:stoptweening()
+					hymn_aux:x(-100)
+					hymn_aux:linear(60/158)
+					hymn_aux:x(-100 + (sus-0.5)*66 * (hymn_xmod/2) )
+					hymn_aux:linear((sus-1)*60/158)
+					hymn_aux:x(-100)
+					
+					--[[
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a and pn == 2 then
+							a:stoptweening()
+							a:linear(.05)
+							a:zoomx(1.5)
+							a:accelerate(45/158)
+							a:zoomx(1)
+							a:sleep(0)
+							a:zoomx(1.5)
+							a:accelerate(135/158)
+							a:zoomx(1)
+						end
+					end
+					]]
+					
+					local amt = 0.8 + 0.4*(beat-266)/32
+					
+					
+					
+				end)
+				
+				crashcrash(beat)
+				
+			end
+			
+			--crashcrash(266)
+			
+			dunk(266,4.125)
+			dunk(270.5,4.5)
+			dunk(275.5,4)
+			dunk(280,4.125)
+			dunk(284.5,4.5)
+			dunk(289.5,4)
+			
+			m2(266,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:stoptweening()
+						a:decelerate(45/158)
+						a:zoomz(10)
+						a:spring(180/158)
+						a:zoomz(1)
+					end
+				end
+			end)
+			
+			
+			if not slumpo then
+				m2(266,'WhiteFlashQ');
+				m2(270.5,'WhiteFlashQ');
+				m2(275.5,'WhiteFlashQ');
+				m2(280,'WhiteFlashQ');
+				m2(284.5,'WhiteFlashQ');
+				m2(289.5,'WhiteFlashQ');
+			else
+				m2(266,'WhiteFlash');
+				m2(270.5,'WhiteFlash');
+				m2(275.5,'WhiteFlash');
+				m2(280,'WhiteFlash');
+				m2(284.5,'WhiteFlash');
+				m2(289.5,'WhiteFlash');
+			end
+			
+			if slumpo then
+				me(250,258,0,100,'drunk',e,outQuart,1,262)
+				me(250,258,0,60,'tipsy',e,outQuart,1,262)
+				me(262,264,100,0,'drunk',e,inOutQuad,1,262)
+				me(262,264,60,0,'tipsy',e,inOutQuad,1,262)
+				
+				me(250,258,0,-100,'drunk',e,outQuart,2,262)
+				me(250,258,0,-60,'tipsy',e,outQuart,2,262)
+				me(262,264,-100,0,'drunk',e,inOutQuad,2,262)
+				me(262,264,-60,0,'tipsy',e,inOutQuad,2,262)
+				
+				me(250,258,0,10,'dizzy',e,outQuart,1,262)
+				me(250,258,0,-10,'dizzy',e,outQuart,2,262)
+				me(262,264,10,0,'dizzy',e,inOutQuad,1)
+				me(262,264,-10,0,'dizzy',e,inOutQuad,2)
+			else
+				me(250,258,0,70,'drunk',e,outQuart,1,262)
+				me(250,258,0,40,'tipsy',e,outQuart,1,262)
+				me(262,264,70,0,'drunk',e,inOutQuad,1,262)
+				me(262,264,40,0,'tipsy',e,inOutQuad,1,262)
+				
+				me(250,258,0,-70,'drunk',e,outQuart,2,262)
+				me(250,258,0,-40,'tipsy',e,outQuart,2,262)
+				me(262,264,-70,0,'drunk',e,inOutQuad,2,262)
+				me(262,264,-40,0,'tipsy',e,inOutQuad,2,262)
+				
+				me(250,258,0,8,'dizzy',e,outQuart,1,262)
+				me(250,258,0,-8,'dizzy',e,outQuart,2,262)
+				me(262,264,8,0,'dizzy',e,inOutQuad,1)
+				me(262,264,-8,0,'dizzy',e,inOutQuad,2)
+			end
+			
+			m(266,296,'*10000 dark',e,2)
+			
+			m(266,270.5,'*1000 tornado',e,2)
+			m(270.5,275.5,'*1000 no tornado, *1000 brake, *1000 dizzy, *1000 150 wave',e,2)
+			m(270.5,280,'*10000 no wave, *1000 no dizzy, *1000 no brake, *1000 invert',e,2)
+			m(280,284.5,'*1000 invert, *1000 500 bumpy',e,2)
+			m(284.5,289.5,'*1000 no invert, *1000 flip, *1000 -100 tornado, *1000 250 bumpy',e,2)
+			m(289.5,294.75,'*1000 no tornado, *1000 flip, *1000 150 bumpy',e,2)
+			m(294.75,1,'*10 no bumpy',l,2)
+			
+			local mult = 1
+			
+			if slumpo then mult = mult*1.5 end
+			
+			mod_wiggle(266-.1,3,4,150*mult,2,'drunk')
+			mod_wiggle(267.5-.1,4,4,-150*mult,2,'drunk')
+			mod_wiggle(268.5-.1,4,6,-200*mult,3,'drunk')
+			mod_wiggle(269.166-.1,5,6,-200*mult,3,'drunk')
+			
+			mod_wiggle(270.5-.1,3,4,150*mult,2,'drunk')
+			mod_wiggle(271.75-.1,4,4,-150*mult,2,'drunk')
+			mod_wiggle(272.75-.1,4,6,-150*mult,2,'drunk')
+			mod_wiggle(273.5-.1,6,6,250*mult,3,'tipsy')
+			
+			me(273.5,.5,0,-100,'tornado',l,outQuad,nil);
+			me(274.25,2,-100,0,'tornado',l,outElastic,nil,1);
+			
+			--simple_m0d2(274.5-.1,-50,.4,'tornado')
+			
+			mod_wiggle(275.5-.1,3,4,250*mult,2,'tipsy')
+			mod_wiggle(277-.1,6,4,-250*mult,2,'tipsy')
+			mod_wiggle(278.5-.1,5,4,150*mult,2,'drunk')
+			
+			local mult = 1.2
+			
+			if slumpo then mult = mult*1.5 end
+			
+			mod_wiggle(14+266-.1,3,4,150*mult,2,'drunk')
+			mod_wiggle(14+267.5-.1,8,4,-150*mult,2,'drunk')
+			
+			mod_wiggle(14+270.5-.1,3,4,150*mult,2,'drunk')
+			mod_wiggle(14+272-.1,6,4,-150*mult,2,'drunk')
+			mod_wiggle(14+273.5-.1,4,5,250*mult,2,'tipsy')
+			
+			me(14+273.5,.5,0,-150,'tornado',l,outQuad,nil);
+			me(14+274.25,2,-150,0,'tornado',l,outElastic,nil,1);
+			
+			--simple_m0d2(14+274.5-.1,-100,.4,'tornado')
+			
+			mod_wiggle(14+275.5-.1,3,4,250*mult,2,'tipsy')
+			mod_wiggle(14+277-.1,6,4,-250*mult,2,'tipsy')
+			mod_wiggle(14+278.5-.1,5,4,150*mult,2,'drunk')
+			
+			--m(280,296,'*10000 -100 tornado',e,2)
+			
+			--[[
+			m(280,294,'*1000 100 bumpy, *1000 120 drunk',e,1)
+			m(280,294,'*1000 -100 bumpy, *1000 -120 drunk',e,2)
+			]]
+			
+			m(270.0-2,2.5,'*0.1 hidden',l,1)
+			m(270.0-2,2.5,'*0.1 sudden',l,2)
+			m(275.0-2,2.5,'*0.1 hidden',l,1)
+			m(275.0-2,2.5,'*0.1 sudden',l,2)
+			m(279.5-2,2.5,'*0.1 hidden',l,1)
+			m(279.5-2,2.5,'*0.1 sudden',l,2)
+			
+			m(284.0-3,3.5,'*0.1 hidden',l,1)
+			m(284.0-3,3.5,'*0.1 sudden',l,2)
+			m(289.0-3,3.5,'*0.1 hidden',l,1)
+			m(289.0-3,3.5,'*0.1 sudden',l,2)
+			m(293.5-3,3.5,'*0.1 hidden',l,1)
+			m(293.5-3,3.5,'*0.1 sudden',l,2)
+			
+			--[[
+			m(280,294,'*1000 hidden',e,1)
+			m(280,294,'*1000 sudden',e,2)
+			]]
+			
+			me(294,1,0,50,'stealth',l,linear,2,1)
+			
+			m(294.75,1.5,'*10 no flip, *10 no tornado',l,2)
+			
+			--[[
+			me(294,0.75,0,100,'stealth',l,linear,1)
+			me(294.75,1.25,100,0,'stealth',l,linear,1)
+			me(294,0.75,0,200,'brake',l,linear)
+			me(294.75,1.25,-100,0,'brake',l,linear)
+			]]
+			
+			m(294-.1,1,'*10 invert',l,1)
+			m(294.75-.1,1,'*10 no invert',l,1)
+			
+			me(294,.375,0,-80,'centered',l,outSine)
+			me(294.375,.375,-80,0,'centered',l,inSine)
+			me(294.75,.625,0,-80,'centered',l,outSine)
+			me(294.75+.625,.625,-80,0,'centered',l,inSine)
+			
+			me(294,.75,0,150,'distant',l,linear)
+			me(294.75,1.25,150,0,'distant',l,linear)
+			
+			m2(296-.05,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						for i=1,6 do
+							a:linear(.05)
+							a:rotationz(360*(i/6)*(pn*2-3))
+							a:sleep(20/158 - .05)
+						end
+						a:rotationz(0)
+					end
+				end
+			end)
+			
+			m2(298,function()
+				local a = Plr(1)
+				if a then
+					a:accelerate(180/158)
+					a:zoom(0)
+					a:rotationz(180)
+				end
+				local a = Plr(2)
+				if a then
+					a:accelerate(180/158)
+					a:zoom(4)
+					a:rotationz(-180)
+				end
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:sleep(0)
+						a:rotationz(0)
+						a:zoom(0)
+						a:x(sw/2 + 160*(pn*2-3))
+						a:decelerate(120/158)
+						a:zoom(1)
+						a:accelerate(60/200)
+						a:zoom(0)
+					end
+				end
+				
+			end)
+			
+			
+			
+			me(298,3,0,-100,'flip',l,inQuart,2)
+			me(298,3,0,100,'invert',l,inQuart,2)
+			
+			m(301,1,'*10000 no flip, *10000 no invert',l)
+			
+			if not slumpo then
+				m(308,4,'*10000 -628 dizzy',l)
+				m(312,4,'*10000 no dizzy',l)
+			else
+				m(304,4,'*10000 628 dizzy',l)
+				m(308,4,'*10000 -628 dizzy',l)
+				m(312,4,'*10000 628 dizzy',l)
+				m(316,4,'*10000 -628 dizzy',l)
+				m(320,4,'*10000 no dizzy',l)
+			end
+			
+			m2(304-.1,function()
+				hymn_bglaer1:playcommand('Wake')
+			end)
+			m2(312-.1,function()
+				hymn_bglaer2:playcommand('Wake')
+			end)
+			
+			m2(301.05,function()
+				for pn=1,2 do
+					local a = Jud(pn)
+					if a then
+						a:x(0)
+					end
+					local a = Com(pn)
+					if a then
+						a:x(0)
+					end
+				end
+			end)
+			m2(320,function()
+				for pn=1,2 do
+					local a = Jud(pn)
+					if a then
+						a:x(0)
+					end
+					local a = Com(pn)
+					if a then
+						a:x(0)
+					end
+				end
+			end,true)
+			m2(304.05,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2)
+						a:zoom(1)
+						a:zoomz(3)
+					end
+					local a = Jud(pn)
+					if a then
+						a:x(160*(pn*2-3))
+					end
+					local a = Com(pn)
+					if a then
+						a:x(160*(pn*2-3))
+					end
+				end
+			end)
+			
+			m(304,4,'*10000 flip, *10000 reverse',l)
+			m(308,4,'*10000 invert, *10000 no flip, *10000 no reverse',l)
+			m(312,4,'*10000 flip, *10000 no invert, *10000 reverse',l)
+			m(316,4,'*10000 no flip, *10000 no reverse',l)
+			
+			m(304,4,'*10000 100 distant',l)
+			m(308,4,'*10000 -100 distant',l)
+			m(312,4,'*10000 150 distant',l)
+			
+			me(304,2,200,0,'mini',l,outCirc)
+			me(306,2,0,200,'mini',l,inCirc)
+			me(308,2,200,0,'mini',l,outCirc)
+			me(310,2,0,200,'mini',l,inCirc)
+			me(312,2,200,0,'mini',l,outCirc)
+			me(314,2,0,200,'mini',l,inCirc)
+			me(316,2,200,0,'mini',l,outCirc)
+			
+			me(304,2,50,100,'reverse',l,outCirc)
+			me(306,2,100,50,'reverse',l,inCirc)
+			me(308,2,50,0,'reverse',l,outCirc)
+			me(310,2,0,50,'reverse',l,inCirc)
+			me(312,2,50,100,'reverse',l,outCirc)
+			me(314,2,100,50,'reverse',l,inCirc)
+			me(316,2,50,0,'reverse',l,outCirc)
+			
+			me(316,2,150,150,'distant',l,linear)
+			me(318,2,150,0,'distant',l,linear)
+			
+			mod_sugarkiller(318,2,2,50,90)
+			
+			m(318,348,'sudden, *1000 90 suddenoffset, 1.5x',e)
+			m(348,380,'sudden, *0.5 90 suddenoffset, 1.5x',e)
+			
+			m2(318,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:accelerate(120/200)
+						a:zoom(0)
+						a:zoomz(1)
+					end
+				end
+			end)
+			
+			m(318,352,'dark',e)
+			
+			for i=320,348,4 do
+				m2(i,function() hymn_splash(3) end)
+			end
+			
+			function blah_appear(beat,xp,yp,player,inv)
+				local b = beat
+				local x = xp
+				local y = yp
+				local pn = player
+				me(b,b+0.5,100,0,'stealth',e,linear,pn)
+				me(b+0.5,b+1.5,0,100,'stealth',e,linear,pn)
+				--if b > 336 and b-math.floor(b) == 0.5 then
+				--	me(b,b+1,90,160,'flip',e,linear,pn)
+				--else
+				--me(b,b+.5,-100,20,'flip',e,outCirc,pn)
+				--me(b+.5,b+1.5,20,-60,'flip',e,inCirc,pn)
+				--end
+				me(b,b+4,-25,275,'centered',e,linear,pn)
+				
+				if slumpo then
+					me(b,b+1.5,20,20,'mini',e,linear,pn)
+				else
+					me(b,b+1.5,50,50,'mini',e,linear,pn)
+				end
+				
+				if b > 336 then
+					me(b,1.5,100*(pn*2-3),-100*(pn*2-3),'hallway',l,outQuad,pn)
+				end
+				
+				if not inv then
+					me(b,b+1.5,50,-20,'flip',e,outCirc,pn)
+					me(b,b+1.5,0,0,'invert',e,outCirc,pn)
+				else
+					me(b,b+1.5,50,-20,'flip',e,outCirc,pn)
+					me(b,b+1.5,0,130,'invert',e,outCirc,pn)
+				end
+				
+				--me(b+.5,b+1.5,-200,100,'mini',e,linear,pn)
+				
+				local rot = 0.2 + 0.8*(b-320)/32
+				if not slumpo then
+					rot = rot*0.6
+				end
+				
+				if not slumpo then
+					me(b,b+1.5,-100*(pn*2-3)*(rot*0.6+0.6),0,'dizzy',e,outQuad,pn)
+				else
+					me(b,b+1.5,-314*(pn*2-3)*(rot*0.6+0.6),0,'dizzy',e,outQuad,pn)
+				end
+				me(b,b+1.5,0,150,'drunk',e,linear,pn)
+				
+				--100 centered = 128 pixels
+				--1 beat at 1.5x = 96 pixels
+				--4 beats at 1.5x = 384 pixels
+				--300 centered
+				
+				m2(b,function()
+					local a = hymn_get_emitter(pn,160,256,0.08,1)
+					if a then
+						a:finishtweening()
+						a:aux(1)
+						a:zoomx(.5)
+						a:zoomy(.3)
+						a:y(y)
+						a:x(x)
+						a:sleep(0.1)
+						a:aux(0)
+					end
+					
+					local b = _G['hymn_ror'..pn]
+					if b then
+						b:finishtweening()
+						b:hidden(0)
+						local c = b:GetChild('')
+						b:x(x)
+						b:y(y)
+						b:zoom(.25)
+						b:linear(.2)
+						b:zoom(.8)
+						b:decelerate(.4)
+						b:zoom(1.2)
+						b:queuecommand('Hide')
+						
+						local r = math.random(0,360)
+						c:diffusealpha(1.2)
+						c:rotationz(r)
+						c:linear(.6)
+						c:rotationz(r+90*(pn*2-3))
+						c:diffusealpha(0)
+					end
+					
+				end)
+				
+				m2(b,function()
+					local a = Plr(pn)
+					if a then
+						a:zoom(1)
+						a:x(x)
+						a:y(y)
+						a:rotationz( 120*rot*(pn*2-3) )
+						a:decelerate(90/200)
+						a:zoomx(1)
+						a:rotationz(0)
+						a:sleep(0)
+						a:zoom(0)
+					end
+				end)
+			end
+			
+			blah_appear(320,sw/2,sh/2,2)
+			
+			function hymn_sick_spark(b)
+				m2(b,function()
+					local a = hymn_get_emitter(1,320,320,0.05,1)
+					if a then
+						a:finishtweening()
+						a:aux(1)
+						a:zoomx(.5)
+						a:zoomy(.3)
+						a:y(sh/2)
+						a:x(sw/2)
+						a:sleep(0.14)
+						a:aux(0)
+					end
+				end)
+			end
+			
+			function hymn_sick(b)
+				hymn_sick_spark(b+1.5)
+				hymn_sick_spark(b+2.5)
+				if b < 368 then
+					hymn_sick_spark(b+3.5)
+					m2(b,'Aurora2');
+				end
+			end
+			
+			for i=0,6 do
+				hymn_sick(352+4*i)
+			end
+			
+			m(336,352,'*1000 invert',e)
+			
+			m2(347.5,function()
+				local a = Plr(1)
+				if a then
+					a:x(sw/2)
+					a:zoom(0)
+					a:y(sh/2)
+					a:rotationz(0)
+					a:decelerate(60/200)
+					a:zoom(1)
+				end
+			end)
+			m2(349.5,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2)
+						if pn == 2 then
+							a:addx(-sw)
+						end
+						a:zoom(0)
+						a:y(sh/2)
+						a:rotationz(0)
+						a:sleep(0)
+						a:zoom(1)
+					end
+				end
+			end,true)
+			
+			local f = -1
+			local fdir = 1
+			for i=1,table.getn(hymn_spawns) do
+				local a = hymn_spawns[i]
+				local x = sw/2 + 160*f
+				local y = sh/2 + 0
+				local inv = false
+				if f == 0 and a[1] >= 336 then
+					inv = true
+				end
+				blah_appear(a[1],x,y,a[2],inv)
+				f = f+fdir
+				if f > 1 then
+					if a[1] >= 336 then
+					f = 0
+					else
+					f = 1
+					end
+					fdir = -1
+				end
+				if f < -1 then
+					if a[1] >= 336 then
+					f = 0
+					else
+					f = -1
+					end
+					fdir = 1
+				end
+			end
+			
+			me(347.5,6,0,0,'centered',l,linear,1)
+			me(347.5,6,0,0,'stealth',l,linear,1)
+			me(347.5,6,0,0,'dark',l,linear,1)
+			me(347.5,6,0,0,'invert',l,linear,1)
+			me(347.5,6,0,0,'drunk',l,linear,1)
+			me(347.5,6,0,0,'hallway',l,linear,1)
+			
+			me(349.5,6,0,0,'centered',l,linear,2)
+			me(349.5,6,0,0,'stealth',l,linear,2)
+			me(349.5,6,0,0,'dark',l,linear,2)
+			me(349.5,6,0,0,'invert',l,linear,2)
+			me(349.5,6,0,0,'drunk',l,linear,2)
+			me(349.5,6,0,0,'hallway',l,linear,2)
+			
+			me(347.5,.5,100,100,'mini',l,linear,1)
+			me(348,1,100,50,'mini',l,outQuart,1)
+			me(349,1,50,0,'mini',l,outQuart)
+			me(350,1,0,-40,'mini',l,outQuart)
+			me(351,352,-40,-80,'mini',e,outQuart,nil,382)
+			
+			me(348,352,1.5,1,'xmod',e,linear,nil,382)
+			me(348,352,0,120,'wave',e,linear,nil,382)
+			
+			me(382,2,120,150,'wave',l,linear,nil)
+			me(382,1,-80,-400,'mini',l,outQuad,nil)
+			me(383,1,-400,0,'mini',l,inQuad,nil)
+			me(382,1,1,0.5,'xmod',l,outQuad,nil)
+			me(383,1,0.5,1.45,'xmod',l,inQuad,nil)
+			
+			if slumpo then
+				mod_sugarkiller(382,2,1,50,80)
+			end
+			
+			me(382-.1,.25,0,-50,'split',l,linear,nil,3)
+			me(382-.1,.25,0,-50,'cross',l,linear,nil,3)
+			me(382-.1,.25,0,-50,'alternate',l,linear,nil,3)
+			me(382-.1,.25,0,100,'reverse',l,linear,nil,3)
+			
+			me(382.25-.1,.25,-50,-100,'split',l,linear,nil,3)
+			me(382.25-.1,.25,-50,0,'cross',l,linear,nil,3)
+			me(382.25-.1,.25,-50,0,'alternate',l,linear,nil,3)
+			
+			me(382.5-.1,.25,-100,-50,'split',l,linear,nil,3)
+			me(382.5-.1,.25,0,50,'cross',l,linear,nil,3)
+			me(382.5-.1,.25,0,-50,'alternate',l,linear,nil,3)
+			
+			me(382.75-.1,.25,-50,0,'split',l,linear,nil,3)
+			me(382.75-.1,.25,-50,0,'cross',l,linear,nil,3)
+			me(382.75-.1,.25,-50,0,'alternate',l,linear,nil,3)
+			
+			me(383-.1,.25,0,50,'split',l,linear,nil,3)
+			me(383-.1,.25,0,50,'cross',l,linear,nil,3)
+			me(383-.1,.25,0,50,'alternate',l,linear,nil,3)
+			me(383-.1,.25,100,0,'reverse',l,linear,nil,3)
+			
+			me(383.25-.1,.25,50,100,'split',l,linear,nil,3)
+			me(383.25-.1,.25,50,0,'cross',l,linear,nil,3)
+			me(383.25-.1,.25,50,0,'alternate',l,linear,nil,3)
+			
+			me(383.5-.1,.25,100,50,'split',l,linear,nil,3)
+			me(383.5-.1,.25,0,-50,'cross',l,linear,nil,3)
+			me(383.5-.1,.25,0,50,'alternate',l,linear,nil,3)
+			
+			me(383.75-.1,.25,50,0,'split',l,linear,nil,3)
+			me(383.75-.1,.25,-50,0,'cross',l,linear,nil,3)
+			me(383.75-.1,.25,50,0,'alternate',l,linear,nil,3)
+			
+			hymn_onscreen = 1
+			
+			function hmmm_yolo(beat,len,dir)
+				local d = dir
+				m2(beat-len/2,function()
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:sleep(0)
+							a:x(sw/2)
+							local where = -180
+							if pn ~= hymn_onscreen then
+								a:addx(sw*-dir)
+								a:rotationz(-180)
+							else
+								where = 0
+								a:rotationz(0)
+							end
+							a:accelerate(len/2 * 60/200)
+							a:addx(sw*0.5*dir)
+							a:rotationz(where+90*dir)
+							a:decelerate(len/2 * 60/200)
+							a:addx(sw*0.5*dir)
+							a:rotationz(where+180*dir)
+						end
+					end
+				
+					hymn_onscreen = hymn_other(hymn_onscreen)
+				end)
+			end
+			
+			m(347.5,381.5,'*1000 250 beat',e)
+			
+			hmmm_yolo(356,2,1)
+			hmmm_yolo(360,2,1)
+			hmmm_yolo(364,2,1)
+			hmmm_yolo(368,2,-1)
+			hmmm_yolo(372,2,-1)
+			hmmm_yolo(376,2,-1)
+			hmmm_yolo(380,2,-1)
+			
+			me(380,382,0,0,'hidden',e,linear)
+			me(380,382,100,100,'sudden',e,linear)
+			me(380,382,100,100,'suddenoffset',e,linear)
+			me(380,382,0,0,'stealth',e,linear)
+			
+			m2(382,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2)
+						a:y(sh/2)
+						a:rotationz(0)
+					end
+				end
+			end,true)
+			
+			function move_boy(b,w)
+				m2(b,function()
+					_G['hymn_aux_p'..w]:linear(30/200)
+					_G['hymn_aux_p'..w]:addx(1)
+					_G['hymn_aux_p'..w]:sleep(30/200)
+					_G['hymn_aux_p'..w]:linear(30/200)
+					_G['hymn_aux_p'..w]:addx(1)
+					_G['hymn_aux_p'..w]:sleep(30/200)
+					_G['hymn_aux_p'..w]:linear(30/200)
+					_G['hymn_aux_p'..w]:addx(1)
+					_G['hymn_aux_p'..w]:sleep(30/200)
+				end)
+			end
+			
+			move_boy(353.25,1)
+			move_boy(357.25,2)
+			move_boy(361.25,1)
+			move_boy(365.25,2)
+			move_boy(369.25,1)
+			move_boy(373.25,2)
+			move_boy(377.25,1)
+			
+			
+			m2(379,function()
+				hymn_aux_p2:x(0)
+			end)
+			m2(381,function()
+				hymn_aux_p1:finishtweening()
+				hymn_aux_p1:x(0)
+				hymn_aux_p2:finishtweening()
+				hymn_aux_p2:x(0)
+			end)
+			
+			m2(382,function()
+				hymn_heightaux:y(sh)
+				
+				hymn_bgcover:linear(120/200)
+				hymn_bgcover:diffusealpha(0)
+				
+				hymn_introbg:hidden(1)
+				hymn_introbg2:hidden(1)
+				hymn_introbg3:diffusealpha(1)
+				
+				hymn_clouds2:y(0)
+				hymn_clouds2:fadeleft(0)
+				hymn_clouds2:cropleft(0)
+				hymn_clouds3:y(0)
+				hymn_clouds3:fadeleft(0)
+				hymn_clouds3:cropleft(0)
+				
+				hymn_clouds2:rotationz(0)
+				hymn_clouds2:texcoordvelocity(0,0.03)
+				hymn_clouds2:zoomx((SCREEN_WIDTH/640)*480*1.4/256)
+				hymn_clouds2:zoomy(1200*1.4/512)
+				hymn_clouds3:rotationz(0)
+				hymn_clouds3:texcoordvelocity(0,0.08)
+				hymn_clouds3:zoomx((SCREEN_WIDTH/640)*480*1.4/256)
+				hymn_clouds3:zoomy(1200*1.4/512)
+				--zoomx,1200*1.2/512;zoomy,480*1.2/256;
+				
+				
+			end)
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			--bidirectional rolling boy
+			--m(384,416,'1.45x, *2 190 wave, hidden, sudden',e)
+			
+			m(384,416,'1.45x, 150 wave',e)
+			m(384,416,'*10 flip',e,2)
+			m(417,420,'*10 no flip',e,2)
+			m(384,420,'dark',e,2)
+			
+			for i=384,396,8 do
+				m(i-0.1,.2,'*1000 -40 suddenoffset, *1000 40 hiddenoffset',l,1)
+				m(i,3.9,'*1000 -100 hidden,*1000 -100 sudden, *1000 100 stealth',l,1)
+				m(i,3.9,'*1 200 suddenoffset, *1 -200 hiddenoffset',l,1)
+				m(i+3.8,.2,'*1000 2000 stealth',l,1)
+				m(i+4,3.9,'*1000 100 hidden,*100 100 sudden',l,1)
+				m(i+4.1,3.8,'*1000 no stealth',l,1)
+				m(i+3.9,.2,'*1000 -40 suddenoffset, *1000 40 hiddenoffset',l,1)
+				m(i+4,3.9,'*1 200 suddenoffset, *1 -200 hiddenoffset',l,1)
+			end
+			for i=400,412,4 do
+				m(i-0.1,.2,'*1000 -40 suddenoffset, *1000 40 hiddenoffset',l,1)
+				m(i,1.9,'*1000 -100 hidden,*1000 -100 sudden, *1000 100 stealth',l,1)
+				m(i,1.9,'*2 200 suddenoffset, *2 -200 hiddenoffset',l,1)
+				m(i+1.8,.2,'*1000 2000 stealth',l,1)
+				m(i+2,1.9,'*1000 100 hidden,*100 100 sudden',l,1)
+				m(i+2.1,1.8,'*1000 no stealth',l,1)
+				m(i+1.9,.2,'*1000 -40 suddenoffset, *1000 40 hiddenoffset',l,1)
+				m(i+2,1.9,'*2 200 suddenoffset, *2 -200 hiddenoffset',l,1)
+			end
+			
+			for i=380,400,8 do
+				m(i-0.1,.2,'*1000 -40 suddenoffset, *1000 40 hiddenoffset',l,2)
+				m(i,3.9,'*1000 -10 hidden,*1000 -10 sudden, *1000 100 stealth',l,2)
+				m(i,3.9,'*1 200 suddenoffset, *1 -200 hiddenoffset',l,2)
+				m(i+3.8,.2,'*1000 2000 stealth',l,2)
+				m(i+4,3.9,'*1000 100 hidden,*100 100 sudden',l,2)
+				m(i+4.1,3.8,'*1000 90 stealth',l,2)
+				m(i+3.9,.2,'*1000 -40 suddenoffset, *1000 40 hiddenoffset',l,2)
+				m(i+4,3.9,'*1 200 suddenoffset, *1 -200 hiddenoffset',l,2)
+			end
+			for i=402,414,4 do
+				m(i-0.1,.2,'*1000 -40 suddenoffset, *1000 40 hiddenoffset',l,2)
+				m(i,1.9,'*1000 -10 hidden,*1000 -10 sudden, *1000 100 stealth',l,2)
+				m(i,1.9,'*2 200 suddenoffset, *2 -200 hiddenoffset',l,2)
+				m(i+1.8,.2,'*1000 2000 stealth',l,2)
+				m(i+2,1.9,'*1000 100 hidden,*100 100 sudden',l,2)
+				m(i+2.1,1.8,'*1000 90 stealth',l,2)
+				m(i+1.9,.2,'*1000 -40 suddenoffset, *1000 40 hiddenoffset',l,2)
+				m(i+2,1.9,'*2 200 suddenoffset, *2 -200 hiddenoffset',l,2)
+			end
+			
+			
+			--ending
+			if FUCK_EXE then
+				m(417,435.75,'*10000 hidenoteflash',e,2)
+				m(435.75,1,'*10000 no hidenoteflash',l,2)
+			end
+			
+			me(420,436,0,100,'brake',e,outQuart,1,436)
+			me(420,434,100,100,'hidden',e,linear,1)
+			me(434,436,100,0,'hidden',e,linear,1)
+			me(420,436,-100,60,'hiddenoffset',e,outSine,1)
+			
+			m2(416,function()
+				for pn=1,2 do
+					
+					local b = Jud(pn)
+					if b then
+						b:x(10000*(pn*2-3))
+					end
+					local b = Com(pn)
+					if b then
+						b:x(10000*(pn*2-3))
+					end
+					
+				end
+			end)
+			
+			m2(384,function()
+				hymn_aux3:x(0)
+			end,true)
+			m2(400,function()
+				hymn_aux3:x(0)
+				hymn_aux3:decelerate(12*60/200)
+				hymn_aux3:x(350)
+				hymn_aux3:accelerate(4*60/200)
+				hymn_aux3:x(0)
+			end)
+			
+			m(420-.1,999,'*1000 centered, *1000 -2000 reverse, *1000 -100 flip, *1000 dark, *1000 50 stealth, *1000 180 mini, *1000 -7000 bumpy, *1000 sudden, *1000 -99.99 suddenoffset, *1000 80 wave',e,2);
+			m(436-.1,999,'*1000 centered, *1000 -2000 reverse, *1000 -100 flip, *1000 dark, *1000 50 stealth, *1000 180 mini, *1000 -7000 bumpy, *1000 sudden, *1000 -99.99 suddenoffset, *1000 80 wave',e,1);
+			
+			if slumpo then
+				m(420-.1,999,'*1000 0.06x',e,2)
+				m(436-.1,999,'*1000 0.06x',e,1)
+			else
+				m(420-.1,999,'*1000 0.055x',e,2)
+				m(436-.1,999,'*1000 0.055x',e,1)
+			end
+			
+			m(428,999,'*0.4 stealth, *0.4 dark',e,1);
+			m(436,999,'*0.1 75 stealth',e,1);
+			m(432,999,'*0.1 stealth',e,2);
+			
+			m(456,999,'*0.06 no stealth',e,2);
+			
+			m2(400,function()
+				local a = Plr(1)
+				if a then
+					a:z(3)
+				end
+				local a = Plr(2)
+				if a then
+					a:z(3)
+				end
+				
+				MESSAGEMAN:Broadcast('Fall');
+				
+				hymn_sky1:bob()
+				hymn_sky1:effectclock('timer');
+				hymn_sky1:effectperiod(25);
+				hymn_sky1:effectmagnitude(90,0,0);
+				hymn_sky1:effectoffset(10)
+				hymn_sky2:bob()
+				hymn_sky2:effectclock('timer');
+				hymn_sky2:effectperiod(25);
+				hymn_sky2:effectmagnitude(90,0,0);
+				hymn_sky2:effectoffset(10)
+				
+				hymn_sky1:linear(16*60/200)
+				hymn_sky1:diffusealpha(1.5)
+				hymn_sky1:y(SCREEN_HEIGHT*1)
+				
+				hymn_sky2:diffusealpha(1)
+				hymn_sky2:sleep(8*60/200)
+				hymn_sky2:linear(8*60/200)
+				hymn_sky2:y(SCREEN_HEIGHT*0.7)
+				
+			end)
+			
+			m2(416.01,function()
+				local a = Plr(2)
+				if a then
+					a:z(0)
+				end
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:spring(90/200)
+						a:skewx(0)
+					end
+				end
+			end)
+			
+			m2(420,function()
+				local a = Plr(2)
+				if a then
+					a:hidden(0)
+					
+					a:z(0)
+					
+					a:skewx(-1.8);
+					a:zoomx(4);
+					a:zoomy(3);
+					a:zoomz(0);
+					a:y(SCREEN_HEIGHT*0.3)
+					a:x(SCREEN_WIDTH*0.6)
+					a:rotationx(180);
+					a:rotationy(1);
+					a:rotationz(5);
+					
+					a:wag();
+					a:effectclock('timer');
+					a:effectperiod(3);
+					a:effectmagnitude(0.1,0.2,0.3);
+					
+				end
+			end,true)
+			
+			m2(436,function()
+				local a = Plr(1)
+				if a then
+					a:z(1)
+					a:skewx(-1.6);
+					a:zoomx(4);
+					a:zoomy(3);
+					a:zoomz(0);
+					a:y(SCREEN_HEIGHT*0.7)
+					a:x(SCREEN_WIDTH*0.66)
+					--a:rotationx(180);
+					a:rotationy(1);
+					a:rotationz(5);
+					
+					
+					a:wag();
+					a:effectclock('timer');
+					a:effectperiod(3);
+					a:effectmagnitude(0.1,0.2,0.3);
+					
+				end
+			end,true)
+			
+			m2(0,function()
+				SongBackground:z(-502)
+			end,true)
+			m2(384,function()
+				SongBackground:z(-502)
+				SongForeground:z(-500)
+			end,true)
+			m2(416,function()
+				SongBackground:z(0)
+				SongForeground:z(2)
+				
+				local a = Plr(1)
+				if a then
+					a:z(3)
+				end
+				local a = Plr(2)
+				if a then
+					a:z(3)
+				end
+				
+			end)
+			
+			m2(463,function()
+				hymn_aux:x(0)
+				hymn_aux:accelerate(240/190)
+				hymn_aux:x(64)
+				hymn_aux:y(5)
+				hymn_aux:decelerate(240/190)
+				hymn_aux:x(128)
+				hymn_aux:y(10)
+			end)
+			
+			if FUCK_EXE then
+				m(436,999,'*10000 -100 drawsizeback, *10000 dizzyholds',e)
+				m(436,999,'*10000 314.15 confusionoffset1, *10000 314.15 confusionoffset2',e,2)
+			end
+			
+			hymn_flicker = 1;
+			function hymn_opp(pn)
+				if pn == 1 then v = 2 end
+				if pn == 2 then v = 1 end
+				return v
+			end
+			
+			m2(92,function()
+				for pn=1,2 do
+					_G['hymn_judadd'..pn]:linear(240/200)
+					_G['hymn_judadd'..pn]:y(-140)
+					_G['hymn_judadd'..pn]:z(-1)
+				end
+			end)
+			m2(156,function()
+				for pn=1,2 do
+					_G['hymn_judadd'..pn]:linear(240/200)
+					_G['hymn_judadd'..pn]:y(0)
+					_G['hymn_judadd'..pn]:z(0)
+				end
+			end)
+			
+			m2(472,function()
+				SongBackground:z(-2)
+				SongForeground:z(0)
+				
+				local a = Plr(1)
+				if a then
+					a:z(-1)
+				end
+				local a = Plr(2)
+				if a then
+					a:z(-1)
+				end
+				
+				screen:SetDrawByZPosition(false)
+				
+			end)
+			
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			dwtimer = 0;
+			dwdelay = 5;
+			
+			hymn_curmessage = 1;
+			hymn_smessages = {
+				'Laer: Maybe don\'t change the size of the screen???',
+				'Laer: Since you\'ve changed the window size...',
+				'Laer: ...My attacks may hit you with more force than intended.',
+			}
+			
+			self:queuecommand('Update');
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay','StageFrame'}
+				local ThingsToHide = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay','StageFrame'}
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				
+				--name players, judgment and combo
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['P'..pn]:z(1)
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				screen:SetDrawByZPosition(true)
+				
+				if SongBackground then
+					SongBackground:z(0)
+				end
+				if SongForeground then
+					SongForeground:z(2)
+				end
+				
+				checked = true; --let this only run once
+				
+				if FUCK_EXE and tonumber(GAMESTATE:GetVersionDate()) > 20190216 then
+					GAMESTATE:HideStageText(true);
+				end
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			hymn_skew_approach = 0
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+			
+				if FUCK_EXE then
+					if dw ~= DISPLAY:GetDisplayWidth() then
+						dwtimer = dwtimer - hymn_framerate
+						if dwtimer <= 0 then
+							SCREENMAN:SystemMessage(hymn_smessages[math.mod(hymn_curmessage-1,table.getn(hymn_smessages))+1])
+							hymn_curmessage = hymn_curmessage+1
+							dwtimer = dwdelay
+						end
+					end
+				end
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i=1,2 do
+						mod_do('clearall',i)
+					end
+				end
+				
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if beat >=v[1] then
+								if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = '';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+						end
+					end
+				end
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods2) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if mod_time >=v[1] then
+								if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = 'error';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+						end
+					end
+				end
+				
+				--------------------------------------------------------------------------------------
+				-- i dont know who this reader is but he looks like he is made out of EASE HAHAHAHA --
+				-- original code by exschwasion, bastardized by taro for cmod support and less 'if' --
+				--------------------------------------------------------------------------------------
+				if not ease_janked then
+					for i,v in pairs(mods_ease) do
+						if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] and (v[6] == 'end' and v[2] > v[1] or v[6] == 'len') then
+							if beat >=v[1] then
+								if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+									
+									local duration = v[2];
+									if v[6] == 'end' then duration = v[2] - v[1] end
+									local curtime = beat - v[1]
+									local diff = v[4] - v[3]
+									local startstrength = v[3]
+									local curve = v[7]
+									local mod = v[5]
+									
+									local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+									
+									local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+									mod_do('*10000 '..modstr,v[8]);
+									
+								elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+								
+									local strength = v[4]
+									
+									local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+									mod_do('*10000 '..modstr,v[8]);
+									
+								end
+							end
+						else
+							SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+							ease_janked = true
+							Trace(tostring(v[1])..','..tostring(v[2])..','..tostring(v[3])..','..tostring(v[4])..','..tostring(v[5])..','..tostring(v[6]))
+						end
+					end
+				end
+				
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				hymn_update_bg(beat)
+				
+				if beat < 80 then
+					hymn_intro_update(beat)
+				end
+				
+				
+				if not FUCK_EXE and beat > 96 and beat < 198 then
+					
+					if hymn_395rtimer <= 0 then
+						
+						hymn_395rain()
+						hymn_395rtimer = hymn_395rdelay
+						
+					else
+						
+						hymn_395rtimer = hymn_395rtimer-hymn_framerate
+						
+					end
+					
+				end
+				
+				
+				
+				
+				
+				if beat > 80 and beat < 96 then
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationz(hymn_aux2:GetX())
+							a:zoomz(hymn_aux3:GetX())
+						end
+					end
+				end
+				
+				for pn=1,2 do
+					local a = Jud(pn)
+					if a then
+						
+						a:effectmagnitude(_G['hymn_judadd'..pn]:GetX(),_G['hymn_judadd'..pn]:GetY(),0)
+						
+					end
+					local a = Com(pn)
+					if a then
+						a:basezoomx(1+_G['hymn_judadd'..pn]:GetZ())
+						a:basezoomy(1+_G['hymn_judadd'..pn]:GetZ())
+					end
+				end
+				
+				if beat > 96 and beat < 160 then
+					
+				end
+				
+				if beat > 80 and beat < 160 then
+					mod_do('*10000 '..hymn_aux:GetX()..' hallway');
+				end
+				if beat > 160 and beat < 195 then
+					mod_do('*10000 '..(hymn_aux:GetX()+(hymn_aux2:GetX()/2)+5)..' suddenoffset');
+					mod_do('*10000 '..(hymn_aux:GetX()-(hymn_aux2:GetX()/2))..' hiddenoffset');
+				end
+				if beat > 200 and beat < 248 then
+					mod_do('*10000 '..(hymn_aux:GetX()*1)..' hallway');
+					mod_do('*10000 '..hymn_aux2:GetX()..' mini');
+					mod_do('*10000 '..(1.5+0.5*math.sin((200+(2/3)*beat)*math.pi))..'x');
+				end
+				
+				local spheremult = 0.5
+				if slumpo then spheremult = 1 end
+				if beat > 96 and beat < 104 then
+					--if slumpo then
+						mod_do('*10000 '..math.sin(beat*math.pi)*20*spheremult ..' alternate,*10000 '..math.sin(beat*math.pi)*-10*spheremult ..' reverse');
+						mod_do('*10000 '..-math.cos(beat*math.pi)*50+50 ..' invert');
+					--end
+				elseif beat > 112 and beat < 120 then
+					--if slumpo then
+						mod_do('*10000 '..math.sin(beat*math.pi)*-20*spheremult ..' alternate,*10000 '..math.sin(beat*math.pi)*10*spheremult ..' reverse');
+						mod_do('*10000 '..-math.cos(beat*math.pi)*50+50 ..' invert');
+					--end
+				elseif beat > 128 and beat < 136 then
+					mod_do('*10000 '..math.sin(beat*math.pi)*-20*spheremult ..' cross,*10000 '..math.sin(beat*math.pi)*10*spheremult ..' reverse');
+					mod_do('*10000 '..-math.cos(beat*math.pi)*50+50 ..' invert');
+				elseif beat > 144 and beat < 152 then
+					mod_do('*10000 '..math.sin(beat*math.pi)*20*spheremult ..' cross,*10000 '..math.sin(beat*math.pi)*-10*spheremult ..' reverse');
+					mod_do('*10000 '..-math.cos(beat*math.pi)*50+50 ..' invert');
+				elseif beat > 96 and beat < 156 then
+					mod_do('*10000 '..hymn_aux4:GetX()..' flip');
+					mod_do('*10000 '..hymn_aux4:GetY()..' invert');
+				elseif beat > 200 and beat < 248 then
+				
+					hymn_wallfuck_motion(beat)
+				
+				elseif beat > 248 and beat < 296 then
+					mod_do('*10000 '..(hymn_aux:GetX()+15)..' hiddenoffset',1);
+					mod_do('*10000 '..(hymn_aux:GetX()-15)..' suddenoffset',2);
+					
+					local add = 0
+					if beat > 262 and beat < 266 then
+						add = -100*(beat-262)/4
+					end
+					
+					if beat < 266 then
+						hymn_aux:x(add+hymn_aux2:GetX()*math.sin(beat*math.pi))
+					end
+					
+					if beat > 258 and beat < 264 then
+						for pn=1,2 do
+							local a = Plr(pn)
+							if a then
+								a:z(hymn_aux3:GetZ()*(pn*2-3)*math.sin(beat*math.pi))
+							end
+						end
+					end
+					
+					if beat > 264 then
+						for pn=1,2 do
+							local a = Plr(pn)
+							if a then
+								a:z(0)
+							end
+						end
+					end
+					
+				end
+				
+				--{694,1,'*10000 75 flip, *10000 75 invert','len'},
+				
+				if beat > 352 and beat < 368 then
+					mod_do('*10000 '..math.sin(hymn_aux_p1:GetX()*math.pi)*40 ..' cross,*10000 '..math.sin(hymn_aux_p1:GetX()*math.pi)*-20 ..' reverse',1);
+					mod_do('*10000 '..math.cos(hymn_aux_p1:GetX()*math.pi)*-50+50 ..' invert',1);
+					mod_do('*10000 '..math.sin(hymn_aux_p2:GetX()*math.pi)*40 ..' cross,*10000 '..math.sin(hymn_aux_p2:GetX()*math.pi)*-20 ..' reverse',2);
+					mod_do('*10000 '..math.cos(hymn_aux_p2:GetX()*math.pi)*-37.5+37.5 ..' flip, *10000 '..math.cos(hymn_aux_p2:GetX()*math.pi)*-37.5+37.5 ..' invert',2);
+				end
+				
+				--{722,1,'*10000 75 flip, *10000 -125 invert','len'},
+				--{726,1,'*10000 25 flip, *10000 125 invert','len'},
+				
+				if beat > 368 and beat < 382 then
+					mod_do('*10000 '..math.sin(hymn_aux_p1:GetX()*math.pi)*40 ..' cross,*10000 '..math.sin(hymn_aux_p1:GetX()*math.pi)*-20 ..' reverse',1);
+					mod_do('*10000 '..math.cos(hymn_aux_p1:GetX()*math.pi)*-37.5+37.5 ..' flip, *10000 '..math.cos(hymn_aux_p1:GetX()*math.pi)*62.5-62.5 ..' invert',1);
+					mod_do('*10000 '..math.sin(hymn_aux_p2:GetX()*math.pi)*40 ..' cross,*10000 '..math.sin(hymn_aux_p2:GetX()*math.pi)*-20 ..' reverse',2);
+					mod_do('*10000 '..math.cos(hymn_aux_p2:GetX()*math.pi)*-12.5+12.5 ..' flip, *10000 '..math.cos(hymn_aux_p2:GetX()*math.pi)*-62.5+62.5 ..' invert',2);
+				end
+				
+				if beat > 384 and beat < 416 then
+					local pos = beat*math.pi*0.25
+					
+					local amt = 60+130*(beat-384)/24
+					
+					hymn_skew_approach = hymn_skew_approach+((amt/120)*math.cos(pos) - hymn_skew_approach)/4
+					
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							if pn == 2 then
+								--a:hidden(1)
+							end
+							a:skewx(0 + (pn*2-3)*hymn_skew_approach)
+							a:x(sw/2 + (pn*2-3)*amt*math.sin(pos))
+							a:z((pn*2-3)*hymn_aux3:GetX()*math.cos(pos))
+							
+						end
+					end
+					
+				end
+				
+				--ending flicker
+				if beat > 463 then
+					for pn=1,2 do
+						local xp = .6
+						local yp = .3
+						if pn == 1 then
+							xp = .66
+							yp = .7
+						end
+						local a = Plr(pn)
+						if a then
+							a:x(sw*xp + 1.2*hymn_aux:GetX()*hymn_flicker )
+							a:y(sh*yp + -1.2*(pn*2-3)*hymn_aux:GetY()*hymn_flicker )
+						end
+					end
+				end
+				
+				hymn_flicker = hymn_flicker*-1
+				
+				if FUCK_EXE then
+					testQuad1:y(math.mod(beat*15 + sh/2+60*SawTooth(beat/2),sh))
+					testQuad1:zoomx(20-5*DeltaSawTooth(beat/2))
+					testQuad1:zoomy(20+5*DeltaSawTooth(beat/2))
+				else
+					
+					scrolling_water_tex:texcoordvelocity(rain_spd_aux:GetX()*-.4,rain_spd_aux:GetX())
+					
+				end
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+						if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+							if type(mod_actions[curaction][2]) == 'function' then
+								mod_actions[curaction][2]()
+							elseif type(mod_actions[curaction][2]) == 'string' then
+								MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+							end
+						end
+						curaction = curaction+1;
+					end
+				end
+				
+			end
+			
+			self:sleep(hymn_framerate);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux2 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux3 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux4 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux5 = self end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_p1 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_p2 = self end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_introspin1 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_introspin2 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_introspin3 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_introspin4 = self end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_introding1 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_introding2 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_introding3 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_aux_introding4 = self end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_judadd1 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_judadd2 = self end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_heightaux = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_camrot = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1" InitCommand="%function(self) hymn_thunderbg = self end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) hymn_makeemitter(self) end" />
+	<CODE Type="Quad" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) hymn_makeemitter(self) end" />
+	<CODE Type="Quad" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) hymn_makeemitter(self) end" />
+	<CODE Type="Quad" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) hymn_makeemitter(self) end" />
+	<CODE Type="Quad" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) hymn_makeemitter(self) end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,1;" AFTOffMessageCommand="linear,8*60/200;x,0;" AFTOff2MessageCommand="x,0;"
+	InitCommand="%function(self) hymn_alpha = self end" />
+	
+	<CODE File="darkvig" OnCommand="stretchto,0,0,sw,sh;diffusealpha,1;"
+		InitCommand="%function(self) hymn_darkvig = self end"
+	/>
+	
+	<CODE Type="Quad" OnCommand="stretchto,0,0,sw,sh;diffusealpha,1;linear,0.5;diffusealpha,0;"
+		WhiteFlashMessageCommand="finishtweening;diffusealpha,1;linear,0.5;diffusealpha,0;"
+		WhiteFlashQMessageCommand="finishtweening;diffusealpha,.4;linear,0.4;diffusealpha,0;"
+	/>
+	
+	<Layer File="treeline" OnCommand="zoomto,sw,sh;y,SCREEN_HEIGHT*1.5;x,SCREEN_CENTER_X;" FallMessageCommand="sleep,8*60/200;linear,8*60/200;addy,-SCREEN_HEIGHT" />
+	
+	<Layer Type="ActorFrame" NameCommand="%function(self) hymn_fg_container = self end"
+	OnCommand="playcommand,Name;x,SCREEN_WIDTH/2;y,SCREEN_HEIGHT/2" ><children>
+		<Layer File="rainfall" NameCommand="%function(self) hymn_rainfall2=self end" OnCommand="playcommand,Name;blend,add;x,0;y,0;wag;effectmagnitude,0,0,-8;effectperiod,5.67;
+		customtexturerect,0,0,5,5;zoom,6;zoomx,-6;texcoordvelocity,0,-4;skewx,0.3;diffusealpha,0;"
+		HideCommand="hidden,1" RainAwayCommand="linear,1;diffusealpha,0;queuecommand,Hide" />
+		
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,2) end" HideCommand="hidden,1" />
+		
+	</children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,1) end" HideCommand="hidden,1" ><children>
+	<Layer File="ligma" /></children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,2) end" HideCommand="hidden,1" ><children>
+	<Layer File="bokeh" /></children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,3) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,3) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,3) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,3) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,3) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,3) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,3) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,3) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,5) end" HideCommand="hidden,1" ><children>
+	<Layer File="sparkle" /></children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,6) end" HideCommand="hidden,1" ><children>
+	<Layer File="blue_lig" /></children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_ror1=self end" HideCommand="hidden,1" ><children>
+	<Layer File="rings_of_rainbow" OnCommand="blend,add" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_ror2=self end" HideCommand="hidden,1" ><children>
+	<Layer File="rings_of_rainbow" OnCommand="blend,add" /></children></Layer>
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<Layer File="aurora" OnCommand="scaletofit,0,0,sw,sh;diffusealpha,0;blend,add;"
+	AuroraMessageCommand="finishtweening;linear,.2;diffusealpha,.8;linear,1;diffusealpha,0;"
+	Aurora2MessageCommand="finishtweening;zoom,1.5*(SCREEN_WIDTH/640);linear,.2;diffusealpha,.4;linear,1;diffusealpha,0;" />
+	
+	<Layer Type="ActorFrame" Condition="mbc3_shaders"><children>
+	
+		<LAER File="noisemed" OnCommand="hidden,1;" InitCommand="%function(self) sampler_1 = self end" />
+		<LAER File="bubbles" OnCommand="hidden,1;" InitCommand="%function(self) sampler_2 = self end" />
+	
+		<LAER File="hole"
+			InitCommand="%function(self)
+				hymn_nop=self;
+			end"
+		Shader="nop.frag" OnCommand="hidden,1" />
+	
+		<LAER
+			Type="ActorFrameTexture"
+			InitCommand="%function(self)
+				self:SetWidth( DISPLAY:GetDisplayWidth() );
+				self:SetHeight( DISPLAY:GetDisplayHeight() );
+				self:EnableDepthBuffer( true );
+				self:EnableAlphaBuffer( false );
+				self:EnableFloat( false );
+				self:EnablePreserveTexture( true );        
+				self:hidden(0);
+				self:Create();
+				hymn_aft=self
+			end"
+		/>
+		
+		<LAER
+			Shader="rain.frag"
+			Type="Sprite"
+			InitCommand="%function(self)
+				hymn_aft_sprite=self;
+			end"
+			OnCommand="%function(self)
+				self:SetTextureFiltering(true)
+				self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth()));
+				self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()));
+				self:SetTexture(hymn_aft:GetTexture())
+				self:hidden(1);
+				self:diffuse(1,1,1,1);
+				self:xy(sw/2,sh/2);
+			end"
+			AFTOnMessageCommand="hidden,0" AFTOffMessageCommand="linear,8*60/200;diffusealpha,0;" AFTOffQMessageCommand="hidden,1"
+		/>
+		
+		<LAER
+			Shader="kuutrain.frag"
+			Type="Sprite"
+			InitCommand="%function(self)
+				hymn_aft_sprite2=self;
+			end"
+			OnCommand="%function(self)
+				self:SetTextureFiltering(true)
+				self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth()));
+				self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()));
+				self:SetTexture(hymn_aft:GetTexture())
+				self:hidden(1);
+				self:diffuse(1,1,1,1);
+				self:xy(sw/2,sh/2);
+			end"
+			AFT2OnMessageCommand="hidden,0" AFTOffMessageCommand="linear,3*60/158;diffusealpha,0;" AFT2OffQMessageCommand="hidden,1"
+		/>
+		
+	</children></Layer>
+	
+	<Layer Type="Quad" OnCommand="hidden,1;x,sw/2-50;zoom,20;" InitCommand="%function(self) testQuad1 = self end" />
+	<Layer Type="Quad" OnCommand="hidden,1;x,sw/2+50;zoom,20;" InitCommand="%function(self) testQuad2 = self end" />
+	<Layer Type="Quad" OnCommand="hidden,1;x,-.8" Rain395_3MessageCommand="linear,120/158;x,-.3" InitCommand="%function(self) rain_spd_aux = self end" /> />
+	
+	<Layer File="splash" OnCommand="blend,add;diffusealpha,0;stretchto,0,0,sw,sh;"
+	Splash1MessageCommand="finishtweening;linear,.2;diffusealpha,.3;linear,1;diffusealpha,0;"
+	Splash2MessageCommand="finishtweening;linear,.2;diffusealpha,.5;linear,1;diffusealpha,0;"
+	Splash3MessageCommand="finishtweening;linear,.2;diffusealpha,.7;linear,1;diffusealpha,0;"
+	/>
+	
+	<!--wenis-->
+	<Layer Type="ActorFrame" Condition="not FUCK_EXE" ><children>
+	
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+		<Layer File="drip" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,7) end" HideCommand="hidden,1" />
+	
+		<Layer File="waterAlphaC.png" OnCommand="x,sw/2;y,sh/2;zoomx,8;zoomy,8;customtexturerect,0,0,4,4;texcoordvelocity,0,-2;diffusealpha,0;blend,add;"
+		Rain395_2MessageCommand="diffusealpha,.1" Rain395_3MessageCommand="linear,120/158;diffusealpha,0;" />
+		
+		<Layer File="waterDim.png" InitCommand="%function(self) scrolling_water_tex = self end" OnCommand="x,sw/2;y,sh/2;zoomx,10;zoomy,2;customtexturerect,0,0,5,1;texcoordvelocity,0,-.8;diffusealpha,0;blend,add;"
+		Rain395_2MessageCommand="diffusealpha,.4" Rain395_4MessageCommand="linear,180/158;diffusealpha,0;" />
+		
+	</children></Layer>
+	
+</children></ActorFrame>

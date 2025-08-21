@@ -1,0 +1,14 @@
+<ActorFrame> <children>
+
+	<Layer
+		File="itb"
+		OnCommand="%function(self)		
+			self:x(SCREEN_CENTER_X);
+			self:y(SCREEN_CENTER_Y);
+			self:zoomtowidth(SCREEN_WIDTH);
+			self:zoomtoheight(SCREEN_HEIGHT);
+			self:diffusealpha(1);
+		end"
+	/>
+	
+</children></ActorFrame>

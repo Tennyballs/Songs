@@ -1,0 +1,65 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+			
+			local colors = {
+				{1,0,0,1},
+				{1,.5,0,1},
+				{1,1,0,1},
+				{0,1,0,1},
+				{0,1,1,1},
+				{0,.5,1,1},
+				{0,0,1,1},
+				{.5,0,1,1},
+				{1,0,1,1},
+			}
+			
+			function mimi_shuffle(t)
+				local n = table.getn(t)
+			 
+				while n >= 2 do
+					-- n is now the last pertinent index
+					local k = math.random(n) -- 1 <= k <= n
+					-- Quick swap
+					t[n], t[k] = t[k], t[n]
+					n = n - 1
+				end
+			 
+				return t
+			end
+			
+			colors = mimi_shuffle(colors)
+			
+            local mbc3_spellcards = {
+                {20,68,'Clussy Iron',2,colors[1]},
+                {68,100,'Discord\'s Funny Shuffle',3,colors[2]},
+                {100,133,'Receptor\'s Funny Scuffle',4,colors[3]},
+                {133,162,'Random Box',3,colors[4]},
+                {162,196,'Speed Round',4,colors[5]},
+                {196,228,'Bass Drop!',4,colors[6]},
+                {228,244,'Devil\'s Funny Kerfuffle',4,colors[7]},
+                {244,248,'Mr. Box in a Box',4,colors[8]},
+                {248,252,'CAR???',5,colors[9]},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

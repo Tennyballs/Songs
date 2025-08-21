@@ -1,0 +1,56 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {32,40.5,'Follow the Harambe',10,{1,0,0,1}},
+                {40.5,56,'Time to Warm Up',5,{1,.7,.7,1}},
+                {56,88,'Jumping in Place',4,{1,.7,.3,1}},
+                {88,104,'Count With Me',4,{1,.3,.3,1}},
+                {104,156,'Dynamic Stretching',6,{1,.6,.3,1}},
+                {156,192,'Ministhenics',6,{.6,.3,.3,1}},
+                {192,224,'...Weird mod',6,{.3,0,.3,1}},
+                {224,256,'Exercise Science',6,{.7,.2,.7,1}},
+                {256,288,'Oh my god Kyi no',5,{.5,.4,.6,1}},
+                {288,320,'MBC Taisou',6,{.3,.6,1,1}},
+                {320,340,'Time to Cool Down',4,{.2,.2,1,1}},
+                {340,356,'Breathing Exercises',6,{.4,.4,.7,1}},
+                {356,357,'INHALE',7,{0,1,1,1}},
+                {357,358,'EXHALE',8,{1,0,1,1}},
+                {358,359,'INHALE',9,{0,1,1,1}},
+                {359,360,'EXHALE',10,{1,0,1,1}},
+                {360,361,'INHALE',11,{0,1,1,1}},
+                {361,362,'EXHALE',12,{1,0,1,1}},
+                {362,363,'INHALE',13,{0,1,1,1}},
+                {363,364,'EXHALE',14,{1,0,1,1}},
+                {364,366,'INHALE!',15,{0,1,1,1}},
+                {366,368,'INHALE!!',20,{.2,1,.9,1}},
+                {368,370,'INHALE!!!',25,{.4,.8,.8,1}},
+                {370,372,'INHALE!!!!!',50,{.6,.6,.7,1}},
+                {372,376,'INHALE!!!!!!!!',100,{.8,.4,.6,1}},
+                {376,382,'exhale.',-100,{.6,0,.6,1}},
+                {382,384,'Dismissed!',0,{1,1,1,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

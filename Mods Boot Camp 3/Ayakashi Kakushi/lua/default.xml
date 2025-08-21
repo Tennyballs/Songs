@@ -1,0 +1,1339 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT --shortcuts
+	
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+	function GetJud(pn)
+		return _G['jud'..pn]
+	end
+	function GetCom(pn)
+		return _G['com'..pn]
+	end
+	
+	function mod_do(str,pn)
+		if pn then
+			GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+		else
+			GAMESTATE:ApplyGameCommand('mod,'..str)
+		end
+	end
+	
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers.xml" />
+	<Layer File="spellcard.xml" />
+	<Layer File="../aya_bgpulse.xml"/>
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+			
+			slumpo = false
+			for pn=1,2 do
+				if GAMESTATE:IsPlayerEnabled(pn-1) then
+					if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 5 then
+						slumpo = true
+					end
+				end
+			end
+		
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_shader(beat,key,which)
+				--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+				
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_onebeat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--use a variable called 'switcheroo_width' to change how much space is between each column
+			--e.g. switcheroo_width = 2 for ayakashi
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+				
+			--function doSpline(spd, axis, path, col)
+				--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+				
+			--function doSplineAll(spd, axis, path)
+				--same as above, but for all columns
+				--(faster performance than using doSpline 4 times due to more efficient concat)
+			
+			--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+				--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+			
+			
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local m = mod_insert
+			local m2 = mod_message
+			
+			
+			local l = 'len'
+			local e = 'end'
+
+			
+			
+			
+			
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*2 2.5x, *100 sudden, *100 80 suddenoffset, *10000 -999999 cover','end'},
+			}
+			
+			--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+			
+			
+			
+			
+			
+			
+			
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+				--{0,200.345,'3x','end',1},
+			}
+			
+			
+			
+			
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 32
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {
+				{0,function()
+					--aya_bgquad
+					aya_bgquad:linear(180/85)
+					aya_bgquad:diffusealpha(1)
+
+					for i = 1,8 do
+						local h = _G['aya_hole'..i]
+						if h then
+							h:pulse()
+							h:effectmagnitude(0.95,1.15,0)
+							--h:effectmagnitude(0,0,20)
+							h:effectclock('bgm')
+							h:effectperiod(3)
+							h:effectoffset((60/85)*(i*3))
+						end
+					end
+					
+				end,true},
+			}
+
+			---- bg flash parsing
+
+			for i = 1,table.getn(aya_bgpulse) do
+				local beat,which = aya_bgpulse[i][1],aya_bgpulse[i][2]
+				if which == 0 then
+					m2(beat,function(self)
+						aya_bgquad:playcommand('FlashX')
+					end)
+				elseif which == 1 then
+					m2(beat,function(self)
+						aya_bgquad:playcommand('FlashY')
+					end)
+				end
+			end
+			
+			m2(168,function(self)
+				aya_bgquad:playcommand('Finish')
+			end)
+
+			----
+			
+			m(132,999,'*1000 2.2x,',e)
+			
+			if slumpo then
+				m(0,132,'*1000 3.5x',e)
+				m(132,999,'*1000 2.75x',e)
+			end
+			
+			m(0,3,'dark','len');
+			m(3,1,'*1000 no dark','len');
+			
+			m(2,30,'*10000 centered','end');
+			m(2,999,'*10000 20 mini','end');
+			
+			
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+			for i=6,29,3 do
+				simple_m0d2(i,200,.8,'drunk')
+				simple_m0d2(i+1.5,-200,.8,'drunk')
+				simple_m0d2(i,100,.8,'tipsy')
+				simple_m0d2(i+1.5,-100,.8,'tipsy')
+			end
+			
+			m2(0,function()
+				aya_yukari:pulse()
+				aya_yukari:effectmagnitude(1,1,1)
+				aya_yukari:effectcolor2(.98,1.02,1,1)
+				aya_yukari:effectcolor1(1.02,0.98,1,1)
+				aya_yukari:effectclock('timer')
+				aya_yukari:effectperiod(3)
+			end,true)
+			
+			m2(2,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoom(0)
+						a:basezoomx(1.1)
+						a:basezoomy(1.1)
+						a:y(SCREEN_HEIGHT)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:basezoomx(0)
+						a:basezoomy(0)
+					end
+				end
+				rb_aux:x(100)
+			end)
+			
+			m2(2,function()
+				for pn=1,2 do
+					local a = GetJud(pn)
+					if a then
+						a:bob()
+						a:effectmagnitude(0,0,0)
+						a:effectperiod(100000)
+						a:effectoffset(25000)
+					end
+				end
+			end,true)
+			
+			m2(2.75,function()
+				aya_hole1:spring(60/85);
+				aya_hole1:zoom(.8)
+				aya_hole2:spring(60/85);
+				aya_hole2:zoom(.8)
+			end)
+			
+			m2(3,function()
+				aya_yukari:hidden(0)
+				aya_yukari:diffusealpha(1)
+				aya_yukari:zoomx(2)
+				aya_yukari:zoomy(0)
+				aya_yukari:bounceend(0.3)
+				aya_yukari:zoom(1)
+			end)
+			
+			m2(28.5,function()
+				aya_yukari:linear(90/85)
+				aya_yukari:diffusealpha(0)
+			end)
+			
+			--[[
+			m2(3,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(180/85)
+						a:y(SCREEN_HEIGHT-240)
+					end
+				end
+			end)
+			]]
+			
+			m2(3,function() aya_hop(1,0,280,2,1) end);
+			m2(6,function() aya_hop(2,0,280,2,2) end);
+			m2(9,function() aya_hop(1,0,280,2,1) end);
+			m2(12,function() aya_hop(2,0,280,2,2) end);
+			m2(15,function() aya_hop(1,0,280,2,1) end);
+			m2(18,function() aya_hop(2,0,280,2,2) end);
+			m2(21,function() aya_hop(1,0,280,2,1) end);
+			m2(24,function() aya_hop(2,0,280,2,2) end);
+			
+			m2(27,function() aya_hop(1,0,280,1.5,1,true); rb_aux:x(100) end);
+			m2(28.5,function()
+				local pn = 1
+					local a = Plr(pn)
+					if a then
+						local tx = a:GetX()
+						local ty = a:GetY()
+						a:accelerate(0.75*60/85)
+						a:addx((sw/2 - tx)/2)
+						a:addy((sh/2 - ty)/2)
+						a:zoom(0.85)
+						a:decelerate(0.75*60/85)
+						a:addx((sw/2 - tx)/2)
+						a:addy((sh/2 - ty)/2)
+						a:zoom(0.9)
+					end
+				--end
+				
+				rb_aux:x(100)
+				rb_aux:accelerate(0.75*60/85)
+				rb_aux:x(50)
+				rb_aux:decelerate(0.75*60/85)
+				rb_aux:x(0)
+				
+				jud_size:linear(0.3)
+				jud_size:x(0)
+				
+				aya_hole1:bouncebegin(0.75*60/85)
+				aya_hole1:zoom(0)
+				aya_hole2:bouncebegin(0.75*60/85)
+				aya_hole2:zoom(0)
+				
+				aya_hole3:sleep(0.75*60/85)
+				aya_hole3:bounceend(0.75*60/85)
+				aya_hole3:zoom(1)
+				aya_hole4:sleep(0.75*60/85)
+				aya_hole4:bounceend(0.75*60/85)
+				aya_hole4:zoom(1)
+				
+			end)
+			
+			m2(29.9,function() -- idk why but running this at exactly 30 breaks p2 - hal
+				jud_size:linear(0.3)
+				jud_size:x(1)
+				for pn=1,2 do
+					local b = _G['jud'..pn]
+					local c = _G['com'..pn]
+					if b then
+						b:x(200*(pn*2-3))
+					end
+					if c then
+						c:x(200*(pn*2-3))
+					end
+				end
+				
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2)
+						a:y(sh/2)
+						a:zoom(0.9)
+					end
+				end
+				
+				rb_aux:x(0)
+				
+			end,true)
+			
+			m2(30,function()
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoom(0.9)
+						a:linear(4.5*60/85)
+						a:zoom(1.2)
+						a:linear(1.5*60/85)
+						a:zoom(0.9)
+						a:linear(4.5*60/85)
+						a:zoom(1.3)
+						a:linear(1.5*60/85)
+						a:zoom(0.9)
+						a:linear(4.5*60/85)
+						a:zoom(1.4)
+						a:linear(1.5*60/85)
+						a:zoom(0.9)
+						a:linear(4.5*60/85)
+						a:zoom(1.5)
+						a:linear(1.5*60/85)
+						a:zoom(0.9)
+					end
+				end
+				
+				local a = aya_judpos
+				a:x(0.9)
+				a:linear(4.5*60/85)
+				a:x(1.2)
+				a:linear(1.5*60/85)
+				a:x(0.9)
+				a:linear(4.5*60/85)
+				a:x(1.3)
+				a:linear(1.5*60/85)
+				a:x(0.9)
+				a:linear(4.5*60/85)
+				a:x(1.4)
+				a:linear(1.5*60/85)
+				a:x(0.9)
+				a:linear(4.5*60/85)
+				a:x(1.5)
+				a:linear(1.5*60/85)
+				a:x(0.9)
+				
+			end)
+			
+			m(30,54,'*1.25 no brake',e);
+			
+			simple_m0d(58.75,500,.6,'dizzy');
+			simple_m0d(65,-500,.6,'dizzy');
+			simple_m0d(70.75,500,.6,'dizzy');
+			
+			for i=0,3 do
+				m(30+6*i,4.5,'*0.3 brake',l)
+			end
+			
+			m(43.5,3,'*1000 reverse',l)
+			m(46.5,3,'*1000 no reverse',l)
+			m(49.5,3,'*1000 reverse',l)
+			m(52.5,3,'*1000 no reverse',l)
+			
+			--m(42,54,'50 drunk, 50 tipsy',e)
+			
+			m2(53,function()
+				--[[
+				aya_hole3:bouncebegin(0.75*60/85)
+				aya_hole3:zoom(0)
+				aya_hole4:bouncebegin(0.75*60/85)
+				aya_hole4:zoom(0)
+				]]
+			end)	
+			
+			m2(54,function()
+				rb_aux:x(0)
+				rb_aux:decelerate(1.5*60/85)
+				rb_aux:x(75);
+				
+				--[[
+				rb_aux2:accelerate(0.75*60/85)
+				rb_aux2:x(250)
+				rb_aux2:sleep(0)
+				rb_aux2:x(-350)
+				rb_aux2:decelerate(0.75*60/85)
+				rb_aux2:x(-135)
+				]]
+				
+				
+			end)
+			m2(60,function()
+				rb_aux:decelerate(1.5*60/85)
+				rb_aux:x(150);
+			end)
+			m2(66,function()
+				rb_aux:decelerate(1.5*60/85)
+				rb_aux:x(225);
+			end)
+			m2(72,function()
+				rb_aux:decelerate(1.5*60/85)
+				rb_aux:x(300);
+			end)
+			m2(75,function()
+				rb_aux:decelerate(1.5*60/85)
+				rb_aux:x(350);
+			end)
+			m2(78,function()
+				rb_aux:accelerate(3*60/85)
+				rb_aux:x(150);
+			end)
+			m2(81,function()
+				rb_aux:decelerate(2*60/85)
+				rb_aux:x(0);
+			end)
+			
+			for i=84,166,3 do
+				if i < 132 then
+					simple_m0d2(i,150,.8,'drunk')
+					simple_m0d2(i+1.5,-150,.8,'drunk')
+					simple_m0d2(i,80,.8,'tipsy')
+					simple_m0d2(i+1.5,-80,.8,'tipsy')
+				elseif i > 132 then
+					simple_m0d2(i,100,.8,'drunk')
+					simple_m0d2(i+1.5,-100,.8,'drunk')
+					simple_m0d2(i,60,.8,'tipsy')
+					simple_m0d2(i+1.5,-60,.8,'tipsy')
+				elseif i == 132 then
+					simple_m0d2(i,300,.4,'drunk')
+					simple_m0d2(i+1.5,-300,.4,'drunk')
+					simple_m0d2(i,40,.4,'tipsy')
+					simple_m0d2(i+1.5,-40,.4,'tipsy')
+				end
+			end
+			
+			function quikdiz(beat,len,spd)
+				m(beat,len,'*10000 '..(spd*math.pi*200)..' dizzy',l)
+				m(beat+len,0.5,'*10000 no dizzy',l)
+			end
+			
+			quikdiz(7.75,.25,4);
+			quikdiz(10.5,0.5,4);
+			quikdiz(11.25,0.5,-4);
+			quikdiz(13.75,.25,-4);
+			quikdiz(16.5,1.5,-4);
+			quikdiz(19.75,.25,4);
+			quikdiz(22.5,0.5,4);
+			quikdiz(23.25,0.5,-4);
+			quikdiz(25.75,.25,-4);
+			quikdiz(28.5,1.5,-4);
+			
+			quikdiz(150+7.75,.25,4);
+			quikdiz(150+10.5,0.5,4);
+			quikdiz(150+11.25,0.5,-4);
+			quikdiz(150+13.75,.25,-4);
+			quikdiz(150+16.5,1.5,-4);
+			quikdiz(150+19.75,.25,4);
+			quikdiz(150+22.5,0.5,4);
+			quikdiz(150+23.25,0.5,-4);
+			quikdiz(150+25.75,.25,-4);
+			quikdiz(150+28.5,1.5,-4);
+			
+			for i=108,131,3 do
+				simple_m0d(i,220,.9,'bumpy')
+				simple_m0d(i+1.5,-220,.9,'bumpy')
+			end
+			for i=156,167,3 do
+				simple_m0d(i,300,.3,'bumpy')
+				simple_m0d(i+1.5,-300,.3,'bumpy')
+			end
+			
+			--m(135,168,'120 bumpy',e);
+			
+			function aya_hop(hole,ang,hei,len,p,half)
+				if slumpo then
+					hei = hei*1.25
+				end
+				for pn=1,2 do
+					if pn == p or not p then
+						local a = Plr(pn)
+						local h = _G['aya_hole'..hole]
+						local b = _G['rb_centered'..pn]
+						local e = _G['rb_invert'..pn]
+						if a and h then
+							
+							b:x(100)
+							e:x(0)
+						
+							if p then
+								local c = GetJud(pn)
+								if c then
+									c:x(0)
+								end
+								local d = GetCom(pn)
+								if d then
+									d:x(0)
+								end
+							else
+								local c = GetJud(pn)
+								if c then
+									c:x(160*(pn*2-3))
+								end
+								local d = GetCom(pn)
+								if d then
+									d:x(160*(pn*2-3))
+								end
+							end
+						
+							a:finishtweening();
+							a:zoom(.8)
+							
+							a:x(h:GetX())
+							a:y(h:GetY())
+							
+							a:rotationz(ang);
+							
+							a:addx(-30*math.sin(math.deg(ang)))
+							a:addy(30*math.cos(math.deg(ang)))
+							
+							a:decelerate(len*60/85)
+							
+							a:addx((hei+30)*math.sin(math.rad(ang)))
+							a:addy((-hei-30)*math.cos(math.rad(ang)))
+							
+							if not half then
+							
+							a:accelerate(len*60/85)
+							
+							a:addx((-hei-30)*math.sin(math.rad(ang)))
+							a:addy((hei+30)*math.cos(math.rad(ang)))
+							
+							a:sleep(0)
+							a:zoom(0)
+							
+							end
+							
+						end
+					end
+				end
+			end
+			
+			function opposite_reverse(val)
+				if val == 0 then return 100 end
+				if val == 100 then return 0 end
+				return 0
+			end
+			
+			function aya_hop2(hole1,hole2,hei,len,p,half)
+				if slumpo then
+					hei = hei*1.25
+				end
+				for pn=1,2 do
+					if pn == p or not p then
+						local a = Plr(pn)
+						local b = _G['rb_centered'..pn]
+						local e = _G['rb_invert'..pn]
+						local f = _G['rb_reverse'..pn]
+						local h1 = _G['aya_hole'..hole1]
+						local h2 = _G['aya_hole'..hole2]
+						local rx, ang1, rz = _G['aya_hole'..hole1]:getrotation();
+						local rx, ang2, rz = _G['aya_hole'..hole2]:getrotation();
+						
+						if a and b and h1 and h2 then
+						
+							if p then
+								local c = GetJud(pn)
+								if c then
+									c:x(0)
+								end
+								local d = GetCom(pn)
+								if d then
+									d:x(0)
+								end
+							else
+								local c = GetJud(pn)
+								if c then
+									c:x(160*(pn*2-3))
+								end
+								local d = GetCom(pn)
+								if d then
+									d:x(160*(pn*2-3))
+								end
+							end
+							
+							local push1 = 30
+							local push2 = 30
+							
+							local hole34 = false;
+							if (hole1 == 4 and hole2 == 3) or (hole1 == 3 and hole2 == 4) then
+								hole34 = true;
+							end
+							
+							local flippy = false
+							if ((ang1 < 100) ~= (ang2 < 100) and hole1 ~= 3 and hole1 ~= 4 and hole2 ~= 3 and hole2 ~= 4) or (hole1 == 4 and hole2 == 3) or (hole1 == 3 and hole2 == 4) then
+								flippy = true --we changed sides
+							end
+							
+							if hole2 == 2 or hole2 == 7 or hole2 == 8 then
+								push2 = -30
+							end
+							
+							local rev = 0
+							if hole1 == 2 or hole1 == 7 or hole1 == 8 then
+								ang1 = ang1-180
+								--if not flippy then
+								--if not flippy and not hole34 and math.abs(GAMESTATE:GetSongBeat() - 132) > 1 then
+								if not flippy and not hole34 then
+									ang2 = ang2-180
+								end
+								f:x(100)
+								rev = 100
+								
+								push1 = -30
+								
+								if hole2 == 3 or hole2 == 4 then
+									push2 = -30
+								end
+								
+							else
+								f:x(0)
+							end
+							
+							if hole1 ~= 2 and hole1 ~= 7 and hole1 ~= 8 and flippy and not hole34 then
+								--if math.abs(GAMESTATE:GetSongBeat() - 132) > 1 then
+								if true then
+									ang2 = ang2-180
+								end
+							end
+							
+							local nocenter = false
+							if hole1 == 7 and hole2 == 4 then
+								flippy = true
+								ang2 = ang2+180
+								push2 = 50
+								--nocenter = true;
+							end
+							
+							
+							if flippy and not hole34 then
+								f:accelerate(len*30/85)
+								f:x(50)
+								f:decelerate(len*30/85)
+								f:x(opposite_reverse(rev))
+							end
+							
+							
+						
+							a:finishtweening();
+							a:zoom(0)
+							a:sleep(0.05)
+							a:zoom(.8)
+							
+							a:rotationz(ang1);
+							
+							a:x(h1:GetX()-push1*math.sin(math.rad(ang1)))
+							a:y(h1:GetY()+push1*math.cos(math.rad(ang1)))
+							
+							--a:accelerate(len*60/85);
+							
+							if flippy then
+								a:decelerate(len*30/85);
+							else
+								a:accelerate(len*30/85);
+							end
+							
+							a:rotationz((ang1+ang2)/2);
+							
+							a:x(((h1:GetX()+h2:GetX())/2)-((push1+push2)/2)*math.sin(math.rad((ang1+ang2)/2)))
+							a:y(((h1:GetY()+h2:GetY())/2)+((push1+push2)/2)*math.cos(math.rad((ang1+ang2)/2)))
+							
+							if not half then
+								if flippy then
+									a:accelerate(len*30/85);
+								else
+									a:decelerate(len*30/85);
+								end
+								
+								a:rotationz(ang2);
+								
+								a:x(h2:GetX()-push2*math.sin(math.rad(ang2)))
+								a:y(h2:GetY()+push2*math.cos(math.rad(ang2)))
+								
+								a:sleep(0)
+								a:zoom(0)
+							end
+							
+							
+							b:x(100)
+							b:decelerate(len*30/85)
+							b:addx(-hei)
+							if not half and not nocenter then
+								b:accelerate(len*30/85)
+								b:addx(hei)
+							end
+							
+							e:x(0)
+							
+						end
+					end
+				end
+			end
+			
+			function aya_clap(p,len)
+				for pn=1,2 do
+					if pn == p or not p then
+						local a = Plr(pn)
+						local b = _G['rb_centered'..pn]
+						local e = _G['rb_invert'..pn]
+						if a and b then
+						
+							local c = GetJud(pn)
+							if c then
+								c:x(0)
+							end
+							local d = GetCom(pn)
+							if d then
+								d:x(0)
+							end
+						
+							a:finishtweening();
+							a:zoom(0)
+							a:sleep(0.05)
+							a:zoom(.8)
+							
+							a:x(sw/2)
+							a:y(sh/2)
+							a:rotationz(0)
+							
+							a:sleep(len*60/85)
+							
+							b:x(40)
+							
+							e:x(-90)
+							e:linear(len*60/85)
+							e:x(90)
+							
+						end
+					end
+				end
+			end
+			
+			m2(82.5,function()
+				for pn=1,2 do
+					local a = GetJud(pn)
+					if a then
+						a:linear(90/85)
+						a:x(0)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(90/85)
+						a:x(0)
+					end
+					
+					local a = Plr(pn)
+					if a then
+						a:accelerate(90/85)
+						a:y(SCREEN_HEIGHT+200)
+						a:sleep(0)
+						a:zoom(0)
+					end
+				end
+				
+				aya_hole3:bouncebegin(0.75*60/85)
+				aya_hole3:zoom(0)
+				aya_hole4:bouncebegin(0.75*60/85)
+				aya_hole4:zoom(0)
+				
+				
+			end)
+			
+			m2(82.5,function()
+				aya_hole1:sleep(0.75*60/85)
+				aya_hole1:x(SCREEN_CENTER_X);
+				aya_hole1:rotationy(0)
+				aya_hole1:bounceend(0.75*60/85)
+				aya_hole1:zoom(.8)
+				
+				aya_hole5:sleep(0.75*60/85)
+				aya_hole5:x(SCREEN_WIDTH*0.1);
+				aya_hole5:rotationy(30)
+				aya_hole5:bounceend(0.75*60/85)
+				aya_hole5:zoom(.8)
+				aya_hole6:sleep(0.75*60/85)
+				aya_hole6:x(SCREEN_WIDTH*0.9);
+				aya_hole6:rotationy(-30)
+				aya_hole6:bounceend(0.75*60/85)
+				aya_hole6:zoom(.8)
+			end,true)
+			
+			--(hole1,hole2,hei,len,p,half)
+			m2(84,function() aya_hop2(5,1,330,3,1) end);
+			m2(87,function() aya_hop2(6,1,330,3,2) end);
+			m2(90,function() aya_hop2(5,6,330,3,1) end);
+			m2(93,function() aya_hop2(1,1,330,3,2) end);
+			
+			m2(94.5,function()
+				aya_hole3:bounceend(0.75*60/85)
+				aya_hole3:zoom(.8)
+				aya_hole4:bounceend(0.75*60/85)
+				aya_hole4:zoom(.8)
+			end,true)
+			
+			m2(96,function() aya_clap(1,3) end);
+			m2(99,function() aya_hop2(6,5,330,3,1) end);
+			m2(102,function() aya_clap(1,3) end);
+			m2(105,function() aya_hop2(5,6,330,3,1) end);
+			
+			m2(108,function() aya_hop(1,0,280,1.5,nil,true) end);
+			
+			m2(108,function()
+				rb_aux:x(0)
+				rb_aux:y(0)
+				rb_aux2:x(0)
+			end);
+			
+			m2(130.5,function()
+				rb_aux:accelerate(90/85)
+				rb_aux2:accelerate(90/85)
+				
+				local rx, ang2, rz = aya_hole5:getrotation();
+				
+				rb_aux:x(aya_hole5:GetX() - 40 - sw/2);
+				rb_aux:y(aya_hole5:GetY() + 60 - sh/2);
+				rb_aux2:x(ang2);
+				
+			end);
+			
+			m2(133.5,function()
+				aya_hole7:x(SCREEN_WIDTH*0.1);
+				aya_hole7:y(0)
+				aya_hole7:rotationy(180-30)
+				aya_hole7:bounceend(0.75*60/85)
+				aya_hole7:zoom(.8)
+				aya_hole8:x(SCREEN_WIDTH*0.9);
+				aya_hole8:y(0)
+				aya_hole8:rotationy(180+30)
+				aya_hole8:bounceend(0.75*60/85)
+				aya_hole8:zoom(.8)
+			end,true)
+			
+			m2(132,function()
+				
+				local a = Plr(2)
+				if a then
+					a:zoom(0)
+				end
+				
+				aya_hop2(1,2,100,3,1)
+			end)
+			
+			m(132,3,'*10000 flip',l,1)
+			m(135,3,'*10000 no flip',l,1)
+			
+			m2(132,function()
+				aya_hole2:x(SCREEN_CENTER_X);
+				aya_hole2:y(0)
+				aya_hole2:rotationy(180)
+				aya_hole2:bounceend(0.75*60/85)
+				aya_hole2:zoom(.8)
+			end,true)
+			
+			m2(135,function()
+				aya_bg:linear(2)
+				aya_bg:diffusealpha(0.4);
+			end,true)
+			m2(168,function()
+				aya_bg:linear(2)
+				aya_bg:diffusealpha(0);
+				
+				for i=1,8 do
+					_G['aya_hole'..i]:linear(2)
+					_G['aya_hole'..i]:zoom(0)
+				end
+				
+			end,true)
+			
+			m2(135,function() aya_hop2(7,8,290,3,2) end);
+			m2(138,function() aya_hop2(6,5,330,3,1) end);
+			m2(141,function() aya_hop2(7,4,140,3,2) end);
+			
+			m2(144,function() aya_hop2(5,8,95,3,1) end);
+			m2(147,function() aya_hop2(6,7,95,3,2) end);
+			m2(150,function() aya_hop2(3,1,380,3,1) end);
+			m2(153,function() aya_hop2(4,3,190,3,2) end);
+			
+			m2(156,function() aya_hop2(5,5,380,3,1) end);
+			m2(159,function() aya_hop2(6,6,380,3,2) end);
+			m2(162,function() aya_hop2(7,7,380,3,1) end);
+			if slumpo then
+				m2(165,function() aya_hop2(8,7,320,3,nil,true) end);
+			else
+				m2(165,function() aya_hop2(8,7,380,3,nil,true) end);
+			end
+			--mod_wiggle(166.5,12,8,100,2,'tipsy');
+			local fluct = 1
+			for i=28.5,29.9,0.125 do
+				local amt = 40+((i-28.5)/1.5)*200
+				m(i,0.125,'*'..(math.abs(amt)/4)..' '..amt*fluct..' tipsy',l)
+				fluct = fluct*-1
+			end
+			for i=166.5,167.9,0.125 do
+				local amt = 40+((i-166.5)/1.5)*500
+				m(i,0.125,'*'..(math.abs(amt)/4)..' '..amt*fluct..' tipsy',l)
+				fluct = fluct*-1
+			end
+			m(30,4,'*24 no tipsy',l)
+			m(168,4,'*54 no tipsy',l)
+			
+			m(165,3,'*1 -100 mini',l)
+			m(168,999,'-1000 mini, *0.6 dark, *0.6 stealth, 1000 drunk, 1000 bumpy, 2000 tipsy',e)
+			
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			self:queuecommand('Update');
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				
+				--name players, judgment and combo
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				checked = true; --let this only run once
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i=1,2 do
+						mod_do('clearall',i)
+					end
+				end
+				
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if beat >=v[1] then
+								if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = '';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+						end
+					end
+				end
+				
+				
+				
+				if beat > 28 and beat < 31 then
+					mod_do('*10000 '..rb_aux:GetX()..' centered');
+				end
+				
+				if beat > 30 and beat < 54 then
+					local m = 1
+					if beat > 42 then
+						m = -1
+					end
+					mod_do('*10000 '..(m*32*math.tan((beat/3)*math.pi))..' invert')
+					
+					for pn=1,2 do
+						local b = _G['jud'..pn]
+						local c = _G['com'..pn]
+						if b then
+							b:x(200*(pn*2-3)/aya_judpos:GetX()/0.9)
+						end
+						if c then
+							c:x(200*(pn*2-3)/aya_judpos:GetX()/0.9)
+						end
+					end
+					
+				end
+				
+				if beat > 54 and beat < 55.5 then
+					aya_gap:zoomx(rb_aux:GetX())
+					--[[
+					mod_do('*10000 '..(-rb_aux2:GetX())..' flip');
+					mod_do('*10000 '..(rb_aux2:GetX())..' invert');
+					]]
+					
+					--mod_do('*10000 '..(0.5*0.9*rb_aux:GetX())..' invert');
+					local w1 = -0.5*0.9*rb_aux:GetX()
+					local w2 = 0.5*0.9*rb_aux:GetX()
+					local r = 30
+					if ((beat-0.75)/3)-math.floor((beat-0.75)/3) < 0.5 then
+						r = 70
+						w1 = w1*-1
+						w2 = w2*-1
+					end
+					mod_do('*10000 '..(32/math.sin(((beat-0.75)/1.5)*math.pi) + r + w1)..' flip')
+					mod_do('*10000 '..(-32/math.sin(((beat-0.75)/1.5)*math.pi) - r + w2)..' invert')
+					
+				end
+				
+				if beat > 55.5 and beat < 82.5 then
+					aya_gap:zoomx(rb_aux:GetX())
+					--mod_do('*10000 '..(-0.5*0.9*rb_aux:GetX())..' flip');
+					--mod_do('*10000 '..(0.5*0.9*rb_aux:GetX())..' invert');
+					local w1 = -0.5*0.9*rb_aux:GetX()
+					local w2 = 0.5*0.9*rb_aux:GetX()
+					local r = 30
+					if (beat/6)-math.floor(beat/6) < 0.5 then
+						r = 70
+						w1 = w1*-1
+						w2 = w2*-1
+					end
+					mod_do('*10000 '..(32/math.sin((beat/3)*math.pi) + r + w1)..' flip')
+					mod_do('*10000 '..(-32/math.sin((beat/3)*math.pi) - r + w2)..' invert')
+				end
+				
+				if beat > 82.5 and beat < 84 then
+					aya_gap:zoomx(rb_aux:GetX())
+					mod_do('*10000 '..(-0.5*0.9*rb_aux:GetX())..' flip');
+					mod_do('*10000 '..(0.5*0.9*rb_aux:GetX())..' invert');
+				end
+				
+				if beat > 84 then
+					mod_do('*10000 '..(rb_centered1:GetX())..' centered, *10000 '..(64*math.tan(math.rad(rb_invert1:GetX())))..' invert, *10000 '..(rb_reverse1:GetX())..' reverse',1)
+					mod_do('*10000 '..(rb_centered2:GetX())..' centered, *10000 '..(64*math.tan(math.rad(rb_invert2:GetX())))..' invert, *10000 '..(rb_reverse2:GetX())..' reverse',2)
+				end
+				
+				if beat > 109.5 and beat < 132 then
+					local amt = math.min((beat-109.5)/12,1)
+					if beat > 130.5 then
+						amt = (132-beat)/1.5
+					end
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:x(sw/2 + rb_aux:GetX() + 128*amt*math.sin((beat/6)*math.pi))
+							if slumpo then
+								a:y(sh + rb_aux:GetY() - 280*1.25 + 100*amt*math.cos((beat/3)*math.pi))
+							else
+								a:y(sh + rb_aux:GetY() - 280 + 100*amt*math.cos((beat/3)*math.pi))
+							end
+							a:rotationz( rb_aux2:GetX() + 15*amt*math.cos((beat/6)*math.pi) )
+							--a:rotationz(45*amt*math.cos((beat/6)*math.pi))
+							if slumpo then
+								a:skewx(-1.6*amt*math.cos((beat/6)*math.pi))
+							else
+								a:skewx(-0.9*amt*math.cos((beat/6)*math.pi))
+							end
+							a:zoomx(0.8 + 0.25*amt*math.sin((beat/1.5)*math.pi))
+							a:zoomy(0.8 + 0.25*amt*math.cos((beat/1.5)*math.pi))
+						end
+					end
+				end
+				
+				if beat > 84 then
+					for pn=1,2 do
+						local m = 1
+						if _G['rb_reverse'..pn]:GetX() > 50 then
+							m = -1
+						end
+						local a = GetJud(pn)
+						if a then
+							a:effectmagnitude(0,_G['rb_centered'..pn]:GetX()*1.28*m,0);
+						end
+						local a = GetCom(pn)
+						if a then
+							a:effectmagnitude(0,_G['rb_centered'..pn]:GetX()*1.28*m,0);
+						end
+					end
+				end
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods2) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if mod_time >=v[1] then
+								if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = 'error';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+						end
+					end
+				end
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				for pn = 1,2 do
+					local b = _G['jud'..pn]
+					local c = _G['com'..pn]
+					if b then
+						b:basezoomx(jud_size:GetX()/(aya_judpos:GetX()/0.9))
+						b:basezoomy(jud_size:GetX()/(aya_judpos:GetX()/0.9))
+					end
+					if c then
+						c:basezoomx(0)
+						c:basezoomy(0)
+					end
+				end
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+						if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+							if type(mod_actions[curaction][2]) == 'function' then
+								mod_actions[curaction][2]()
+							elseif type(mod_actions[curaction][2]) == 'string' then
+								MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+							end
+						end
+						curaction = curaction+1;
+					end
+				end
+				
+			end
+			
+			self:sleep(1/60);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	
+	<!--Handling messages here is still fun and profitable-->
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) rb_aux = self end"
+	/>
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) rb_aux2 = self end"
+	/>
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,100;"
+	InitCommand="%function(self) rb_centered1 = self end"
+	/>
+	<CODE Type="Quad" OnCommand="hidden,1;x,100;"
+	InitCommand="%function(self) rb_centered2 = self end"
+	/>
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,0;"
+	InitCommand="%function(self) rb_invert1 = self end"
+	/>
+	<CODE Type="Quad" OnCommand="hidden,1;x,0;"
+	InitCommand="%function(self) rb_invert2 = self end"
+	/>
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,0;"
+	InitCommand="%function(self) rb_reverse1 = self end"
+	/>
+	<CODE Type="Quad" OnCommand="hidden,1;x,0;"
+	InitCommand="%function(self) rb_reverse2 = self end"
+	/>
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,1;"
+	InitCommand="%function(self) jud_size = self end"
+	/>
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,0.9;"
+	InitCommand="%function(self) aya_judpos = self end"
+	/>
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	
+	
+</children></ActorFrame>

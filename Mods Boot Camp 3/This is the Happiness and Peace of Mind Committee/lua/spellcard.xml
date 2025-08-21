@@ -1,0 +1,36 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {18,36,'Confused yet?',1,{1,.5,0,1}},
+                {36,68,'Synchronized Swimmers',2,{.7,0,1,1}},
+                {68,100,'Following Simple Directions',3,{.7,.7,.7,1}},
+                {100,132,'We Live In Confusing Times',3,{.7,0,1,1}},
+                {138,140,'They Are Down Arrows',1,{.7,0,1,1}},
+                {146,164,'Still not confused?',1,{1,.5,0,1}},
+                {164,180,'Octopus Dance',3,{1,.5,0,1}},
+                {180,196,'Asskicker',4,{1,.25,0,1}},
+                {196,227,'Drop Distortion Beam',4,{1,0,0,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

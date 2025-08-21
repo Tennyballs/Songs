@@ -1,0 +1,52 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {0,15,'Blastix Ray',4,{1,0,0,1}},
+                {15,39,'Rings of Riotz',5,{238/256,11/256,41/256,1}},
+                {39,71,'PN Fuck',8,{233/256,16/256,61/256,1}},
+                {71,75,'Surprise Planet Wars',7,{224/256,25/256,95/256,1}},
+                {75,107,'Smooth Brain Power',7,{221/256,28/256,109/256,1}},
+                {107,127,'It\'s an Issen',7,{212/256,37/256,143/256,1}},
+                {127,143,'PN Bullshit',8,{207/256,42/256,163/256,1}},
+                {143,183,'Xross Loss',6,{200/256,49/256,190/256,1}},
+                {183,191,':ok_hand:',69,{195/256,54/256,210/256,1}},
+                {191,206,'Xross Toss',8,{170/256,83/256,217/256,1}},
+                {206,214,'Preserved Rampage',8,{153/256,102/256,221/256,1}},
+                {214,222,'Sudden Hidden Wars',7,{140/256,117/256,225/256,1}},
+                {222,238,'Xross Boss',9,{127/256,131/256,228/256,1}},
+                {238,246,'Rampaging Valkyria',8,{115/256,145/256,231/256,1}},
+                {246,262,'Shiawase Transition Wars',7,{106/256,155/256,234/256,1}},
+                {262,287,'Censored Valkyria',9,{85/256,179/256,240/256,1}},
+                {287,291,'Red Weapon',7,{64/256,203/256,245/256,1}},
+                {291,303,'Blastix Star',5,{47/256,223/256,249/256,1}},
+                {303,307,'Vibe Check',420,{26/256,247/256,255/256,1}},
+                {307,359,'CrimXyhashi',10,{22/256,240/256,224/256,1}},
+                {359,423,'Garry\'s Valkyria',9,{18/256,233/256,192/256,1}},
+                {423,437,'Sayonara PFC',9,{14/256,226/256,161/256,1}},
+                {437,464,'Ok yeah this is just Blastix again',6,{10/256,219/256,129/256,1}},
+                {464,512,'The Haunted Ultra',42069,{7/256,213/256,104/256,1}},
+                {512,516,'FailEndOfSong',6,{0,206/256,72/256,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

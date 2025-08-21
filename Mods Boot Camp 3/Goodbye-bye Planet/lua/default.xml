@@ -1,0 +1,2048 @@
+<ActorFrame
+InitCommand="%function(self)
+	songName = GAMESTATE:GetCurrentSong():GetSongDir()
+	sw,sh = SCREEN_WIDTH,SCREEN_HEIGHT
+	scx,scy = SCREEN_CENTER_X,SCREEN_CENTER_Y
+	dai_flickerval = 1
+	checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+	spb = (60/185)
+
+	function GetJud(pn)
+        return _G['jud'..pn]
+    end
+    function GetCom(pn)
+        return _G['com'..pn]
+    end
+
+    gb_flicker = 1
+	
+	ullu_frame_rate = 60
+	
+	if not ulluriaq_time_of_day then
+		ulluriaq_time_of_day = 14
+	end
+
+end"
+><children>
+	<Layer Type="Quad" InitCommand="hidden,1" OnCommand="sleep,1000"/>
+	<ActorFrame OnCommand="%function(self) self:fov(45) end"><children>
+	<Layer File="modhelpers.xml" /> <Layer File="tweens.xml" /> <Layer File="readers.xml" /> <Layer File="c2l.xml" /> <Layer File="spellcard.xml" />
+	<Layer Type="Quad" InitCommand="%function(self) self:hidden(1) gb_aux = self end"/>
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1;"
+		InitCommand="%function(self)
+			mod_plr = {}; mod_firstSeenBeat = GAMESTATE:GetSongBeat(); mods, curaction, mod_actions, mods_ease = {}, 1, {}, {}
+			local m,mm,me,l,e,str = mod_insert,mod_message,mod_ease,'len','end',''
+			bsp_rootconst = (2^.5)/2
+			m(0, 9999, '*999 overhead,*999 1.75x,*999 -10000 cover,*999 no beat',l,nil)
+			
+			slumpo = false
+			for pn=1,2 do
+				if GAMESTATE:IsPlayerEnabled(pn-1) then
+					if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 5 then
+						slumpo = true
+					end
+				end
+			end
+
+			function gb_tiny(beat,amount)
+				me(beat, 1, -amount, 0, 'mini', l, outExpo,nil)
+				me(beat, 1, (amount/10), 0, 'flip', l, outExpo,nil)
+			end
+
+			function gb_remove_col(b,loe,col)
+				if col == 0 then
+					m(b,loe,'*10000 -500 reverse, *10000 250 split, *10000 250 cross, *10000 250 alternate',l)
+				end
+				if col == 1 then
+					m(b,loe,'*10000 0 reverse, *10000 250 split, *10000 -250 cross, *10000 -250 alternate',l)
+				end
+				if col == 2 then
+					m(b,loe,'*10000 0 reverse, *10000 -250 split, *10000 -250 cross, *10000 250 alternate',l)
+				end
+				if col == 3 then
+					m(b,loe,'*10000 0 reverse, *10000 -250 split, *10000 250 cross, *10000 -250 alternate',l)
+				end
+				if col == -1 then
+					m(b,loe,'*10000 0 reverse, *10000 0 split, *10000 0 cross, *10000 0 alternate',l)
+				end
+			end
+			function gb_remove_2col(b,loe,col)
+				if col == 0 then
+					m(b,loe,'*10000 -500 reverse, *10000 500 split, *10000 0 cross, *10000 0 alternate',l)
+				end
+				if col == 1 then
+					m(b,loe,'*10000 0 reverse, *10000 0 split, *10000 -500 cross, *10000 0 alternate',l)
+				end
+				if col == 2 then
+					m(b,loe,'*10000 0 reverse, *10000 -500 split, *10000 0 cross, *10000 0 alternate',l)
+				end
+				if col == 3 then
+					m(b,loe,'*10000 -500 reverse, *10000 0 split, *10000 500 cross, *10000 0 alternate',l)
+				end
+				if col == 4 then
+					m(b,loe,'*10000 0 reverse, *10000 0 split, *10000 0 cross, *10000 -500 alternate',l)
+				end
+				if col == 5 then
+					m(b,loe,'*10000 -500 reverse, *10000 0 split, *10000 0 cross, *10000 500 alternate',l)
+				end
+				if col == -1 then
+					m(b,loe,'*10000 0 reverse, *10000 0 split, *10000 0 cross, *10000 0 alternate',l)
+				end
+			end
+			function gb_remove_3col(b,loe,col)
+				if col == 0 then
+					m(b,loe,'*10000 0 reverse, *10000 -250 split, *10000 -250 cross, *10000 -250 alternate',l)
+				end
+				if col == 1 then
+					m(b,loe,'*10000 -500 reverse, *10000 -250 split, *10000 250 cross, *10000 250 alternate',l)
+				end
+				if col == 2 then
+					m(b,loe,'*10000 -500 reverse, *10000 250 split, *10000 250 cross, *10000 -250 alternate',l)
+				end
+				if col == 3 then
+					m(b,loe,'*10000 -500 reverse, *10000 250 split, *10000 -250 cross, *10000 250 alternate',l)
+				end
+				if col == -1 then
+					m(b,loe,'*10000 0 reverse, *10000 0 split, *10000 0 cross, *10000 0 alternate',l)
+				end
+			end
+
+			----------------------------------------
+			----------------------------------------
+			
+			mm(0,function(self)
+				for pn = 1,2 do
+					local a = GetJud(pn)
+					if a then
+						a:bob()
+						a:effectperiod(1000000)
+						a:effectoffset(250000)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:bob()
+						a:effectperiod(1000000)
+						a:effectoffset(250000)
+					end
+				end
+			end,true)
+			
+			for i=4,64,2 do
+				if i ~= 34 then
+					m(i,.5,'*999 25 invert',l)
+					m(i+.5,.5,'*999 no invert',l)
+					m(i+1,.5,'*999 -25 invert',l)
+					m(i+1.5,.5,'*999 no invert',l)
+				end
+			end
+
+			local f = 1
+			for i = 0,29,2 do
+				m(4+i,1,'*999 '.. 12.5*f ..' alternate,*999 '.. -6.25*f ..' reverse',l,nil)
+				m(5+i,1,'*999 no alternate,*999 no reverse',l,nil)
+				m(36+i,1,'*999 '.. 12.5*f ..' alternate,*999 '.. -6.25*f ..' reverse',l,nil)
+				m(37+i,1,'*999 no alternate,*999 no reverse',l,nil)
+				f=-f
+			end
+			me(33.5,1,0,100,'mini',l,inOutBack,nil,1)
+			me(33.5,0.5,-10,0,'alternate',l,inOutBack,nil,1)
+			me(33.5,0.5,10,0,'reverse',l,inOutBack,nil,1)
+			m(34,0.5,'*999 no reverse,*999 no alternate',l,nil)
+			me(34,2,314,0,'dizzy',l,outCirc,nil)
+
+			mod_bounce(66,2,0,-400,function(val) for pn = 1,2 do local a = Plr(pn) if a then a:z(val) end end end,'Circ',false)
+			me(66,2,360,0,function(val) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(val) end end end,l,outCirc,nil)
+			m(66,0.5,'*999 no reverse,*999 no alternate',l,nil)
+			me(66,2,-360,0,'dizzy',l,outCirc,nil)
+
+			mm(68,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomz(4)
+					end
+				end
+			end,true)
+
+			m(68,14,'*10 wave',l,nil)
+			mod_bounce(68,2,1.75,1,'xmod','Circ',false)
+			mod_bounce(70,4,1.75,1,'xmod','Circ',false)
+			mod_bounce(74,2,1.75,1,'xmod','Circ',false)
+			mod_bounce(76,2,1.75,1,'xmod','Circ',false)
+			mod_bounce(78.5,1,1.75,1,'xmod','Circ',false)
+
+			m(78.5,1,'*20 invert',l,nil)
+			m(79.5,4,'*20 100 invert',l,nil)
+			me(79.5,1,0,1,function(val) for pn = 1,2 do local a = Plr(pn) if a then a:x(sw*normalize(pn,1,2,0.25,0.75)-val*normalize(pn,1,2,-sw/4,sw/4)) end end end,l,outBack,nil,0.2)
+			mod_wiggle(82,4,4,100,20,'drunk',nil)
+			mod_wiggle(83,4,4,100,20,'tipsy',nil)
+			mm(82,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(scx)
+					end
+				end
+			end,true)
+
+			local amt = 100
+			for i = 0,2,0.25 do
+				m(82+i,0.25,'*40 '.. amt ..' invert',l,nil)
+				amt = amt-(100/8)
+			end
+
+			mod_bounce(84,1,0,-400,function(val) for pn = 1,2 do local a = Plr(pn) if a then a:z(val) end end end,'Circ',false)
+
+			gb_tiny(85,200)
+			gb_tiny(87,200)
+			gb_tiny(105,100)
+			gb_tiny(107,100)
+			gb_tiny(109,100)
+			gb_tiny(111,100)
+			gb_tiny(112,50)
+			gb_tiny(113,50)
+			gb_tiny(114,50)
+			gb_tiny(115,50)
+
+			for i = 0,6,2 do
+				gb_tiny(93+i,200)
+			end
+
+			mod_bounce(100,1.5,0,-100,'mini','Circ',false)
+			mod_bounce(101.5,2,0,100,'mini','Circ',false)
+
+			function gb_benis(beat)
+				me(beat,1,200,0,'drunk',l,outExpo,nil)
+				me(beat,1,200,0,'tipsy',l,outExpo,nil)
+				me(beat+.25,1,-200,0,'drunk',l,outExpo,nil)
+				me(beat+.25,1,-200,0,'tipsy',l,outExpo,nil)
+			end
+
+			mod_bounce(101,2.5,0,100,'wave','Circ',false)
+			gb_benis(101)
+			gb_benis(102.5)
+
+			mm(87,function()
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(0)
+						a:zoom(1)
+					end
+				end
+			end)
+			
+			me(88,92,0,-5000,'dizzy','end',inQuad)
+			me(88,92,0,150,'mini','end',inQuad)
+			m(88,92,'*999 50 stealth','end')
+			m(92,93,'*999 150 mini, *999 no dark, *999 no stealth,*999 no centered,*999 no dizzy','end')
+			--me(93,4,200,0,'drunk','len',outQuad)
+			me(93,1,200,0,'tipsy','len',outCirc)
+			me(96,3,0,600,'dizzy','len',linear)
+			me(99,1,600,0,'dizzy','len',linear)
+			
+			me(103.5,1.25,0,70,'mini','len',outQuad)
+			me(103.5,1.25,0,70,'tornado','len',outQuad)
+			me(104.75,.75,70,-25,'mini','len',inQuad)
+			me(104.75,.75,70,-25,'tornado','len',inQuad)
+			me(105.5,1.25,-25,25,'mini','len',outQuad)
+			me(105.5,1.25,-25,-70,'tornado','len',outQuad)
+			me(106.75,1.25,25,-70,'mini','len',inQuad)
+			me(106.75,1.25,-70,0,'tornado','len',inQuad)
+			
+			me(108,.5,10,0,'flip','len',linear)
+			me(109.5,.5,10,0,'flip','len',linear)
+			me(110.5,.5,10,0,'flip','len',linear)
+			
+			me(110,1.75,0,300,'bumpy','len',inQuad)
+			me(111.5,.5,300,0,'bumpy','len',outQuad)
+			
+			me(112,1,0,-50,'split','len',outCirc)
+			me(112,1,0,50,'cross','len',outCirc)
+			me(112,1,0,50,'alternate','len',outCirc)
+			
+			me(113,1,-50,0,'split','len',outCirc)
+			me(113,1,50,100,'cross','len',outCirc)
+			me(113,1,50,0,'alternate','len',outCirc)
+			
+			me(114,1,0,50,'split','len',outCirc)
+			me(114,1,100,50,'cross','len',outCirc)
+			me(114,1,0,50,'alternate','len',outCirc)
+			
+			me(115,1,50,0,'split','len',outCirc)
+			me(115,1,50,0,'cross','len',outCirc)
+			me(115,1,50,0,'alternate','len',outCirc)
+			me(115,1,0,100,'reverse','len',outCirc)
+			
+			me(116,1,100,0,'reverse','len',outCirc)
+			mm(116,function()
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(360)
+						a:zoomz(120)
+						a:decelerate(spb)
+						a:rotationz(0)
+						a:zoomz(1)
+					end
+				end
+			end)
+			
+			me(117,.5,0,-50,'split','len',outCirc)
+			me(117,.5,0,-50,'cross','len',outCirc)
+			me(117,.5,0,-50,'alternate','len',outCirc)
+			me(117,.5,0,100,'reverse','len',outCirc)	
+			
+			me(117.5,.5,-50,-100,'split','len',outCirc)
+			me(117.5,.5,-50,0,'cross','len',outCirc)
+			me(117.5,.5,-50,0,'alternate','len',outCirc)
+			me(117.5,.5,100,100,'reverse','len',outCirc)			
+			
+			me(118,.5,-100,-50,'split','len',outCirc)
+			me(118,.5,0,50,'cross','len',outCirc)
+			me(118,.5,0,-50,'alternate','len',outCirc)
+			me(118,.5,100,100,'reverse','len',outCirc)
+			
+			me(118.5,.5,-50,0,'split','len',outCirc)
+			me(118.5,.5,50,0,'cross','len',outCirc)
+			me(118.5,.5,-50,0,'alternate','len',outCirc)
+			me(118.5,.5,100,100,'reverse','len',outCirc,nil,.5)
+			
+			me(119.5,.5,100,50,'reverse','len',outCirc,nil,.5)
+			me(119.5,.5,0,50,'flip','len',outCirc,nil,.25)
+			
+			me(120.5,4,50,0,'reverse','len',outElastic)
+			me(120.5,4,50,0,'flip','len',outElastic)
+			
+			me(125,126,0,100,'reverse','end',outCirc,nil,134)
+			mm(123,function()
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(spb*2)
+						a:zoomx(2)
+						a:zoomz(50)
+						a:sleep(0)
+						a:zoomz(120)
+						a:rotationz(-360)
+						a:decelerate(spb)
+						a:rotationz(0)
+						a:zoomx(1)
+						a:zoomz(1)
+					end
+				end
+			end)
+			
+			
+			me(117,.5,0,100,'reverse','len',outCirc)	
+			
+			me(123,2,0,30,'stealth','len',linear)		
+			me(132,2,0,30,'stealth','len',linear)	
+			me(132,2,0,120,'hallway','len',linear)	
+			
+			me(126,.5,0,-50,'split','len',outCirc)
+			me(126,.5,0,50,'cross','len',outCirc)
+			me(126,.5,0,-50,'alternate','len',outCirc)
+			
+			me(126.5,.5,-50,-100,'split','len',outCirc)
+			me(126.5,.5,50,0,'cross','len',outCirc)
+			me(126.5,.5,-50,0,'alternate','len',outCirc)
+			
+			me(127,.5,-100,-50,'split','len',outCirc)
+			me(127,.5,0,-50,'cross','len',outCirc)
+			me(127,.5,0,-50,'alternate','len',outCirc)
+			
+			me(127.5,.5,-50,0,'split','len',outCirc)
+			me(127.5,.5,-50,0,'cross','len',outCirc)
+			me(127.5,.5,-50,0,'alternate','len',outCirc)
+			me(127.5,.5,100,0,'reverse','end',outCirc)
+			
+			me(128.5,.5,0,50,'reverse','len',outCirc,nil,.5)
+			me(128.5,.5,0,50,'flip','len',outCirc,nil,.25)
+			
+			me(129.5,4,50,100,'reverse','len',outElastic)
+			me(129.5,4,50,0,'flip','len',outElastic)
+			
+			me(134,135,100,0,'reverse','end',outCirc)
+			mm(132,function()
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(spb*2)
+						a:zoomy(2)
+						a:zoomz(3)
+						a:sleep(0)
+						a:zoomz(120)
+						a:rotationz(360)
+						a:decelerate(spb*1.5)
+						a:rotationz(0)
+						a:zoomy(1)
+						a:zoomz(1)
+					end
+				end
+			end)
+
+
+
+
+			mod_bounce(105.5,1.5,0,-10,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Circ',false)
+			mod_bounce(106.5,2,0,30,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Circ',false)
+			mod_bounce(108.5,3.5,0,0.75,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(t) end end end,'Circ',false)
+
+			bouncy_wiggle(112,4,1,0,-20,'centered',l,'Circ',false,nil,-20)
+			bouncy_wiggle(112,4,1,0,20,'space',l,'Circ',false,nil,20)
+			bouncy_wiggle(112,4,1,0,20,'drunk',l,'Circ',false,nil,20)
+
+			me(88,2,0,-200,'tipsy','len',linear)
+			me(90,2.5,-200,0,'tipsy','len',inOutBack)
+			me(88,2,0,-200,'drunk','len',linear)
+			me(90,2.5,-200,0,'drunk','len',inOutBack)
+			
+			mod_bounce(96,4,0,-100,'drunk','Circ',false)
+			mod_bounce(96,4,0,-100,'distant','Quad',false)
+
+			m(116,32,'*10000 100 wave',l)
+
+			mod_bounce(117,3.5,0,75,'mini','Circ',false)
+			me(122.5,2,314,0,'dizzy',l,outCirc,nil)
+			mod_bounce(126,3.5,0,75,'mini','Circ',false)
+			me(131.5,2,314,0,'dizzy',l,outCirc,nil)
+
+			--me(136,2,-200,0,'tipsy','len',outQuad)
+			me(136,2,50,0,'stealth','len',outQuad)
+
+			--didn't feel like these fit
+			--mod_swirlySwap(136,1,'ludr',1,'Quad',nil)
+			--mod_swirlySwap(137,1,'normal',1,'Quad',nil)
+
+			--mod_swirlySwap(138.5,1,'invert',-1,'Quad',nil)
+			--mod_swirlySwap(139.5,1,'normal',-1,'Quad',nil)
+
+			me(136,.5,0,50,'split','len',outCirc)
+			me(136,.5,0,-50,'cross','len',outCirc)
+			me(136,.5,0,50,'alternate','len',outCirc)
+			
+			me(136.5,.5,50,0,'split','len',outCirc)
+			me(136.5,.5,-50,0,'cross','len',outCirc)
+			me(136.5,.5,50,100,'alternate','len',outCirc)
+			
+			me(137,.5,0,50,'split','len',outCirc)
+			me(137,.5,0,50,'cross','len',outCirc)
+			me(137,.5,100,50,'alternate','len',outCirc)
+			
+			me(137.5,.5,50,0,'split','len',outCirc)
+			me(137.5,.5,50,0,'cross','len',outCirc)
+			me(137.5,.5,50,0,'alternate','len',outCirc)
+			me(137.5,.5,0,100,'reverse','len',outCirc,nil,1)
+			
+			me(136,3,100,0,'tipsy','len',linear)
+			me(138.5,.5,0,100,'drunk','len',outCirc)
+			me(139,.5,100,-100,'drunk','len',outCirc)
+			me(139.5,.5,-100,200,'drunk','len',outCirc)
+			me(140,2.5,200,0,'drunk','len',outCirc)
+
+
+			me(138.5,.5,0,50,'split','len',outCirc)
+			me(138.5,.5,0,-50,'cross','len',outCirc)
+			me(138.5,.5,0,-50,'alternate','len',outCirc)
+
+			me(139,.5,50,100,'split','len',outCirc)
+			me(139,.5,-50,0,'cross','len',outCirc)
+			me(139,.5,-50,0,'alternate','len',outCirc)
+			me(139,.5,100,0,'reverse','len',outCirc)
+
+			me(139.5,.5,100,50,'split','len',outCirc)
+			me(139.5,.5,0,50,'cross','len',outCirc)
+			me(139.5,.5,0,-50,'alternate','len',outCirc)
+
+			me(140,.5,100,0,'split','len',outCirc)
+			me(140,.5,50,0,'cross','len',outCirc)
+			me(140,.5,-50,0,'alternate','len',outCirc)
+			
+			--me(147.5,4.5,100,0,'reverse','len',outQuad)
+			me(147.5,4.5,300,0,'bumpy','len',outQuad)
+			
+			bouncy_wiggle(141,3,1,0,20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(scx+(-t*(pn*2-3))) a:skewx((t/100)*(pn*2-3)) a:rotationy(-t/2*(pn*2-3)) end end end,l,'Circ',false,nil,20)
+			bouncy_wiggle(141,3,1,0,75,'tipsy',l,'Circ',false,nil,75)
+			mm(141,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomz(4)
+					end
+				end
+			end,true)
+
+			mod_bounce(144,1.5,0,-40,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationx(t) end end end,'Circ',false)
+			mod_bounce(145.5,1.5,0,40,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationx(t) end end end,'Circ',false)
+			mod_bounce(144,1.5,0,100,'invert','Circ',false)
+			mod_bounce(145.5,1.5,0,100,'flip','Circ',false)
+
+			mod_bounce(147,0.75,0,-100,'invert','Circ',false)
+			mod_bounce(147,0.75,0,100,'flip','Circ',false)
+			me(147.5,4.5,360*3,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(-t) end end end,l,outBack,nil,0,1)
+			me(147.5,1,4,1,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoomx(t) end end end,l,outExpo)
+			me(147.5,2,-400,0,'mini','len',outExpo)
+			me(147.5,4.5,0,200,'drunk','len',inElastic,nil,nil,100,0.002)
+			me(147.5,4.5,1,1.75,'xmod','len',inQuad,nil,0.2)
+
+			m(152,0.2,'*9999 no drunk',l)
+
+			for i=152,179,2 do
+				m(i,1,'*2.529296875 500 centered, *9999 100 dark,*9999 no stealth','len',1)
+				m(i+1,1,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',1)
+				if FUCK_EXE then
+					m(i-.1,1,'*9999 hidenoteflash','len',1)
+					m(i+1.1,1,'*9999 no hidenoteflash','len',1)
+				end
+				mm(i-.1,function()
+					if P1 then
+						jud1:sleep(spb*1.2);
+						com1:sleep(spb*1.2);
+					end
+				end)
+				m(i+1,1,'*2.529296875 500 centered, *9999 100 dark,*9999 no stealth','len',2)
+				m(i,1,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',2)
+				if FUCK_EXE then
+					m(i+1.1,1,'*9999 hidenoteflash','len',2)
+					m(i-.1,1,'*9999 no hidenoteflash','len',2)
+				end
+				mm(i+.9,function()
+					if P2 then
+						jud2:sleep(spb*1.2);
+						com2:sleep(spb*1.2);
+					end
+				end)
+			end
+			
+			for i = 0,26,1 do
+				mm(152+i,function(self)
+					for pn = 1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationy(20*math.sin(GAMESTATE:GetSongBeat()/4*math.pi))
+							a:rotationx(20*math.cos(GAMESTATE:GetSongBeat()/4*math.pi))
+						end
+					end
+				end)
+			end
+
+			m(179,1,'*9999 no centered, *9999 no dark, *9999 no stealth','len')
+			
+			for i,v in ipairs(gb_boings) do
+				if v[2] == 0 then
+					me(v[1],.2,0,-25,'split','len',linear,nil,.05)
+					me(v[1]+.25,.2,-25,0,'split','len',linear)
+					me(v[1],.2,0,-25,'cross','len',linear,nil,.05)
+					me(v[1]+.25,.2,-25,0,'cross','len',linear)
+					me(v[1],.2,0,-25,'alternate','len',linear,nil,.05)
+					me(v[1]+.25,.2,-25,0,'alternate','len',linear)
+					me(v[1],.2,0,50,'reverse','len',linear,nil,.05)
+					me(v[1]+.25,.2,25,0,'reverse','len',linear)
+				elseif v[2] == 3 then
+					me(v[1],.2,0,25,'split','len',linear,nil,.05)
+					me(v[1]+.25,.2,25,0,'split','len',linear)
+					me(v[1],.2,0,-25,'cross','len',linear,nil,.05)
+					me(v[1]+.25,.2,-25,0,'cross','len',linear)
+					me(v[1],.2,0,25,'alternate','len',linear,nil,.05)
+					me(v[1]+.25,.2,25,0,'alternate','len',linear)
+				elseif v[2] == 1 then
+					me(v[1],.2,0,50,'cross','len',linear,nil,.05)
+					me(v[1]+.25,.2,50,0,'cross','len',linear)
+				else
+					m(v[1],.5,'*999 200 tipsy','len')
+					m(v[1]+.5,1,'*999 no tipsy','len')
+				end
+			end
+
+			mm(178.5,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:bouncebegin(spb)
+						a:rotationy(360*(pn*2-3))
+						a:rotationx(0)
+					end
+				end
+			end)
+			mm(183,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:bounceend(spb)
+						a:x(scx*(pn/1.25 -.2))
+						a:rotationz(30)
+						a:skewx(.5)
+					end
+				end
+			end,false)
+				
+			me(179.5,.5,0,100,'mini','len',outCirc)
+			me(180,.5,100,-100,'mini','len',inCirc)
+			me(1+179.5,.5,-100,50,'mini','len',outCirc)
+			me(1+180,.5,50,-250,'mini','len',inCirc)
+			me(2+179.5,.5,-250,0,'mini','len',outCirc)
+			me(2+180,.5,0,-400,'mini','len',inCirc,nil,.5)
+			me(179.5,.5,0,-20,'flip','len',outQuad)
+			me(180,.5,-20,80,'flip','len',inQuad)
+			me(1+179.5,.5,80,-20,'flip','len',outQuad)
+			me(1+180,.5,-20,80,'flip','len',inQuad)
+			me(2+179.5,.5,80,-20,'flip','len',outQuad)
+			me(2+180,.5,-20,80,'flip','len',inQuad,nil,.5)
+			
+			me(179.5,.5,1.75,2,'xmod','len',outQuad)
+			me(180,.5,2,1,'xmod','len',inQuad)
+			me(1+179.5,.5,1,1.75,'xmod','len',outQuad)
+			me(1+180,.5,1.75,.75,'xmod','len',inQuad)
+			me(2+179.5,.5,.75,1.5,'xmod','len',outQuad)
+			me(2+180,.5,1.5,.5,'xmod','len',inQuad,nil,.5)
+			
+			
+			me(183,1,80,0,'flip','len',outBack,nil,0,2)
+			me(183,1,-400,0,'mini','len',outBack,nil,1,3)
+			me(183,1,.5,1.75,'xmod','len',outBack,nil,0,1)
+
+			--i put in kick/snare to col 0/1, with crashes being mines on col 1. idk loam
+			local fuckthisisalotofwork = {}
+			local fuckcounter = 0
+			for i,v in ipairs(gb_ihopeitlooksgood) do
+				if v[2] == 2 then
+					if fuckcounter > 0 then
+						table.insert(fuckthisisalotofwork,{v[1],0,v[1]-fuckthisisalotofwork[fuckcounter][1]})
+					else
+						table.insert(fuckthisisalotofwork,{v[1],0,.5})
+					end
+					fuckcounter = fuckcounter + 1;
+				elseif v[2] == 3 then
+					local longvariablenames = 1
+					if v[3] == 'M' then longvariablenames = 2 end
+					if fuckcounter > 0 then
+						table.insert(fuckthisisalotofwork,{v[1],longvariablenames,v[1]-fuckthisisalotofwork[fuckcounter][1]})
+					else
+						table.insert(fuckthisisalotofwork,{v[1],longvariablenames,.5})
+					end
+					fuckcounter = fuckcounter + 1;
+				elseif v[2] == 1 then
+					if v[3] == 'M' then
+						me(v[1],.5,-100,0,'mini','len',outQuad)
+						me(v[1],.5,30,0,'reverse','len',outQuad)
+						me(v[1],4,50,0,'stealth','len',outQuad)
+						me(v[1],4,400,0,'dizzy','len',outQuad)
+						--me(v[1],4,-200,0,'bumpy','len',outQuad)
+					else
+						--me(v[1],1,-200,0,'bumpy','len',outQuad)
+						--me(v[1],1,-20,0,'flip','len',outQuad)
+					end
+				elseif v[2] == 0 then
+					--me(v[1],.5,50,0,'mini','len',outQuad)
+					--me(v[1],.5,10,0,'flip','len',outQuad)
+				end
+			end
+			
+			
+			m(184,215,'*10000 20 centered, *0.08 150 wave','end')
+			
+			for i=183.9,214,2 do
+				mod_bounce(i,1,0,-20,'reverse','Circ')
+				mod_bounce(i+1,1,0,-40,'reverse','Circ')
+				mod_bounce(i,1,1.5,1.25,'xmod','Circ')
+				mod_bounce(i+1,1,1.5,1,'xmod','Circ')
+				mod_bounce(i,1,0,20,'mini','Circ')
+				mod_bounce(i+1,1,0,-20,'mini','Circ')
+			end
+			
+
+
+
+			bouncy_wiggle(184,2,1,0,150,'tipsy',l,'Circ',false,nil)
+			bouncy_wiggle(186,2.25,0.75,0,150,'drunk',l,'Circ',false,nil)
+			mod_bounce(188,4,0,100,'distant','Circ')
+			mod_bounce(192,1,0,-200,'drunk','Circ')
+			bouncy_wiggle(193,2.25,0.75,0,-50,'tornado',l,'Circ',false,nil)
+			me(195.75,1,0,100,'invert',l,outBack,nil,1.25)
+			me(198,1,100,0,'invert',l,outBack,nil)
+
+			me(195.75,200,0,120,'hallway','end',inQuad)
+			me(195.75,200,0,400,'dizzy','end',inBack)
+			me(200,202,150,0,'hallway','end',outBack)
+			me(195.75,200,0,50,'stealth','end',inQuad)
+			me(211.75,215,0,50,'stealth','end',inQuad)
+			me(208,215,0,120,'hallway','end',linear)
+			
+			bouncy_wiggle(184+16,2,1,0,150,'tipsy',l,'Circ',false,nil)
+			bouncy_wiggle(186+16,2.25,0.75,0,150,'drunk',l,'Circ',false,nil)
+			mod_bounce(188+16,4,0,100,'distant','Circ')
+			mod_bounce(192+16,1,0,-200,'drunk','Circ')
+			mod_bounce(192+16,1,0,100,'invert','Circ')
+			mod_bounce(193+16,1,0,-50,'invert','Circ')
+			bouncy_wiggle(194+16,1.5,0.5,0,150,'drunk',l,'Circ',false,nil)
+			me(212.5,0.5,0,100,'invert',l,outBack,nil)
+			me(213,0.5,100,0,'invert',l,outBack,nil)
+			me(213.5,0.5,0,100,'invert',l,outBack,nil)
+			me(214,0.5,100,0,'invert',l,outBack,nil)
+			--bouncy_wiggle(214,2,1,0,50,'space',l,'Circ',false,nil)
+
+			--mod_bounce(215,1,1,2,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoomx(t) end end end,'Circ')
+			
+			local minithing = 0
+			for i,v in ipairs(fuckthisisalotofwork) do
+				
+				if v[2] == 2 then
+					--me(v[1],v[3]/2,minithing,minithing+75*v[3],'mini','len',outQuad)
+					--me(v[1]+v[3]/2,v[3]/2,minithing+75*v[3],minithing,'mini','len',inQuad)
+					--me(v[1],v[3]/2,minithing*1,(minithing+75*v[3])*1,'rotationz','len',outQuad)
+					--me(v[1]+v[3]/2,v[3]/2,(minithing+75*v[3])*1,minithing*1,'rotationz','len',inQuad)
+				else
+					local flexval = 70
+					if v[2] == 1 then flexval = -100 end
+					--me(v[1],v[3],minithing,minithing+flexval*v[3],'mini','len',outQuad)
+					--me(v[1],v[3],minithing*1,(minithing+flexval*v[3])*1,'rotationz','len',outQuad)
+					minithing = minithing + flexval*v[3]
+				end
+			end
+			
+			mm(215,function()
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomy(1.5)
+						a:decelerate(spb)
+						a:x(scx)
+						a:zoomy(1)
+						a:zoomx(1)
+						a:skewx(0)
+						a:rotationz(0)
+					end
+				end
+			end)
+
+			m(215,248,'*999 1.25x','end')
+			m(215,216,'*999 no tipsy','end')
+			
+			ease_wiggle(216,2,150,0.5,'drunk',outExpo,l,nil,false)
+			ease_wiggle(220,2,150,0.5,'drunk',outExpo,l,nil,false)
+			ease_wiggle(224,2.5,150,0.5,'drunk',outExpo,l,nil,false)
+			ease_wiggle(225.5,2.5,50,0.5,'tornado',outExpo,l,nil,false)
+			ease_wiggle(228,2,150,0.5,'drunk',outExpo,l,nil,false)
+			ease_wiggle(216+16,2,150,0.5,'drunk',outExpo,l,nil,false)
+			ease_wiggle(220+16,2,150,0.5,'drunk',outExpo,l,nil,false)
+			ease_wiggle(224+16,2.5,150,0.5,'drunk',outExpo,l,nil,false)
+			ease_wiggle(225+16.5,2.5,50,0.5,'tornado',outExpo,l,nil,false)
+			ease_wiggle(228+16,2,150,0.5,'drunk',outExpo,l,nil,false)
+			
+			for i=0,16,16 do -- lol this is so dumB
+				m(i+216,3,'*1.80645 500 centered','len')
+				m(i+216,3,'*999 100 stealth','len',2)
+				
+				m(i+218,2,'*9999 no centered','len',2)
+				me(i+218,2,100,0,'stealth','len',inQuad,2)
+				me(i+218,2,-400,0,'mini','len',linear,2)
+				me(i+218,2,40,0,'flip','len',linear,2)
+				me(i+218,2,1,1.55,'xmod','len',linear,2)
+				me(i+218,2,100,50,'dark','len',linear,2)
+				
+				me(i+219,.5,0,500,'drunk','len',linear,1)
+				me(i+219,.5,0,500,'tipsy','len',linear,1)
+				me(i+219,.5,0,-1000,'mini','len',linear,1)
+				me(i+219,.5,0,50,'flip','len',linear,1)
+				me(i+219,.5,(100*i/16),100-(100*i/16),'reverse','len',linear,1)
+				me(i+219,.5,50,100,'stealth','len',linear,1)
+				me(i+219,.5,50,100,'dark','len',linear,1)
+				m(i+219.5,.5,'*999 no centered, *999 100 stealth, *999 100 dark, *999 no tipsy, *999 no drunk, *999 no reverse, *999 no flip, *999 no mini','len',1)
+				
+				m(i+220,3,'*1.80645 500 centered','len')
+				m(i+220,3,'*999 100 stealth,','len',1)
+				
+				m(i+222,2,'*9999 no centered','len',1)
+				me(i+222,2,100,0,'stealth','len',inQuad,1)
+				me(i+222,2,-400,0,'mini','len',linear,1)
+				me(i+222,2,40,0,'flip','len',linear,1)
+				me(i+222,2,1,1.55,'xmod','len',linear,1)
+				me(i+222,2,100,50,'dark','len',linear,1)
+				
+				me(i+223,.5,0,500,'drunk','len',linear,2)
+				me(i+223,.5,0,500,'tipsy','len',linear,2)
+				me(i+223,.5,0,-1000,'mini','len',linear,2)
+				me(i+223,.5,0,50,'flip','len',linear,2)
+				me(i+223,.5,(100*i/16),100-(100*i/16),'reverse','len',linear,2)
+				me(i+223,.5,50,100,'stealth','len',linear,2)
+				me(i+223,.5,50,100,'dark','len',linear,2)
+				m(i+223.5,.5,'*999 no centered, *999 100 stealth, *999 100 dark, *999 no tipsy, *999 no drunk, *999 no reverse, *999 no flip, *999 no mini','len',2)
+				
+				m(i+224,7,'*1.80645 500 centered','len')
+				m(i+225.5,2.5,'*1.44516 no centered','len')
+				m(i+224,7,'*999 100 stealth,*999 100 dark','len',2)
+				me(i+225.5,3,(100*i/16),100-(100*i/16),'reverse','len',inOutCubic,nil,2.5)
+				
+				m(i+230,2,'*9999 no centered','len',2)
+				me(i+230,2,100,0,'stealth','len',inQuad,2)
+				me(i+230,2,-400,0,'mini','len',linear,2)
+				me(i+230,2,40,0,'flip','len',linear,2)
+				me(i+230,2,1,1.55,'xmod','len',linear,2)
+				me(i+230,2,100,50,'dark','len',linear,2)
+				
+				me(i+231,.5,0,500,'drunk','len',linear,1)
+				me(i+231,.5,0,500,'tipsy','len',linear,1)
+				me(i+231,.5,0,-1000,'mini','len',linear,1)
+				me(i+231,.5,0,50,'flip','len',linear,1)
+				me(i+231,.5,(100*i/16),100-(100*i/16),'reverse','len',linear,1)
+				me(i+231,.5,50,100,'stealth','len',linear,1)
+				me(i+231,.5,50,100,'dark','len',linear,1)
+				m(i+231.5,.5,'*999 no centered, *999 100 stealth, *999 100 dark, *999 no tipsy, *999 no drunk, *999 no reverse, *999 no flip, *999 no mini','len',1)
+				m(i+232,.5,'*999 no stealth','len',1)
+			end
+			
+			m(230,247,'*999 100 reverse','end')
+			
+			me(235.5,0.5,5,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:y(scy+(t*gb_flicker)) end end gb_flicker=-gb_flicker end,l,linear,nil)
+			me(237,0.5,100,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x((scx)+(t*gb_flicker)) end end gb_flicker=-gb_flicker end,l,linear,nil)
+			me(243.5,0.5,5,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:y(scy+(t*gb_flicker)) end end gb_flicker=-gb_flicker end,l,linear,nil)
+			me(245.5,0.5,5,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x((scx)+(t*gb_flicker)) end end gb_flicker=-gb_flicker end,l,linear,nil)
+			me(247,0.5,50,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x((scx)+(t*gb_flicker)) end end gb_flicker=-gb_flicker end,l,linear,nil)
+			me(247.5,0.5,50,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:y(scy+(t*gb_flicker)) end end gb_flicker=-gb_flicker end,l,linear,nil)
+			
+			--[[
+			
+				local f = 1
+				function gb_stealthclap(b)
+					me(b,1,300*f,0,'tipsy','len',outCirc)
+					me(b,1,50,0,'stealth','len',outQuad)
+					mod_bounce(b,1,0,50,'mini','Circ',false)
+					f=-f
+				end		
+			
+				gb_stealthclap(219) gb_stealthclap(223) gb_stealthclap(231)
+				gb_stealthclap(219+16) gb_stealthclap(223+16) gb_stealthclap(231+16)
+				
+			]]
+				
+
+			mod_bounce(216,2.25,0,20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Circ',false)
+			mod_bounce(220,2.25,0,20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Circ',false)
+			mod_bounce(224,1.5,0,20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Circ',false)
+			mod_bounce(225.5,1.5,0,0.75,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(t) end end end,'Circ',false)
+			mod_bounce(227,1,0,-0.5,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(t) end end end,'Circ',false)
+			mod_bounce(228,2.25,0,-20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Circ',false)
+			mod_bounce(216+16,2.25,0,20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(-t) end end end,'Circ',false)
+			mod_bounce(220+16,2.25,0,20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(-t) end end end,'Circ',false)
+			mod_bounce(224+16,1.5,0,20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(-t) end end end,'Circ',false)
+			mod_bounce(225+16.5,1.5,0,0.75,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(-t) end end end,'Circ',false)
+			mod_bounce(227+16,1,0,-0.5,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(-t) end end end,'Circ',false)
+			mod_bounce(228+16,2.25,0,-20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(-t) end end end,'Circ',false)
+
+			mm(248,function()
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(-360*(pn*2-3))
+						a:zoomz(120)
+						a:decelerate(spb*1.5)
+						a:rotationz(0)
+						a:zoomz(1)
+						a:x(scx+160*(pn*2-3))
+					end
+				end
+			end)
+
+			local counter = (160/5)
+			for i = 0,1,0.25 do
+				local scope = i
+				mm(250+i,function()
+					local c = counter
+					for pn = 1,2 do
+						local amt = 160 - ((scope*4+2)/6*160)
+						
+						local a = Plr(pn)
+						if a then
+							a:x(scx + amt*(pn*2-3))
+						end
+						
+						--[[
+						local div = (pn-0.5)
+						local a = Plr(pn)
+						if a then
+							a:x((scx*div)-c*(pn*2-3))
+						end
+						]]
+					end
+					counter = counter + (160/5)
+				end)
+			end
+
+			me(249,1,50,0,'stealth','len',outQuad)
+			mod_bounce(251,1,0,150,'mini','Circ',false)
+			me(252,1,4,1,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoomx(t) end end end,l,outExpo,nil)
+
+			mm(292,function()
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(360)
+						a:zoomz(180)
+						a:decelerate(spb)
+						a:rotationz(0)
+						a:zoomz(4)
+					end
+				end
+			end)
+
+			
+
+
+
+			mm(252,function()
+			
+				mod_screen:accelerate(spb*16)
+				condor_screenzoom(0)
+				mod_screen:sleep(spb*4)
+				condor_screenzoom(1)
+			end)
+			
+			mm(272,'BringItBack')
+			
+			m(252,20,'*8 dark,*8 1x',l)
+			--mod_drivendrop(252,12,1,1,false,nil)
+			mod_drivendrop(264,4,0.5,1,false,nil)
+
+			for i=252,252+10,2 do
+				m(i,1,'*1.4453125 500 centered, *9999 100 dark,*9999 no stealth','len',1)
+				m(i+1,1,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',1)
+				if FUCK_EXE then
+					m(i-.1,1,'*9999 hidenoteflash','len',1)
+					m(i+1.1,1,'*9999 no hidenoteflash','len',1)
+				end
+				mm(i-.1,function()
+					if P1 then
+						jud1:sleep(spb*1.2);
+						com1:sleep(spb*1.2);
+					end
+				end)
+				m(i+1,1,'*1.4453125 500 centered, *9999 100 dark,*9999 no stealth','len',2)
+				m(i,1,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',2)
+				if FUCK_EXE then
+					m(i+1.1,1,'*9999 hidenoteflash','len',2)
+					m(i-.1,1,'*9999 no hidenoteflash','len',2)
+				end
+				mm(i+.9,function()
+					if P2 then
+						jud2:sleep(spb*1.2);
+						com2:sleep(spb*1.2);
+					end
+				end)
+			end
+			for i=264,264+3,1 do
+				m(i,.5,'*1.4453125 500 centered, *9999 100 dark,*9999 '.. ((i-264)/3)*100 ..' stealth','len',1)
+				m(i+.5,.5,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',1)
+				if FUCK_EXE then
+					m(i-.1,.5,'*9999 hidenoteflash','len',1)
+					m(i+.6,.5,'*9999 no hidenoteflash','len',1)
+				end
+				mm(i-.1,function()
+					if P1 then
+						jud1:sleep(spb*6);
+						com1:sleep(spb*6);
+					end
+				end)
+				m(i+.5,.5,'*1.4453125 500 centered, *9999 100 dark,*9999 '.. ((i-263.5)/3)*100 ..' stealth','len',2)
+				m(i,.5,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',2)
+				if FUCK_EXE then
+					m(i+.6,.5,'*9999 hidenoteflash','len',2)
+					m(i-.1,.5,'*9999 no hidenoteflash','len',2)
+				end
+				mm(i+.4,function()
+					if P2 then
+						jud2:sleep(spb*.6);
+						com2:sleep(spb*6);
+					end
+				end)
+			end
+			
+			
+			m(264,8,'*1 sudden',l)
+			m(268,4,'*1 stealth',l)
+			local v = sh/24
+			for i = 0,4,0.5 do
+				mm(264+i,function(self)
+					for pn = 1,2 do
+						local a = Plr(pn)
+						if a then
+							a:y(scy-v)
+						end
+					end
+					v = v + sh/24
+				end)
+			end
+
+			mm(271.5,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:y(scy)
+					end
+				end
+			end,true)
+
+			m(272,1,'*999 85 stealth,*9999 no sudden,*999 1.75x',l)
+			m(273,1,'*999 no stealth',l)
+			mod_drivendrop(272,2,1,1.75,false,nil)
+
+
+			local c = 1
+			for i = 0,2,0.25 do
+				local s = {'normal','invert','flip','drlu'}
+				if c > table.getn(s) then c = 1 end
+				switcheroo_add(280+i,s[c],999,0.25,nil)
+				c = c + 1
+			end
+
+			for i=272,272,2 do
+				m(i,1,'*2.529296875 500 centered, *9999 100 dark,*9999 no stealth','len',1)
+				m(i+1,1,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',1)
+				if FUCK_EXE then
+					m(i-.1,1,'*9999 hidenoteflash','len',1)
+					m(i+1.1,1,'*9999 no hidenoteflash','len',1)
+				end
+				mm(i-.1,function()
+					if P1 then
+						jud1:sleep(spb*1.2);
+						com1:sleep(spb*1.2);
+					end
+				end)
+				m(i+1,1,'*2.529296875 500 centered, *9999 100 dark,*9999 no stealth','len',2)
+				m(i,1,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',2)
+				if FUCK_EXE then
+					m(i+1.1,1,'*9999 hidenoteflash','len',2)
+					m(i-.1,1,'*9999 no hidenoteflash','len',2)
+				end
+				mm(i+.9,function()
+					if P2 then
+						jud2:sleep(spb*1.2);
+						com2:sleep(spb*1.2);
+					end
+				end)
+			end
+
+			m(274,1,'*999 no centered, *999 no stealth, *999 no dark','len')
+			m(273,1,'*999 100 invert','len')
+			m(274,1,'*999 no invert','len')
+			
+
+
+			mm(274,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomz(4)
+						a:x(scx)
+					end
+				end
+			end,true)
+
+
+			mod_bounce(274,1,0,50,'mini','Circ',false)
+			mod_bounce(274,1,1.75,1,'xmod','Circ',false)
+
+			mod_bounce(275,1,0,100,'mini','Circ',false)
+			mod_bounce(275,1,1.75,1,'xmod','Circ',false)
+
+			mod_bounce(274,1,0,10,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Circ',false)
+			mod_bounce(275,1,0,-20,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Circ',false)
+
+			me(276,.75,0,-100,'tornado','len',outCirc)
+			me(276.75,.75,-100,50,'tornado','len',outCirc)
+			me(277.5,.5,50,-100,'tornado','len',outCirc)
+			me(278,.5,-100,0,'tornado','len',outCirc)
+			
+			me(276,1,50,0,'stealth',l,linear,nil)
+			mod_bounce(276,2,0,-1,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(t) end end end,'Circ',false)
+			--mod_bounce(276.75,0.75,0,0.5,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(t) end end end,'Circ',false)
+			--mod_bounce(277.5,0.5,0,-0.5,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(t) end end end,'Circ',false)
+			--mod_bounce(279,1,0,.5,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(scx+t*100) a:skewx(t*-1) end end end,'Circ',false)
+			mod_bounce(280,2,0,.5,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(scx+t*100) a:skewx(-1*t) end end end,'Circ',false)
+			
+			mod_bounce(278,2,0,-30,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Circ',false)
+			mod_bounce(278.5,0.5,0,250,'tipsy','Circ',false)
+			mod_bounce(279,1,0,-300,'tipsy','Circ',false)
+			mod_bounce(278,2,0,50,'drunk','Circ',false)
+			--bouncy_wiggle(277.5,1.5,0.5,0,-0.2,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(t) end end end,l,'Circ',false,nil,-0.2)
+			--mod_bounce(279,1,0,100,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(scx+(t*(pn*2-3))) end end end,'Circ',false)
+
+
+			mod_bounce(278,2,0,100,'invert','Circ',false)
+			mod_bounce(278,2,1.75,.75,'xmod','Circ',false)
+			--mod_bounce(279,1,1.75,2,'xmod','Circ',false)
+			--mod_bounce(280,2,0,100,'reverse','Expo',false)
+			--mod_bounce(280,2,0,.5,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(scx+t*100) a:skewx(t) end end end,'Circ',false)
+
+			mod_bounce(282,2,1,2,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoomy(t)  a:skewx((t-1)) end end end,'Circ',false)
+			mod_bounce(282,.75,0,200,'drunk','Quad',false)
+
+			mod_bounce(282.75,0.75,0,-200,'drunk','Quad',false)
+
+			mod_bounce(283.5,0.5,0,200,'drunk','Quad',false)
+			mod_bounce(284,7,0,-500,'bumpy','Circ',false)
+			mod_bounce(284,7,0,-170,'reverse','Quad',false)
+			mod_bounce(284,7,0,98,'centered','Circ',false)
+			mod_bounce(284,7,0,100,'distant','Circ',false)
+			mod_bounce(284,7,1.75,.1,'xmod','Circ',false)
+			if FUCK_EXE then
+				
+				me(284,7,100,100,'stealthtype','len',linear)
+				me(284,6,100,100,'sudden','len',linear)
+				me(290,1,100,0,'sudden','len',linear)
+				me(284,7,0,-100,'suddenoffset','len',outQuad)
+			end
+			m(284,10,'*5 150 wave',l,nil)
+
+			mod_bounce(284,1.5,0,-50,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationx(t) end end end,'Quad',false)
+			me(285.5,2,0,50,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationx(t) end end end,l,outCirc,nil)
+			me(290,2,50,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationx(t) end end end,l,inCirc,nil,1)
+			
+			me(287.75,3.25,-360,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy(t) end end end,l,inBack,nil,1)
+			
+			local f,amt = 1,100
+			for i = 0,3,0.333 do
+				me(288+i,1,amt*f,0,'drunk',l,outExpo,nil)
+				me(288+i,1,amt*f,0,'tipsy',l,outExpo,nil)
+				amt = amt + 50
+				f=-f
+			end
+
+			m(291,1,'*10 100 invert',l,nil)
+			m(292,1,'*10 no invert',l,nil)
+
+			me(293,1,400,0,'bumpy',l,outExpo,nil)
+			m(293,4,'*100 200 wave',l,nil)
+			mm(293,function(self)
+				gb_aux:x(0)
+				gb_aux:decelerate(spb)
+				gb_aux:x(150)
+			end)
+			mm(298,function(self)
+				gb_aux:x(150)
+				gb_aux:decelerate(spb*2)
+				gb_aux:x(0)
+			end)
+
+			me(298,1,0,100,'flip',l,outBack,nil)
+			me(299,1,100,0,'flip',l,outBack,nil) me(299,1,0,100,'invert',l,outBack,nil)
+			me(300,1,100,0,'invert',l,outBack,nil)
+			mod_bounce(298,1,0,-15,'reverse','Quad',false)
+			mod_bounce(299,1,0,30,'reverse','Quad',false)
+
+			bouncy_wiggle(300,4.333,0.667,0,100,'drunk',l,'Circ',false,nil)
+			bouncy_wiggle(300,4.333,0.667,0,55,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(scx+(t*(pn*2-3))) end end end,l,'Circ',false,nil)
+			me(300,4,0,200,'mini',l,inBack,nil)
+			me(304,1,200,0,'mini',l,outBack,nil)
+			m(304,2,'*100 reverse',l,nil)
+			mm(304,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:z(0)
+						a:zoom(1)
+					end
+				end
+			end)
+
+			me(304,3,400,0,'bumpy',l,outExpo,nil)
+			me(305,2,100,0,'reverse',l,inOutExpo,nil)
+
+			mm(300.2,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(scx)
+						a:y(scy)
+					end
+				end
+			end)
+
+			mm(316,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz((pn*2-3)*180)
+						a:bounceend(spb)
+						a:rotationz(0)
+						--a:x(scx*(pn-0.5))
+					end
+				end
+			end,true)
+
+			for i=317,323,1.5 do
+				m(i,.75,'*2.529296875 500 centered, *9999 100 dark,*9999 no stealth','len',1)
+				m(i+.75,.75,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',1)
+				if FUCK_EXE then
+					m(i-.1,.75,'*9999 hidenoteflash','len',1)
+					m(i+.85,.75,'*9999 no hidenoteflash','len',1)
+				end
+				mm(i-.1,function()
+					if P1 then
+						jud1:sleep(spb*.95);
+						com1:sleep(spb*.95);
+					end
+				end)
+				m(i+.75,.75,'*2.529296875 500 centered, *9999 100 dark,*9999 no stealth','len',2)
+				m(i,.75,'*9999 no centered, *9999 no dark,*9999 100 stealth','len',2)
+				if FUCK_EXE then
+					m(i+.85,.75,'*9999 hidenoteflash','len',2)
+					m(i-.1,.75,'*9999 no hidenoteflash','len',2)
+				end
+				mm(i+.65,function()
+					if P2 then
+						jud2:sleep(spb*.95);
+						com2:sleep(spb*.95);
+					end
+				end)
+			end
+			
+			local addystuff= {50,-50,20,-45,45,-95,25,25,25}
+			local zoomstuff= {1,1,1,-45,1,60,50,35,10}
+			local f = 1
+			local counter = 1
+			for i = 0,6,0.75 do
+				local fuckscope = counter
+				mm(317+i,function(self)
+					for pn = 1,2 do
+						local a = Plr(pn)
+						if a then
+							a:bounceend(spb*0.25)
+							a:rotationz(-20*f)
+							a:addy(addystuff[fuckscope])
+							a:zoomz(zoomstuff[fuckscope])
+						end
+					end
+					f=-f
+				end)
+				counter = counter+1
+			end
+
+			mm(323.5,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:bounceend(spb*0.25)
+						a:rotationz(0)
+						a:zoomz(1)
+					end
+				end
+				f=-f
+			end)
+
+			mm(323.5,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(spb*.5)
+						a:x(scx*(pn-.5))
+						a:rotationz(0)
+						a:bouncebegin(spb)
+						a:x(scx)
+						
+					end
+				end
+			end)
+
+			me(323.5,1,0,100,'reverse',l,inOutExpo,nil,7)
+			m(323.5,3,'*1000 no stealth, *1000 no dark','len')
+			local f = 1
+			local a = 5
+			for i = 1,table.getn(gb_endJumps)-1 do
+				local beat,diff = gb_endJumps[i][1],gb_endJumps[i+1][1]-gb_endJumps[i][1]
+				--m(beat,diff,'*20 '.. 100*(normalize(f,-1,1,0,1)) ..' reverse',l,nil)
+				mod_bounce(beat,diff,0,150*f,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(scx+(t*(pn*2-3))) end end end,'Expo',false)
+				mod_bounce(beat,diff,0,a,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy((t*(pn*2-3))) end end end,'Expo',false)
+				me(beat,1,200*f,0,'drunk',l,outExpo,nil)
+				me(beat,1,200*f,0,'tipsy',l,outExpo,nil)
+				me(beat,1,200*f,0,'distant',l,outExpo,nil)
+				mod_bounce(beat,diff,0.5,1.75,'xmod','Circ',false)
+				f=-f
+				a=a+5
+			end
+
+
+
+
+
+
+
+			me(331.5,4.5,360*6,0,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,l,outSine,nil)
+			mod_bounce(331.5,3,0,SCREEN_CENTER_X*.5,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(SCREEN_CENTER_X+t*(pn*2-3)) end end end,'Circ')
+			me(336,1,4,1,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoomx(t) end end end,l,outExpo,nil)
+
+			me(336,1,0,20,'reverse',l,outBack,nil,6)
+			me(336,1,0,150,'mini',l,outBack,nil,6)
+
+
+
+			mm(341.02,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(0)
+						a:zoom(1)
+					end
+				end
+			end,true)
+
+			--mod_bounce(342,1,0,100,'drunk','Quad',false)
+			me(342,1,150,150/2,'mini',l,outBack,nil)
+			me(343,1,150/2,0,'mini',l,outBack,nil)
+
+			m(343,1,'*1000 stealth','len',1)
+			m(343,1,'*1000 dark','len',2)
+			
+			mm(343,function()
+				if P1 then
+					P1:decelerate(spb*.5)
+					P1:y(SCREEN_CENTER_Y*.5)
+					P1:accelerate(spb*.5)
+					P1:y(SCREEN_CENTER_Y)
+				end				
+				if P2 then
+					P2:decelerate(spb*.5)
+					P2:y(SCREEN_CENTER_Y*1.75)
+					P2:accelerate(spb*.5)
+					P2:y(SCREEN_CENTER_Y)
+				end	
+			end)
+			
+			-- i like this effect, thanks alan
+			m(306,314,'*10000 -40 suddenoffset, *10000 5 hiddenoffset',e)
+			
+			me(304,308,0,-200,'hidden',e,linear,nil,315);
+			me(304,308,0,-200,'sudden',e,linear,nil,315);
+			me(304,308,0,250,'stealth',e,linear,nil,315);
+			me(315,1,-200,0,'hidden',l,linear,nil,1);
+			me(315,1,-200,0,'sudden',l,linear,nil,1);
+			me(315,1,250,0,'stealth',l,linear,nil,1);
+			
+			me(304,308,1.75,1.25,'xmod',e,linear,nil,315);
+			for i=308,309.75,1 do
+				gb_remove_col(i,.25,0)
+				gb_remove_col(i+.25,.25,1)
+				gb_remove_col(i+.5,.25,2)
+				gb_remove_col(i+.75,.25,3)
+			end
+			
+			local i=310
+			gb_remove_2col(i,.25,0)
+			gb_remove_2col(i+.25,.25,2)
+			gb_remove_2col(i+.5,.25,0)
+			gb_remove_2col(i+.75,.25,2)
+			local i=311
+			gb_remove_2col(i,.25,4)
+			gb_remove_2col(i+.25,.25,5)
+			gb_remove_2col(i+.5,.25,4)
+			gb_remove_2col(i+.75,.25,5)
+			
+			for i=312,315.75,1 do
+				gb_remove_3col(i,.25,0)
+				gb_remove_3col(i+.25,.25,2)
+				gb_remove_3col(i+.5,.25,1)
+				gb_remove_3col(i+.75,.25,3)
+			end
+			
+			gb_remove_col(315,1,-1)
+			
+			mm(306,function()
+				gb_aux:x(0)
+				gb_aux:linear(240/185)
+				gb_aux:x(35)
+				gb_aux:sleep(120/185)
+				gb_aux:linear(240/185)
+				gb_aux:x(0)
+			end)
+
+			me(342,1,0,-50,'cross','len',outCirc)
+			me(342,1,0,50,'reverse','len',outCirc,nil,1)
+			me(343,1,-50,0,'cross','len',outCirc)
+
+			
+			
+			
+			--ending stuff
+
+			m(344,99,'*10 100x,*10 sudden, *10 50 stealth',l)
+			
+			mm(344,function() -- bye bye
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomz(3)
+						a:x(sw/2)
+						a:rotationy(360*14)
+						a:accelerate(spb*16)
+						a:rotationy(0)
+						a:zoomz(5)
+					end
+				end
+			end)
+			
+			me(350,360,0,200,'bumpy','end',linear,1)
+			me(350,360,0,-200,'bumpy','end',linear,2)
+			me(350,360,0,-250,'tornado','end',linear)
+			me(350,360,0,50,'flip','end',linear)
+			me(350,360,50,100,'dark','end',linear)
+			
+			mm(360,'I')
+
+			me(344,352,50,0,'reverse',e,outQuart)
+			me(352,360,0,50,'reverse',e,inCubic,nil,1)
+			
+			if FUCK_EXE then
+				m(344,999,'-100 drawsizeback',e)
+			end
+			
+			gb_sparkles = {}
+			gb_sptr = 0
+			function gb_make_sparkle(obj)
+				table.insert(gb_sparkles,obj)
+			end
+			gb_stmr = 0
+			gb_sdl = 0.1
+			function gb_get_sparkle()
+				gb_sptr = gb_sptr+1
+				local a = gb_sparkles[ math.mod( gb_sptr, table.getn(gb_sparkles) ) + 1 ]
+				return a
+			end
+			
+
+			-----------------
+			-----------------
+			-----------------
+			local t = gb_percussion
+			local f = 1
+			for i = 1,table.getn(t) do
+				local beat,w = t[i][1],t[i][2]
+				if w == 0 then
+					gb_tiny(beat,50)
+					if beat >= 68 and beat <= 78.5 then
+						me(beat,1,200*f,0,'drunk',l,outExpo,nil)
+						me(beat,1,200*f,0,'tipsy',l,outExpo,nil)
+						me(beat,1,200*f,0,'distant',l,outExpo,nil)
+						f=-f
+					end
+				elseif w == 1 then
+					me(beat,1,0.7,1,function(val) for pn = 1,2 do local a = Plr(pn) if a then a:zoom(val) end end end,l,outExpo,nil)
+					me(beat,1,200*f,0,'drunk',l,outExpo,nil)
+					f=-f
+				end
+			end
+
+
+
+			local t = gb_bootsNCats
+			local f = 1
+			for i = 1,table.getn(t) do
+				local beat,w = t[i][1],t[i][2]
+				if w == 0 then
+					--me(beat,1,20,0,'mini',l,outExpo,nil)
+				elseif w == 1 then
+					--me(beat,1,-20,0,'mini',l,outExpo,nil)
+					--me(beat,1,10,0,'flip',l,outExpo,nil)
+					f=-f
+				end
+			end 
+
+
+			---------- PERFRAMES ----------
+			function mod_perframes()
+			local beat = GAMESTATE:GetSongBeat()
+
+				if perframe(306,317) then
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationx( gb_aux:GetX()*math.sin(beat*math.pi) )
+							a:rotationy( gb_aux:GetX()*math.cos(beat*math.pi) )
+						end
+					end
+				elseif perframe(86.5,87) then
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationz( dai_flickerval*15 )
+							a:zoom( .9-(dai_flickerval/5) )
+						end
+						dai_flickerval = math.mod(dai_flickerval+1,5)
+					end
+				elseif perframe(184,215) then
+					local bluestar = math.sin(beat*math.pi)
+					local bluespun = math.abs(bluestar/10)^.85
+					
+					local bluecos = math.cos((beat-.5)*math.pi/2)
+					local bluecheck = 1
+					if bluecos < 0 then bluecheck = -1 end
+					local blueang = math.min(math.abs(bluecos)^.65,bsp_rootconst)*bluecheck
+					
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationz(blueang*30)
+							--a:zoom((bluecheck*bluespun*(pn*2-3))+.85)
+							a:skewx(blueang*.5)
+						end
+					end
+				elseif perframe(344,360) then
+					
+					gb_stmr = gb_stmr - 1/50
+					if gb_stmr < 0 then
+						
+						for i=1,2 do
+							local a = gb_get_sparkle()
+							if a then
+								a:hidden(0)
+								a:diffusealpha(1)
+								a:blend('Add')
+								local zm = math.random()*0.5+0.8
+								a:basezoomx(zm)
+								a:basezoomy(zm)
+								a:zoom(0)
+								a:x( sw/2 + math.random(10, math.floor(sw/2) - 30) * (i*2-3) )
+								a:y( math.random(math.floor(sh*0.1),math.floor(sh*0.9)) )
+								a:bounceend(.1)
+								a:zoom(1)
+								a:linear(.2)
+								a:diffusealpha(0)
+								a:zoom(.5)
+								a:queuecommand('Hide')
+							end
+						end
+						
+						mod_do('*10000 '..(100+100*math.cos(beat*math.pi*.25))..' suddenoffset')
+						
+						gb_stmr = gb_sdl
+					end
+					if beat > 350 then
+						local quadTime = outElastic(beat-350,0,100,10)
+						for i=1,2 do
+							local a = Plr(i)
+							if a then
+								--print(quadTime)
+								a:rotationx(quadTime)								
+							end
+						end
+					end
+				elseif perframe(293,300) then
+					for pn = 1,2 do
+						local a = Plr(pn)
+						if a then
+							a:x(scx+math.sin(beat/4*math.pi+(pn*math.pi))*gb_aux:GetX())
+							a:z(50+math.cos(beat/4*math.pi+(pn*math.pi))*gb_aux:GetX())
+							a:rotationz(math.sin(beat/4*math.pi+(pn*math.pi))*gb_aux:GetX()/8)
+							a:rotationx(math.cos(beat/4*math.pi+(pn*math.pi))*gb_aux:GetX()/8)
+						end
+					end
+				elseif perframe(340.5,341) then
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationz( dai_flickerval*9 )
+							a:zoom( .9+(dai_flickerval/4) )
+						end
+						dai_flickerval = math.mod(dai_flickerval+1,5)
+					end
+				end
+
+			end -- THIS ENDS THE FUNCTION
+			
+			
+			
+			------------------------------
+			--taro: doin' the judgments
+			
+			mm(79.5,function()
+				gb_jud_aux:bounceend(60/185)
+				gb_jud_aux:x(200)
+			end)
+			mm(80.5,function() gb_jud_aux:x(200) end, true)
+			mm(183,function()
+				gb_jud_aux:decelerate(60/185)
+				gb_jud_aux:x(0)
+			end)
+			mm(184,function() gb_jud_aux:x(0) end, true)
+			mm(215,function()
+				gb_jud_aux:decelerate(60/185)
+				gb_jud_aux:x(200)
+			end)
+			mm(216,function() gb_jud_aux:x(200) end, true)
+			mm(248,function()
+				gb_jud_aux:decelerate(60/185)
+				gb_jud_aux:x(0)
+			end)
+			mm(250,function()
+				gb_jud_aux:linear(60/185)
+				gb_jud_aux:x(200)
+			end)
+			mm(216,function() gb_jud_aux:x(200) end, true)
+			mm(292,function()
+				gb_jud_aux:decelerate(60/185)
+				gb_jud_aux:x(0)
+			end)
+			mm(293,function() gb_jud_aux:x(0) end, true)
+			mm(300,function() gb_jud_aux:x(200) end, true)
+			
+			mm(323,function()
+				gb_jud_aux:accelerate(60/185)
+				gb_jud_aux:x(0)
+			end)
+			mm(331.6,function()
+				gb_jud_aux:linear(240/185)
+				gb_jud_aux:x(200)
+			end)
+			mm(344,function()
+				gb_jud_aux:x(200)
+			end)
+			
+			----------------------------------
+			--taro: BG stuff
+			
+			color_night = {.2,.2,.6,.3}
+			color_morning = {.8,.6,.8,.3}
+			color_day = {.6,.6,1,.3}
+			color_sunset = {1,.6,.4,.3}
+			
+			function ullu_get_day_diffuse(t)
+				
+				local diff = {1,1,1,.2}
+				
+				if t >= 0 and t < 4-2 or t >= 20+2 and t < 24 then
+					return color_night
+				elseif t >= 4-2 and t < 6.1-1 then
+					local perc = inOutQuad((t-2)/3.1,0,1,1)
+					for i=1,4 do
+						diff[i] = color_night[i] + perc*(color_morning[i]-color_night[i])
+					end
+				elseif t >= 6.1-1 and t < 6.1+1 then
+					return color_morning
+				elseif t >= 6.1+1 and t < 8+2 then
+					local perc = inOutQuad((t-7.1)/2.9,0,1,1)
+					for i=1,4 do
+						diff[i] = color_morning[i] + perc*(color_day[i]-color_morning[i])
+					end
+				elseif t >= 8+2 and t < 16-2 then
+					return color_day
+				elseif t >= 16-2 and t < 18.25-1 then
+					local perc = inOutQuad((t-14)/3.25,0,1,1)
+					for i=1,4 do
+						diff[i] = color_day[i] + perc*(color_sunset[i]-color_day[i])
+					end
+				elseif t >= 18.25-1 and t < 18.25+1 then
+					return color_sunset
+				elseif t >= 18.25+1 and t < 20+2 then
+					local perc = inOutQuad((t-19.25)/2.75,0,1,1)
+					for i=1,4 do
+						diff[i] = color_sunset[i] + perc*(color_night[i]-color_sunset[i])
+					end
+				end
+				
+				return diff
+				
+			end
+			
+			function ullu_get_mountain_diffuse(t)
+				local diff = 0
+				
+				if t >= 0 and t < 4-3 or t >= 20+2 and t < 24 then
+					return .5
+				elseif t >= 4-3 and t < 6.1-1 then
+					local perc = inOutQuad((t-1)/4.1,0,1,1)
+					diff = .5-.2*perc
+				elseif t >= 6.1-1 and t < 6.1+1 then
+					return .3
+				elseif t >= 6.1+1 and t < 8+2 then
+					local perc = inOutQuad((t-7.1)/2.9,0,1,1)
+					diff = .3+.5*perc
+				elseif t >= 8+2 and t < 16-3 then
+					return .8
+				elseif t >= 13 and t < 18.05 then
+					local perc = inOutQuad((t-13)/(18.05-13),0,1,1)
+					diff = .8-.65*perc
+				elseif t >= 18.05 and t < 18.45 then
+					return .15
+				elseif t >= 18.45 and t < 22 then
+					local perc = inOutQuad((t-18.45)/(22-18.45),0,1,1)
+					diff = .15+.35*perc
+				end
+				
+				return diff
+			end
+			
+			mm(35.5,function()
+				ullu_itg:zoom(0)
+			end,true)
+			
+			mm(250,function()
+				ullu_itg:zoom(1)
+				ullu_itg:diffusealpha(0)
+				ullu_itg:linear(spb)
+				ullu_itg:diffusealpha(1)
+			end)
+			
+			mm(251,function()
+				ullu_itg:zoom(1)
+				ullu_itg:diffusealpha(1)
+				ullu_landscape:hidden(1)
+			end,true)
+			
+			mm(270,function()
+				ullu_itg:zoom(0)
+				ullu_itg:diffusealpha(0)
+				ullu_landscape:hidden(0)
+				
+				if not slumpo then
+					ulluriaq_time_of_day = ulluriaq_time_of_day+.5
+				end
+				
+			end,true)
+			
+			d_bright = .8
+			
+			mm(35,function()
+				ullu_day_diffuse:decelerate(spb*4)
+				local d = ullu_get_day_diffuse(ulluriaq_time_of_day)
+				ullu_day_diffuse:diffuse(d[1]*d_bright,d[2]*d_bright,d[3]*d_bright,d[4])
+			end,true)
+			
+			mm(36,function()
+				
+				char_ullu:basezoomx(.7)
+				char_ullu:basezoomy(.7)
+				char_ullu:x(sw/2)
+				char_ullu:y(sh/2)
+				char_ullu:playcommand('Spawn')
+				
+			end,true)
+			
+			mm(64,function()
+				
+				char_ullu:playcommand('Cast')
+				
+			end)
+			
+			mm(79.5,function()
+				
+				char_ullu:playcommand('Hide')
+				
+			end)
+			
+			mm(152,function()
+				
+				char_ullu:basezoomx(.7)
+				char_ullu:basezoomy(.7)
+				char_ullu:x(sw/2)
+				char_ullu:y(sh/2)
+				char_ullu:playcommand('Spawn')
+				char_ullu:playcommand('Pixel')
+				
+			end,true)
+			
+			mm(183,function()
+				
+				char_ullu:playcommand('Idle')
+				
+			end)
+			
+			mm(184,function()
+				
+				char_ullu:playcommand('Cast2')
+				
+			end)
+			
+			mm(214,function()
+				
+				char_ullu:playcommand('Hide')
+				
+			end)
+			
+			mm(344,function()
+				
+				char_ullu:playcommand('Spawn')
+				char_ullu:playcommand('Cast')
+				
+			end)
+			
+			ullu_pixel_mode = false
+			
+			mm(152,function()
+				ullu_pixel_mode = true
+			end)
+			mm(183,function()
+				ullu_pixel_mode = false
+			end)
+			
+			function ullu_update_bg(beat)
+			
+				if beat >= 34 and beat < 35.5 then
+					ullu_itg:zoom( 1 - outExpo((beat-34)/1.5,0,1,1) )
+				end
+				
+				if beat >= 147.5 and beat < 152 then
+					local mag = 15*inCirc((beat-147.5)/4.5,0,1,1)
+					ullu_landscape:vibrate()
+					ullu_landscape:effectmagnitude(mag,mag,0)
+				end
+				
+				if beat >= 152 and beat < 155 then
+					ullu_landscape:stopeffect()
+					ullu_landscape:zoom( 0.7+0.3*outElastic((beat-152)/3,0,1,1) )
+				end
+				
+				if beat >= 183 and beat < 186 then
+					ullu_landscape:stopeffect()
+					ullu_landscape:zoomx( 0.5+0.5*outElastic((beat-183)/3,0,1,1) )
+				end
+				
+				--ullu_landscape:rotationz( 2*math.sin(beat*2*math.pi*0.03) )
+				
+				if slumpo then
+				--if true then
+					ulluriaq_time_of_day = ulluriaq_time_of_day+(2/ullu_frame_rate)
+				else
+					ulluriaq_time_of_day = ulluriaq_time_of_day+(2/ullu_frame_rate)*(0.1)*(1/8)
+				end
+				
+				ulluriaq_time_of_day = math.mod(ulluriaq_time_of_day,24)
+				
+				local md = ullu_get_mountain_diffuse(ulluriaq_time_of_day)
+				local d = ullu_get_day_diffuse(ulluriaq_time_of_day)
+				
+				if beat > 36 then
+					ullu_day_diffuse:diffuse(d[1]*d_bright,d[2]*d_bright,d[3]*d_bright,d[4])
+				end
+				
+				local mmd = 1
+				local mad = 0
+				if ulluriaq_time_of_day >= 20 and ulluriaq_time_of_day < 24 then
+					mmd = 1+1*inOutQuad((ulluriaq_time_of_day-20)/4,0,1,1)
+					mad = .1*inOutQuad((ulluriaq_time_of_day-20)/4,0,1,1)
+				elseif ulluriaq_time_of_day >= 2 and ulluriaq_time_of_day < 4 then
+					mmd = 2-1*inOutQuad((ulluriaq_time_of_day-2)/2,0,1,1)
+					mad = .1-.1*inOutQuad((ulluriaq_time_of_day-2)/2,0,1,1)
+				elseif ulluriaq_time_of_day < 4 then
+					mmd = 2
+					mad = .1
+				end
+				
+				ullu_treequad:diffuse(mad+mmd*md*d[1]*.1,mad+mmd*md*d[1]*.1,mad+mmd*md*d[1]*.1,1)
+				ullu_treeline1:diffuse(mad+mmd*md*d[1]*.1,mad+mmd*md*d[1]*.1,mad+mmd*md*d[1]*.1,1)
+				ullu_treeline2:diffuse(mmd*md*d[1]*.25,mmd*md*d[1]*.25,mmd*md*d[1]*.25,1)
+				pixel_ullu_treeline1:diffuse(mad+mmd*md*d[1]*.1,mad+mmd*md*d[1]*.1,mad+mmd*md*d[1]*.1,1)
+				pixel_ullu_treeline2:diffuse(mmd*md*d[1]*.25,mmd*md*d[1]*.25,mmd*md*d[1]*.25,1)
+				
+				local sun_yellow = 0
+				
+				if ulluriaq_time_of_day >= 14 and ulluriaq_time_of_day < 18 then
+					sun_yellow = (ulluriaq_time_of_day-14)/4
+				elseif ulluriaq_time_of_day >= 18 and ulluriaq_time_of_day < 24 then
+					sun_yellow = 1
+				end
+				
+				for i=1,4 do
+					local a = _G['ullu_sky_'..i]
+					if a then
+						if ulluriaq_time_of_day >= 3 + (i-1)*5 and ulluriaq_time_of_day < 7 + (i-1)*5 then
+							a:diffusealpha( (ulluriaq_time_of_day - (3 + (i-1)*5)) / 4)
+						elseif ulluriaq_time_of_day >= 7 + (i-1)*5 and ulluriaq_time_of_day < 9 + (i-1)*5 then
+							a:diffusealpha(1)
+						elseif i~=4 and ulluriaq_time_of_day >= 9 + (i-1)*5 and ulluriaq_time_of_day < 12 + (i-1)*5 then
+							a:diffusealpha( 1 - (ulluriaq_time_of_day - (9 + (i-1)*5)) / 3)
+						else
+							a:diffusealpha(0)
+						end
+					end
+				end
+				
+				local a = _G['ullu_sky_'..4]
+				if a and ulluriaq_time_of_day >= 21 and ulluriaq_time_of_day < 24 then
+					a:diffusealpha( 1 - ((ulluriaq_time_of_day-21) / 3) )
+				end
+				
+				ullu_skystars:diffusealpha(.1+.8*math.cos( (ulluriaq_time_of_day/24)*math.pi*2 ) )
+				ullu_skystars:rotationz( ulluriaq_time_of_day*(360/24) )
+				
+				pixel_ullu_skystars:diffusealpha(.1+.8*math.cos( (ulluriaq_time_of_day/24)*math.pi*2 ) )
+				pixel_ullu_skystars:rotationz( 0 )
+				
+				local sunalp = 0
+				
+				if ulluriaq_time_of_day >= 7 and ulluriaq_time_of_day < 12 then
+					sunalp = inOutQuad((ulluriaq_time_of_day-7)/5,0,1,1)
+				elseif ulluriaq_time_of_day >= 12 and ulluriaq_time_of_day < 16 then
+					sunalp = 1 - inOutQuad((ulluriaq_time_of_day-12)/4,0,1,1)
+				end
+				
+				local sunx = 50 - (sw*0.4)*math.sin( (ulluriaq_time_of_day/24)*math.pi*2 )
+				local suny = (sh*0.5)*math.cos( (ulluriaq_time_of_day/24)*math.pi*2 )
+				
+				ullu_sun:diffuse( 1, 1, 1-sun_yellow, sunalp )
+				ullu_sun:rotationz( ulluriaq_time_of_day*(360/12) )
+				ullu_sun:x( sw/2 + sunx )
+				ullu_sun:y( sh/2 + suny )
+				
+				ullu_sunb:diffuse( 1, 1, 1-sun_yellow, 1 )
+				ullu_sunb:rotationz( ulluriaq_time_of_day*(360/12) )
+				ullu_sunb:x( sw/2 + sunx )
+				ullu_sunb:y( sh/2 + suny )
+				
+				pixel_ullu_sun:diffuse( 1, 1, 1-sun_yellow, 1 )
+				pixel_ullu_sun:rotationz( 0 )
+				pixel_ullu_sun:x( sw/2 + math.floor(sunx/2)*2 )
+				pixel_ullu_sun:y( sh/2 + math.floor(suny/2)*2 )
+				
+				ullu_mountain1:diffuse( md, md, md, 1 )
+				ullu_mountain2:diffuse( md, md, md, 0.5 - 0.5*math.sin( (ulluriaq_time_of_day/24)*math.pi*2 ) )
+				
+				pixel_ullu_mountain1:diffuse( md, md, md, 1 )
+				pixel_ullu_mountain2:diffuse( md, md, md, 0.5 - 0.5*math.sin( (ulluriaq_time_of_day/24)*math.pi*2 ) )
+				
+				if SCREEN_WIDTH>666 then
+					pixel_ullu_treeline1:basezoomx(1.05*(SCREEN_WIDTH-(SCREEN_WIDTH-640))/640)
+					pixel_ullu_treeline2:basezoomx(1.05*(SCREEN_WIDTH-(SCREEN_WIDTH-640))/640)
+					ullu_treeline1:basezoomx(1.05*(SCREEN_WIDTH-(SCREEN_WIDTH-640))/640)
+					ullu_treeline2:basezoomx(1.05*(SCREEN_WIDTH-(SCREEN_WIDTH-640))/640)
+				end
+				
+				--ullu_treeline1:rotationz( 2*math.sin(beat*2*math.pi*0.03) )
+				--ullu_treeline2:rotationz( 1*math.sin(beat*2*math.pi*0.03) )
+				ullu_treeline1:x( sw/2 - 20*math.sin(beat*2*math.pi*0.03 + .7) )
+				ullu_treeline2:x( sw/2 - 10*math.sin(beat*2*math.pi*0.03) )
+				ullu_treeline1:skewx( .09*math.sin(beat*2*math.pi*0.03 + .7) )
+				ullu_treeline2:skewx( .06*math.sin(beat*2*math.pi*0.03) )
+				
+				
+				ullu_clock:rotationz( ulluriaq_time_of_day*(360/12) )
+				if ulluriaq_time_of_day > 6.1 and ulluriaq_time_of_day < 18.25 then
+					ullu_clock:diffuse(1,1,1,1)
+				else
+					ullu_clock:diffuse(0,0,0,1)
+				end
+				
+				if ullu_pixel_mode then
+					pixel_ullu_treeline1:hidden(0)
+					pixel_ullu_treeline2:hidden(0)
+					pixel_ullu_skystars:hidden(0)
+					pixel_ullu_sun:hidden(0)
+					pixel_ullu_mountain1:hidden(0)
+					pixel_ullu_mountain2:hidden(0)
+					ullu_treeline1:hidden(1)
+					ullu_treeline2:hidden(1)
+					ullu_skystars:hidden(1)
+					ullu_sun:hidden(1)
+					ullu_sunb:hidden(1)
+					ullu_mountain1:hidden(1)
+					ullu_mountain2:hidden(1)
+				else
+					pixel_ullu_treeline1:hidden(1)
+					pixel_ullu_treeline2:hidden(1)
+					pixel_ullu_skystars:hidden(1)
+					pixel_ullu_sun:hidden(1)
+					pixel_ullu_mountain1:hidden(1)
+					pixel_ullu_mountain2:hidden(1)
+					ullu_treeline1:hidden(0)
+					ullu_treeline2:hidden(0)
+					ullu_skystars:hidden(0)
+					ullu_sun:hidden(0)
+					ullu_sunb:hidden(0)
+					ullu_mountain1:hidden(0)
+					ullu_mountain2:hidden(0)
+				end
+				
+			end
+			
+			---------- SORT ACTIONS ----------
+			if table.getn(mod_actions) > 1 then table.sort(mod_actions, modtable_compare) end
+			self:queuecommand('Update');
+		end"
+		
+		UpdateCommand="%function(self)
+		
+			local updateBeat = GAMESTATE:GetSongBeat()
+			if updateBeat>=0 and not checked then
+				local ThingsToGrab = {'BPMDisplay','LifeFrame','ScoreFrame','Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						table.insert(mod_plr, _G['P'..pn])
+						_G['jud'..pn]=_G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn]=_G['P'..pn]:GetChild('Combo');
+					end
+					table.insert(ThingsToGrab,'LifeP'..pn); table.insert(ThingsToGrab,'ScoreP'..pn);
+					table.insert(ThingsToHide,'LifeP'..pn); table.insert(ThingsToHide,'ScoreP'..pn);
+				end	
+				for i,v in ipairs(ThingsToGrab) do _G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil end	
+				for i,v in ipairs(ThingsToHide) do if _G[v] then _G[v]:hidden(1) end end
+				if table.getn(mod_actions) > 1 then table.sort(mod_actions, modtable_compare) end
+				checked = true;
+				mod_screen = SCREENMAN:GetTopScreen()
+			end
+			
+			if updateBeat > mod_firstSeenBeat+0.1 and checked then
+			
+				if updateBeat > 325 and updateBeat < 331.5 then
+					if P1 then
+						gb_jud_aux:x( (P1:GetX() - sw*0.25)*1 )
+					elseif P2 then
+						gb_jud_aux:x( (P2:GetX() - sw*0.75)*-1 )
+					end
+				end
+				
+				for pn=1,2 do
+					local a = GetJud(pn)
+					if a then
+						a:effectmagnitude( gb_jud_aux:GetX()*(pn*2-3), gb_jud_aux:GetY(), 0 );
+					end
+					local a = GetCom(pn)
+					if a then
+						a:effectmagnitude( gb_jud_aux:GetX()*(pn*2-3), gb_jud_aux:GetY(), 0 );
+					end
+				end
+				
+				mod_do('clearall')
+				mod_beat_reader(updateBeat)
+				mod_ease_reader(updateBeat)
+				actions_reader(updateBeat)
+				mod_perframes(updateBeat)
+				
+				ullu_update_bg(updateBeat)
+				
+			end
+			self:sleep(1/ullu_frame_rate)
+			self:queuecommand('Update')
+		end"
+	/>
+	
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+	<Layer File="spark" OnCommand="hidden,1;sleep,.03;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) gb_make_sparkle(self) end"/>
+
+	<Layer Type="Quad" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffusealpha,0;" Fade2MessageCommand="accelerate,6*60/225;diffusealpha,1;"
+	IMessageCommand="diffuse,0,0,0,1;" UnfadeMessageCommand="linear,1;diffusealpha,0;" />
+	<Layer File="transition" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0;" IMessageCommand="zoom,10;decelerate,0.15;zoomx,1.5;zoomy,0;" />
+	<Layer Type="Quad" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1;y,-.5*SCREEN_HEIGHT"
+	BringItBackMessageCommand="y,SCREEN_CENTER_Y;diffusealpha,.66;sleep,spb;diffusealpha,.33;sleep,spb;diffusealpha,0" />
+	
+	<Layer Type="Quad" InitCommand="%function(self) self:hidden(1); gb_jud_aux = self; end"/>
+	
+	<Layer File="clock" StepP1Action1PressMessageCommand="hidden,0;" StepP1Action2PressMessageCommand="%function(self) ulluriaq_time_of_day = ulluriaq_time_of_day+.5 end"
+	InitCommand="%function(self) ullu_clock = self; end" OnCommand="hidden,1;x,64;y,64;"/>
+	
+</children></ActorFrame>

@@ -1,0 +1,6 @@
+[Sprite]
+Texture=checkers_jump 6x5.png
+Frame0000=1
+Delay0000=1
+Frame0001=4
+Delay0001=1

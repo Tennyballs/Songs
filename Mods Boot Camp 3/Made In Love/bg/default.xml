@@ -1,0 +1,85 @@
+<ActorFrame InitCommand="fov,30"> <children>
+
+	<Layer Type="ActorFrame" Condition="FUCK_EXE"><children>
+
+		<Layer Type="Quad" InitCommand="hidden,0;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomtowidth,SCREEN_WIDTH;zoomtoheight,SCREEN_HEIGHT;diffuse,0,0,0,1" />
+
+		<!-- Hymn -->
+		<Layer File="hymn" />
+
+		<Layer Type="Quad" InitCommand="hidden,0;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomtowidth,SCREEN_WIDTH;zoomtoheight,SCREEN_HEIGHT;diffuse,0,0,0,1"
+			HymnMessageCommand="linear,spb*2;diffusealpha,0"/>
+
+		<!-- Dyscontrolled -->
+		<Layer File="dysc" />
+
+		<Layer File="itg.png" InitCommand="hidden,0;x,0;y,SCREEN_CENTER_Y;zoomtowidth,SCREEN_WIDTH*.5;zoomtoheight,SCREEN_HEIGHT;horizalign,left"
+			OpenSesaMessageCommand="linear,spb*4;rotationy,-110;diffuse,0,0,0,1"/>
+		<Layer File="itg2.png" InitCommand="hidden,0;x,SCREEN_WIDTH;y,SCREEN_CENTER_Y;zoomtowidth,SCREEN_WIDTH*.5;zoomtoheight,SCREEN_HEIGHT;horizalign,right"
+			OpenSesaMessageCommand="linear,spb*4;rotationy,110;diffuse,0,0,0,1"	/>
+
+
+		<Layer Type="Quad" Var="mil_bgover" InitCommand="hidden,0;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomtowidth,SCREEN_WIDTH;zoomtoheight,SCREEN_HEIGHT;diffuse,1,1,1,0" />
+
+		<Layer File="force" Var="love_force" InitCommand="hidden,1" EarthMessageCommand="hidden,1"/>
+
+		<Layer File="hymn/stars" NameCommand="%function(self) love_stars = self; self:hidden(1) end"
+			OnCommand="playcommand,Name;customtexturerect,0,0,3,3;zoom,3;basezoomx,SCREEN_WIDTH/640;blend,add;diffusealpha,0;fadebottom,0.5;cropbottom,0;texcoordvelocity,0,.05;rotationx,30;x,SCREEN_WIDTH/2;y,SCREEN_HEIGHT/2"
+			EarthMessageCommand="hidden,0;linear,spb*2;diffusealpha,.75"
+		/>
+		
+		<Layer Type=ActorFrame InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;fov,30"><children>
+		<Layer File="../lua/text/Thanks1" InitCommand="hidden,1;bob;effectmagnitude,10,0,10;effectperiod,8;effectclock,bgm;blend,add" Var="mil_cThanks1" HideSelfCommand="hidden,1" />
+		<Layer File="../lua/text/Thanks2" InitCommand="hidden,1;bob;effectmagnitude,0,10,0;effectperiod,8;effectclock,bgm;blend,add" Var="mil_cThanks2" HideSelfCommand="hidden,1" />
+		</children></Layer>
+		
+		<Layer File="what" Var="love_earth" InitCommand="fov,10;x,SCREEN_CENTER_X;y,SCREEN_HEIGHT*1.75;hidden,1;zoom,.75" EarthMessageCommand="hidden,0;bounceend,spb*2;y,SCREEN_HEIGHT;zoom,1" NearthMessageCommand="hidden,1" />
+
+
+
+		<Layer 
+			Var="mil_bgaftSprite"
+			File="blank" 
+			OnCommand="sleep,.1;queuecommand,Beginfuckyou"
+			BeginfuckyouCommand="%function(self) self:hidden(1); self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth())); self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight())); self:SetTexture(mil_aft1:GetTexture()); self:SetTextureFiltering(true); self:diffuse(1,1,1,.75); self:blend('add'); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:zoom(1.01) end"
+		
+			AftOnMessageCommand="%function(self)
+				self:hidden(0);
+			end"
+			AftOffMessageCommand="%function(self)
+				self:hidden(1);
+			end"
+		/> 
+		
+		<Layer
+			Type="ActorFrameTexture"
+			Var="mil_bgaft1"
+			InitCommand="%function(self)
+				self:SetWidth( DISPLAY:GetDisplayWidth() );
+				self:SetHeight( DISPLAY:GetDisplayHeight() );
+				self:EnableDepthBuffer( true );
+				self:EnableAlphaBuffer( true );
+				self:EnableFloat( true );
+				self:EnablePreserveTexture( true );        
+				self:hidden(1);
+				self:Create();
+			end"
+			AftOn2MessageCommand="%function(self)
+				self:hidden(0);
+			end"
+			AftOffMessageCommand="%function(self)
+				self:hidden(1);
+			end"
+		/>
+
+		<Layer Type=ActorFrame InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;fov,30"><children>
+		<Layer File="../lua/text/Giants" InitCommand="hidden,1;bob;effectmagnitude,0,10,0;effectperiod,8;effectclock,bgm;blend,normal;rotationx,-50" Var="mil_cGiants" HideSelfCommand="hidden,1" />
+		</children></Layer>
+	
+	
+	</children></Layer>
+
+	
+
+	
+</children> </ActorFrame>

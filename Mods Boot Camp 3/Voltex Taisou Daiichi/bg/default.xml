@@ -1,0 +1,350 @@
+<ActorFrame FOV="60"><children>	
+
+	<Layer File="desecration 1x2"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_WIDTH*.5)
+			self:y(SCREEN_HEIGHT*.5)
+			self:basezoomx(SCREEN_WIDTH/640)
+			self:basezoomy(SCREEN_HEIGHT/480)
+			self:diffusealpha(0)
+			vtd_bgd = self;
+		end"
+	/>
+
+	<Layer File="chalkground 1x2"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_WIDTH*.5)
+			self:y(SCREEN_HEIGHT*.5)
+			self:basezoomx(SCREEN_WIDTH/640)
+			self:basezoomy(SCREEN_HEIGHT/480)
+			self:diffusealpha(0)
+			vtd_bgch = self;
+		end"
+	/>
+
+	<Layer File="background"
+		OnCommand="%function(self)
+			self:hidden(0)
+			self:x(SCREEN_WIDTH*.5)
+			self:y(SCREEN_HEIGHT*.5)
+			self:basezoomx(SCREEN_WIDTH/640)
+			self:basezoomy(SCREEN_HEIGHT/480)
+			self:diffuse(.5,.5,.5,1)
+			vtd_bg0 = self;
+		end"
+	/>
+	
+	<Layer Type="ActorFrame"
+		OnCommand="%function(self)
+			self:hidden(0);
+			self:x(SCREEN_WIDTH*.5)
+			self:y(SCREEN_HEIGHT*.5)
+			vtd_tutorial = self;
+		end"
+		ShowSelfCommand="%function(self)
+			fuckOITGtable = {vtd_bgbar,vtd_bgbarc, vtd_topbar,vtd_botbar,vtd_avydia,vtd_tag,vtd_kyi,vtd_wordbartop,vtd_wordbarbot}
+			for i,v in pairs(fuckOITGtable) do
+				if v then
+					v:queuecommand('ShowSelf')
+				end
+			end
+		end"
+		><children>
+		
+		<Layer File="tutorial/words"
+			OnCommand="%function(self)
+				self:hidden(0)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomy(0)
+				self:customtexturerect(0,0,2,1)
+				self:texcoordvelocity(.1,0)
+				self:cropbottom(.2)
+				self:y(0)
+				self:blend('add')
+				self:diffusealpha(.3)
+				vtd_wordbartop = self
+			end"
+			ShowSelfCommand="%function(self)
+				self:sleep(spb*.75)
+				self:decelerate(spb*1.25)
+				self:zoomy(.5)
+				self:y(-62)
+			end"
+			HideSelfCommand="%function(self)
+				self:accelerate(spb*1)
+				self:zoomy(0)
+				self:y(0)
+			end"
+		/>
+		
+		<Layer File="tutorial/words"
+			OnCommand="%function(self)
+				self:hidden(0)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomy(0)
+				self:customtexturerect(0,0,2,1)
+				self:texcoordvelocity(-.1,0)
+				self:y(0)
+				self:cropbottom(.2)
+				self:diffusealpha(.3)
+				self:blend('add')
+				vtd_wordbarbot = self
+			end"
+			ShowSelfCommand="%function(self)
+				self:sleep(spb*.75)
+				self:decelerate(spb*1.25)
+				self:zoomy(.5)
+				self:y(71)
+			end"
+			HideSelfCommand="%function(self)
+				self:accelerate(spb*1)
+				self:zoomy(0)
+				self:y(0)
+			end"
+		/>
+		
+		<Layer File="tutorial/bgbar1"
+			OnCommand="%function(self)
+				self:hidden(0)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomy(0)
+				vtd_bgbar = self
+			end"
+			ShowSelfCommand="%function(self)
+				self:bounceend(spb*1.5)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomy(1)
+				self:diffuseramp()
+				self:effectclock('bgm')
+				self:effectperiod(2)
+				self:effectcolor1(.9,.9,.9,.75)
+				self:effectcolor2(1,1,1,.8)
+			end"
+			HideSelfCommand="%function(self)
+				self:bouncebegin(spb*1.5)
+				self:zoomy(0)
+			end"
+			FuckingHellCommand="%function(self)
+				self:bouncebegin(spb)
+				self:stopeffect()
+				self:diffusealpha(0)
+			end"
+		/>
+		<Layer File="tutorial/bgbarc"
+			OnCommand="%function(self)
+				self:hidden(0)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomy(1)
+				self:diffusealpha(0)
+				self:blend('add')
+				vtd_bgbarc = self
+			end"
+			ShowSelfCommand="%function(self)
+				self:bounceend(spb*1.5)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomy(1)
+			end"
+			ChowCommand="%function(self)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomy(1)
+				self:bounceend(spb)
+				self:diffusealpha(1)
+				self:queuecommand('Ramp')
+			end"
+			RampCommand="%function(self)
+				self:diffuseramp()
+				self:effectclock('bgm')
+				self:effectperiod(2)
+				self:effectcolor1(.9,.9,.9,.75)
+				self:effectcolor2(1,1,1,.8)
+			end"
+			DeathCommand="%function(self)
+				self:stopeffect()
+				self:diffusealpha(0)
+			end"
+			HideSelfCommand="%function(self)
+				self:bouncebegin(spb*1.5)
+				self:zoomy(0)
+			end"
+		/>
+				
+		<Layer File="tutorial/topbbar"
+			OnCommand="%function(self)
+				self:hidden(0)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomy(0)
+				self:blend('add')
+				vtd_botbar = self
+			end"
+			ShowSelfCommand="%function(self)
+				self:sleep(spb*.75)
+				self:decelerate(spb*1.25)
+				self:y(55)
+				self:zoomy(-1)
+			end"
+			HideSelfCommand="%function(self)
+				self:accelerate(spb*1)
+				self:y(0)
+				self:zoomy(0)
+			end"
+		/>
+		
+		<Layer File="tutorial/topbbar"
+			OnCommand="%function(self)
+				self:hidden(0)
+				self:zoomtowidth(SCREEN_WIDTH)
+				self:zoomy(0)
+				self:blend('add')
+				vtd_topbar = self
+			end"
+			ShowSelfCommand="%function(self)
+				self:sleep(spb*.75)
+				self:decelerate(spb*1.25)
+				self:y(-50)
+				self:zoomy(1)
+			end"
+			HideSelfCommand="%function(self)
+				self:accelerate(spb*1.25)
+				self:y(0)
+				self:zoomy(0)
+			end"
+		/>
+		<Layer Type="ActorFrame"
+			OnCommand="%function(self)
+				self:hidden(0);
+				self:x(SCREEN_CENTER_X*-.75)
+				vtd_tutorialavy = self;
+			end"><children>
+			<Layer File="tutorial/avatarbg"
+				OnCommand="%function(self)
+					self:hidden(0)
+					self:zoom(0)
+					self:rotationz(90)
+					self:rotationy(-90)
+					self:diffuseshift()
+					self:effectclock('bgm')
+					self:effectperiod(2)
+					self:effectcolor1(.9,.9,.9,.4)
+					self:effectcolor2(1,1,1,.4)
+					self:effectoffset(1)
+					self:blend('add')
+					vtd_avydia = self
+				end"
+				ShowSelfCommand="%function(self)
+					self:linear(spb*1.75)
+					self:rotationz(0)
+					self:rotationy(0)
+					self:zoom(1)
+				end"
+				HideSelfCommand="%function(self)
+					self:linear(spb*1.75)
+					self:rotationz(90)
+					self:rotationy(-90)
+					self:zoom(0)
+				end"
+			/>
+			
+			<Layer File="tutorial/SlyP/blink.sprite"
+				OnCommand="%function(self)
+					self:hidden(0)
+					self:diffusealpha(0)
+					self:zoom(.25)
+					self:y(-10)
+					vtd_kyi = self
+				end"
+				ShowSelfCommand="%function(self)
+					self:sleep(spb)
+					self:decelerate(spb*.75)
+					self:diffusealpha(1)
+				end"
+				HideSelfCommand="%function(self)
+					self:linear(spb*.75)
+					self:diffusealpha(0)
+				end"
+			/>
+			
+			<Layer File="tutorial/SlyP/talk.sprite"
+				OnCommand="%function(self)
+					self:hidden(0)
+					self:diffusealpha(0)
+					self:zoom(.25)
+					self:y(-10)
+					self:setstate(0)
+					self:pause()
+					vtd_tkyi = self
+				end"
+				ShowSelfCommand="%function(self)
+					self:sleep(spb)
+					self:decelerate(spb*.75)
+					self:diffusealpha(1)
+				end"
+				HideSelfCommand="%function(self)
+					self:linear(spb*.75)
+					self:diffusealpha(0)
+				end"
+			/>
+			
+			<Layer File="tutorial/tag"
+				OnCommand="%function(self)
+					self:hidden(0)
+					self:rotationy(180)
+					self:diffusealpha(0)
+					self:diffuseramp()
+					self:effectclock('bgm')
+					self:effectperiod(2)
+					self:effectcolor1(.9,.9,.9,.65)
+					self:effectcolor2(1,1,1,.75)
+					self:effectoffset(1)
+					vtd_tag = self
+				end"
+				ShowSelfCommand="%function(self)
+					self:sleep(spb)
+					self:decelerate(spb*.75)
+					self:rotationy(0)
+					self:diffusealpha(1)
+				end"
+				HideSelfCommand="%function(self)
+					self:linear(spb*.75)
+					self:rotationy(180)
+					self:diffusealpha(0)
+				end"
+			/>
+		</children></Layer>
+		
+	</children></Layer>
+	
+	<Layer Type="Quad"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:zoomtowidth(SCREEN_WIDTH)
+			self:zoomtoheight(SCREEN_HEIGHT)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:diffuse(.5,.5,.5,1)
+			vtd_quad = self
+		end"	
+	/>
+	
+	<Layer File="Text/textpool" />
+	
+	<Layer Type="Quad"
+		OnCommand="%function(self)
+			self:hidden(0)
+			self:zoomtowidth(SCREEN_WIDTH)
+			self:zoomtoheight(SCREEN_HEIGHT)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:diffuse(0,0,0,.15)
+		end"	
+	/>
+	
+	<Layer File="classroom/group5" OnCommand="%function(self) self:hidden(1) vtd_group5 = self end"/>
+	<Layer File="classroom/cirno" OnCommand="%function(self) self:hidden(1) vtd_group6 = self end"/>
+	<Layer File="classroom/group2" OnCommand="%function(self) self:hidden(1) vtd_group2 = self end"/>
+	<Layer File="classroom/group1" OnCommand="%function(self) self:hidden(1) vtd_group1 = self end"/>
+	<Layer File="classroom/group4" OnCommand="%function(self) self:hidden(1) vtd_group4 = self end"/>
+	<Layer File="classroom/group3" OnCommand="%function(self) self:hidden(1) vtd_group3 = self end"/>
+	
+</children></ActorFrame>

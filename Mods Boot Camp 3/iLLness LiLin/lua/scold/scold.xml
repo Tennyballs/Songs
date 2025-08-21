@@ -1,0 +1,73 @@
+<ActorFrame>
+<children>
+
+<Layer
+Frag="jpegglitch.frag"
+File="newidle.sprite"
+OnCommand="%function(self)
+sto_idle=self
+self:diffusealpha(0.7)
+sto_scoldglitch=self:GetShader()
+		self:GetShader():uniform1f( 'segments', 80) 
+		self:GetShader():uniform1f( 'colorSegments', 60 ) 
+		self:GetShader():uniform1f( 'segmentsBegin', 0.0 )
+		self:GetShader():uniform1f( 'noSegment', 0.1 ) 
+		self:GetShader():uniform1f( 'maxShift', 0.002 )
+		self:GetShader():uniform1f( 'seed', 100 ) 
+		self:GetShader():uniform1f( 'coloring', 0.6 )
+end"
+Attack1Command="%function(self)
+self:hidden(1)
+sto_toss:hidden(1)
+sto_attack:hidden(0)
+sto_attack:animate(1)
+sto_attack:setstate(0)
+end"
+
+TossCommand="%function(self)
+self:hidden(1)
+sto_attack:hidden(1)
+sto_toss:hidden(0)
+sto_toss:animate(1)
+sto_toss:setstate(0)
+end"
+
+IdleCommand="%function(self)
+sto_toss:hidden(1)
+sto_attack:hidden(1)
+self:hidden(0)
+self:setstate(0)
+end"
+/>
+
+<Layer File="blink.sprite" OnCommand="y,-83;x,-1;" Var="char_scold_face"
+Attack1Command="hidden,1"
+Attack2Command="hidden,1"
+/>
+
+<Layer
+File="attack.sprite"
+OnCommand="%function(self)
+sto_attack=self
+self:hidden(1)
+self:animate(0)
+end"
+/>
+
+<Layer
+Type="Sprite"
+Texture="toss 3x1.png"
+Frame0000="0"
+Delay0000="0.1"
+Frame0001="1"
+Delay0001="0.1"
+Frame0002="2"
+Delay0002="999"
+OnCommand="%function(self)
+sto_toss=self
+self:hidden(1)
+self:animate(0)
+end"
+/>
+</children>
+</ActorFrame>

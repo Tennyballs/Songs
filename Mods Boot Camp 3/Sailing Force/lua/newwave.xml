@@ -1,0 +1,317 @@
+<ActorFrame><children>
+
+	<Actor
+	Type="Quad" OnCommand="hidden,1" 
+	InitCommand="%function(self)
+	
+		new_wave_location = {}
+	
+		function buildMods(mod_tbl, numPlr)
+	
+			-----setup table, one for each numPlr.  
+				--each player table represents a collection of mods, and their timelines essentially
+			
+			if numPlr then numPlr = 2 end
+			local plr_tbl = blankLoL(numPlr)
+			for i,v in pairs(plr_tbl) do
+				table.insert(new_wave_location,1)
+			end
+			-----step 1 build separate tables for each separate mod indicating start and stop preferences
+				---this should go backwards from the end of the file to preserve the behavior of the normal mods table
+				---one table per player
+				
+			for i=table.getn(mod_tbl),1,-1 do
+				
+				local plrChk = -1 --determine which player to affect
+				if table.getn(mod_tbl[i]) == 5 then plrChk = mod_tbl[i][5] end
+				
+				local startBeat = mod_tbl[i][1]
+				local endConvert = mod_tbl[i][2]	--if mod is len, convert to end
+				if mod_tbl[i][4] == 'len' then endConvert = endConvert + startBeat end
+				
+				if plrChk == -1 then
+					for j,v in pairs(plr_tbl) do
+						v = parseMod(v, startBeat, endConvert, mod_tbl[i][3])	--call function to add the mod line to every player
+					end
+				else						
+					plr_tbl[plrChk] = parseMod(plr_tbl[plrChk], startBeat, endConvert, mod_tbl[i][3]) --call function to add the mod line to only 1 player based on plrChk
+				end
+				
+			end
+			
+			--wastefulness can be done later to improve things, biggest problem is to make it work fully
+			-----step 2 is to try and be as not-wasteful as possible for the final array, so remove any duplicate breakpoints
+			-----step 3 is to find all the breakpoints, and set up a blank table of those, then iterate through all of the different mods to setup the final table
+			local finalChunker = blankLoL(numPlr)
+			local highBall = {-1,-1}
+			for i,v in pairs(plr_tbl) do	--plr table
+				for j,w in pairs(v) do -- mods tbl
+					local innerTbl = w[2]	
+					for k,u in pairs(innerTbl) do	--separationTable		
+						--print(u[1] .. ' to ' .. u[2])
+						finalChunker[i][tostring(u[1])] = ''
+						highBall[i] = math.max(highBall[i], u[2])
+					end
+				end
+				for j,w in pairs(v['stealth'][2]) do
+					--print(w[1] .. ' to ' .. w[2])
+				end
+			end
+			
+			local modSep = blankLoL(numPlr)
+			for j,w in pairs(finalChunker) do
+				for i,v in pairs(w) do
+					table.insert(modSep[j],tonumber(i))
+				end
+			end
+			for i,v in pairs(modSep) do
+				table.sort(v)
+			end
+			
+			local finalFuck = blankLoL(numPlr)
+			for j,v in pairs(modSep) do
+				for i=1,table.getn(v)-1,1 do
+					table.insert(finalFuck[j],{v[i],v[i+1],''})
+				end
+				table.insert(finalFuck[j],{v[table.getn(v)],highBall[j],''})
+			end
+			
+			for i,v in pairs(finalFuck) do
+				for q,p in pairs(v) do
+					local ffRangeStart = p[1]
+					local ffRangeEnd = p[2]
+					for j,w in pairs(plr_tbl[i]) do -- mods tbl
+						
+						local innerTbl = w[2]
+						local innerCount = 1
+						local contInner = true
+						while innerCount<=table.getn(innerTbl) and contInner do
+							local modCzech = innerTbl[innerCount]
+							local modStart = modCzech[1]
+							local modEnd = modCzech[2]
+							local rangeCzech = modRangeCzech(ffRangeStart, ffRangeEnd, modStart, modEnd)
+							if rangeCzech == 0 then
+								local aaa = appendString(modCzech[3],j,' ')
+								p[3] = appendString(p[3], aaa, ',')
+								contInner = false
+							elseif rangeCzech == 1 then
+								contInner = false
+							elseif rangeCzech == -1 then
+								innerCount = innerCount + 1
+							end
+						end
+					end
+					
+				end
+			end
+			
+			return finalFuck
+		end
+		
+		--takes a player's table of mods, beat start and end of the mods to insert, and the mods
+		--separates out mods
+		function parseMod(plr_tbl, bStart, bEnd, mods)
+			--check what mod it is
+				--special cases
+					--xmod/cmod might need special tables? maybe just one ultra condensed one that's janky as fuck
+					--mods with the | shit
+					--what are more things idk
+			local toReturn = plr_tbl
+			local modSep = modSplit(mods,',')
+			for i=table.getn(modSep),1,-1 do
+				local curMod = modSplit(modSep[i],' ')
+				for j=table.getn(curMod),1,-1 do
+					if curMod[j] == '' or curMod[j] == ' ' then
+						table.remove(curMod,j)
+					end
+				end
+				--verified to be correct until here so far
+				local strLen = table.getn(curMod)
+				if strLen > 0 then
+					local modname = (string.lower(curMod[strLen]))
+					local prefixes = ''
+					for j=1,strLen-1,1 do
+						prefixes = prefixes .. ' ' .. curMod[j]
+					end
+
+					--let's assume for now that there's no special cases LOL
+					if toReturn[modname] then
+						toReturn[modname] = insertMod(toReturn[modname],bStart,bEnd,prefixes)
+					else
+						toReturn[modname] = insertMod({{},{}},bStart, bEnd, prefixes)
+					end
+					
+					if modname == 'stealth' then
+						local builder = ''
+						--for k,v in pairs(toReturn[modname][1]) do
+						--	if v[1] then
+						--		builder = builder .. v[1] .. ' - '
+						--	end
+						--end
+						--print(bStart..','..bEnd..','..prefixes)
+					end
+					
+				end
+			end
+			
+			return toReturn
+		end
+		
+		--here's where the fuckery is hhhhh this is where i've verified up to tbh
+		--takes a mod's table, which consists of the block table, and the info table
+			--block table [1] consists of information of which blocks of beats are full and taken up
+			--separation table [2] consists of actual divisions between the mod lines, with activation rate, and amount stored
+			--assume both tables are sorted properly
+		--after implementation this isn't actually all that fucked
+		--returns {new_block_tbl,new_separation_tbl}
+		function insertMod(mod_tbl, bStart, bEnd, prefixes)
+			
+			--first go through block table to figure out what packages need to be taken out from the mod being inserted
+				--update the block table as you go?
+				
+			local block_tbl = mod_tbl[1]
+			local separ_tbl = mod_tbl[2]
+			
+			--5 cases
+			--block is before main block
+			--block consumes main block's start pos [start case]
+			--block is contained by main block
+			--block consumes main block's end pos (not mutually exclusive) [end case]
+			--block is after main block 
+			
+			local blk = 1
+			local curLoc = bStart
+			local loopFlag = true
+			while (blk < table.getn(block_tbl) and loopFlag) do
+				
+				local curBlock = block_tbl[blk]
+				--if the block end is after the current location to insert, then do it
+				if curBlock[2] > curLoc then
+					--there is some cutoff, check where start is, only if end is contained within the mod
+					if curBlock[2] < bEnd then
+						if curBlock[1] > curLoc then
+							--inner chop, add stuff to addblock
+							
+							table.insert(separ_tbl,{curLoc,curBlock[1],prefixes})
+							curLoc = curBlock[2]
+						else
+							--chop contains the curLoc, so chop and don't add
+							curLoc = curBlock[2]
+						end
+					else	--end is greater or equal to the mod thing, either start cuts off before or after beat end, determine what to add then
+						if curBlock[1] < bEnd then
+							if curBlock[1] > curLoc then
+								table.insert(separ_tbl,{curLoc,curBlock[1],prefixes})
+								curLoc = curBlock[2]
+							end
+						else
+							table.insert(separ_tbl,{curLoc,bEnd,prefixes})
+							curLoc = curBlock[2]
+						end
+						loopFlag = false;
+					end
+				end
+				blk = blk + 1
+			end
+			
+			if loopFlag then
+				--all the blocks traversed, with dangling leftovers
+				table.insert(separ_tbl,{curLoc,bEnd,prefixes})
+			end
+			
+			---if this worked properly, this thing of code will have generated the mod chunks and added to table
+			---sort table pls
+			if table.getn(separ_tbl) > 1 then
+				table.sort(separ_tbl,sort_by_first)
+				local builder = ''
+				for i,v in pairs(separ_tbl) do
+					builder = builder .. v[1] .. ' - '
+				end
+				print(builder)
+			end
+			
+			local new_block_tbl = {}
+			local curStart = -1
+			local curEnd = -1
+			--generate block table (is there a better inline way of doing this? probably, but the table inserts and removals would be dumb)
+			for i,v in pairs(separ_tbl) do
+				if curStart == -1 then
+					curStart = v[1]
+					curEnd = v[2]
+				elseif curEnd == v[1] then
+					curEnd = v[2]
+				else
+					table.insert(new_block_tbl,{curStart,curEnd})
+					curStart = v[1]
+					curEnd = v[2]
+				end
+			end
+			table.insert(new_block_tbl,{curstart,curEnd})
+			return {new_block_tbl,separ_tbl}
+		end
+		
+		function modSplit(inputstr, delimiter)
+			 local result = { }
+			  local from  = 1
+			  local delim_from, delim_to = string.find( inputstr, delimiter, from  )
+			  while delim_from do
+				table.insert( result, string.sub( inputstr, from , delim_from-1 ) )
+				from  = delim_to + 1
+				delim_from, delim_to = string.find( inputstr, delimiter, from  )
+			  end
+			  table.insert( result, string.sub( inputstr, from  ) )
+			  return result
+		end
+		
+		function trim(s)
+			return s:gsub('^%s+', ''):gsub('%s+$','')
+		end
+	
+		function sort_by_first(a,b)
+			return a[1] < b[1]
+		end
+		
+		function blankLoL(numT)
+			local toReturn = {}
+			for i=1,numT,1 do
+				table.insert(toReturn,{})
+			end
+			return toReturn
+		end
+		
+		function appendString(baseString, toAppend, separator)
+			return baseString .. separator .. toAppend
+		end
+		
+		function modRangeCzech(bStart, bEnd, mStart, mEnd)
+			if mStart < bEnd and mEnd > bStart then
+				return 0
+			elseif mEnd <= bStart then
+				return -1
+			elseif mStart >= bEnd then
+				return 1
+			end
+		end
+		
+		function modReader(newWave,beat,numPlr)
+		
+			for i=1,numPlr,1 do
+				local flag = true
+				while new_wave_location[i] <= table.getn(newWave[i]) and flag do
+					local whereMod = modRangeCzech(beat,beat,newWave[i][new_wave_location[i]][1],newWave[i][new_wave_location[i]][2])
+					if whereMod == -1 then
+						new_wave_location[i] = new_wave_location[i] + 1
+					elseif whereMod == 0 then
+						GAMESTATE:ApplyGameCommand('mod'.. newWave[i][new_wave_location[i]][3],i);
+						--print(newWave[i][new_wave_location[i]][3] .. ' Player P' .. new_wave_location[i])
+						flag = false
+					elseif whereMod == 1 then
+						flag = false
+					end
+				end
+			end
+		end
+		
+	end"/>
+
+</children></ActorFrame>

@@ -1,0 +1,1560 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	mod_globaloffset = PREFSMAN:GetPreference('GlobalOffsetSeconds');
+	
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT --shortcuts
+	
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+	function GetJud(pn)
+		return _G['jud'..pn]
+	end
+	function GetCom(pn)
+		return _G['com'..pn]
+	end
+	
+	function mod_do(str,pn)
+		if pn then
+			GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+		else
+			GAMESTATE:ApplyGameCommand('mod,'..str)
+		end
+	end
+	
+	function taro_Sound(str)
+		local met = GAMESTATE:GetCurrentSong():GetSongDir();
+		SOUND:PlayOnce(met..'lua/'..str..'.ogg');
+	end
+	
+	nue_ufo_spd = .6;
+	
+	nue_stars = {};
+	nue_sptr = 1;
+	nue_st = 1;
+	
+	function nue_nexts()
+		nue_sptr = nue_sptr+1;
+		if nue_sptr > table.getn(nue_stars) then
+			nue_sptr = 1
+		end
+	end
+	
+	function nue_placeStar()
+
+		local a = nue_stars[nue_sptr];
+		
+		local s = math.random(10,20)/15;
+		
+		a:hidden(0);
+		a:diffusealpha(0.4);
+		a:blend('add');
+		a:x(-300+math.random(0,SCREEN_WIDTH+600));
+		a:y(-225+math.random(0,SCREEN_HEIGHT+450));
+		a:z(-700);
+		
+		--a:zoom(s);
+		
+		a:pulse();
+		a:effectclock('bgm');
+		a:effectperiod(0.2);
+		a:effectmagnitude(1,2,1);
+		a:effectdelay(0.8);
+		
+		a:linear(2);
+		
+		a:z(700);
+		a:queuecommand('Hide');
+
+		nue_nexts();
+		
+	end
+	
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers.xml" />
+	<Layer File="easing.xml" />
+	
+	<Layer File="bleeps.xml" />
+	<Layer File="bloops.xml" />
+	<Layer File="blips.xml" />
+	
+	<Layer File="spellcard.xml" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+		
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_shader(beat,key,which)
+				--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+				
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_onebeat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--use a variable called 'switcheroo_width' to change how much space is between each column
+			--e.g. switcheroo_width = 2 for ayakashi
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+				
+			--function doSpline(spd, axis, path, col)
+				--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+				
+			--function doSplineAll(spd, axis, path)
+				--same as above, but for all columns
+				--(faster performance than using doSpline 4 times due to more efficient concat)
+			
+			--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+				--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+			
+			
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local m = mod_insert
+			local m2 = mod_message
+			local me = mod_ease
+			
+			
+			local l = 'len'
+			local e = 'end'
+			
+			
+			
+			
+			
+			
+			
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*2 1.75x, *1000 no beat, *10000 -99999 cover','end'},
+			}
+			
+			--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+			
+			
+			
+			
+			
+			
+			
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+				--{0,200.345,'3x','end',1},
+			}
+			
+			
+			
+			
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 32
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {
+			
+			
+				
+			}
+			
+			
+			
+			
+			
+			
+			--beat-based ease mods
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--valid ease types are:
+				--linear
+				--inQuad    outQuad    inOutQuad    outInQuad
+				--inCubic   outCubic   inOutCubic   outInCubic
+				--inQuart   outQuart   inOutQuart   outInQuart
+				--inQuint   outQuint   inOutQuint   outInQuint
+				--inSine    outSine    inOutSine    outInSine
+				--inExpo    outExpo    inOutExpo    outInExpo
+				--inCirc    outCirc    inOutCirc    outInCirc
+				--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+				--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+				--inBounce  outBounce  inOutBounce  outInBounce
+				
+			mods_ease = {
+				-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+				--{0,4,360,0,'rotationz','end',inOutBack},
+			}
+			
+			
+			
+			mod_perframes = {
+				
+			}
+			
+			function mpf(s,e,f)
+				table.insert(mod_perframes,{s,e,f})
+			end
+			
+			
+			
+			
+			-------------------------------------
+			--intro
+			
+			m2(0,function()
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						local x = a:GetX()
+						a:accelerate(120/180)
+						a:x( ((sw/2 + 160*(pn*2-3)) + x )/2 )
+						a:decelerate(120/180)
+						a:x(sw/2 + 160*(pn*2-3) )
+					end
+				end
+				
+			end)
+			
+			mpf(4,12,function(beat)
+				
+				local ang = 4*math.pi*outQuad((beat-4)/8,0,1,1)
+				
+				mod_do('*10000 '.. math.cos(ang)*-50+50 .. ' flip,*10000 '.. math.sin(ang)*-43.75 ..' split,*10000 '.. math.sin(ang)*-18.75 ..' alternate,*10000 '.. math.sin(ang)*31.25 ..' reverse')
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(math.deg(ang))
+						a:x( sw/2 + 160*(pn*2-3) + 128*math.sin(-ang) )
+						a:y( sh/2 - 128 + 128*math.cos(-ang) )
+					end
+				end
+				
+			end)
+			
+			me(4,12,50,100,'dark',e,linear,nil,32)
+			
+			me(4,12,0,000,'drunk',e,linear,nil)
+			me(4,12,0,1000,'tipsy',e,linear,nil)
+			
+			--m(4,8,'*10000 centered',e)
+			
+			m2(4,function()
+				
+				
+				
+				nue_bgcover:linear(480/180)
+				nue_bgcover:diffusealpha(1)
+				
+			end)
+			
+			m2(12,function()
+			
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(0)
+					end
+				end
+			
+				nue_bgcover:diffusealpha(1)
+			end,true)
+			
+			m(12.1,32,'*10000 300 drunk, *10000 314 dizzy, *10000 no tipsy, *10000 -100 flip, *10000 -100 tornado, sudden',e)
+			me(11.9,32,100,50,'stealth',e,linear,nil)
+			me(12.1,32,200,100,'mini',e,linear,nil)
+			
+			me(12.1,32,1,0.333,'xmod',e,linear,nil)
+			me(12.1,32,-100,0,'flip',e,linear,nil)
+			me(16,32,0,100,'suddenoffset',e,linear,nil)
+			
+			me(12.1,32,500,500,'bumpy',e,linear,nil)
+			
+			me(32,4,500,0,'bumpy',l,linear)
+			me(32,4,50,0,'stealth',l,linear)
+			me(32,4,100,0,'mini',l,linear)
+			me(32,4,314,0,'dizzy',l,linear)
+			me(32,4,300,0,'drunk',l,linear)
+			me(32,4,-100,0,'tornado',l,linear)
+			
+			me(32,4,0.4,1.75,'xmod',l,linear)
+			me(32,4,0.4,1.75,'xmod',l,linear)
+			
+			mod_onebeat(36,-200)
+			
+			m(36,64,'*10 bumpy',e);
+			
+			me(35.9,.2,0,100,'distant',l,linear)
+			me(36.1,64,100,-200,'distant',e,linear)
+			
+			me(35.9,.2,0,50,'stealth',l,linear)
+			me(36.1,64,50,100,'stealth',e,linear)
+			
+			me(36.1,64,20,-100,'flip',e,inQuad)
+			
+			me(35.9,.2,0,-200,'mini',l,linear)
+			me(36.1,64,-200,200,'mini',e,linear)
+			
+			me(35.9,.2,1.75,1.5,'xmod',l,linear)
+			me(36.1,64,1.5,1.75,'xmod',e,linear)
+			
+			m(36.5,51.5,'*1000 -100 beat',e)
+			
+			for i=36,51,2 do
+				m2(i,function()
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:linear(60/180)
+							a:x(sw/2 + 160*(pn*2-3) + 64)
+							a:linear(60/180)
+							a:x(sw/2 + 160*(pn*2-3) - 64)
+						end
+					end
+				end)
+			end
+			m2(51,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(60/180)
+						a:x(sw/2 + 160*(pn*2-3))
+					end
+				end
+			end)
+			
+			mod_wiggle(52-.0,16,2,150,1.5,'drunk')
+			mod_wiggle(60-.1,16,4,150,3,'drunk')
+			
+			me(64,4,100,0,'stealth',l,linear)
+			me(64,4,-200,0,'distant',l,linear)
+			me(64,4,-100,0,'flip',l,linear)
+			me(64,4,200,0,'mini',l,linear)
+			me(64,4,100,0,'bumpy',l,linear)
+			
+			me(66,1,0,200,'tornado',l,outQuad)
+			me(67,1,200,0,'tornado',l,inQuad,nil,1)
+			me(66,1,0,200,'dizzy',l,outQuad)
+			me(67,1,200,0,'dizzy',l,inQuad,nil,1)
+			
+			--[[
+			me(66,1,1.75,5,'xmod',l,outQuad)
+			me(67,1,5,1.75,'xmod',l,inQuad,nil,1)
+			]]
+			
+			
+			m2(99,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:vibrate()
+						a:effectmagnitude(10,10,0)
+					end
+				end
+			end)
+			m2(100,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:stopeffect()
+					end
+				end
+			end)
+			
+			
+			
+			
+			-----------------------------------
+			--phase 1
+			
+			for i=1,table.getn(bleeps) do
+				
+				local a = bleeps[i]
+				local b = a[1]
+				local c = a[2]
+				local d = a[3]
+				if d == 'M' or d >= 100 then
+					m(b,.5,'*1000 no drunk',l)
+				elseif c == 0 then
+					m(b,.5,'*1000 10 drunk',l)
+				elseif c == 1 then
+					m(b,.5,'*1000 -10 drunk',l)
+				end
+				
+			end
+			
+			local function mbounce(b,d,a,m,pn)
+				me(b,d,0,a,m,l,outQuad,pn,.2)
+				me(b+d,d,a,0,m,l,outQuad,pn,.2)
+			end
+			
+			mbounce(71,.75,150,'distant')
+			mbounce(79,.75,150,'distant')
+			mbounce(87,.75,150,'distant')
+			mbounce(95,.75,150,'distant')
+			
+			for i=68,99,4 do
+				
+				if not slumpo then
+					me(i+1,.5,0,100,'tornado',l,outQuart,1)
+					me(i+1,.5,0,314,'dizzy',l,outQuart,1)
+					me(i+1,.5,0,50,'stealth',l,outQuart,1)
+					me(i+1.5,.75,100,0,'tornado',l,inQuad,1,.2)
+					me(i+1.5,.75,314,0,'dizzy',l,inQuad,1,.2)
+					me(i+1.5,.75,50,0,'stealth',l,inQuad,1,.2)
+					simple_m0d2(i+.9,80,.5,'brake',1)
+					
+					if i < 96 then
+						me(i+3,.5,0,100,'tornado',l,outQuart,2)
+						me(i+3,.5,0,314,'dizzy',l,outQuart,2)
+						me(i+3,.5,0,50,'stealth',l,outQuart,2)
+						me(i+3.5,.75,100,0,'tornado',l,inQuad,2,.2)
+						me(i+3.5,.75,314,0,'dizzy',l,inQuad,2,.2)
+						me(i+3.5,.75,50,0,'stealth',l,inQuad,2,.2)
+						simple_m0d2(i+2.9,80,.5,'brake',2)
+					end
+				else
+					me(i+1,1,0,100,'tornado',l,outQuart,1)
+					me(i+1,1,0,314,'dizzy',l,outQuart,1)
+					me(i+1,1,0,50,'stealth',l,outQuart,1)
+					me(i+2,1,100,0,'tornado',l,inQuad,1,.2)
+					me(i+2,1,314,0,'dizzy',l,inQuad,1,.2)
+					me(i+2,1,50,0,'stealth',l,inQuad,1,.2)
+					simple_m0d2(i+.9,80,.5,'brake',1)
+					
+					if i < 96 then
+						me(i+3,1,0,100,'tornado',l,outQuart,2)
+						me(i+3,1,0,314,'dizzy',l,outQuart,2)
+						me(i+3,1,0,50,'stealth',l,outQuart,2)
+						me(i+4,1,100,0,'tornado',l,inQuad,2,.2)
+						me(i+4,1,314,0,'dizzy',l,inQuad,2,.2)
+						me(i+4,1,50,0,'stealth',l,inQuad,2,.2)
+						simple_m0d2(i+2.9,80,.5,'brake',2)
+					end
+				end
+				
+				m2(i+0,function() mars_nue:decelerate(60/180) mars_nue:x(sw/2 - 150) end)
+				m2(i+0,function() mars_nue:playcommand('GoLeft') end)
+				if i < 96 then
+					m2(i+2,function() mars_nue:decelerate(60/180) mars_nue:x(sw/2 + 150) end)
+					m2(i+2,function() mars_nue:playcommand('GoRight') end)
+				end
+				
+			end
+			
+			m2(36,function() mars_nue:playcommand('NueOn') end,true)
+			m2(60,function() mars_nue:playcommand('Cast') end)
+			
+			m2(60,function()
+				
+				mars_bglayer1:linear(4/3);
+				mars_bglayer1:croptop(-0.1);
+				mars_bglayer1:cropbottom(-0.1);
+				mars_bglayer2:linear(4/3);
+				mars_bglayer2:diffusealpha(0.6);
+				mars_bglayer2b:linear(4/3);
+				mars_bglayer2b:diffusealpha(0.6);
+				
+				mars_bgvig:playcommand('Active')
+				
+			end)
+			
+			m2(98,function() mars_nue:decelerate(60/180) mars_nue:x(sw/2) end)
+			
+			me(96,100,0,50,'mini',e,linear,nil,130)
+			
+			m2(96,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(240/180)
+						a:x(sw/2 + 180*(pn*2-3))
+					end
+				end
+			end)
+			
+			m(100,124,'50 drunk, 50 tipsy',e)
+			
+			m2(100,function() mars_nue:playcommand('GoRight') end)
+			m2(100.01,function() mars_nue:playcommand('GoRight2') end)
+			m2(101,function() mars_nue:playcommand('GoRight3') end)
+			
+			for i=102,127,8 do
+				m2(i,function() mars_nue:playcommand('GoLeft') end)
+				m2(i+0.01,function() mars_nue:playcommand('GoLeft2') end)
+				m2(i+3,function() mars_nue:playcommand('GoLeft3') end)
+				m2(i+4,function() mars_nue:playcommand('GoRight') end)
+				m2(i+4.01,function() mars_nue:playcommand('GoRight2') end)
+				m2(i+7,function() mars_nue:playcommand('GoRight3') end)
+				
+				me(i-2+0,2,0,100,'tornado',l,inOutQuad,2,2)
+				me(i-2+0,2,0,314,'dizzy',l,inOutQuad,2,2)
+				me(i-2+0,2,0,50,'stealth',l,inOutQuad,2,2)
+				me(i-2+0,2,0,80,'brake',l,inOutQuad,2,2)
+				me(i-1+2,2,100,0,'tornado',l,inOutQuad,2,.2)
+				me(i-1+2,2,314,0,'dizzy',l,inOutQuad,2,.2)
+				me(i-1+2,2,50,0,'stealth',l,inOutQuad,2,.2)
+				me(i-1+2,2,80,0,'brake',l,inOutQuad,2,.2)
+				
+				if i < 126 then
+					me(i-2+4,2,0,100,'tornado',l,inOutQuad,1,2)
+					me(i-2+4,2,0,314,'dizzy',l,inOutQuad,1,2)
+					me(i-2+4,2,0,50,'stealth',l,inOutQuad,1,2)
+					me(i-2+4,2,0,80,'brake',l,inOutQuad,1,2)
+					me(i-1+6,2,100,0,'tornado',l,inOutQuad,1,.2)
+					me(i-1+6,2,314,0,'dizzy',l,inOutQuad,1,.2)
+					me(i-1+6,2,50,0,'stealth',l,inOutQuad,1,.2)
+					me(i-1+6,2,80,0,'brake',l,inOutQuad,1,.2)
+				end
+				
+			end
+			
+			mpf(100,128,function(beat)
+				
+				mars_nue:x( sw/2 + 180*math.sin((beat-100)*math.pi*0.25) )
+				
+			end)
+			
+			--[[
+			me(116,2,0,50,'mini',l,linear)
+			me(120,2,0,50,'mini',l,linear)
+			me(124,2,0,50,'mini',l,linear)
+			me(126,2,0,50,'mini',l,linear)
+			me(128,1,0,50,'mini',l,linear)
+			me(129,1,0,50,'mini',l,linear)
+			]]
+			
+			me(116,2,1,1.75,'xmod',l,linear)
+			me(120,2,1,1.75,'xmod',l,linear)
+			me(124,2,1,1.75,'xmod',l,linear)
+			me(126,2,1,1.75,'xmod',l,linear)
+			me(128,1,1,1.75,'xmod',l,linear)
+			me(129,1,1,1.75,'xmod',l,linear)
+			
+			m2(124,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:accelerate(240/180)
+						a:x(sw/2)
+					end
+					
+					local a = GetJud(pn)
+					if a then
+						a:accelerate(4/3)
+						a:x(200*(pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:accelerate(4/3)
+						a:x(200*(pn*2-3))
+					end
+					
+				end
+			end)
+			
+			m2(128,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2)
+					end
+					
+					local a = GetJud(pn)
+					if a then
+						a:x(200*(pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(200*(pn*2-3))
+					end
+					
+				end
+			end,true)
+			
+			m2(128,function()
+				mars_bglayer1:linear(4/3)
+				mars_bglayer1:diffusealpha(0)
+				mars_bglayer2:linear(4/3)
+				mars_bglayer2:diffusealpha(0)
+				mars_bglayer2b:linear(4/3)
+				mars_bglayer2b:diffusealpha(0)
+			end)
+			
+			m2(127,function() mars_nue:playcommand('GoRight3') end)
+			
+			m2(128,function() mars_nue:playcommand('NueOff') end)
+			
+			me(130,132,1.66,1.5,'xmod',e,inOutQuad,nil,156)
+			me(156,4,1.5,1.66,'xmod',l,inOutQuad)
+			
+			me(130,132,0,-100,'flip',e,inOutQuad,nil,156)
+			me(130,132,50,100,'mini',e,inOutQuad,nil,156)
+			--me(130,132,0,20,'brake',e,inOutQuad,nil,156)
+			me(156,4,-100,0,'flip',l,inOutQuad,nil)
+			me(156,4,100,0,'mini',l,inOutQuad,nil)
+			--me(156,4,20,0,'brake',l,inOutQuad,nil)
+			
+			if FUCK_EXE then
+				m(130,156,'*2 -90 drawsizeback',e)
+			end
+			
+			me(128,132,0,100,'centered',e,inOutQuad,nil,160)
+			
+			me(130,132,0,100,'reverse',e,inOutQuad,2,156)
+			
+			mpf(132,160,function(beat)
+				
+				local rot = 0
+				
+				if beat >= 132 and beat < 140 then
+					rot = (-360*8)*inOutQuad((beat-132)/8,0,1,1)
+				elseif beat >= 140 and beat < 148 then
+					rot = (360*8)*inOutQuad((beat-140)/8,0,1,1)
+				elseif beat >= 148 and beat < 156 then
+					rot = (-360*8)*inOutQuad((beat-148)/8,0,1,1)
+				elseif beat >= 156 and beat < 160 then
+					rot = (360*1)*inOutQuad((beat-156)/4,0,1,1)
+				else
+					rot = 0
+				end
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationx(rot)
+					end
+				end
+				
+			end)
+			
+			local b136 = {0,0,0,0,0,-1,-1,0}
+			local b144 = {0,0,0,0,0,-1,-1,0}
+			
+			for i=1,table.getn(b136) do
+				me(136+(i-1)*0.25-.05,.25,-100 + 75*b136[i],-100 + 75*b136[i],'flip',l,linear)
+				me(144+(i-1)*0.25-.05,.25,-100 + 75*b144[i],-100 + 75*b144[i],'flip',l,linear)
+			end
+			
+			m(136.00-.04,.25,'*10000 50 stealth',l)
+			m(136.25-.04,.25,'*10000 no stealth',l)
+			m(136.50-.04,.25,'*10000 50 stealth',l)
+			m(136.75-.04,.25,'*10000 no stealth',l)
+			
+			m(144.00-.04,.25,'*10000 50 stealth',l)
+			m(144.25-.04,.25,'*10000 no stealth',l)
+			m(144.50-.04,.25,'*10000 50 stealth',l)
+			m(144.75-.04,.25,'*10000 no stealth',l)
+			m(145.00-.04,.25,'*10000 50 stealth',l)
+			m(145.25-.04,.25,'*10000 no stealth',l)
+			
+			me(148-.2,.5,0,-180,'drunk',l,outQuad)
+			me(149.3,6.7,-180,0,'drunk',l,outQuad)
+			simple_m0d2(148-.2,50,1.5,'stealth')
+			
+			m(160.00,1,'*2 80 centered',l)
+			m(160.75,1,'*2 60 centered',l)
+			m(161.50,1,'*2 40 centered',l)
+			m(162.25,1,'*2 20 centered',l)
+			m(163.00,1,'*1 10 centered',l)
+			m(163.50,1,'*1 0 centered',l)
+			
+			m2(160.00,function()for pn=1,2 do local a = Plr(pn) if a then a:rotationx(0);a:linear(.1);a:rotationz(10*(pn*2-3));a:x(sw/2+30*(pn*2-3)) end end end)
+			m2(160.75,function()for pn=1,2 do local a = Plr(pn) if a then a:linear(.1);a:rotationz(-20*(pn*2-3));a:x(sw/2+60*(pn*2-3)) end end end)
+			m2(161.50,function()for pn=1,2 do local a = Plr(pn) if a then a:linear(.1);a:rotationz(30*(pn*2-3));a:x(sw/2+90*(pn*2-3)) end end end)
+			m2(162.25,function()for pn=1,2 do local a = Plr(pn) if a then a:linear(.1);a:rotationz(-40*(pn*2-3));a:x(sw/2+120*(pn*2-3)) end end end)
+			m2(163.00,function()for pn=1,2 do local a = Plr(pn) if a then a:linear(.1);a:rotationz(20*(pn*2-3));a:x(sw/2+140*(pn*2-3)) end end end)
+			m2(163.50,function()for pn=1,2 do local a = Plr(pn) if a then a:linear(.1);a:rotationz(0);a:x(sw/2+160*(pn*2-3)) end end end)
+			
+			m2(160,function()
+				for pn=1,2 do
+				
+					local a = GetJud(pn)
+					if a then
+						a:linear(4/3)
+						a:x(0)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(4/3)
+						a:x(0)
+					end
+					
+				end
+			end)
+			m2(164,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2 + 160*(pn*2-3))
+						a:rotationx(0)
+						a:rotationz(0)
+					end
+					
+					local a = GetJud(pn)
+					if a then
+						a:x(0)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(0)
+					end
+					
+				end
+			end,true)
+			
+			for i=0,7 do
+				me(162+4*i,1.9,0,99.9,'reverse',l,inCirc,nil,.1)
+				me(164+4*i,1.9,99.9,0,'reverse',l,inCirc,nil,.1)
+			end
+			
+			for i=0,6 do
+				for j=0,3 do
+					m(180+i*2+j*0.25,.125,'*10000 30 stealth',l)
+					m(180.125+i*2+j*0.25,.125,'*10000 no stealth',l)
+				end
+				me(180+i*2+1,.4,30,0,'stealth',l,linear)
+			end
+			
+			for i=204,264,4 do
+				me(i,3,50,0,'stealth',l,linear)
+				me(i,4,200,0,'drunk',l,outElastic)
+			end
+			
+			me(184,2,0,-150,'mini',l,linear)
+			me(186,1,-150,0,'mini',l,linear)
+			me(184,2,0,314,'dizzy',l,linear)
+			me(186,1,314,0,'dizzy',l,linear)
+			me(184,2,0,100,'drunk',l,linear)
+			me(186,1,100,0,'drunk',l,linear)
+			me(184,2,0,50,'flip',l,linear)
+			me(186,1,50,0,'flip',l,linear)
+			
+			me(192,2,0,-150,'mini',l,linear)
+			me(194,1,-150,0,'mini',l,linear)
+			me(192,2,0,314,'dizzy',l,linear)
+			me(194,1,314,0,'dizzy',l,linear)
+			me(192,2,0,100,'drunk',l,linear)
+			me(194,1,100,0,'drunk',l,linear)
+			me(192,2,0,50,'flip',l,linear)
+			me(194,1,50,0,'flip',l,linear)
+			
+			me(288,2,0,-150,'mini',l,linear)
+			me(290,1,-150,0,'mini',l,linear)
+			--me(288,2,0,314,'dizzy',l,linear)
+			--me(290,1,314,0,'dizzy',l,linear)
+			me(288,2,0,100,'drunk',l,linear)
+			me(290,1,100,0,'drunk',l,linear)
+			me(288,2,0,50,'flip',l,linear)
+			me(290,1,50,0,'flip',l,linear)
+			
+			m2(200,function()
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(-360)
+						a:decelerate(180/180)
+						a:rotationz(0)
+						a:x(sw/2 + 128*(pn*2-3))
+					end
+				end
+				
+			end)
+			
+			--[[
+			m(196,4,'*100000 157.08 dizzy',l)
+			m(200,1,'*100000 no dizzy',l)
+			]]
+			
+			simple_m0d2(196,-100,1.5,'mini')
+			simple_m0d2(196,200,1.5,'drunk')
+			simple_m0d2(196,50,1.5,'stealth')
+			simple_m0d2(196,500,1.5,'bumpy')
+			
+			me(200,204,0,99.9,'reverse',e,inOutQuad)
+			
+			for i=164,195,4 do
+				if i ~= 168 and i ~=176 and i ~= 184 and i ~= 192 then
+					me(i,.75,0,200,'drunk',l,outQuart)
+					me(i+.75,.5,200,0,'drunk',l,outQuart)
+					me(i+2,.75,0,200,'tipsy',l,outQuart)
+					me(i+2.75,.5,200,0,'tipsy',l,outQuart)
+				end
+				if i == 168 then
+					me(i,.75,0,200,'drunk',l,outQuart)
+					me(i+.75,.5,200,0,'drunk',l,outQuart)
+				end
+				if i == 176 then
+					me(i,.75,0,200,'drunk',l,outQuart)
+					me(i+.75,.5,200,0,'drunk',l,outQuart)
+					me(i+1.5,.5,-150,0,'mini',l,linear)
+				end
+			end
+			
+			for i=164,177,2 do
+				simple_m0d(i+1.45,50,.5,'stealth')
+			end
+			
+			m2(194,function() mars_nue:playcommand('NueOn') end, true)
+			m2(200,function() mars_nue:playcommand('Cast') end)
+			
+			m2(204,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2 + 128*(pn*2-3))
+					end
+				end
+				
+			end,true)
+			
+			m(199.5,203.5,'*1000 150 beat',e)
+			
+			m2(200,function()
+				mars_nue:accelerate(240/180)
+				mars_nue:addy(-sh)
+			end)
+			
+			m2(204,function()
+				mars_nue:playcommand('NueOff')
+				
+				mars_spacelayer:hidden(0)
+				
+				mars_bglayer3:diffusealpha(1)
+				mars_bglayer3:linear(4/3)
+				mars_bglayer3:diffusealpha(0.4)
+			end)
+			
+			m2(204,function()
+				mars_nue:playcommand('NueOff')
+			end,true)
+			
+			-------------------------------
+			--ufo invasion
+			
+			m2(203,function()
+				
+				nue_ufos:hidden(0)
+				
+				nue_ufos_red:y(-50)
+				nue_ufos_blue:y(-50)
+				nue_ufos_green:y(-50)
+				nue_ufos_yellow:y(-50)
+				
+			end)
+			
+			m2(204,function()
+				
+				nue_ufos_red:decelerate(4/3)
+				nue_ufos_red:y(sh*0.06)
+				
+			end)
+			
+			m2(212,function()
+				
+				nue_ufos_blue:decelerate(4/3)
+				nue_ufos_blue:y(sh*0.12)
+				
+			end)
+			
+			m2(220,function()
+				
+				nue_ufos_green:decelerate(4/3)
+				nue_ufos_green:y(sh*0.18)
+				
+			end)
+			
+			m2(228,function()
+				
+				nue_ufos_yellow:decelerate(4/3)
+				nue_ufos_yellow:y(sh*0.24)
+				
+			end)
+			
+			m2(236,function()
+				
+				nue_ufos_yellow:accelerate(8/3)
+				nue_ufos_yellow:addy(sh+50)
+				
+			end)
+			
+			m2(244,function()
+				
+				nue_ufos_green:accelerate(8/3)
+				nue_ufos_green:addy(sh+50)
+				
+			end)
+			
+			m2(252,function()
+				
+				nue_ufos_blue:accelerate(8/3)
+				nue_ufos_blue:addy(sh+50)
+				
+			end)
+			
+			m2(260,function()
+				
+				nue_ufos_red:accelerate(8/3)
+				nue_ufos_red:addy(sh+50)
+				
+			end)
+			
+			m2(268,function()
+				
+				nue_ufos:hidden(1)
+				
+			end)
+			
+			
+			m(204,264,'*1 space',e)
+			m(204,266,'*10 99.9 reverse',e)
+			
+			me(264,2,100,0,'space',l,linear);
+			
+			me(266,2,100,0,'reverse',l,linear);
+			
+			m(268,292,'*10000 -500 split',e,1)
+			m(268,292,'*10000 -500 reverse,*10000 500 split',e,2)
+			
+			m(268,292,'*1000 -200 hidden, *1000 -200 sudden, *1000 200 stealth, *1000 5 hiddenoffset, *1000 -40 suddenoffset',e)
+			m(292,1,'*1000 no hidden, *1000 no sudden, *1000 no stealth',l)
+			
+			m2(266,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:accelerate(2/3)
+						a:x(sw/2)
+					end
+					local a = GetJud(pn)
+					if a then
+						a:accelerate(2/3)
+						a:x(200*(pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:accelerate(2/3)
+						a:x(200*(pn*2-3))
+					end
+				end
+			end)
+			
+			m2(268,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2)
+					end
+					local a = GetJud(pn)
+					if a then
+						a:x(200*(pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(200*(pn*2-3))
+					end
+				end
+			end,true)
+			
+			if slumpo then
+				m(236,268,'*0.5 150 space',e)
+			end
+			
+			mpf(204,268,function(beat)
+				
+				local amp = 0
+				if beat >= 204 and beat < 212 then
+					amp = 2*outQuad((beat-204)/8,0,1,1)
+				elseif beat >= 212 and beat < 236 then
+					amp = 2
+				elseif beat >= 236 and beat < 264 then
+					amp = 2+0.5*(beat-236)/28
+				elseif beat >= 264 and beat < 268 then
+					amp = 2.5*(268-beat)/4
+				end
+				
+				mod_do('*10000 '..(1.75 + (amp/2)*math.cos((beat-204)*math.pi*0.25) )..'x')
+				
+			end)
+			
+			m2(264,function()
+				mars_bglayer3:linear(4/3)
+				mars_bglayer3:diffusealpha(1)
+			end)
+			
+			m2(268,function()
+				
+				mars_spacelayer:hidden(1)
+				
+			end)
+			
+			for i=268,287 do
+				simple_m0d2(i-.1,30,.3,'brake')
+			end
+			for i=292,295 do
+				simple_m0d2(i-.1,30,.3,'brake')
+			end
+			
+			m(292-.05,.5,'*1000 invert',l)
+			m(292.5-.05,.5,'*1000 no invert',l)
+			m(293-.05,.5,'*1000 invert',l)
+			m(293.25-.05,.5,'*1000 no invert',l)
+			m(293.5-.05,.5,'*1000 invert',l)
+			m(294-.05,.5,'*1000 no invert',l)
+			m(294.25-.05,.5,'*1000 invert',l)
+			m(294.75-.05,.5,'*1000 no invert',l)
+			m(295-.05,.5,'*1000 invert',l)
+			m(295.25-.05,.5,'*1000 no invert',l)
+			m(295.5-.05,.5,'*1000 no invert',l)
+			simple_m0d(295.5-.05,50,.3,'stealth')
+			
+			for i=0,3 do
+				m(296.00+i-.05,.25,'*30 invert, *30 no flip',l)
+				m(296.25+i-.05,.25,'*30 no invert, *30 flip',l)
+				m(296.50+i-.05,.25,'*30 -100 invert, *30 flip',l)
+				m(296.75+i-.05,.25,'*30 no invert, *30 no flip',l)
+			end
+			
+			simple_m0d(300-.05,50,.6,'stealth')
+			simple_m0d(300-.05,-50,.6,'mini')
+			simple_m0d(300-.05,100,.6,'drunk')
+			simple_m0d(300-.05,100,.6,'tipsy')
+			
+			m2(302,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:sleep(0)
+						a:rotationz(360)
+						a:rotationx(-720)
+						a:linear(1/3)
+						a:zoom(3)
+						a:rotationx(0)
+						a:sleep(0)
+						a:decelerate(8/3)
+						--a:rotationz(0)
+						a:zoom(1)
+						a:vibrate()
+						a:effectmagnitude(0,10,0)
+					end
+					local a = GetJud(pn)
+					if a then
+						a:linear(1/3)
+						a:x(66*(pn*2-3))
+						a:decelerate(8/3)
+						a:x(200*(pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(1/3)
+						a:x(66*(pn*2-3))
+						a:decelerate(8/3)
+						a:x(200*(pn*2-3))
+					end
+				end
+			end)
+			m2(303,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:stopeffect()
+					end
+				end
+			end)
+			
+			m(292,1,'*10000 no reverse, *10000 no split',l,1)
+			m(292,1,'*10000 no reverse, *10000 no split',l,2)
+			
+			me(302,1,0,50,'flip',l,linear,nil,99)
+			me(302,1,0,50,'reverse',l,linear,nil,99)
+			
+			--m(303,99,'*5 200 drunk, *2 200 tipsy',l,1)
+			--m(303,99,'*5 -200 drunk, *2 -200 tipsy',l,2)
+			me(303,8,50,100,'dark',l,linear,nil,99)
+			
+			me(303,8,0,50*1.41,'alternate',l,outQuad,1,99)
+			me(303,8,50,50-25*1.41,'reverse',l,outQuad,1,99)
+			me(303,8,50,50-50*1.41,'flip',l,outQuad,1,99)
+			me(303,8,0,50*1.41,'invert',l,outQuad,1,99)
+			
+			me(303,8,0,-50,'split',l,outQuad,2,99)
+			me(303,8,0,-50,'alternate',l,outQuad,2,99)
+			me(303,8,50,99.9,'reverse',l,outQuad,2,99)
+			me(303,8,50,100,'flip',l,outQuad,2,99)
+			me(303,8,0,-150,'invert',l,outQuad,2,99)
+			
+			if FUCK_EXE then
+				m(303,999,'*1000 disablemines, *1000 hidemines, *1000 stealthpastreceptors',e)
+			end
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			--------------------------------------
+			--ending blips (non euclidean column swaps)
+			
+			local p1i = -1
+			local p2i = -1
+			local p12fi = -1
+			
+			for i=1,table.getn(bloops)-1 do
+				local a = bloops[i]
+				local b = a[1]
+				local c = a[2]
+				local a2 = bloops[i+1]
+				local b2 = a2[1]
+				local c2 = a2[2]
+				if c == 0 then
+					if p1i == -1 then
+						if b < 280 then
+							m(b-.05,b2,'*30 invert',e,1)
+						else
+							m(b-.05,b2,'*15 50 invert',e,1)
+							m(b-.05,b2,'*15 50 flip',e,1)
+							m(b-.05,b2,'*45 -150 invert',e,2)
+							m(b-.05,b2,'*15 50 flip',e,2)
+						end
+					else
+						if b < 280 then
+							m(b-.05,b2,'*30 no invert',e,1)
+						else
+							m(b-.05,b2,'*15 no invert',e,1)
+							m(b-.05,b2,'*15 no flip',e,1)
+							m(b-.05,b2,'*45 no invert',e,2)
+							m(b-.05,b2,'*15 no flip',e,2)
+						end
+					end
+					p1i = p1i*-1
+				elseif c == 3 then
+					if p2i == -1 then
+						if b < 280 then
+							m(b-.05,b2,'*30 invert',e,2)
+						else
+							m(b-.05,b2,'*15 50 invert',e,2)
+							m(b-.05,b2,'*15 50 flip',e,2)
+							m(b-.05,b2,'*45 -150 invert',e,1)
+							m(b-.05,b2,'*15 50 flip',e,1)
+						end
+					else
+						if b < 280 then
+							m(b-.05,b2,'*30 no invert',e,2)
+						else
+							m(b-.05,b2,'*15 no invert',e,2)
+							m(b-.05,b2,'*15 no flip',e,2)
+							m(b-.05,b2,'*45 no invert',e,1)
+							m(b-.05,b2,'*15 no flip',e,1)
+						end
+					end
+					p2i = p2i*-1
+				elseif c == 2 then
+					if p12fi == -1 then
+						m(b-.05,b2,'*7.5 25 flip',e,1)
+						m(b-.05,b2,'*22.5 -75 invert',e,1)
+						m(b-.05,b2,'*7.5 25 flip',e,2)
+						m(b-.05,b2,'*7.5 125 invert',e,2)
+					else
+						m(b-.05,b2,'*7.5 no flip',e,1)
+						m(b-.05,b2,'*22.5 no invert',e,1)
+						m(b-.05,b2,'*7.5 no flip',e,2)
+						m(b-.05,b2,'*7.5 100 invert',e,2)
+					end
+					p12fi = p12fi*-1
+				end
+			end
+			
+			m(271.75,274.25,'*30 invert',e,1)
+			m(274.25,276,'*30 invert',e,2)
+			
+			mod_wiggle(280,4,4,200,2,'drunk')
+			mod_wiggle(281,4,4,200,2,'tipsy')
+			mod_wiggle(282,4,4,200,2,'drunk')
+			
+			m2(283,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomz(80)
+						a:decelerate(60/180)
+						a:zoomz(0)
+					end
+				end
+			end)
+			
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			self:queuecommand('Update');
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'LifeP1','LifeP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				
+				--name players, judgment and combo
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+					
+					if _G['ScoreP'..pn] then 
+						_G['ScoreP'..pn]:zoom(0)
+					end
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				checked = true; --let this only run once
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				for i=1,2 do
+					mod_do('clearall',i)
+				end
+				
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+				for i,v in pairs(mods) do
+					if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+						if beat >=v[1] then
+							if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+								if table.getn(v) == 5 then
+									mod_do(v[3],v[5]);
+								else
+									mod_do(v[3]);
+								end
+							end
+						end
+					else
+						v[1] = 0;
+						v[2] = 0;
+						v[3] = '';
+						v[4] = 'error';
+						SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+					end
+				end
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+				for i,v in pairs(mods2) do
+					if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+						if mod_time >=v[1] then
+							if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+								if table.getn(v) == 5 then
+									mod_do(v[3],v[5]);
+								else
+									mod_do(v[3]);
+								end
+							end
+						end
+					else
+						v[1] = 0;
+						v[2] = 0;
+						v[3] = 'error';
+						v[4] = 'error';
+						SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+					end
+				end
+				
+				--------------------------------------------------------------------------------------
+				-- i dont know who this reader is but he looks like he is made out of EASE HAHAHAHA --
+				-- original code by exschwasion, bastardized by taro for cmod support and less 'if' --
+				--------------------------------------------------------------------------------------
+				for i,v in pairs(mods_ease) do
+					if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+						if beat >=v[1] then
+							if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+								
+								local duration = v[2];
+								if v[6] == 'end' then duration = v[2] - v[1] end
+								local curtime = beat - v[1]
+								local diff = v[4] - v[3]
+								local startstrength = v[3]
+								local curve = v[7]
+								local mod = v[5]
+								
+								local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+							
+								local strength = v[4]
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							end
+						end
+					else
+						SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+					end
+				end
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				----------------------------------------
+				-- HBLBHCBLBJGBHL DO THIS EVERY FRAME --
+				----------------------------------------
+				
+				if table.getn(mod_perframes)>0 then
+					for i=1,table.getn(mod_perframes) do
+						local a = mod_perframes[i]
+						if beat > a[1] and beat < a[2] then
+							a[3](beat);
+						end
+					end
+				end
+				
+				mars_bgvig:x( mars_nue:GetX() )
+				mars_bgvig:y( mars_nue:GetY() )
+				
+				if beat>nue_st-0.05 then
+					if beat<nue_st+1 then
+						for i=1,4 do
+							nue_placeStar();
+						end
+					end
+					nue_st = nue_st+1;
+				end
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+					if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+						if type(mod_actions[curaction][2]) == 'function' then
+							mod_actions[curaction][2]()
+						elseif type(mod_actions[curaction][2]) == 'string' then
+							MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+						end
+					end
+					curaction = curaction+1;
+				end
+				
+			end
+			
+			self:sleep(1/60);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	
+	<!--Handling messages here is still fun and profitable-->
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) rb_aux = self end"
+	/>
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = mod_globaloffset+tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<Layer Type="ActorFrame" InitCommand="%function(self) nue_ufos = self end" OnCommand="hidden,1;" ><children>
+		
+		<Layer Type="ActorFrame" InitCommand="%function(self) nue_ufos_red = self end" OnCommand="x,0;y,sh/2;" ><children>
+			<Layer File="../nue/ufored" OnCommand="zoom,2;x,0*sw*0.2;linear,nue_ufo_spd*0.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufored" OnCommand="zoom,2;x,1*sw*0.2;linear,nue_ufo_spd*1.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufored" OnCommand="zoom,2;x,2*sw*0.2;linear,nue_ufo_spd*2.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufored" OnCommand="zoom,2;x,3*sw*0.2;linear,nue_ufo_spd*3.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufored" OnCommand="zoom,2;x,4*sw*0.2;linear,nue_ufo_spd*4.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufored" OnCommand="zoom,2;x,5*sw*0.2;linear,nue_ufo_spd*5.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+		</children></Layer>
+		
+		<Layer Type="ActorFrame" InitCommand="%function(self) nue_ufos_blue = self end" OnCommand="x,0;y,sh/2;" ><children>
+			<Layer File="../nue/ufoblue" OnCommand="zoom,2;x,0*sw*0.2;linear,nue_ufo_spd*5.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoblue" OnCommand="zoom,2;x,1*sw*0.2;linear,nue_ufo_spd*4.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoblue" OnCommand="zoom,2;x,2*sw*0.2;linear,nue_ufo_spd*3.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoblue" OnCommand="zoom,2;x,3*sw*0.2;linear,nue_ufo_spd*2.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoblue" OnCommand="zoom,2;x,4*sw*0.2;linear,nue_ufo_spd*1.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoblue" OnCommand="zoom,2;x,5*sw*0.2;linear,nue_ufo_spd*0.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+		</children></Layer>
+		
+		<Layer Type="ActorFrame" InitCommand="%function(self) nue_ufos_green = self end" OnCommand="x,0;y,sh/2;" ><children>
+			<Layer File="../nue/ufogreen" OnCommand="zoom,2;x,0*sw*0.2;linear,nue_ufo_spd*0.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufogreen" OnCommand="zoom,2;x,1*sw*0.2;linear,nue_ufo_spd*1.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufogreen" OnCommand="zoom,2;x,2*sw*0.2;linear,nue_ufo_spd*2.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufogreen" OnCommand="zoom,2;x,3*sw*0.2;linear,nue_ufo_spd*3.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufogreen" OnCommand="zoom,2;x,4*sw*0.2;linear,nue_ufo_spd*4.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+			<Layer File="../nue/ufogreen" OnCommand="zoom,2;x,5*sw*0.2;linear,nue_ufo_spd*5.5;x,sw*-0.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*1.1;linear,nue_ufo_spd*6;x,sw*-0.1;queuecommand,Loop" />
+		</children></Layer>
+		
+		<Layer Type="ActorFrame" InitCommand="%function(self) nue_ufos_yellow = self end" OnCommand="x,0;y,sh/2;" ><children>
+			<Layer File="../nue/ufoyellow" OnCommand="zoom,2;x,0*sw*0.2;linear,nue_ufo_spd*5.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoyellow" OnCommand="zoom,2;x,1*sw*0.2;linear,nue_ufo_spd*4.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoyellow" OnCommand="zoom,2;x,2*sw*0.2;linear,nue_ufo_spd*3.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoyellow" OnCommand="zoom,2;x,3*sw*0.2;linear,nue_ufo_spd*2.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoyellow" OnCommand="zoom,2;x,4*sw*0.2;linear,nue_ufo_spd*1.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+			<Layer File="../nue/ufoyellow" OnCommand="zoom,2;x,5*sw*0.2;linear,nue_ufo_spd*0.5;x,sw*1.1;sleep,0;queuecommand,Loop"
+			LoopCommand="x,sw*-0.1;linear,nue_ufo_spd*6;x,sw*1.1;queuecommand,Loop" />
+		</children></Layer>
+		
+	</children></Layer>
+	
+</children></ActorFrame>

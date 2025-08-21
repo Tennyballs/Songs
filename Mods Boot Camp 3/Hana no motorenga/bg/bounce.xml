@@ -1,0 +1,35 @@
+<ActorFrame> <children>
+	
+	<Layer
+		File="background-dark"
+		OnCommand="queuecommand,bgcommandfuck;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,1"
+		bgcommandfuckCommand="%function(self)
+			fd_hnm_bg = self
+		end"
+	/>
+	
+
+	<Layer
+		File="top"
+		OnCommand="queuecommand,bgcommandfuck;x,SCREEN_CENTER_X;y,SCREEN_HEIGHT*-.25;ZoomToWidth,SCREEN_WIDTH;diffusealpha,1;vertalign,top;sleep,2.133;decelerate,1.067;y,SCREEN_HEIGHT*-.05"
+		bgcommandfuckCommand="%function(self)
+			fd_hnm_bgt = self
+		end"
+	/>
+	<Layer
+		File="2_floor"
+		OnCommand="queuecommand,bgcommandfuck;x,SCREEN_CENTER_X;y,SCREEN_HEIGHT*.75;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,1;sleep,2.133;decelerate,1.067;y,SCREEN_CENTER_Y*1.15;glowshift;effectcolor1,1,1,1,.1;effectcolor2,1,1,1,0;effectperiod,math.random()+10"
+		bgcommandfuckCommand="%function(self)
+			fd_hnm_bgf = self
+		end"
+	/>
+	
+	<Layer
+		File="../lua/R"
+		OnCommand="y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH*.55;ZoomToHeight,SCREEN_HEIGHT*1.05;diffusealpha,0;x,SCREEN_WIDTH*1.5"
+	/>
+	<Layer
+		File="../lua/L"
+		OnCommand="y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH*.55;ZoomToHeight,SCREEN_HEIGHT*1.05;diffusealpha,0;sleep,2.133;decelerate,1.067;x,SCREEN_WIDTH*-.5"
+	/>
+</children></ActorFrame>

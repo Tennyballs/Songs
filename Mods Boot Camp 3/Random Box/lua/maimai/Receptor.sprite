@@ -1,0 +1,10 @@
+[Sprite]
+Texture=_Down Receptor go 2x1.png
+Frame0000=0
+Delay0000=0.04285714286
+Frame0001=1
+Delay0001=0.34285714285
+Frame0002=0
+Delay0002=0.04285714286
+
+//1 beat = 0.42857142857 sec at 140bpm

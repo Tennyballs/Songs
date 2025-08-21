@@ -1,0 +1,7 @@
+<ActorFrame> <children>
+
+	<Layer File="sky" OnCommand="stretchto,0,0,sw,sh" />
+	
+	<Layer InitCommand="%function(self) nyan_intro_sky2 = self end" File="isky" OnCommand="stretchto,0,0,sw,sh;y,1000;" />
+
+</children> </ActorFrame>

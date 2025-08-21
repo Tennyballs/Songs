@@ -1,0 +1,3175 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	if FUCK_EXE then
+
+		songName = GAMESTATE:GetCurrentSong():GetSongDir();
+		
+		mod_globaloffset = PREFSMAN:GetPreference('GlobalOffsetSeconds');
+		
+		sw = SCREEN_WIDTH
+		scx = SCREEN_CENTER_X
+		scy = SCREEN_CENTER_Y
+		sh = SCREEN_HEIGHT --shortcuts
+		
+		function Plr(pn)
+			return _G['P'..pn]
+		end
+		function GetJud(pn)
+			return _G['jud'..pn]
+		end
+		function GetCom(pn)
+			return _G['com'..pn]
+		end
+		
+		function mod_do(str,pn)
+			if pn then
+				GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+			else
+				GAMESTATE:ApplyGameCommand('mod,'..str)
+			end
+		end
+		
+		function taro_Sound(str)
+			local met = GAMESTATE:GetCurrentSong():GetSongDir();
+			SOUND:PlayOnce(met..'lua/'..str..'.ogg');
+		end
+	
+	else
+		
+		SCREENMAN:SystemMessage('Requires NotITG ver. 3.2!')
+		
+	end
+	
+end"
+><children>
+
+	<Layer Type="ActorFrame" Condition="FUCK_EXE"><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="wiggletable.xml" />
+	<Layer File="modhelpers.xml" />
+	<Layer File="easing.xml" />
+	<Layer File="SnowField1.xml" />
+	<Layer File="SnowField2.xml" />
+	<Layer File="SnowField3.xml" />
+	<Layer File="SnowField4.xml" />
+	<Layer File="spellcard.xml" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			if tonumber(GAMESTATE:GetVersionDate()) > 20180909 then
+		
+				checked = false;
+				for pn=1,8 do
+					_G['P'..pn] = nil
+					_G['jud'..pn] = nil
+					_G['com'..pn] = nil
+				end
+				
+				function snow_faketaphit(col,w,pn)
+					local beat = GAMESTATE:GetSongBeat()
+					if checked and beat and beat > 4 then
+						local a = Plr(1)
+						if a then
+							a:DidTapNote(col,w) --generate noteflash
+						end
+					end
+				end
+				
+				function snow_fakeholdhit(col)
+					local beat = GAMESTATE:GetSongBeat()
+					if checked and beat and beat > 4 then
+						local a = Plr(1)
+						if a then
+							--a:DidHoldNote(col) --generate hold success flash
+						end
+					end
+				end
+			
+				---------------------------------------------------------
+				---------DOCUMENTATION-----------------------------------
+				---------------------------------------------------------
+				
+				--function perframe( beat, endBeat )
+					--return true if the current beat is between 'beat' and 'endBeat'
+				
+				--function mod_shader(beat,key,which)
+					--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+					
+				--function mod_insert(beat,len,mod,len_or_end,pn)
+					--insert mod into beat mods table
+				--function mod_insert2(time,len,mod,len_or_end,pn)
+					--insert mod into time mods table
+					
+				--function mod_message(beat,msg,persistent)
+					--insert something into the actions table.
+					--msg can also be a function. If string, a message gets broadcast at that beat
+					--if 'persistent' is true, message will run even if editor starts at a beat past it
+					
+				--function mod_blacklist(t,n)
+					--check if number n occurs in table t
+					--useful for doing 'every beat EXCEPT the contents of t'
+					
+				--function simple_m0d(beat,strength,mult,mod)
+				--function simple_m0d2(beat,strength,mult,mod,pn)
+				--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+					--activate mods at specific beat but also deactivate them
+					
+				--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+					--alternates a mod back and forth before resetting to 0
+					
+				--function mod_springt(time,strength,dur,mod,pn)
+					--time-based per-frame alternating mod that decreases based on how much time is left.
+						--think doorstopper
+				
+				--function mod_springt2(time,strength,dur,mod,pn)
+					--time-based per-frame alternating mod
+				
+				--function mod_onebeat(beat,strength,pn)
+					--turns on beat for the beat specified, at the desired strength	
+				
+				--function switcheroo_add(beat,which,speed,len,pn)
+					--adds a column swap at the desired beat
+				--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+						flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+						ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+				]]
+				
+				--use a variable called 'switcheroo_width' to change how much space is between each column
+				--e.g. switcheroo_width = 2 for ayakashi
+				
+				--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+					--portable version of the effect from sugarkill X
+					
+				--function doSpline(spd, axis, path, col)
+					--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+					
+				--function doSplineAll(spd, axis, path)
+					--same as above, but for all columns
+					--(faster performance than using doSpline 4 times due to more efficient concat)
+				
+				--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+					--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+				
+				
+				---------------------------------------------------------
+				--------END DOCUMENTATION--------------------------------
+				---------------------------------------------------------
+				
+				local m = mod_insert
+				local m2 = mod_message
+				local me = mod_ease
+				
+				
+				local l = 'len'
+				local e = 'end'
+				local sm_beat = 0
+				sm_cur1 = 1
+				sm_runLoop1=1
+				
+				sm_cur2 = 1
+				sm_runLoop2=1
+				
+				sm_cur3 = 1
+				sm_runLoop3=1
+				
+				sm_cur4 = 1
+				sm_runLoop4=1
+				
+				sm_worldrot=-45
+				sm_curtree=1
+				sm_td=7
+				sm_treedelay=sm_td
+				sm_spawntrees=0
+				
+				sm_cursnow=1
+				sm_sd=7
+				sm_snowdelay=sm_sd
+				sm_scrollmult=0
+				sm_makesnow=0
+				
+				
+				
+				
+				sm_latestAwake34 = -1
+				sm_latestAwake56 = -1
+				
+				
+				
+				
+				
+				init_modsp1 = '';
+				init_modsp2 = '';
+				init_modsp3 = '';
+				init_modsp4 = '';
+				
+				mod_plr = {};
+				
+				mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+	---------------------------------------------------------------------------------------
+	----------------------Begin tables 'n stuff--------------------------------------------
+	---------------------------------------------------------------------------------------
+
+				--beat based mods
+				--{beat_start, beat_end, mods, len_or_end, player_number}
+				mods = {
+					{0,9999,'*2 1.6x, *1000 no beat, *10000 -99999 cover,*-1 sudden,*-1 110 suddenoffset,*-1 Overhead, *-1 -100 hiddenoffset, *-1 hidden, *-1 stealthpastreceptors','end'},
+					{0,4,'*-1 dark','end'},
+					{64.25,9999,'*-1 50 flip,*-1 50 mini,*-1 -500 bumpyx,*-1 1500 bumpyxperiod,*-1 no sudden,*-1 dark,*-1 0 orient,*-1 dizzyholds,*-1 30 stealth,*-1 0 pulse,*-1 0 pulseperiod,*-1 0 straightholds,*-1 zbuffer,*-1 receptorzbuffer,*-1 0 arrowpath,*-1 88 holdstealth','end'},
+					{64.25,9999,'*5 10000000 bumpyxoffset','end'},
+					{64.25,9999,'*-1 1 z','end',2},
+					--{64.25,9999,'*-1 400 bouncez,*-1 0 bouncezperiod','end',1},
+					{64.25,9999,'*-1 -500 bumpyx,*-1 1500 bumpyxperiod,*5 10000 bumpyxoffset','end',3}, --Extra players have a very basic path for GetX tracking
+					{64.25,9999,'*-1 -500 bumpyx,*-1 1500 bumpyxperiod,','end',4}, --Using P1/2's complex paths would result in unnarural character movement
+					
+					
+					
+				}
+				for i=1,2 do
+					table.insert(mods,{121,219,'*.5 -50 tornado','end',i})
+					table.insert(mods,{219,289,'*.5 -25 tornado','end',i})
+					table.insert(mods,{289,999,'*.5 -60 tornado','end',i})
+					table.insert(mods,{129,219,'*.5 1.9x','end',i})
+					table.insert(mods,{219,280,'*1 1.4x','end',i})
+					table.insert(mods,{280,353,'*1 1.6x','end',i})
+					--table.insert(mods,{0,63.5,'','end',i})
+					table.insert(mods,{160,289,'*-1 400 bouncez,*-1 -20 bouncezperiod','end',i})
+					table.insert(mods,{280,353,'*0.8 250 bouncez,*-1 -20 bouncezperiod, *0.2 30 orient','end',i})
+					table.insert(mods,{157,219,'*-1 no bumpyx,*-1 no flip,*-1 no bouncez,*2 no dark,*-1 no tornado,*-1 no mini','end',i})
+					table.insert(mods,{219,230,'*-1 -500 bumpyx,*-1 50 flip,*-1 400 bouncez,*-1 dark,*-1 no tornado,*-1 50 mini','end',i})
+					table.insert(mods,{353,999,'*-1 no orient, *-1 0 bumpyx,*-1 0 flip,*-1 0 bouncez,*-1 dark,*-1 no tornado,*-1 no mini,*-1 200 sudden,*-1 110 suddenoffset','end',i})
+				end
+				
+				for i=5,6 do
+					table.insert(mods,{121,219,'*.5 -60 tornado','end',i})
+					table.insert(mods,{225+57,999,'*.5 -60 tornado','end',i})
+					--table.insert(mods,{0,63.5,'','end',i})
+					table.insert(mods,{160,900,'*-1 0 bouncez,*-1 0 bouncezperiod','end',i})
+					table.insert(mods,{157,219,'*-1 no bumpyx,*-1 no flip,*-1 no bouncez,*2 no dark,*-1 no tornado,*-1 no mini','end',i})
+					table.insert(mods,{219,230,'*-1 00 bumpyx,*-1 0 flip,*-1 0 bouncez,*1 dark,*-1 no tornado,*-1 0 mini','end',i})
+					table.insert(mods,{353,999,'*-1 0 bumpyx,*-1 0 flip,*-1 0 bouncez,*-1 dark,*-1 no tornado,*-1 no mini,*-1 20 tornado,*-1 200 sudden,*-1 110 suddenoffset','end',i})
+				end
+				
+				for i=0,3 do
+					table.insert(mods,{64.25,156,'*-1 50 bumpyx'..i..',*-1 100 bumpyxperiod'..i..',*5 100 bumpyxoffset'..i..'','end',1})
+					table.insert(mods,{64.25,156,'*-1 50 bumpyx'..i..',*-1 100 bumpyxperiod'..i..',*5 100 bumpyxoffset'..i..'','end',2})
+					
+					table.insert(mods,{219,284,'*-1 50 bumpyx'..i..',*-1 100 bumpyxperiod'..i..',*5 100 bumpyxoffset'..i..'','end',1})
+					table.insert(mods,{219,284,'*-1 50 bumpyx'..i..',*-1 100 bumpyxperiod'..i..',*5 100 bumpyxoffset'..i..'','end',2})
+					table.insert(mods,{353,503,'*-1 0 bumpyx'..i..'','end',1})
+					table.insert(mods,{353,503,'*-1 0 bumpyx'..i..'','end',2})
+				end
+				
+				
+				for i=1,table.getn(wiggletable) do
+					local modmultt=1
+					if math.mod(i,2)== 0 then modmultt=-1 end
+					table.insert(mods,{wiggletable[i][1],.25,'*40 '.. 200*modmultt ..' tipsy','len'})
+					if i<table.getn(wiggletable) and wiggletable[i+1][1]-wiggletable[i][1]~=0.25 then
+					table.insert(mods,{wiggletable[i+1][1],.25,'*40 '.. 0*modmultt ..' tipsy','len'})
+					else
+					table.insert(mods,{wiggletable[i][1]+.25,.25,'*40 '.. 0*modmultt ..' tipsy','len'})
+					end
+				end
+				
+				
+				
+				--time based mods
+				mod_time = 0;
+				--{time_start, time_end, mods, len_or_end, player_number}
+				mods2 = {
+					--{0,200.345,'3x','end',1},
+				}
+				
+				
+				
+				
+				--this is both a message broadcaster and a function runner
+				--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+				--if you put {beat,function() somecode end}, then function() is run at that beat
+				--see example on beat 32
+				local scratchoffset=0.1
+				curaction = 1;
+				--{beat,thing,persists}
+				mod_actions = {
+				
+				{0.5,function()
+					
+					for pn=1,2 do
+						local d = 0.2; if pn == 2 then d = 0.8 end
+						
+						local b = _G['jud'..pn]
+						if b then
+							b:hidden(1);
+							b:sleep(999)
+							b:basezoomx(1);
+							b:basezoomy(1);
+						end
+						local c = _G['com'..pn]
+						if c then
+							c:hidden(1);
+							c:sleep(999)
+							c:basezoomx(1);
+							c:basezoomy(1);
+						end
+						
+						local b = _G['jud'..pn..'p']
+						if b then
+							b:hidden(0);
+							b:basezoomx(.9);
+							b:basezoomy(.9);
+							b:x(SCREEN_WIDTH*d)
+							b:y(SCREEN_HEIGHT*0.15)
+						end
+						local c = _G['com'..pn..'p']
+						if c then
+							c:hidden(0);
+							c:basezoomx(.9);
+							c:basezoomy(.9);
+							c:x(SCREEN_WIDTH*d)
+							c:y(SCREEN_HEIGHT*0.12)
+						end
+					
+						
+					end
+					
+					MESSAGEMAN:Broadcast('GetProxy');
+					
+				end,true},
+				
+				{64.5,function()
+					for pn=1,2 do
+					
+						local b = _G['jud'..pn..'p']
+						if b then
+							b:tween(120/181,'inOutQuad(%f,0,1,1)')
+							b:y(SCREEN_HEIGHT*0.5)
+						end
+						local c = _G['com'..pn..'p']
+						if c then
+							c:tween(120/181,'inOutQuad(%f,0,1,1)')
+							c:y(SCREEN_HEIGHT*0.47)
+						end
+					
+					end
+				end},
+				
+				{70,function()
+					for pn=1,2 do
+					
+						local b = _G['jud'..pn..'p']
+						if b then
+							b:y(SCREEN_HEIGHT*0.5)
+						end
+						local c = _G['com'..pn..'p']
+						if c then
+							c:y(SCREEN_HEIGHT*0.47)
+						end
+					
+					end
+				end,true},
+				
+				{1,function()
+					--test the it
+					
+					for i=3,4 do
+						local a=_G['P'..i]
+						if a then
+							a:SetAwake(true)
+							a:hidden(0)
+							a:zoom(0) --let's make sure the hallway mod won't ruin things
+							sm_latestAwake34 = i
+							--break;
+						end
+					end
+					for i=5,6 do
+						local a=_G['P'..i]
+						if a then
+							a:SetAwake(true)
+							a:hidden(0)
+							a:zoom(0) --let's make sure the hallway mod won't ruin things
+							--sm_latestAwake56 = i
+							break;
+						end
+					end
+					
+					for i=1,table.getn(SnowField1) do
+						local qnt = 4
+						local rotz = 90
+						local posmult = -1.5
+						 nspeed = 64
+						if SnowField1[i][2] == 1 then rotz = 0; posmult = -.5
+						elseif SnowField1[i][2] == 2 then rotz = 180; posmult = .5
+						elseif SnowField1[i][2] == 3 then rotz = -90; posmult = 1.5 end
+						if math.mod(i,2) == 1 then qnt = 8 end 
+							_G['sm_1_'..qnt..'ths'..i]:hidden(0)
+							_G['sm_1_'..qnt..'ths'..i]:SetShader(glassShader)
+							_G['sm_1_'..qnt..'th'..i]:hidden(0)
+							_G['sm_1_'..qnt..'th'..i]:x(64*posmult)
+							_G['sm_1_'..qnt..'ths'..i]:rotationz(rotz)
+							_G['sm_1_'..qnt..'th'..i]:y((-nspeed*2)+nspeed*i)
+							_G['sm_1_'..qnt..'th'..i]:ztest(0)
+					end
+					
+					for i=1,table.getn(SnowField2) do
+						local qnt = 4
+						local rotz = 90
+						local posmult = -1.5
+						 nspeed = 64
+						if SnowField2[i][2] == 1 then rotz = 0; posmult = -.5
+						elseif SnowField2[i][2] == 2 then rotz = 180; posmult = .5
+						elseif SnowField2[i][2] == 3 then rotz = -90; posmult = 1.5 end
+						if math.mod(i,2) == 1 then qnt = 8 end 
+							_G['sm_2_'..qnt..'ths'..i]:hidden(0)
+							_G['sm_2_'..qnt..'ths'..i]:SetShader(glassShader)
+							_G['sm_2_'..qnt..'th'..i]:hidden(0)
+							_G['sm_2_'..qnt..'th'..i]:x(64*posmult)
+							_G['sm_2_'..qnt..'ths'..i]:rotationz(rotz)
+							_G['sm_2_'..qnt..'th'..i]:y((-nspeed*2)+nspeed*i)
+							_G['sm_2_'..qnt..'th'..i]:ztest(0)
+					end
+					
+					for i=1,table.getn(SnowField3) do
+						local qnt = 4
+						local rotz = 90
+						local posmult = -1.5
+						 nspeed = 64
+						if SnowField3[i][2] == 1 then rotz = 0; posmult = -.5
+						elseif SnowField3[i][2] == 2 then rotz = 180; posmult = .5
+						elseif SnowField3[i][2] == 3 then rotz = -90; posmult = 1.5 end
+						if math.mod(i,2) == 1 then qnt = 8 end 
+							_G['sm_3_'..qnt..'ths'..i]:hidden(0)
+							_G['sm_3_'..qnt..'ths'..i]:SetShader(glassShader)
+							_G['sm_3_'..qnt..'th'..i]:hidden(0)
+							_G['sm_3_'..qnt..'th'..i]:x(64*posmult)
+							_G['sm_3_'..qnt..'ths'..i]:rotationz(rotz)
+							_G['sm_3_'..qnt..'th'..i]:y((-nspeed*2)+nspeed*i)
+							_G['sm_3_'..qnt..'th'..i]:ztest(0)
+					end
+					
+					for i=1,table.getn(SnowField4) do
+						local qnt = 4
+						local rotz = 90
+						local posmult = -1.5
+						 nspeed = 64
+						if SnowField4[i][2] == 1 then rotz = 0; posmult = -.5
+						elseif SnowField4[i][2] == 2 then rotz = 180; posmult = .5
+						elseif SnowField4[i][2] == 3 then rotz = -90; posmult = 1.5 end
+						if math.mod(i,2) == 1 then qnt = 8 end 
+							_G['sm_4_'..qnt..'ths'..i]:hidden(0)
+							_G['sm_4_'..qnt..'ths'..i]:SetShader(glassShader)
+							_G['sm_4_'..qnt..'th'..i]:hidden(0)
+							_G['sm_4_'..qnt..'th'..i]:x(64*posmult)
+							_G['sm_4_'..qnt..'ths'..i]:rotationz(rotz)
+							_G['sm_4_'..qnt..'th'..i]:y((-nspeed*2)+nspeed*i)
+							_G['sm_4_'..qnt..'th'..i]:ztest(0)
+					end
+					
+
+					for i=1,4 do
+						_G['sm_field'..i]:hidden(1)
+					end
+					
+					for i=0,3 do
+						local harzaMult=-3
+						local harzaRot=90
+						if i==1 then harzaMult = -1; harzaRot=0
+						elseif i==2 then harzaMult = 1; harzaRot=180
+						elseif i==3 then harzaMult = 3; harzaRot=-90
+						end
+					
+						_G['sm_1_recw'..i]:xy(32*harzaMult,-64*2)
+						_G['sm_1_recg'..i]:xy(32*harzaMult,-64*2)
+						_G['sm_1_recw'..i]:rotationz(harzaRot)
+						_G['sm_1_recg'..i]:rotationz(harzaRot)
+						_G['sm_1_recg'..i]:hidden(0)
+						_G['sm_1_recw'..i]:hidden(0)
+						_G['sm_1_recg'..i]:zoom(.5)
+						_G['sm_1_recw'..i]:zoom(.5)
+						_G['sm_1_recw'..i]:diffusealpha(.5)
+
+						_G['sm_1_recg'..i]:diffuseshift()
+						_G['sm_1_recg'..i]:effectcolor1(1,1,1,1)
+						_G['sm_1_recg'..i]:effectcolor2(1,1,1,.5)
+						_G['sm_1_recg'..i]:effectclock('bgm')
+						_G['sm_1_recg'..i]:effectperiod(1)
+						
+						_G['sm_1_recw'..i]:pulse()
+						_G['sm_1_recw'..i]:effectmagnitude(1,.9,0)
+						_G['sm_1_recw'..i]:effectclock('bgm')
+						_G['sm_1_recw'..i]:effectperiod(1)
+						
+						_G['sm_2_recw'..i]:xy(32*harzaMult,-64*2)
+						_G['sm_2_recg'..i]:xy(32*harzaMult,-64*2)
+						_G['sm_2_recw'..i]:rotationz(harzaRot)
+						_G['sm_2_recg'..i]:rotationz(harzaRot)
+						_G['sm_2_recg'..i]:hidden(0)
+						_G['sm_2_recw'..i]:hidden(0)
+						_G['sm_2_recg'..i]:zoom(.5)
+						_G['sm_2_recw'..i]:zoom(.5)
+						_G['sm_2_recw'..i]:diffusealpha(.5)
+
+						_G['sm_2_recg'..i]:diffuseshift()
+						_G['sm_2_recg'..i]:effectcolor1(1,1,1,1)
+						_G['sm_2_recg'..i]:effectcolor2(1,1,1,.5)
+						_G['sm_2_recg'..i]:effectclock('bgm')
+						_G['sm_2_recg'..i]:effectperiod(1)
+						
+						_G['sm_2_recw'..i]:pulse()
+						_G['sm_2_recw'..i]:effectmagnitude(1,.9,0)
+						_G['sm_2_recw'..i]:effectclock('bgm')
+						_G['sm_2_recw'..i]:effectperiod(1)
+						
+						--
+						_G['sm_4_recw'..i]:xy(32*harzaMult,-64*2)
+						_G['sm_4_recg'..i]:xy(32*harzaMult,-64*2)
+						_G['sm_4_recw'..i]:rotationz(harzaRot)
+						_G['sm_4_recg'..i]:rotationz(harzaRot)
+						_G['sm_4_recg'..i]:hidden(0)
+						_G['sm_4_recw'..i]:hidden(0)
+						_G['sm_4_recg'..i]:zoom(.5)
+						_G['sm_4_recw'..i]:zoom(.5)
+						_G['sm_4_recw'..i]:diffusealpha(.5)
+
+						_G['sm_4_recg'..i]:diffuseshift()
+						_G['sm_4_recg'..i]:effectcolor1(1,1,1,1)
+						_G['sm_4_recg'..i]:effectcolor2(1,1,1,.5)
+						_G['sm_4_recg'..i]:effectclock('bgm')
+						_G['sm_4_recg'..i]:effectperiod(1)
+						
+						_G['sm_4_recw'..i]:pulse()
+						_G['sm_4_recw'..i]:effectmagnitude(1,.9,0)
+						_G['sm_4_recw'..i]:effectclock('bgm')
+						_G['sm_4_recw'..i]:effectperiod(1)
+						--
+						_G['sm_3_recw'..i]:xy(32*harzaMult,-64*2)
+						_G['sm_3_recg'..i]:xy(32*harzaMult,-64*2)
+						_G['sm_3_recw'..i]:rotationz(harzaRot)
+						_G['sm_3_recg'..i]:rotationz(harzaRot)
+						_G['sm_3_recg'..i]:hidden(0)
+						_G['sm_3_recw'..i]:hidden(0)
+						_G['sm_3_recg'..i]:zoom(.5)
+						_G['sm_3_recw'..i]:zoom(.5)
+						_G['sm_3_recw'..i]:diffusealpha(.5)
+
+						_G['sm_3_recg'..i]:diffuseshift()
+						_G['sm_3_recg'..i]:effectcolor1(1,1,1,1)
+						_G['sm_3_recg'..i]:effectcolor2(1,1,1,.5)
+						_G['sm_3_recg'..i]:effectclock('bgm')
+						_G['sm_3_recg'..i]:effectperiod(1)
+						
+						_G['sm_3_recw'..i]:pulse()
+						_G['sm_3_recw'..i]:effectmagnitude(1,.9,0)
+						_G['sm_3_recw'..i]:effectclock('bgm')
+						_G['sm_3_recw'..i]:effectperiod(1)
+					end
+				end,true},
+				
+				{2,function()
+					--test the it
+					
+					for i=3,4 do
+						local a=_G['P'..i]
+						if a then
+							a:SetAwake(true)
+							a:hidden(1)
+							a:zoom(1) --let's make sure the hallway mod won't ruin things
+							--sm_latestAwake34 = i
+							break;
+						end
+					end
+					for i=5,6 do
+						local a=_G['P'..i]
+						if a then
+							a:SetAwake(true)
+							a:hidden(1)
+							a:zoom(1) --let's make sure the hallway mod won't ruin things
+							--sm_latestAwake56 = i
+							break;
+						end
+					end
+					
+				end,true},
+				
+				{28-.2,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3,'inOutBack(%f, 0, 1, 1)')
+						sm_frontproxy:addy(-10)
+						sm_frontproxy:rotationz(20)
+						sm_face1:linear(0.5)
+						sm_face1:diffusealpha(1)
+				end},
+				
+				{29-.2,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3,'inOutBack(%f, 0, 1, 1)')
+						sm_frontproxy:addy(-20)
+						sm_frontproxy:rotationz(-20)
+				end},
+				
+				{30-.2,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3,'inOutBack(%f, 0, 1, 1)')
+						sm_frontproxy:addy(-30)
+						sm_frontproxy:rotationz(20)
+				end},
+				
+				{31-.2,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3,'inOutBack(%f, 0, 1, 1)')
+						sm_frontproxy:addy(-40)
+						sm_frontproxy:rotationz(-20)
+				end},
+				
+				{32-.2,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3,'inOutBack(%f, 0, 1, 1)')
+						sm_frontproxy:addy(-50)
+						sm_frontproxy:rotationz(20)
+				end},
+				
+				{33-.2,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3,'inOutBack(%f, 0, 1, 1)')
+						sm_frontproxy:addy(-60)
+						sm_frontproxy:rotationz(-20)
+				end},
+				
+				{34-.2,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3,'inOutBack(%f, 0, 1, 1)')
+						sm_frontproxy:addy(-70)
+						sm_frontproxy:rotationz(20)
+				end},
+				
+				{35-.2,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.5,'inOutSine(%f, 0, 1, 1)')
+						sm_frontproxy:y(scy)
+						sm_frontproxy:z(-200)
+						sm_frontproxy:x(scx+200)
+						sm_frontproxy:rotationz(0)
+						
+						sm_face2:hidden(0)
+						sm_face2:zoom(1.3)
+						sm_face2:y(-50)
+						sm_face2:sleep(1.5)
+						sm_face2:linear(.5)
+						sm_face2:diffusealpha(0)
+						sm_face1:hidden(1)
+						
+						sm_face2b:hidden(0)
+						sm_face2b:zoom(1.3)
+						sm_face2b:y(10)
+						sm_face2b:sleep(1.5)
+						sm_face2b:linear(.5)
+						sm_face2b:diffusealpha(0)
+				end},
+				
+				{36.0,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:y(scy)
+						sm_frontproxy:rotationz(0)
+						sm_worldproxy:xyz(215,-230,-65)
+						sm_worldproxy:hidden(1)
+				end,true},
+				
+				{37.0,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+							sm_frontproxy:hidden(1)
+							sm_worldproxy:hidden(0)
+							sm_worldproxy:tween(7,'inOutSine(%f, 0, 1, 1)')
+							--sm_worldproxy:rotationx(0)
+							sm_worldproxy:rotationy(-40)
+							sm_worldproxy:zoom(.6)
+							sm_worldproxy:zoomz(.6)
+							sm_worldproxy:xyz(60,-200,65)
+						
+							sm_world:tween(8,'inOutSine(%f, 0, 1, 1)')
+							sm_world:y(scy+150)
+							sm_world:z(300*.9)
+							sm_world:x(scx-100)
+							sm_world:rotationx(-60)
+							sm_world:rotationz(30)
+							
+				end,true},
+				
+					{52.5,function()
+							
+							
+							
+					end},
+					--scratch
+					{60-scratchoffset,function()
+							sm_worldproxy:tween(.08,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(-.1)
+					end},
+					
+					{60.25-scratchoffset,function()
+							sm_worldproxy:tween(.08,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(.2)
+					end},
+					
+					{60.5-scratchoffset,function()
+							sm_worldproxy:tween(.08,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(-.3)
+					end},
+					
+					{60.75-scratchoffset,function()
+							sm_worldproxy:tween(.08,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(.4)
+					end},
+					
+					{61-scratchoffset,function()
+							sm_worldproxy:tween(.08,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(-.5)
+					end},
+					
+					{61.25-scratchoffset,function()
+							sm_worldproxy:tween(.2,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(.6)
+					end},
+					
+					{61.75-scratchoffset,function()
+							sm_worldproxy:tween(.08,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(-.7)
+					end},
+					
+					{62-scratchoffset,function()
+							sm_worldproxy:tween(.08,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(.7)
+					end},
+					
+					{62.5-scratchoffset,function()
+							sm_worldproxy:tween(.08,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(-.7)
+					end},
+					
+					{62.75-scratchoffset,function()
+							sm_worldproxy:tween(.08,'inOutSine(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(.7)
+					end},
+					
+					{63-scratchoffset,function()
+							sm_worldproxy:tween(.8,'outElastic(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(0)
+							
+							
+							
+					end},
+					
+					{63.5,function()
+							sm_snowpile:hidden(1)
+							sm_snowpileh:hidden(0)
+							
+							sm_blob1:hidden(0)
+							sm_blob1:zoom(.6)
+							sm_blob1:zoomz(.6)
+							sm_blob1:xyz(-100,-400,100)
+							sm_blob1:diffuse(.3,.3,.33,1)
+							
+							
+							sm_blob2:hidden(0)
+							sm_blob2:zoom(.4)
+							sm_blob2:zoomz(.4)
+							sm_blob2:rotationz(20)
+							sm_blob2:xyz(-60,-400,100)
+							sm_blob2:diffuse(.3,.3,.33,1)
+							
+							sm_blob3:hidden(0)
+							sm_blob3:zoom(.25)
+							sm_blob3:zoomz(.25)
+							sm_blob3:rotationx(40)
+							sm_blob3:xyz(-80,-400,60)
+							sm_blob3:diffuse(.3,.3,.33,1)
+							
+							sm_blob4:hidden(0)
+							sm_blob4:zoom(.25)
+							sm_blob4:zoomz(.25)
+							sm_blob4:rotationx(0)
+							sm_blob4:xyz(-40,-400,50)
+							sm_blob4:diffuse(.3,.3,.33,1)
+							
+							sm_flash:diffusealpha(0)
+							sm_flash:linear(1)
+							sm_flash:diffusealpha(0)
+							
+							local exptween=.8
+							local zoomtween=1
+								sm_blob1:tween(exptween,'outCirc(%f, 0, 1, 1)')
+								sm_blob1:y(-300)
+								sm_blob1:x(40)
+								sm_blob1:z(120)
+								sm_blob1:diffuse(1,1,1,1)
+								
+								sm_blob2:tween(exptween,'outCirc(%f, 0, 1, 1)')
+								sm_blob2:xyz(-300,-200,-100)
+								sm_blob2:diffuse(1,1,1,1)
+								
+								sm_blob3:tween(exptween,'outCirc(%f, 0, 1, 1)')
+								sm_blob3:xyz(-100,-190,80)
+								sm_blob3:rotationz(80)
+								sm_blob3:diffuse(1,1,1,1)
+								
+								sm_blob4:tween(exptween,'outCirc(%f, 0, 1, 1)')
+								sm_blob4:xyz(-200,-300,50)
+								sm_blob4:rotationz(0)
+								sm_blob4:diffuse(1,1,1,1)
+							
+							sm_snowboard:tween(exptween,'outCirc(%f, 0, 1, 1)')
+							sm_snowboard:y(-250)
+							sm_snowboard:x(-10)
+							sm_snowboard:z(20)
+							sm_snowboard:hidden(0)
+							sm_snowboard:rotationx(90-10)
+							sm_snowboard:rotationy(40)
+							
+							sm_world:tween(zoomtween,'outCirc(%f, 0, 1, 1)')
+							sm_world:zoomz(1.5)
+							sm_world:xy(scx,scy+100)
+							sm_world:rotationz(0)
+							sm_world:rotationy(0)
+							
+							sm_zoomzwrapper:tween(zoomtween*1.2,'outCirc(%f, 0, 1, 1)')
+							sm_zoomzwrapper:y(50*1.2)
+							sm_zoomzwrapper:x(30*1.2)
+							
+							sm_worldproxy:stoptweening()
+							sm_worldproxy:tween(zoomtween,'outCirc(%f, 0, 1, 1)')
+							sm_worldproxy:skewx(0)
+							sm_worldproxy:rotationx(-sm_worldrot+0)
+							sm_worldproxy:xyz(150,-200,0)
+							sm_worldproxy:rotationz(40)
+							sm_worldproxy:rotationy(0)
+							
+							sm_face3:hidden(0)
+							sm_face3b:hidden(0)
+							--[[
+							sm_world:tween(zoomtween,'inCirc(%f, 0, 1, 1)')
+							sm_world:zoomz(1.5)
+							sm_world:xy(scx-50,scy+150*.5)
+							sm_world:rotationz(-30)
+							sm_world:rotationy(15)
+							sm_world:z((300*.9)*.5)
+							sm_world:tween(zoomtween,'outCirc(%f, 0, 1, 1)')
+							sm_world:zoomz(1.0)
+							sm_world:xyz(scx,scy+100,0)
+							sm_world:rotationz(0)
+							sm_world:rotationy(0)
+							sm_world:rotationx(sm_worldrot)
+							--]]
+							
+					end},
+					
+					
+				
+				{64.25,function()
+						
+						sm_flash:diffuse(1,1,1,1)
+						sm_flash:sleep(.0)
+						sm_flash:linear(1)
+						sm_flash:diffusealpha(0)
+						
+						sm_face3:hidden(1)
+						sm_face3b:hidden(1)
+						
+						sm_worldproxy:stoptweening()
+						sm_worldproxy:skewx(0)
+						sm_worldproxy:rotationx(0)
+						sm_worldproxy:rotationy(0)
+						sm_worldproxy:rotationz(0)
+						sm_worldproxy:xyz(0,0,0)
+						sm_worldproxy:zoomx(1)
+						sm_worldproxy:zoomy(1)
+						sm_worldproxy:zoomz(1)
+						
+						sm_world:stoptweening()
+						sm_world:decelerate(3)
+						sm_world:xyz(scx,scy+100,0)
+						sm_world:rotationx(sm_worldrot)
+						sm_world:rotationy(0)
+						sm_world:rotationz(0)
+						sm_world:zoomz(1)
+						sm_snowpileh:linear(2)
+						sm_snowpileh:addy(-800)
+						sm_snowpileh:diffuse(-.5,-.5,-.5,-.5)
+						sm_snowpile:hidden(1)
+						sm_zoomzwrapper:hidden(1)
+						sm_makoto:hidden(0)
+						sm_makoto:xyz(50,-300,0)
+						
+						sm_makotowrapper:xyz(0,-150,0)
+						sm_makotowrapper:tween(1.5,'outBounce(%f, 0, 1, 1)')
+						sm_makotowrapper:xyz(0,0,0)
+						
+						sm_makotoS:x(0)
+						sm_makotoS:tween(1.5,'outSine(%f, 0, 1, 1)')
+						sm_makotoS:x(-100)
+						sm_scrollmult=.8
+				end,true},
+					
+				
+				{65.25,function()
+						
+					sm_makesnow=1
+					sm_snowdelay=1
+					sm_spawntrees=1
+				end},	
+				
+				{128-3,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_field1:z(600)
+						sm_field1:rotationx(0)
+						sm_field1:rotationz(-20)
+						sm_field1:hidden(0)
+						sm_field1:zoom(1)
+						sm_field1:decelerate(6)
+						sm_field1:z(-400)
+						sm_field1:rotationz(60)
+				end},
+				
+					
+					
+					
+				{132-3,function()
+					
+					sm_wrapper1:linear(0.331*13)
+					sm_wrapper1:addy(-(nspeed*2)*13)
+					
+					--sm_field1:vibrate()
+				end},
+				
+				{136-3,function()
+					for i=0,1 do
+						local mmmm='w'
+						if i==1 then mmmm='g' end
+						_G['sm_1_rec'..mmmm..'0']:fadeleft(.1)
+						_G['sm_1_rec'..mmmm..'0']:cropleft(.2)
+						_G['sm_1_rec'..mmmm..'0']:decelerate(1)
+						_G['sm_1_rec'..mmmm..'0']:cropleft(.8)
+						
+						_G['sm_1_rec'..mmmm..'1']:fadetop(.1)
+						_G['sm_1_rec'..mmmm..'1']:croptop(.2)
+						_G['sm_1_rec'..mmmm..'1']:decelerate(1)
+						_G['sm_1_rec'..mmmm..'1']:croptop(.8)
+						
+						_G['sm_1_rec'..mmmm..'2']:fadebottom(.1)
+						_G['sm_1_rec'..mmmm..'2']:cropbottom(.2)
+						_G['sm_1_rec'..mmmm..'2']:decelerate(1)
+						_G['sm_1_rec'..mmmm..'2']:cropbottom(.8)
+						
+						_G['sm_1_rec'..mmmm..'3']:faderight(.1)
+						_G['sm_1_rec'..mmmm..'3']:cropright(.2)
+						_G['sm_1_rec'..mmmm..'3']:decelerate(1)
+						_G['sm_1_rec'..mmmm..'3']:cropright(.8)
+					end
+				end},
+				
+				{134-3,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_field2:z(600)
+						sm_field2:x(-30)
+						sm_field2:rotationx(0)
+						sm_field2:rotationz(-20)
+						sm_field2:hidden(0)
+						sm_field2:zoom(1)
+						sm_field2:decelerate(7)
+						sm_field2:z(-300)
+						sm_field2:x(0)
+						sm_field2:rotationz(-70)
+				end},
+				
+				{140-3,function()
+					
+					sm_wrapper2:linear(0.331*13)
+					sm_wrapper2:addy(-(nspeed*2)*13)
+				end},
+				
+				{144-3,function()
+					for i=0,1 do
+						local mmmm='w'
+						if i==1 then mmmm='g' end
+						_G['sm_2_rec'..mmmm..'0']:fadeleft(.1)
+						_G['sm_2_rec'..mmmm..'0']:cropleft(.2)
+						_G['sm_2_rec'..mmmm..'0']:decelerate(1)
+						_G['sm_2_rec'..mmmm..'0']:cropleft(.8)
+						
+						_G['sm_2_rec'..mmmm..'1']:fadetop(.1)
+						_G['sm_2_rec'..mmmm..'1']:croptop(.2)
+						_G['sm_2_rec'..mmmm..'1']:decelerate(1)
+						_G['sm_2_rec'..mmmm..'1']:croptop(.8)
+						
+						_G['sm_2_rec'..mmmm..'2']:fadebottom(.1)
+						_G['sm_2_rec'..mmmm..'2']:cropbottom(.2)
+						_G['sm_2_rec'..mmmm..'2']:decelerate(1)
+						_G['sm_2_rec'..mmmm..'2']:cropbottom(.8)
+						
+						_G['sm_2_rec'..mmmm..'3']:faderight(.1)
+						_G['sm_2_rec'..mmmm..'3']:cropright(.2)
+						_G['sm_2_rec'..mmmm..'3']:decelerate(1)
+						_G['sm_2_rec'..mmmm..'3']:cropright(.8)
+					end
+				end},
+				
+					{146-3,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(900)
+					end},
+				
+				
+				
+				{142-3,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_field3:z(600)
+						sm_field3:rotationx(0)
+						sm_field3:rotationz(-20)
+						sm_field3:hidden(0)
+						sm_field3:zoom(1)
+						sm_field3:decelerate(6)
+						sm_field3:z(-200)
+						sm_field3:rotationz(70)
+				end},
+				
+				{148-3,function()
+					
+					sm_wrapper3:linear(0.331*13)
+					sm_wrapper3:addy(-(nspeed*2)*13)
+				end},
+				
+				{152-3,function()
+					for i=0,1 do
+						local mmmm='w'
+						if i==1 then mmmm='g' end
+						_G['sm_3_rec'..mmmm..'0']:fadeleft(.1)
+						_G['sm_3_rec'..mmmm..'0']:cropleft(.2)
+						_G['sm_3_rec'..mmmm..'0']:decelerate(1)
+						_G['sm_3_rec'..mmmm..'0']:cropleft(.8)
+						
+						_G['sm_3_rec'..mmmm..'1']:fadetop(.1)
+						_G['sm_3_rec'..mmmm..'1']:croptop(.2)
+						_G['sm_3_rec'..mmmm..'1']:decelerate(1)
+						_G['sm_3_rec'..mmmm..'1']:croptop(.8)
+						
+						_G['sm_3_rec'..mmmm..'2']:fadebottom(.1)
+						_G['sm_3_rec'..mmmm..'2']:cropbottom(.2)
+						_G['sm_3_rec'..mmmm..'2']:decelerate(1)
+						_G['sm_3_rec'..mmmm..'2']:cropbottom(.8)
+						
+						_G['sm_3_rec'..mmmm..'3']:faderight(.1)
+						_G['sm_3_rec'..mmmm..'3']:cropright(.2)
+						_G['sm_3_rec'..mmmm..'3']:decelerate(1)
+						_G['sm_3_rec'..mmmm..'3']:cropright(.8)
+					end
+					
+
+				end},
+				
+				{150-3,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_field4:z(600)
+						sm_field4:rotationx(0)
+						sm_field4:rotationz(-20)
+						sm_field4:hidden(0)
+						sm_field4:zoom(1)
+						sm_field4:decelerate(6)
+						sm_field4:z(-100)
+						sm_field4:y(64)
+						sm_field4:rotationz(-45)
+						
+				end},
+				{150-3,function()
+						
+						--[[
+						if P1 and not P2 then
+							sm_intestines:SetTarget(P5:GetChild('NoteField'))
+							sm_snowproxy:SetTarget(P5:GetChild('NoteField'))
+						elseif P2 and not P1 then
+							sm_intestines:SetTarget(P6:GetChild('NoteField'))
+							sm_snowproxy:SetTarget(P6:GetChild('NoteField'))
+							P2:hidden(1)
+						elseif P1 and P2 then
+							sm_intestines:SetTarget(P5:GetChild('NoteField'))
+							sm_snowproxy:SetTarget(P5:GetChild('NoteField'))
+						end
+						]]
+						
+						for pn=1,2 do
+							if _G['P'..pn] then
+								_G['P'..(pn+4)]:hidden(1)
+								_G['sm_intestines'..pn]:hidden(1)
+								_G['sm_intestines'..pn]:SetTarget(_G['P'..(pn+4)]:GetChild('NoteField'))
+								_G['sm_snowproxy'..pn]:hidden(1)
+								_G['sm_snowproxy'..pn]:SetTarget(_G['P'..(pn+4)]:GetChild('NoteField'))
+							end
+						end
+						
+						for pn=1,2 do
+							if _G['P'..pn] then
+								_G['sm_intestines'..pn]:hidden(0)
+								_G['sm_snowproxy'..pn]:hidden(0)
+								break;
+							end
+						end
+						
+				end,true},
+				
+				{156-3,function()
+					
+					sm_wrapper4:linear(0.331*13)
+					sm_wrapper4:addy(-(nspeed*2)*13)
+				end},
+				
+				{160-3,function()
+					for i=0,1 do
+						local mmmm='w'
+						if i==1 then mmmm='g' end
+						_G['sm_4_rec'..mmmm..'0']:fadeleft(.1)
+						_G['sm_4_rec'..mmmm..'0']:cropleft(.2)
+						_G['sm_4_rec'..mmmm..'0']:decelerate(1)
+						_G['sm_4_rec'..mmmm..'0']:cropleft(.8)
+						
+						_G['sm_4_rec'..mmmm..'1']:fadetop(.1)
+						_G['sm_4_rec'..mmmm..'1']:croptop(.2)
+						_G['sm_4_rec'..mmmm..'1']:decelerate(1)
+						_G['sm_4_rec'..mmmm..'1']:croptop(.8)
+						
+						_G['sm_4_rec'..mmmm..'2']:fadebottom(.1)
+						_G['sm_4_rec'..mmmm..'2']:cropbottom(.2)
+						_G['sm_4_rec'..mmmm..'2']:decelerate(1)
+						_G['sm_4_rec'..mmmm..'2']:cropbottom(.8)
+						
+						_G['sm_4_rec'..mmmm..'3']:faderight(.1)
+						_G['sm_4_rec'..mmmm..'3']:cropright(.2)
+						_G['sm_4_rec'..mmmm..'3']:decelerate(1)
+						_G['sm_4_rec'..mmmm..'3']:cropright(.8)
+					end
+				end},
+				
+				{157,function()
+					sm_worldproxy:hidden(1)
+					sm_frontproxy:hidden(0)
+					sm_frontproxy:xyz(scx,scy+64,0)
+					sm_frontproxy:zoom(1)
+					sm_frontproxy:zoomz(1)
+					sm_frontproxy:rotationz(-45)
+					sm_frontproxy:decelerate(1)
+					sm_frontproxy:rotationz(0)
+					sm_frontproxy:xy(scx,scy)
+					
+					sm_fieldCont:hidden(1)
+					
+					sm_field4:stoptweening()
+					sm_field4:decelerate(1)
+					sm_field4:rotationz(0)
+					sm_field4:xy(0,0)
+					
+						sm_face4:hidden(0)
+						sm_face4:zoom(0)
+						sm_face4:diffusealpha(1)
+						sm_face4:y(-50)
+						sm_face4:decelerate(.2)
+						sm_face4:zoom(1.5)
+						sm_face4:bounceend(.4)
+						sm_face4:zoom(1)
+						sm_face4:sleep(0.5)
+						sm_face4:linear(1)
+						sm_face4:diffusealpha(0)
+				end,true},
+				
+				{161.5,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3*.5,'outSine(%f, 0, 1, 1)')
+						sm_frontproxy:skewx(1)
+				end},
+				
+				{162,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3*.5,'outSine(%f, 0, 1, 1)')
+						sm_frontproxy:skewx(-1)
+				end},
+				
+				{162.5,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3*.5,'outSine(%f, 0, 1, 1)')
+						sm_frontproxy:skewx(0)
+				end},
+				
+				{169.5,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:wag()
+						sm_frontproxy:effectmagnitude(0,0,5)
+						sm_frontproxy:effectclock('bgm')
+						sm_frontproxy:effectperiod(.25)
+						sm_frontproxy:effectoffset(.25)
+				end},
+				
+				{170,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:stopeffect()
+				end},
+				
+				{177.5,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3*.5,'outSine(%f, 0, 1, 1)')
+						sm_frontproxy:skewx(1)
+				end},
+				
+				{178,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3*.5,'outSine(%f, 0, 1, 1)')
+						sm_frontproxy:skewx(-1)
+				end},
+				
+				{178.5,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3*.5,'outSine(%f, 0, 1, 1)')
+						sm_frontproxy:skewx(0)
+				end},
+				
+				{179,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.3,'outSine(%f, 0, 1, 1)')
+						sm_frontproxy:skewx(2)
+				end},
+				
+				{180,function()
+						
+						--sm_fieldCont:decelerate(1)
+						--sm_fieldCont:z(300)
+						
+						sm_frontproxy:tween(.2,'outSine(%f, 0, 1, 1)')
+						sm_frontproxy:skewx(-2)
+						sm_frontproxy:tween(1.5,'outElastic(%f, 0, 1, 1)')
+						sm_frontproxy:skewx(0)
+				end},
+				{189,function()
+						
+						sm_snowStorm:diffusealpha(0)
+						sm_snowStorm:linear(2)
+						sm_snowStorm:hidden(0)
+						sm_snowStorm:diffusealpha(.5)
+						
+						sm_snowFeedback:hidden(0)
+						sm_snowStorm:hidden(0)
+						sm_snowAft:hidden(0)
+						sm_snowAftb:hidden(0)
+						
+						sm_darken:diffusealpha(0)
+						sm_darken:linear(2)
+						sm_darken:hidden(0)
+						sm_darken:diffusealpha(.3)
+						--sm_snowStorm:blend('Add')
+						
+						for i=1,3 do
+							_G['sm_sstorm'..i]:stoptweening()
+							_G['sm_sstorm'..i]:linear(1)
+							_G['sm_sstorm'..i]:diffusealpha(0)
+						end
+				end},
+				
+				{209,function()
+						
+						sm_snowStorm:linear(4)
+						sm_snowStorm:diffusealpha(0)
+						
+						
+						sm_darken:linear(4)
+						sm_darken:hidden(0)
+						sm_darken:diffusealpha(0)
+						--sm_snowStorm:blend('Add')
+						
+						for i=1,3 do
+							_G['sm_sstorm'..i]:stoptweening()
+							_G['sm_sstorm'..i]:linear(1)
+							_G['sm_sstorm'..i]:diffusealpha(0)
+						end
+				end},
+				
+				{219,function()
+						
+						sm_worldproxy:hidden(0)
+						sm_frontproxy:hidden(0)
+				end,true},
+				{225,function()
+						
+						sm_frontproxy:linear(5)
+						sm_frontproxy:addy(-400)
+				end,true},
+				
+				{235,function()
+						
+						sm_frontproxy:hidden(1)
+						
+						
+				end,true},
+				
+				{288,function()
+						
+						sm_spawntrees=0
+						
+				end,true},
+				
+				{353,function()
+						
+						sm_flash:hidden(0)
+						sm_flash:diffuse(1,1,1,1)
+						sm_flash:sleep(.2)
+						sm_flash:linear(1)
+						sm_flash:diffusealpha(0)
+						sm_scrollmult=0;
+						
+						sm_makesnow=0
+						
+						sm_worldproxy:hidden(1)
+						sm_frontproxy:stoptweening()
+						sm_frontproxy:hidden(0)
+						sm_frontproxy:zoom(.6)
+						sm_frontproxy:rotationz(25)
+						sm_frontproxy:xyz(scx+100,scy,0)
+						sm_frontproxy:decelerate(3)
+						sm_frontproxy:addx(20)
+						sm_frontproxy:rotationz(30)
+						sm_makoto:hidden(1)
+						sm_world:finishtweening()
+						sm_world:decelerate(3)
+						sm_world:addx(-60)
+						sm_world:zoomz(4)
+						
+						sm_face5:hidden(0)
+						sm_face5:diffusealpha(1)
+						sm_face5:zoom(2)
+						sm_face5:x(-50)
+						sm_snowball:hidden(0)
+						sm_snowball:diffusealpha(1)
+						sm_snowball:zoom(3)
+						sm_snowball:zoomx(3)
+						sm_snowball:rotationz(-90)
+						sm_snowball:xy(-160,64)
+						sm_snowball:decelerate(2)
+						sm_snowball:xy(-110,64)
+						
+						sm_toss:hidden(0)
+						sm_toss:zoom(0.5)
+						sm_toss:rotationz(10)
+						sm_toss:xy(scx-100,scy)
+						sm_toss:decelerate(3)
+						sm_toss:addx(-60)
+						sm_toss:rotationz(-15)
+						sm_toss:skewx(.08)
+						
+						sm_tshadow:hidden(0)
+						sm_tshadow:basezoomx(.6)
+						sm_tshadow:basezoomy(.6)
+						sm_tshadow:diffusealpha(.3)
+						sm_tshadow:zoomx(0.8)
+						sm_tshadow:zoomy(0.2)
+						sm_tshadow:xy(scx-100,scy+90)
+						sm_tshadow:decelerate(3)
+						sm_tshadow:addx(-60)
+						sm_tshadow:zoomx(1.1)
+						
+						sm_tshadow2:hidden(0)
+						sm_tshadow2:basezoomx(.7)
+						sm_tshadow2:basezoomy(.7)
+						sm_tshadow2:diffusealpha(.3)
+						sm_tshadow2:zoomx(0.9)
+						sm_tshadow2:zoomy(0.2)
+						sm_tshadow2:xy(scx+70,scy+120)
+						sm_tshadow2:decelerate(3)
+						sm_tshadow2:addx(60)
+						sm_tshadow2:zoomx(1.1)
+						
+						sm_uwuc:decelerate(3)
+						sm_uwuc:addx(-30)
+						
+						sm_uwu:hidden(0)
+						sm_uwu:diffuse(.5,.5,.5,1)
+						sm_uwu:zoom(0.5)
+						sm_uwu:valign(1)
+						sm_uwu:xy(scx-50,scy+40)
+						sm_uwu:rotationx(20)
+						sm_uwu:tween(2,'outElastic(%f,0,1,1)')
+						sm_uwu:rotationx(0)
+						
+						--[[
+						if P1 and not P2 then
+							sm_intestines:SetTarget(P1:GetChild('NoteField'))
+							sm_snowproxy:SetTarget(P1:GetChild('NoteField'))
+						elseif P2 and not P1 then
+							sm_intestines:SetTarget(P2:GetChild('NoteField'))
+							sm_snowproxy:SetTarget(P2:GetChild('NoteField'))
+							P2:hidden(1)
+						elseif P1 and P2 then
+							sm_intestines:SetTarget(P1:GetChild('NoteField'))
+							sm_snowproxy:SetTarget(P1:GetChild('NoteField'))
+						end
+						]]
+						
+						for pn=1,2 do
+							if _G['P'..pn] then
+								_G['sm_intestines'..pn]:hidden(1)
+								_G['sm_intestines'..pn]:SetTarget(_G['P'..(pn)]:GetChild('NoteField'))
+								_G['sm_snowproxy'..pn]:hidden(1)
+								_G['sm_snowproxy'..pn]:SetTarget(_G['P'..(pn)]:GetChild('NoteField'))
+								break;
+							end
+						end
+						for pn=1,2 do
+							if _G['P'..pn] then
+								_G['sm_intestines'..pn]:hidden(0)
+								_G['sm_snowproxy'..pn]:hidden(0)
+								break;
+							end
+						end
+						
+				end,true},
+					
+					
+					{355,function()
+						
+						sm_flash:hidden(0)
+						sm_flash:diffuse(0,0,0,0)
+						sm_flash:linear(1)
+						sm_flash:diffusealpha(1)
+					end,true},
+				}
+				
+				
+				
+				
+				
+				
+				--beat-based ease mods
+				--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+				--valid ease types are:
+					--linear
+					--inQuad    outQuad    inOutQuad    outInQuad
+					--inCubic   outCubic   inOutCubic   outInCubic
+					--inQuart   outQuart   inOutQuart   outInQuart
+					--inQuint   outQuint   inOutQuint   outInQuint
+					--inSine    outSine    inOutSine    outInSine
+					--inExpo    outExpo    inOutExpo    outInExpo
+					--inCirc    outCirc    inOutCirc    outInCirc
+					--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+					--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+					--inBounce  outBounce  inOutBounce  outInBounce
+					
+				mods_ease = {
+					-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+					--{0,4,360,0,'rotationz','end',inOutBack},
+					
+					{0,35,1,1,'xmod','end',outSine},
+					--{0,58,200,200,'beat','end',outSine},
+					{35,35.4,1,.5,'xmod','end',outSine},
+					{35,35.4,0,300,'brake','end',outSine},
+					{35.4,38.4,.5,1.6,'xmod','end',outBounce},
+					{35.4,38.4,300,0,'brake','end',outBounce},
+					
+					
+					
+					
+				}
+				for i=1,2 do
+					table.insert(mods_ease,{127.6-3,128.5-3,-300,00,'tiny','end',outQuad,i})
+					
+					table.insert(mods_ease,{128.5-3,128.6-3,0,-300,'tiny','end',outSine,i})
+					table.insert(mods_ease,{128.6-3,129.5-3,-300,0,'tiny','end',outQuad,i})
+					
+					table.insert(mods_ease,{129.5-3,129.6-3,0,-300,'tiny','end',outSine,i})
+					table.insert(mods_ease,{129.6-3,130.5-3,-300,0,'tiny','end',outQuad,i})
+					
+					table.insert(mods_ease,{130.5-3,130.6-3,0,-300,'tiny','end',outSine,i})
+					table.insert(mods_ease,{130.6-3,131.5-3,-300,200,'tiny','end',outQuad,i})
+					table.insert(mods_ease,{131.5-3,157,200,200,'tiny','end',outQuad,i})
+					table.insert(mods_ease,{157,157.5,200,-200,'tiny','end',outQuad,i})
+					table.insert(mods_ease,{157.5,162,-200,0,'tiny','end',outElastic,i})
+					
+					table.insert(mods_ease,{215.5,219,200,200,'tiny','end',outSine,i})
+					table.insert(mods_ease,{219,228,200,0,'tiny','end',outSine,i})
+					table.insert(mods_ease,{353,356,0,20,'tornado','end',outSine,i})
+					table.insert(mods_ease,{356,500,20,20,'tornado','end',outSine,i})
+					--table.insert(mods_ease,{284,286,0,200,'tiny','end',outSine,i})
+					--table.insert(mods_ease,{286,287,200,200,'tiny','end',outSine,i})
+					--table.insert(mods_ease,{287,285,200,0,'tiny','end',outSine,i})
+				end
+				
+				for i=5,6 do
+					table.insert(mods_ease,{127.6-3,128.5-3,-300,00,'tiny','end',outQuad,i})
+					
+					table.insert(mods_ease,{128.5-3,128.6-3,0,-300,'tiny','end',outSine,i})
+					table.insert(mods_ease,{128.6-3,129.5-3,-300,0,'tiny','end',outQuad,i})
+					
+					table.insert(mods_ease,{129.5-3,129.6-3,0,-300,'tiny','end',outSine,i})
+					table.insert(mods_ease,{129.6-3,130.5-3,-300,0,'tiny','end',outQuad,i})
+					
+					table.insert(mods_ease,{130.5-3,130.6-3,0,-300,'tiny','end',outSine,i})
+					table.insert(mods_ease,{130.6-3,131.5-3,-300,200,'tiny','end',outQuad,i})
+					table.insert(mods_ease,{131.5-3,157,200,200,'tiny','end',outQuad,i})
+					table.insert(mods_ease,{157,157.5,200,-200,'tiny','end',outQuad,i})
+					table.insert(mods_ease,{157.5,162,-200,0,'tiny','end',outElastic,i})
+					table.insert(mods_ease,{157,161,-900,0,'confusionoffset','end',outSine,i})
+					
+					table.insert(mods_ease,{163,164,0,40,'reverse','end',outSine,i})
+					table.insert(mods_ease,{163,164,0,40,'flip','end',outSine,i})
+					table.insert(mods_ease,{163,164,0,-400,'tiny','end',outSine,i})
+					
+					table.insert(mods_ease,{164,165,40,0,'reverse','end',outSine,i})
+					table.insert(mods_ease,{164,165,40,0,'flip','end',outSine,i})
+					table.insert(mods_ease,{164,165,-400,0,'tiny','end',outSine,i})
+					table.insert(mods_ease,{165,167,-360,0,'rotationy','end',outSine,i})
+					table.insert(mods_ease,{165,167,628.318531,0,'confusionyoffset','end',outSine,i})
+
+					
+					table.insert(mods_ease,{167,167.5,0,-400,'movez0','end',outQuad,i})
+					table.insert(mods_ease,{167,167.5,0,-400,'movez1','end',outQuad,i})
+					table.insert(mods_ease,{167.5,168,-400,-400,'movez0','end',outQuad,i})
+					table.insert(mods_ease,{167.5,168,-400,-400,'movez1','end',outQuad,i})
+					
+					table.insert(mods_ease,{167.5,168,0,-400,'movez2','end',outQuad,i})
+					table.insert(mods_ease,{167.5,168,0,-400,'movez3','end',outQuad,i})
+					
+					table.insert(mods_ease,{168,169,-400,0,'movez0','end',outQuad,i})
+					table.insert(mods_ease,{168,169,-400,0,'movez1','end',outQuad,i})
+					table.insert(mods_ease,{168,169,-400,0,'movez2','end',outQuad,i})
+					table.insert(mods_ease,{168,169,-400,0,'movez3','end',outQuad,i})
+					
+					table.insert(mods_ease,{169.5,170,0,100,'flip','end',outQuad,i})
+					table.insert(mods_ease,{170,174,100,0,'flip','end',outElastic,i})
+					
+					table.insert(mods_ease,{171,172,628.318531,0,'confusionoffset','end',outQuad,i})
+					table.insert(mods_ease,{171,172,0,-400,'tiny','end',outQuad,i})
+					table.insert(mods_ease,{172,176,-400,0,'tiny','end',outElastic,i})
+					
+					table.insert(mods_ease,{173-.1,173.5-.1,100,300,'zoomx','end',outSine,i})
+					table.insert(mods_ease,{173-.1,173.5-.1,100,33,'zoomy','end',outSine,i})
+					
+					table.insert(mods_ease,{173.5-.1,174-.1,300,100,'zoomx','end',outSine,i})
+					table.insert(mods_ease,{173.5-.1,174-.1,33,100,'zoomy','end',outSine,i})
+					
+					table.insert(mods_ease,{174-.1,174.5-.1,100,200,'zoomy','end',outSine,i})
+					table.insert(mods_ease,{174-.1,174.5-.1,100,50,'zoomx','end',outSine,i})
+					
+					table.insert(mods_ease,{174.5-.1,175-.1,200,100,'zoomy','end',outSine,i})
+					table.insert(mods_ease,{174.5-.1,175-.1,50,100,'zoomx','end',outSine,i})
+					
+					table.insert(mods_ease,{175-.1,176-.2,100,20,'zoom','end',outSine,i})
+					table.insert(mods_ease,{176-.2,177-.2,20,100,'zoom','end',inSine,i})
+					
+					table.insert(mods_ease,{175-.2,177-.2,-360,0,'rotationz','end',inQuad,i})
+					table.insert(mods_ease,{177-.2,179-.2,0,0,'rotationz','end',inQuad,i})
+					
+					table.insert(mods_ease,{181,181.5,0,60,'rotationx','end',outSine,i})
+					table.insert(mods_ease,{181.5,182,60,0,'rotationx','end',inSine,i})
+					
+					table.insert(mods_ease,{182,182.5,0,-60,'rotationx','end',outSine,i})
+					table.insert(mods_ease,{182.5,183,-60,0,'rotationx','end',inSine,i})
+					table.insert(mods_ease,{183,186,0,0,'rotationx','end',inSine,i})
+					
+					table.insert(mods_ease,{182.8,183,0,-400,'tiny','end',outSine,i})
+					table.insert(mods_ease,{183,183.4,-400,0,'tiny','end',inSine,i})
+					
+					table.insert(mods_ease,{183.8-.25,184-.25,0,-400,'tiny','end',outSine,i})
+					table.insert(mods_ease,{184-.25,184.4-.25,-400,0,'tiny','end',inSine,i})
+					
+					table.insert(mods_ease,{184,184.25,100,70,'zoom','end',outSine,i})
+					table.insert(mods_ease,{184.25,184.5,70,100,'zoom','end',inSine,i})
+					
+					table.insert(mods_ease,{184.5,184.75,100,70,'zoom','end',outSine,i})
+					table.insert(mods_ease,{184.75,185,70,100,'zoom','end',inSine,i})
+					
+					table.insert(mods_ease,{185.0,185.25,0,40,'reverse','end',outSine,i})
+					table.insert(mods_ease,{185.25,185.5,40,0,'reverse','end',inSine,i})
+					
+					table.insert(mods_ease,{186.0,186.25,0,40,'reverse','end',outSine,i})
+					table.insert(mods_ease,{186.25,189.5,40,0,'reverse','end',outElastic,i})
+					--table.insert(mods_ease,{186.5,189.5,40,0,'reverse','end',outElastic,i})
+					
+					table.insert(mods_ease,{187-.2,187.5-.2,0,100,'flip','end',outSine,i})
+					table.insert(mods_ease,{187.5-.2,188-.2,100,0,'flip','end',inSine,i})
+					
+					table.insert(mods_ease,{188,188.5,0,-400,'tiny','end',outSine,i})
+					table.insert(mods_ease,{188.5,189,-400,0,'tiny','end',outSine,i})
+					table.insert(mods_ease,{188.5,189,100,30,'zoom','end',outSine,i})
+					
+					table.insert(mods_ease,{189,193,30,150,'zoom','end',outSine,i})
+					table.insert(mods_ease,{189,193,628.318531*2,0,'confusionoffset','end',outSine,i})
+					table.insert(mods_ease,{193,197,150,100,'zoom','end',outElastic,i})
+					table.insert(mods_ease,{193,197,0,100,'drunk','end',inSine,i})
+					table.insert(mods_ease,{197,220,100,100,'drunk','end',inSine,i})
+					
+					--table.insert(mods_ease,{193,197,2,1,'xmod','end',inSine,i})
+					--table.insert(mods_ease,{197,397,1,1,'xmod','end',inSine,i})
+					
+					table.insert(mods_ease,{193,197,0,100,'orient','end',inSine,i})
+					table.insert(mods_ease,{197,220,100,100,'orient','end',inSine,i})
+					table.insert(mods_ease,{220,225,100,0,'orient','end',inSine,i})
+					table.insert(mods_ease,{225,235,-360*4,0,'rotationz','end',outSine,i})
+					table.insert(mods_ease,{225,235,100,0,'zoom','end',outSine,i})
+					--table.insert(mods_ease,{209,215.5,0,200,'tiny','end',outSine,i})
+					--table.insert(mods_ease,{215.5,219,200,200,'tiny','end',outSine,i})
+					--table.insert(mods_ease,{219,220,200,0,'tiny','end',outSine,i})
+					--table.insert(mods_ease,{284,286,0,200,'tiny','end',outSine,i})
+					--table.insert(mods_ease,{286,287,200,200,'tiny','end',outSine,i})
+					--table.insert(mods_ease,{287,280,200,0,'tiny','end',outSine,i})
+					end
+					
+					
+				m(0,35.5,'*1000 200 beat',e)
+				
+				local mu = 1
+				local mt = 1.66
+				for i=36,61,2 do
+					
+					me(i-.25*mt,.25*mt,0,-20*mu,'alternate',l,inOutCirc)
+					me(i-.25*mt,.25*mt,0,10*mu,'reverse',l,inOutCirc)
+					me(i,.25*mt,-20*mu,0,'alternate',l,inOutCirc)
+					me(i,.25*mt,10*mu,0,'reverse',l,inOutCirc)
+					
+					me(i+1-.25*mt,.25*mt,0,20*mu,'alternate',l,inOutCirc)
+					me(i+1-.25*mt,.25*mt,0,-10*mu,'reverse',l,inOutCirc)
+					me(i+1,.25*mt,20*mu,0,'alternate',l,inOutCirc)
+					me(i+1,.25*mt,-10*mu,0,'reverse',l,inOutCirc)
+					
+				end
+				
+				
+				for pn=1,2 do
+					m(340,5,'*10000 -60 zigzagperiod',l,pn)
+					me(340,.5,0,60,'zigzag',l,linear,pn,3.5)
+					me(344,.5,60,0,'zigzag',l,linear,pn)
+				end
+				
+				for i=0,2 do
+					for j=0,7 do
+						local b = 257.5+i*8+j
+						local amt = (j+3)*-20
+						me(b-.25,.25,0,amt,'tiny',l,inQuad)
+						me(b,.25,amt,0,'tiny',l,inQuad)
+					end
+				end
+				
+				for j=0,6 do
+					local b = 257.5+3*8+j
+					local amt = (j+10)*-20
+					me(b-.25,.25,0,amt,'tiny',l,inQuad)
+					me(b,.25,amt,0,'tiny',l,inQuad)
+				end
+				
+				table.insert(mods_ease,{322,2,628,0,'confusionoffset','len',outSine})
+				table.insert(mods_ease,{322,2,-150,0,'tiny','len',outSine})
+				local paritything = 1
+				for i=5,27,2 do
+					table.insert(mods_ease,{i,1,45*paritything,0,'confusionoffset','len',outSine})
+					paritything = paritything * -1
+				end
+				
+				
+	---------------------------------------------------------------------------------------
+	----------------------Sort the actions table-------------------------------------------
+	---------------------------------------------------------------------------------------
+				
+				function modtable_compare(a,b)
+					return a[1] < b[1]
+				end
+				
+				if table.getn(mod_actions) > 1 then
+					table.sort(mod_actions, modtable_compare)
+				end
+				
+				self:queuecommand('Update');
+				
+			else
+				
+				SCREENMAN:SystemMessage('NotITG version Too Old! Needs v3.2')
+			
+			end
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP3'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP4'));
+				
+				--name players, judgment and combo
+				for pn=1,8 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				checked = true; --let this only run once
+				
+				if FUCK_EXE and tonumber(GAMESTATE:GetVersionDate()) > 20190216 then
+					GAMESTATE:HideStageText(true);
+				end
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i=1,4 do
+						mod_do('clearall',i)
+					end
+				end
+				
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if beat >=v[1] then
+								if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = '';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+						end
+					end
+				end
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods2) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if mod_time >=v[1] then
+								if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = 'error';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+						end
+					end
+				end
+				
+				--------------------------------------------------------------------------------------
+				-- i dont know who this reader is but he looks like he is made out of EASE HAHAHAHA --
+				-- original code by exschwasion, bastardized by taro for cmod support and less 'if' --
+				--------------------------------------------------------------------------------------
+				for i,v in pairs(mods_ease) do
+					if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+						if beat >=v[1] then
+							if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+								
+								local duration = v[2];
+								if v[6] == 'end' then duration = v[2] - v[1] end
+								local curtime = beat - v[1]
+								local diff = v[4] - v[3]
+								local startstrength = v[3]
+								local curve = v[7]
+								local mod = v[5]
+								
+								local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+							
+								local strength = v[4]
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							end
+						end
+					else
+						SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+					end
+				end
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				if beat>0.1 then
+				sm_ground:customtexturerect(0,0+beat*.05*sm_scrollmult ,8,1+beat*.05*sm_scrollmult)
+				--sm_ground:texcoordvelocity(0,1+math.sin(beat))
+				end
+				
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+						if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+							if type(mod_actions[curaction][2]) == 'function' then
+								mod_actions[curaction][2]()
+							elseif type(mod_actions[curaction][2]) == 'string' then
+								MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+							end
+						end
+						curaction = curaction+1;
+					end
+				end
+				
+			end
+			
+			-- SNOW MOTION FAKE PLAYFIELD AUTOMATORS
+			if beat > mod_firstSeenBeat+0.1 and sm_cur1<=table.getn(SnowField1) and sm_runLoop1==1 then
+				local qnt = 4
+				if beat >= SnowField1[sm_cur1][1] then
+					if math.mod(sm_cur1,2) == 1 then
+					qnt = 8
+					end
+						_G['sm_1_'..qnt..'ths'..sm_cur1]:hidden(1)
+						
+					if sm_cur1<table.getn(SnowField1) then
+					sm_cur1 = sm_cur1+1
+					else
+					sm_runLoop1=0
+					end
+				end
+			end
+			
+			if beat > mod_firstSeenBeat+0.1 and sm_cur2<=table.getn(SnowField2) and sm_runLoop2==1 then
+				local qnt = 4
+				if beat >= SnowField2[sm_cur2][1] then
+					if math.mod(sm_cur2,2) == 1 then
+					qnt = 8
+					end
+						_G['sm_2_'..qnt..'ths'..sm_cur2]:hidden(1)
+						
+					if sm_cur2<table.getn(SnowField2) then
+					sm_cur2 = sm_cur2+1
+					else
+					sm_runLoop2=0
+					end
+				end
+			end
+			
+			if beat > mod_firstSeenBeat+0.1 and sm_cur3<=table.getn(SnowField3) and sm_runLoop3==1 then
+				local qnt = 4
+				if beat >= SnowField3[sm_cur3][1] then
+					if math.mod(sm_cur3,2) == 1 then
+					qnt = 8
+					end
+						_G['sm_3_'..qnt..'ths'..sm_cur3]:hidden(1)
+						
+					if sm_cur3<table.getn(SnowField3) then
+					sm_cur3 = sm_cur3+1
+					else
+					sm_runLoop3=0
+					end
+				end
+			end
+			
+			if beat > mod_firstSeenBeat+0.1 and sm_cur3<=table.getn(SnowField4) and sm_runLoop4==1 then
+				local qnt = 4
+				if beat >= SnowField4[sm_cur4][1] then
+					if math.mod(sm_cur4,2) == 1 then
+					qnt = 8
+					end
+						_G['sm_4_'..qnt..'ths'..sm_cur4]:hidden(1)
+						
+					if sm_cur4<table.getn(SnowField4) then
+					sm_cur4 = sm_cur4+1
+					else
+					sm_runLoop4=0
+					end
+				end
+			end
+			
+			
+			---STUPID MOD TESTING
+			if beat>2 then
+				for i=1,table.getn(SnowField1) do
+					local qnt = 4
+					local rotz = 90
+					local posmult = -1.5
+					local column = 0
+					if SnowField1[i][2] == 1 then rotz = 0; posmult = -.5; column = 1
+					elseif SnowField1[i][2] == 2 then rotz = 180; posmult = .5; column = 2
+					elseif SnowField1[i][2] == 3 then rotz = -90; posmult = 1.5; column = 3 end
+					if math.mod(i,2) == 1 then qnt = 8 end 
+							local modClock=SnowField1[i][1]-beat;
+							local zoomValue=0
+							local startFrom=SnowField1[1][1]
+							if beat<startFrom then
+								zoomValue=SnowField1[i][1]-startFrom
+							else
+								zoomValue=modClock
+							end
+						if modClock>0 then
+						--_G['sm_1_'..qnt..'th'..i]:x(64*posmult+math.sin(column+modClock*1)*20)
+						--_G['sm_1_'..qnt..'th'..i]:rotationy(modClock*200)
+						
+						_G['sm_1_'..qnt..'th'..i]:zoom(.5*zoomValue+1)
+						_G['sm_1_'..qnt..'th'..i]:rotationy(zoomValue*100)
+						
+						end
+				end
+			end
+			
+			--- SECOND FIELD
+			
+			if beat>2 then
+				for i=1,table.getn(SnowField2) do
+					local qnt = 4
+					local rotz = 90
+					local posmult = -1.5
+					local column = 0
+					if SnowField2[i][2] == 1 then rotz = 0; posmult = -.5; column = 1
+					elseif SnowField2[i][2] == 2 then rotz = 180; posmult = .5; column = 2
+					elseif SnowField2[i][2] == 3 then rotz = -90; posmult = 1.5; column = 3 end
+					if math.mod(i,2) == 1 then qnt = 8 end 
+							local modClock=SnowField2[i][1]-beat;
+							local zoomValue=0
+							local startFrom=SnowField2[1][1]
+							if beat<startFrom then
+								zoomValue=SnowField2[i][1]-startFrom
+							else
+								zoomValue=modClock
+							end
+						if modClock>0 then
+						--_G['sm_1_'..qnt..'th'..i]:x(64*posmult+math.sin(column+modClock*1)*20)
+						--_G['sm_1_'..qnt..'th'..i]:rotationy(modClock*200)
+						
+						_G['sm_2_'..qnt..'th'..i]:zoom(0.5*zoomValue+1)
+						_G['sm_2_'..qnt..'th'..i]:rotationx(zoomValue*100)
+						
+						end
+				end
+			end
+			
+			--- THIRD FIELD
+			
+			if beat>2 then
+				for i=1,table.getn(SnowField3) do
+					local qnt = 4
+					local rotz = 90
+					local posmult = -1.5
+					local column = 0
+					if SnowField3[i][2] == 1 then rotz = 0; posmult = -.5; column = 1
+					elseif SnowField3[i][2] == 2 then rotz = 180; posmult = .5; column = 2
+					elseif SnowField3[i][2] == 3 then rotz = -90; posmult = 1.5; column = 3 end
+					if math.mod(i,2) == 1 then qnt = 8 end 
+							local modClock=SnowField3[i][1]-beat;
+							local zoomValue=0
+							local startFrom=SnowField3[1][1]
+							if beat<startFrom then
+								zoomValue=SnowField3[i][1]-startFrom
+							else
+								zoomValue=modClock
+							end
+						if modClock>0 then
+						--_G['sm_1_'..qnt..'th'..i]:x(64*posmult+math.sin(column+modClock*1)*20)
+						--_G['sm_1_'..qnt..'th'..i]:rotationy(modClock*200)
+						
+						_G['sm_3_'..qnt..'th'..i]:zoom(0.5*zoomValue+1)
+						_G['sm_3_'..qnt..'th'..i]:rotationx(zoomValue*100)
+						_G['sm_3_'..qnt..'th'..i]:rotationz(zoomValue*100)
+						
+						end
+				end
+			end
+			
+			--- FOURTH FIELD
+			
+			if beat>2 then
+				for i=1,table.getn(SnowField4) do
+					local qnt = 4
+					local rotz = 90
+					local posmult = -1.5
+					local column = 0
+					if SnowField4[i][2] == 1 then rotz = 0; posmult = -.5; column = 1
+					elseif SnowField4[i][2] == 2 then rotz = 180; posmult = .5; column = 2
+					elseif SnowField4[i][2] == 3 then rotz = -90; posmult = 1.5; column = 3 end
+					if math.mod(i,2) == 1 then qnt = 8 end 
+							local modClock=SnowField4[i][1]-beat;
+							local zoomValue=0
+							local startFrom=SnowField4[1][1]
+							if beat<startFrom then
+								zoomValue=SnowField4[i][1]-startFrom
+							else
+								zoomValue=modClock
+							end
+						if modClock>0 then
+						--_G['sm_1_'..qnt..'th'..i]:x(64*posmult+math.sin(column+modClock*1)*20)
+						--_G['sm_1_'..qnt..'th'..i]:rotationy(modClock*200)
+						
+						_G['sm_4_'..qnt..'th'..i]:zoom(0.5*zoomValue+1)
+						_G['sm_4_'..qnt..'th'..i]:rotationx(zoomValue*100)
+						_G['sm_4_'..qnt..'th'..i]:rotationz(zoomValue*100)
+						
+						end
+				end
+			end
+			
+			------------------ TREE HANDLER
+			
+			if beat>1 and sm_spawntrees==1 then
+			
+				if sm_treedelay<=0 then
+						local umu=1
+					if math.mod(sm_curtree,2)==0 then
+						 umu=1
+					else
+						 umu=-1
+					end
+					_G['sm_tree'..sm_curtree]:finishtweening()
+					_G['sm_tree'..sm_curtree]:hidden(0)
+					--_G['sm_tree'..sm_curtree]:rotationx(0)
+					--_G['sm_tree'..sm_curtree]:wag()
+					_G['sm_trees'..sm_curtree]:hidden(0)
+					_G['sm_trees'..sm_curtree]:zoomx(.6)
+					_G['sm_trees'..sm_curtree]:zoomy(1.3)
+					_G['sm_trees'..sm_curtree]:zoomz(.5)
+					_G['sm_trees'..sm_curtree]:ztest(1)
+					_G['sm_trees'..sm_curtree]:zwrite(1)
+					_G['sm_tree'..sm_curtree]:fov(100)
+					local rng = math.random(1,2)
+					_G['sm_trees'..sm_curtree]:basezoomx(rng*2-3)
+					_G['sm_tree'..sm_curtree]:SetDrawByZPosition(true)
+					_G['sm_tree'..sm_curtree]:rotationx(sm_worldrot*-1)
+					_G['sm_trees'..sm_curtree]:align(.5,.9)
+					_G['sm_trees'..sm_curtree]:diffuse(1.3,1.3,1.3,7)
+					_G['sm_trees'..sm_curtree]:linear(3.1/sm_scrollmult)
+					_G['sm_trees'..sm_curtree]:diffuse(0,0,0,0)
+					_G['sm_tree'..sm_curtree]:xy(-400*umu+math.sin(beat*2.5)*200,500)
+					_G['sm_tree'..sm_curtree]:linear(3.1/sm_scrollmult)
+					_G['sm_tree'..sm_curtree]:y(-700)
+					_G['sm_tree'..sm_curtree]:queuecommand('Hide')
+					--_G['sm_tree'..sm_curtree]:rotationx(0)
+					if sm_curtree==30 then
+						sm_curtree=1
+					else
+						sm_curtree=sm_curtree+1
+					end
+					sm_treedelay=sm_td
+				
+				else
+					sm_treedelay=sm_treedelay-(1*sm_scrollmult)
+				end --treedelay end
+			end
+			
+			--- SNOW HANDLER
+			
+			if beat>1 then
+			
+				if sm_snowdelay<=0 and sm_makesnow==1 then
+					
+					_G['sm_snowt'..sm_cursnow]:stoptweening()
+					_G['sm_snowt'..sm_cursnow]:hidden(0)
+					_G['sm_snowt'..sm_cursnow]:rotationz(0)
+					_G['sm_snowt'..sm_cursnow]:zoom(.5)
+					_G['sm_snowt'..sm_cursnow]:zoomy(.5)
+					_G['sm_snowt'..sm_cursnow]:zoomz(.5)
+					_G['sm_snowt'..sm_cursnow]:fov(100)
+					_G['sm_snowt'..sm_cursnow]:SetDrawByZPosition(true)
+					_G['sm_snowt'..sm_cursnow]:rotationx(sm_worldrot*-1)
+					_G['sm_snowt'..sm_cursnow]:xy(sm_makoto:GetX(),sm_makoto:GetY()+100)
+					_G['sm_snowt'..sm_cursnow]:z(0)
+					_G['sm_snowt'..sm_cursnow]:linear(3.1/sm_scrollmult)
+					_G['sm_snowt'..sm_cursnow]:y(-900)
+					_G['sm_snowt'..sm_cursnow]:z(200)
+					_G['sm_snowt'..sm_cursnow]:x(sm_makoto:GetX()+math.sin(beat*5)*0)
+					_G['sm_snowt'..sm_cursnow]:zoomy(0)
+					_G['sm_snowt'..sm_cursnow]:rotationz(180*math.sin(beat*2.5))
+					_G['sm_snowt'..sm_cursnow]:queuecommand('Hide')
+					
+					_G['sm_snowts'..sm_cursnow]:stoptweening()
+					_G['sm_snowts'..sm_cursnow]:hidden(0)
+					_G['sm_snowts'..sm_cursnow]:animate(0)
+					_G['sm_snowts'..sm_cursnow]:zoom(1)
+					_G['sm_snowts'..sm_cursnow]:setstate(math.random(0,3))
+					_G['sm_snowts'..sm_cursnow]:align(.5,.8)
+					_G['sm_snowts'..sm_cursnow]:diffuse(1,1,1,1)
+					_G['sm_snowts'..sm_cursnow]:decelerate(3/sm_scrollmult)
+					_G['sm_snowts'..sm_cursnow]:zoom(7)
+					_G['sm_snowts'..sm_cursnow]:diffuse(1,1,1,0)
+					if sm_cursnow==19 then
+						sm_cursnow=1
+					else
+						sm_cursnow=sm_cursnow+1
+					end
+					sm_snowdelay=sm_sd
+				
+				else
+					sm_snowdelay=sm_snowdelay-(1*sm_scrollmult)
+				end --treedelay end
+			end
+			
+			if beat>64 then
+				--Trace( GAMESTATE:GetX(sm_latestAwake34-1,0,-32) )
+				sm_makoto:x(GAMESTATE:GetX(sm_latestAwake34-1,0,-32))
+			end
+			self:sleep(1/60);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ PUURO'S STUFF ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	<!------------------ ------------- ------------------->
+	
+	<!------------ SHADER BS -------------------->
+
+	
+		
+		
+	
+	
+	<Layer Type="Quad" 
+	OnCommand="%function(self)
+		self:xy(scx,scy)
+		self:zoomx(sw*1.1)
+		self:zoomy(sh*1.1)
+		self:diffuse(0,0,0,1)
+	end"
+	/>
+
+  <Layer File="bubble sphere.png"
+    Var="spriteSphere2"
+    OnCommand="visible,0"
+  />
+
+
+
+<!--------------------------------- END BS ----------->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<Layer
+		File="placeholder.png"
+		OnCommand="%function(self)
+			self:xy(scx,scy)
+			self:zoom(1)
+		end"
+	/>
+	<!---- 3D WORLD IS HERE --->
+	<Layer Type="ActorFrame" OnCommand="%function(self) self:fov(100) 
+	self:xy(scx,scy+100)
+	self:rotationx(sm_worldrot)
+	sm_world=self;
+	self:wag()
+	self:effectmagnitude(0,0,0)
+	end"><children>
+	<Layer File="testig.png" Var="sm_ground"
+	OnCommand="%function(self)
+		self:xy(0,0)
+		self:zoom(5)
+		--self:diffusetopedge(.5,.5,.5,1)
+		self:zoomx(20)
+		self:zoomz(4)
+		self:customtexturerect(0,0,2,2)
+		--self:texcoordvelocity(0,1)
+		self:rotationx(0)
+	end"
+	/>
+	
+	<Layer File="testig.png" Var="sm_black"
+	OnCommand="%function(self)
+		self:xy(0,0)
+		self:zoom(5)
+		self:diffuse(0,0,0,1)
+		self:zoomx(20)
+		self:zoomz(4)
+		self:customtexturerect(0,0,2,2)
+		--self:texcoordvelocity(0,1)
+		self:rotationx(0)
+		self:fadebottom(0.3)
+		self:cropbottom(0.5)
+	end"
+	/>
+	
+	<Layer File="snowpilesh.png" 
+	OnCommand="%function(self)
+		self:xy(-160,-400)
+		self:zoom(1.1)
+		self:zoomz(1.1)
+		self:basezoomy(4)
+		self:rotationx(0)
+		self:hidden(1)
+		self:fadebottom(.15)
+		self:diffuse(0,0,0,.5)
+		self:cropbottom(.05)
+		self:diffuse(.8,.8,.8,1)
+		self:align(.5,.8)
+	end"
+	/>
+	<Layer File="snowpileb.png" Var="sm_pile"
+	OnCommand="%function(self)
+		self:xy(-160,-300)
+		self:zoom(1.1)
+		self:zoomz(1.1)
+		self:hidden(1)
+		self:basezoomx(1.1)
+		self:rotationx(sm_worldrot*-1)
+		self:fadebottom(0)
+		self:diffuse(.8,.8,.8,1)
+		self:cropbottom(.0)
+		self:align(.5,.8)
+	end"
+	/>
+	
+	<Layer File="3D/snhb.txt" Var="sm_snowpileh"
+	OnCommand="%function(self)
+		self:xy(-160,-500)
+		self:zoom(1.5)
+		self:zoomx(2)
+		self:zoomz(1.5)
+		self:hidden(1)
+		self:rotationx(80)
+		self:diffuse(1,1,1,1)
+	end"
+	/>
+	
+	<Layer File="3D/sn.txt" Var="sm_snowpile"
+	OnCommand="%function(self)
+		self:xy(-160,-500)
+		self:zoom(1.5)
+		self:zoomx(2)
+		self:zoomz(1.5)
+		self:rotationx(80)
+		self:diffuse(1,1,1,1)
+	end"
+	/>
+	
+	<Layer Type="ActorFrame" Var="sm_zoomzwrapper" OnCommand="%function(self) 
+			self:xyz(0,0,0)
+	end"><children>
+	
+	<Layer File="3D/blob1.txt" Var="sm_blob1"
+	OnCommand="%function(self)
+		self:xy(0,-200)
+		self:zoom(1)
+		self:hidden(1)
+		self:diffuse(.5,.5,.5,1)
+	end"
+	/>
+	
+	<Layer File="3D/blob2.txt" Var="sm_blob2"
+	OnCommand="%function(self)
+		self:xy(0,-200)
+		self:zoom(1)
+		self:hidden(1)
+		self:diffuse(.5,.5,.5,1)
+	end"
+	/>
+	
+	<Layer File="3D/blob3.txt" Var="sm_blob3"
+	OnCommand="%function(self)
+		self:xy(0,-200)
+		self:zoom(1)
+		self:hidden(1)
+		self:diffuse(.5,.5,.5,1)
+	end"
+	/>
+	
+	<Layer File="3D/blob4.txt" Var="sm_blob4"
+	OnCommand="%function(self)
+		self:xy(0,-200)
+		self:zoom(1)
+		self:hidden(1)
+		self:diffuse(.5,.5,.5,1)
+	end"
+	/>
+	<Layer Type="ActorFrame" Var="sm_snowboard" OnCommand="%function(self) 
+			self:xyz(-110,-495,20)
+			self:zoom(.4)
+			self:zoomz(.4)
+			self:hidden(1)
+			self:rotationx(90)
+	end"><children>
+			<Layer File="3D/char.png" Var="sm_snowperson"
+			OnCommand="%function(self)
+				self:y(-130)
+				self:zwrite(1)
+				self:ztest(1)
+			end"
+			/>
+			<Layer File="3D/snowboard.txt" Var="sm_snowboards"
+			OnCommand="%function(self)
+			end"
+			/>
+	</children></Layer> <!-- snowboard ends here -->
+	
+	</children></Layer> <!-- zoomz wrapper ends here -->
+	
+	
+	
+	
+	
+	
+	<Layer File="snowtrail/snowtrail.xml"
+  OnCommand="%function(self)
+  sm_snowCont=self;
+  self:xy(-100,0)
+  end" />
+  
+    <Layer File="trees.xml"
+  OnCommand="%function(self)
+  sm_treeCont=self;
+  self:xy(0,0)
+  end" />
+	<Layer Type="ActorFrame" Var="sm_makoto" OnCommand="%function(self)
+		  self:xyz(999,0,0)
+		  self:zoom(1)
+		  self:zoomz(1)
+		  self:rotationx(sm_worldrot*-1)
+		  self:hidden(1)
+		  	end"><children>
+			<Layer Type="ActorFrame" Var="sm_makotowrapper"><children>
+		<Layer Type="Sprite"  Var="sm_makotoS"
+		  Texture="chara/slide 4x2.png" 
+		  Frame0000="0"
+		  Delay0000=".6"
+		  Frame0001="1"
+		  Delay0001=".6"
+		  Frame0002="2"
+		  Delay0002=".6"
+		  Frame0003="3"
+		  Delay0003=".6"
+		  Frame0004="4"
+		  Delay0004=".6"
+		  Frame0005="5"
+		  Delay0005=".6"
+		  Frame0006="6"
+		  Delay0006=".6"
+		  
+		  OnCommand="%function(self)
+		  self:effectclock('bgm')
+		  self:x(-100)
+		  --self:ztest(1)
+		  --self:zwrite(1)
+		  end"
+		  
+		  />
+  </children></Layer><!-- sm_makotowrapper ends here -->
+  </children></Layer><!-- sm_makoto ends here -->
+  
+  <Layer Type="ActorFrame" Var="sm_worldproxy" OnCommand="%function(self)
+		  self:xyz(0,0,0)
+		  self:zoom(1)
+		  self:zoomz(1)
+		  self:rotationx(sm_worldrot*-1)
+		  self:hidden(1)
+		  	end"><children>
+			
+	  <Layer Type="ActorProxy"
+			OnCommand="%function(self)
+			self:sleep(0.1)
+			self:queuecommand('SetMe')
+			self:xy(0,0)
+			self:zoomz(1)
+			end"
+			
+			SetMeCommand="%function(self)
+				if P1 then
+					self:SetTarget(P1:GetChild('NoteField'))
+					P1:hidden(1)
+				end
+			end"
+		/>
+			
+	  <Layer Type="ActorProxy"
+			OnCommand="%function(self)
+			self:sleep(0.1)
+			self:queuecommand('SetMe')
+			self:xy(0,0)
+			self:zoomz(1)
+			end"
+			
+			SetMeCommand="%function(self)
+				if P2 then
+					self:SetTarget(P2:GetChild('NoteField'))
+					P2:hidden(1)
+				end
+			end"
+		/>
+		
+		<Layer Type="ActorFrame" Var="sm_facesb" OnCommand="%function(self) 
+				self:xyz(0,32,0)
+				self:zoom(.25)
+				self:fov(100)
+			end"><children>
+			<Layer File="kaomoji/face2.png"
+			Var="sm_face2b"
+			OnCommand="%function(self)
+			self:xy(60,100)
+			self:zoom(1)
+			self:effectclock('beat')
+			self:diffuseramp()
+			self:effectcolor1(0.4,0.4,0.4,1)
+			self:effectcolor2(1,1,1,1,1)
+			self:effectperiod(0.5)
+			self:effectdelay(0.5)
+			self:effectoffset(0.05)
+			self:hidden(1)
+			end"
+			
+			/>
+			
+			<Layer File="kaomoji/face3b.png"
+			Var="sm_face3b"
+			OnCommand="%function(self)
+			self:xy(60,100)
+			self:zoom(1)
+			self:hidden(1)
+			end"
+			
+			/>
+			<Layer File="kaomoji/face3.png"
+			Var="sm_face3"
+			OnCommand="%function(self)
+			self:xy(60,100)
+			self:zoom(1)
+			self:effectclock('beat')
+			self:diffuseramp()
+			self:effectcolor1(0.4,0.4,0.4,1)
+			self:effectcolor2(1,1,1,1)
+			self:effectperiod(0.5)
+			self:effectdelay(0.5)
+			self:effectoffset(0.5)
+			self:hidden(1)
+			end"
+			
+			/>
+			
+		</children></Layer> <!-- here ends facesb -->
+	</children></Layer>
+
+	
+	</children></Layer>
+	
+	
+	
+	
+	
+		
+  
+  <Layer Type="ActorFrame"
+    Frag="shaders/refract.frag"
+    OnCommand="%function( self )
+      self:sleep(0.1)
+      self:queuecommand('Settt')
+
+    end"
+	SetttCommand="%function( self )
+      glassShader = self:GetShader()
+
+      glassShader:uniformTexture( 'samplerSphere', spriteSphere2:GetTexture() )
+
+      glassShader:uniform2f( 'samplerDryTextureSize', AFTDry:GetTexture():GetTextureWidth(), AFTDry:GetTexture():GetTextureHeight() )
+      glassShader:uniform2f( 'samplerDryImageSize', AFTDry:GetTexture():GetImageWidth(), AFTDry:GetTexture():GetImageHeight() )
+      glassShader:uniformTexture( 'samplerDry', AFTDry:GetTexture() )
+
+    end"
+  />
+  
+  	<Layer Type="Quad" Var="sm_darken"
+		OnCommand="%function(self)
+		self:xy(scx,scy)
+		self:zoomx(sw*1.1)
+		self:zoomy(sh*1.1) --let's multiply these so that things like vibrate won't mess this up
+		self:diffuse(0,0,0,0)
+		end"
+	/>
+  <Layer Type="ActorFrame" Var="sm_frontproxy" OnCommand="%function(self)
+		  self:xyz(scx,scy+250,0)
+		  self:zoom(1)
+		  self:zoomz(1)
+		  self:rotationx(0)
+		  self:fov(100)
+		  	end"><children>
+			
+			
+	  <Layer Type="ActorProxy" Var="sm_intestines1"
+			OnCommand="%function(self)
+			self:sleep(0.1)
+			self:queuecommand('SetMe')
+			self:xy(-0,-0,0)
+			self:zoomz(1)
+			end"
+			
+			SetMeCommand="%function(self)
+				if P1 then
+					self:SetTarget(P1:GetChild('NoteField'))
+					P1:hidden(1)
+				end
+			end"
+		/>	
+	  <Layer Type="ActorProxy" Var="sm_intestines2"
+			OnCommand="%function(self)
+			self:sleep(0.1)
+			self:queuecommand('SetMe')
+			self:xy(-0,-0,0)
+			self:zoomz(1)
+			end"
+			
+			SetMeCommand="%function(self)
+				if P2 then
+					self:SetTarget(P2:GetChild('NoteField'))
+					P2:hidden(1)
+				end
+			end"
+		/>
+		
+		
+		<Layer Type="ActorFrame" Var="sm_faces" OnCommand="%function(self) 
+				self:xyz(0,32,0)
+				self:zoom(.25)
+				self:fov(100)
+		end"><children>
+		<Layer File="kaomoji/face1.png"
+			Var="sm_face1"
+			OnCommand="%function(self)
+			self:xy(0,0)
+			self:zoom(1)
+			self:effectclock('beat')
+			self:diffuseramp()
+			self:effectcolor1(0.4,0.4,0.4,1)
+			self:effectcolor2(1,1,1,1,1)
+			self:effectperiod(0.5)
+			self:effectdelay(0.5)
+			self:effectoffset(0.05)
+			self:diffusealpha(0)
+			end"
+			
+		/>
+		
+		<Layer File="kaomoji/face2.png"
+			Var="sm_face2"
+			OnCommand="%function(self)
+			self:xy(100,0)
+			self:zoom(1)
+			self:effectclock('beat')
+			self:diffuseramp()
+			self:effectcolor1(0.4,0.4,0.4,1)
+			self:effectcolor2(1,1,1,1,1)
+			self:effectperiod(0.5)
+			self:effectdelay(0.5)
+			self:effectoffset(0.05)
+			self:hidden(1)
+			end"
+			
+		/>
+		
+		<Layer File="kaomoji/face4.png"
+			Var="sm_face4"
+			OnCommand="%function(self)
+			self:xy(100,0)
+			self:zoom(1)
+			self:effectclock('beat')
+			self:diffuseramp()
+			self:effectcolor1(0.4,0.4,0.4,1)
+			self:effectcolor2(1,1,1,1,1)
+			self:effectperiod(0.5)
+			self:effectdelay(0.5)
+			self:effectoffset(0.05)
+			self:hidden(1)
+			end"
+			
+		/>
+		
+		<Layer File="kaomoji/face5.png"
+			Var="sm_face5"
+			OnCommand="%function(self)
+			self:xy(100,0)
+			self:zoom(1)
+			self:effectclock('beat')
+			self:diffuseramp()
+			self:effectcolor1(0.4,0.4,0.4,1)
+			self:effectcolor2(1,1,1,1,1)
+			self:effectperiod(0.5)
+			self:effectdelay(0.5)
+			self:effectoffset(0.05)
+			self:hidden(1)
+			end"
+			
+		/>
+		</children></Layer> <!-- Faces end here -->
+		
+		<Layer File="3D/snowb.txt"
+			Var="sm_snowball"
+			OnCommand="%function(self)
+			self:xy(0,0)
+			self:zoom(1)
+			self:hidden(1)
+			end"
+			
+		/>
+	</children></Layer> <!-- proxy AF ends here -->
+	
+	
+	<Layer Type="ActorFrameTexture"
+    Var="AFTDry"
+    OnCommand="%function( self )
+      self:SetWidth( DISPLAY:GetDisplayWidth() )
+      self:SetHeight( DISPLAY:GetDisplayHeight() )
+      self:EnableDepthBuffer( false )
+      self:EnableAlphaBuffer( true )
+      self:EnableFloat( false )
+      self:EnablePreserveTexture( true )
+      self:fov( 60 )
+
+      self:Create()
+    end"
+  />
+  
+	<Layer Type="ActorFrame" Var="sm_fieldCont"
+	OnCommand="%function(self) 
+	self:xy(scx,scy)
+	self:fov(70)
+	end"><children>
+	<Layer File="3D/field1.xml" 
+
+		OnCommand="%function(self)
+			sm_field1=self;
+			self:xy(0,0)
+			self:hidden(0)
+			self:fov(70)
+			--self:wag()
+
+		end"
+	/>
+	
+	<Layer File="3D/field2.xml" 
+
+		OnCommand="%function(self)
+			sm_field2=self;
+			self:xy(0,0)
+			self:hidden(0)
+			self:fov(70)
+			--self:wag()
+
+		end"
+	/>
+	
+	<Layer File="3D/field3.xml" 
+
+		OnCommand="%function(self)
+			sm_field3=self;
+			self:xy(0,0)
+			self:hidden(0)
+			self:fov(70)
+			--self:wag()
+
+		end"
+	/>
+	
+	<Layer File="3D/field4.xml" 
+
+		OnCommand="%function(self)
+			sm_field4=self;
+			self:xy(0,0)
+			self:hidden(0)
+			self:fov(70)
+			--self:wag()
+
+		end"
+	/>
+	</children></Layer>
+	
+	<Layer Type="ActorFrame" Var="sm_uwuc" OnCommand="fov,60;"><children>
+	<Layer File="chara/uwu.png" 
+
+		OnCommand="%function(self)
+			sm_uwu=self;
+			self:xy(scx,scy)
+			self:hidden(1)
+
+		end"
+	/>
+	</children></Layer>
+	
+	<Layer File="chara/shadow.png" 
+
+		OnCommand="%function(self)
+			sm_tshadow=self;
+			self:xy(scx,scy)
+			self:hidden(1)
+
+		end"
+	/>
+	<Layer File="chara/shadow.png" 
+
+		OnCommand="%function(self)
+			sm_tshadow2=self;
+			self:xy(scx,scy)
+			self:hidden(1)
+
+		end"
+	/>
+	<Layer File="chara/toss.png" 
+
+		OnCommand="%function(self)
+			sm_toss=self;
+			self:xy(scx,scy)
+			self:hidden(1)
+
+		end"
+	/>
+	
+	<!--Handling messages here is still fun and profitable-->
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) rb_aux = self end"
+	/>
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = mod_globaloffset+tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<Layer Type="Quad"
+			Var="sm_flash"
+			OnCommand="%function(self)
+			self:queuecommand('SetMe')
+			self:xy(scx,scy)
+			self:diffusealpha(0)
+			self:zoom(sw)
+			end"
+			
+		/>
+<Layer
+		Type="ActorFrameTexture"
+		OnCommand="%function(self)
+			sm_masterAft = self;
+			self:SetWidth(DISPLAY:GetDisplayWidth())
+			self:SetHeight(DISPLAY:GetDisplayHeight())
+			self:EnableDepthBuffer(false)
+			self:EnableAlphaBuffer(false)
+			self:EnableFloat(false)
+			self:EnablePreserveTexture(true)
+			self:Create()
+			self:hidden(0)
+		end"
+/>
+		<Layer Type="Quad"
+		OnCommand="%function(self)
+		self:xy(scx,scy)
+		self:zoomx(sw*1.1)
+		self:zoomy(sh*1.1) --let's multiply these so that things like vibrate won't mess this up
+		self:diffuse(0,0,0,1)
+		end"
+	/>
+	
+	
+	<Layer Type="ActorProxy" Var="sm_snowproxy1"
+			OnCommand="%function(self)
+			self:sleep(0.1)
+			self:queuecommand('SetMe')
+			self:xy(scx,scy)
+			self:zoomz(0)
+			self:z(0)
+			end"
+			
+			SetMeCommand="%function(self)
+				if P1 then
+					self:SetTarget(P1:GetChild('NoteField'))
+					P1:hidden(1)
+				end
+			end"
+		/>
+	<Layer Type="ActorProxy" Var="sm_snowproxy2"
+			OnCommand="%function(self)
+			self:sleep(0.1)
+			self:queuecommand('SetMe')
+			self:xy(scx,scy)
+			self:zoomz(0)
+			self:z(0)
+			end"
+			
+			SetMeCommand="%function(self)
+				if P2 then
+					self:SetTarget(P2:GetChild('NoteField'))
+					P2:hidden(1)
+				end
+			end"
+		/>
+		
+		<Layer Type="ActorFrame" OnCommand="fov,70"><children>
+		<Layer Type="Quad"
+		OnCommand="%function(self)
+		self:xy(scx,scy)
+		self:zoomx(sw*1.1)
+		self:zoomy(sh*1.1) --let's multiply these so that things like vibrate won't mess this up
+		self:diffuse(1,1,1,1)
+		self:ztestmode('writeonfail')
+		end"
+	/></children></Layer>
+	
+	<Layer
+		Type="Sprite"
+		Texture="black.png" Var="sm_snowFeedback"
+		OnCommand="%function(self)
+			self:basezoomx((SCREEN_WIDTH / DISPLAY:GetDisplayWidth()))
+			self:basezoomy(-(SCREEN_HEIGHT / DISPLAY:GetDisplayHeight()))
+			self:SetTextureFiltering(true)
+			self:hidden(1)
+			self:xy(scx,scy)
+			self:zoom(1.02)
+			self:diffusealpha(0.95)
+			self:sleep(.1)
+			self:queuecommand('SetMe')
+		end"
+		SetMeCommand="%function(self)
+			self:SetTexture(sm_snowAft:GetTexture())
+			self:hidden(1)
+		end"
+	/>
+
+	<Layer
+		Type="ActorFrameTexture"
+		OnCommand="%function(self)
+			sm_snowAft = self;
+			self:SetWidth(DISPLAY:GetDisplayWidth())
+			self:SetHeight(DISPLAY:GetDisplayHeight())
+			self:EnableDepthBuffer(false)
+			self:EnableAlphaBuffer(false)
+			self:EnableFloat(false)
+			self:EnablePreserveTexture(true)
+			self:Create()
+			self:hidden(1)
+		end"
+	/>
+	
+	<Layer
+		Type="Sprite"
+		Texture="black.png"
+		OnCommand="%function(self)
+			self:basezoomx((SCREEN_WIDTH / DISPLAY:GetDisplayWidth()))
+			self:basezoomy(-(SCREEN_HEIGHT / DISPLAY:GetDisplayHeight()))
+			self:SetTextureFiltering(true)
+			self:hidden(1)
+			self:xy(scx,scy)
+			self:zoom(1)
+			self:diffusealpha(1)
+			self:sleep(.1)
+			self:queuecommand('SetMe')
+		end"
+		SetMeCommand="%function(self)
+			self:SetTexture(sm_snowAft:GetTexture())
+			self:hidden(0)
+		end"
+	/>
+	
+	<Layer
+		Type="Sprite"
+		Texture="black.png"
+		OnCommand="%function(self)
+			self:basezoomx((SCREEN_WIDTH / DISPLAY:GetDisplayWidth()))
+			self:basezoomy(-(SCREEN_HEIGHT / DISPLAY:GetDisplayHeight()))
+			self:SetTextureFiltering(true)
+			self:hidden(1)
+			self:xy(scx,scy)
+			self:zoom(1)
+			self:diffusealpha(1)
+			self:sleep(.1)
+			self:blend('Add')
+			self:queuecommand('SetMe')
+		end"
+		SetMeCommand="%function(self)
+			self:SetTexture(sm_snowAft:GetTexture())
+			self:hidden(0)
+		end"
+	/>
+	
+	<Layer Type="Quad"
+		OnCommand="%function(self)
+		self:xy(scx,scy)
+		self:zoomx(sw*1.1)
+		self:zoomy(sh*1.1) --let's multiply these so that things like vibrate won't mess this up
+		self:diffuse(1,1,1,1)
+		self:blend('InvertDest')
+		end"
+	/>
+	
+	<Layer
+		Type="ActorFrameTexture"
+		OnCommand="%function(self)
+			sm_snowAftb = self;
+			self:SetWidth(DISPLAY:GetDisplayWidth())
+			self:SetHeight(DISPLAY:GetDisplayHeight())
+			self:EnableDepthBuffer(false)
+			self:EnableAlphaBuffer(false)
+			self:EnableFloat(false)
+			self:EnablePreserveTexture(true)
+			self:Create()
+			self:hidden(1)
+		end"
+	/>
+	
+	<Layer
+		Type="Sprite"
+		Texture="black.png"
+		OnCommand="%function(self)
+			self:basezoomx((SCREEN_WIDTH / DISPLAY:GetDisplayWidth()))
+			self:basezoomy(-(SCREEN_HEIGHT / DISPLAY:GetDisplayHeight()))
+			self:SetTextureFiltering(true)
+			self:hidden(1)
+			self:xy(scx,scy)
+			self:zoom(1)
+			self:diffusealpha(1)
+			--self:blend('Add')
+			self:sleep(.1)
+			self:queuecommand('SetMe')
+		end"
+		SetMeCommand="%function(self)
+			self:SetTexture(sm_masterAft:GetTexture())
+			self:hidden(0)
+		end"
+	/>
+	
+
+	
+	<Layer
+		Type="Sprite" Var="sm_snowStorm"
+		Texture="black.png"
+		OnCommand="%function(self)
+			self:basezoomx((SCREEN_WIDTH / DISPLAY:GetDisplayWidth()))
+			self:basezoomy(-(SCREEN_HEIGHT / DISPLAY:GetDisplayHeight()))
+			self:SetTextureFiltering(true)
+			self:hidden(1)
+			self:xy(scx,scy)
+			self:zoom(1)
+			self:diffusealpha(0.8)
+			self:blend('Add')
+			self:sleep(.1)
+			self:queuecommand('SetMe')
+		end"
+		SetMeCommand="%function(self)
+			self:SetTexture(sm_snowAftb:GetTexture())
+			self:hidden(1)
+		end"
+	/>
+	
+	<Layer
+	File="Blizzard/blurredsnow.png"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;customtexturerect,0,0,1,1;texcoordvelocity,1.40,-0.90;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0;linear,1;diffusealpha,0;bob;"
+	Var="sm_sstorm1"
+	/>
+
+
+	<Layer
+	File="Blizzard/blurredsnowFar.png"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;customtexturerect,0,0,1,1;texcoordvelocity,1.20,-0.90;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0;linear,1;diffusealpha,0;bob;"
+	Var="sm_sstorm2"
+	/>
+
+
+	<Layer
+	File="Blizzard/blurredsnowNear.png"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;customtexturerect,0,0,1,1;texcoordvelocity,1.00,-0.90;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0;linear,1;diffusealpha,0;bob;"
+	Var="sm_sstorm3"
+	/>
+	
+	<Layer Type="ActorFrame" InitCommand="%function(self) judc = self end"><children>
+	<LAER Type="ActorProxy" InitCommand="%function(self) jud1p = self end"
+	GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1:GetChild('Judgment')) end end"/>
+	<LAER Type="ActorProxy" InitCommand="%function(self) jud2p = self end"
+	GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2:GetChild('Judgment')) end end"/>
+	</children></Layer>
+	<Layer Type="ActorFrame" InitCommand="%function(self) comc = self end"><children>
+	<LAER Type="ActorProxy" InitCommand="%function(self) com1p = self end"
+	GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1:GetChild('Combo')) end end"/>
+	<LAER Type="ActorProxy" InitCommand="%function(self) com2p = self end"
+	GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2:GetChild('Combo')) end end"/>
+	</children></Layer>
+	
+	<Layer Type="Quad"
+		InitCommand="%function(self)
+		self:xy(scx,scy)
+		self:diffuse(0,0,0,1)
+		self:zoom(sw)
+		self:sleep(1)
+		self:linear(2)
+		self:diffusealpha(0)
+		end"
+		
+		
+		Fk_P2_0_W1MessageCommand="%function(self) snow_faketaphit(0,1,2) end"
+		Fk_P2_0_W2MessageCommand="%function(self) snow_faketaphit(0,2,2) end"
+		Fk_P2_0_W3MessageCommand="%function(self) snow_faketaphit(0,3,2) end"
+		Fk_P2_0_W4MessageCommand="%function(self) snow_faketaphit(0,4,2) end"
+		Fk_P2_0_OKMessageCommand="%function(self) snow_fakeholdhit(0,2) end"
+		Fk_P2_1_W1MessageCommand="%function(self) snow_faketaphit(1,1,2) end"
+		Fk_P2_1_W2MessageCommand="%function(self) snow_faketaphit(1,2,2) end"
+		Fk_P2_1_W3MessageCommand="%function(self) snow_faketaphit(1,3,2) end"
+		Fk_P2_1_W4MessageCommand="%function(self) snow_faketaphit(1,4,2) end"
+		Fk_P2_1_OKMessageCommand="%function(self) snow_fakeholdhit(1,2) end"
+		Fk_P2_2_W1MessageCommand="%function(self) snow_faketaphit(2,1,2) end"
+		Fk_P2_2_W2MessageCommand="%function(self) snow_faketaphit(2,2,2) end"
+		Fk_P2_2_W3MessageCommand="%function(self) snow_faketaphit(2,3,2) end"
+		Fk_P2_2_W4MessageCommand="%function(self) snow_faketaphit(2,4,2) end"
+		Fk_P2_2_OKMessageCommand="%function(self) snow_fakeholdhit(2,2) end"
+		Fk_P2_3_W1MessageCommand="%function(self) snow_faketaphit(3,1,2) end"
+		Fk_P2_3_W2MessageCommand="%function(self) snow_faketaphit(3,2,2) end"
+		Fk_P2_3_W3MessageCommand="%function(self) snow_faketaphit(3,3,2) end"
+		Fk_P2_3_W4MessageCommand="%function(self) snow_faketaphit(3,4,2) end"
+		Fk_P2_3_OKMessageCommand="%function(self) snow_fakeholdhit(3,2) end"
+		
+	/>
+	
+		
+	</children></Layer>
+		
+</children></ActorFrame>

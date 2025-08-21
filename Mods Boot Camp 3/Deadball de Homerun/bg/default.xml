@@ -1,0 +1,45 @@
+<ActorFrame OnCommand="fov,60"> <children>
+	
+	<Layer File="skybox" OnCommand="stretchto,0,0,sw,sh;diffuse,.4,.4,.4,1" />
+	<Layer File="clouds" OnCommand="customtexturerect,0,0,3,3;diffuse,.4,.4,.4,1;x,sw/2;zoom,6;fadebottom,.5;y,0;rotationx,50;texcoordvelocity,.01,.025;" />
+	<Layer File="show" OnCommand="stretchto,0,0,sw,sh;diffuse,.4,.4,.4,1" />
+
+	<Layer
+		File="throw.sprite"
+		NameCommand="%function(self) ded_mimi = self end"
+		OnCommand="playcommand,Name;vertalign,bottom;basezoomx,.55;basezoomy,.55;x,sw*0.15;y,sh*0.9;sleep,0.043;queuecommand,Idle;"
+		IdleCommand="zoomy,.98;linear,.1;zoomy,1;sleep,60/145-.1;queuecommand,Idle;"
+		ThrowCommand="stoptweening;setstate,2;sleep,12/15;queuecommand,Idle;"
+		Throw2Command="stoptweening;setstate,5;sleep,12/15;queuecommand,Idle;"
+	/>
+	<Layer
+		File="swing.sprite"
+		NameCommand="%function(self) ded_condor = self end"
+		OnCommand="playcommand,Name;vertalign,bottom;basezoomx,.55;basezoomy,.55;x,sw*0.87;y,sh*0.9;sleep,0.043;queuecommand,Idle;"
+		IdleCommand="zoomy,.98;linear,.1;zoomy,1;sleep,60/145-.1;queuecommand,Idle;"
+		SwingCommand="stoptweening;setstate,3;sleep,4/15;queuecommand,Idle;"
+	/>
+	
+	<Layer
+		File="pandy"
+		NameCommand="%function(self) ded_pandy = self end"
+		OnCommand="playcommand,Name;setstate,0;x,sw/2;y,192;bob;effectmagnitude,0,4,0;animate,0;"
+		FinalCommand="setstate,1;zoom,1.1;linear,.1;zoom,1;"
+	/>
+
+	<Layer File="lights" OnCommand="stretchto,0,0,sw,sh;blend,add;diffusealpha,0.2;" />
+	
+	<Layer File="curtain" NameCommand="%function(self) ded_curtain = self end" OnCommand="playcommand,Name;x,sw/2;vertalign,top;y,0;" />
+
+	<Layer
+		Type="Quad"
+		NameCommand="%function(self) ded_bg2 = self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.2,.1,.15,1;"
+	/>
+	<Layer
+		File="background"
+		NameCommand="%function(self) ded_bg = self end"
+		OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.5,.5,.5,1;"
+	/>
+
+</children> </ActorFrame>

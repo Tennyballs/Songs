@@ -1,0 +1,37 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+	OnCommand="%function(self)
+	
+		if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+			--start,end,name,difficulty,color
+			local mbc3_spellcards = {
+				{28,63,'Kaomoji\'s entrance',2,{1,1,1,1}},
+				{63,65,'Makoto is here!',1,{.2,.4,1,1}},
+				{65,128,'1080 Snowboarding!',3,{0,.6,.2,1}},
+				{128,161,'Crystal Dynamics',4,{1,1,1,1}},
+				{161,193,'Snow Whirled',3,{0,.6,.2,1}},
+				{193,225,'AFT Blizzard',1,{1,1,1,1}},
+				{225,289,'Makoto\'s Downhill Jam',3,{0,.6,.2,1}},
+				{289,357,'Final Stretch!',3,{1,1,1,1}},
+				{323,330,'CrashOver!',3,{.2,.4,1,1}},
+			}
+			
+			local s = GAMESTATE:GetCurrentSong()
+			
+			--send spellcards
+			if table.getn(mbc3_spellcards) ~= 0  then
+
+				s:SetNumSpellCards(table.getn(mbc3_spellcards))
+				for i=1,table.getn(mbc3_spellcards) do
+					local a = mbc3_spellcards[i]
+					s:SetSpellCardTiming(i-1,a[1],a[2])
+					s:SetSpellCardName(i-1,a[3])
+					s:SetSpellCardDifficulty(i-1,a[4])
+					s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+				end
+			end
+		end
+	end"
+	/>
+	
+</children></ActorFrame>

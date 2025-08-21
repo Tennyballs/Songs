@@ -1,0 +1,192 @@
+<ActorFrame> <children>
+
+	<Layer
+		File="background"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0.5"
+	/>
+	<Layer Type="Quad"
+		NameCommand="%function(self) hymn_blackbg = self end"
+		OnCommand="playcommand,Name;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,4/255,22/255,42/255,0;"
+	/>
+		
+	<Layer Type="ActorFrame" NameCommand="%function(self) hymn_bg_container = self end"
+	OnCommand="playcommand,Name;x,SCREEN_WIDTH/2;y,SCREEN_HEIGHT/2" ><children>
+		
+		<Layer File="just_skybox1"
+			NameCommand="%function(self) hymn_introbg = self end"
+			OnCommand="playcommand,Name;scaletocover,-SCREEN_WIDTH/2-50,-SCREEN_HEIGHT/2-50,SCREEN_WIDTH/2+50,SCREEN_HEIGHT/2+50;diffuse,.7,.7,.7,1;"
+		/>
+		<Layer File="just_skybox2"
+			NameCommand="%function(self) hymn_introbg2 = self end"
+			OnCommand="playcommand,Name;scaletocover,-SCREEN_WIDTH/2-50,-SCREEN_HEIGHT/2-50,SCREEN_WIDTH/2+50,SCREEN_HEIGHT/2+50;diffuse,.4,.4,.4,1;cropbottom,1.5;fadebottom,0.5;"
+		/>
+		<Layer File="just_skybox3"
+			NameCommand="%function(self) hymn_introbg3 = self end"
+			OnCommand="playcommand,Name;scaletocover,-SCREEN_WIDTH/2-50,-SCREEN_HEIGHT/2-50,SCREEN_WIDTH/2+50,SCREEN_HEIGHT/2+50;diffuse,.7,.7,.7,0;"
+		/>
+		
+		<Layer File="stars" NameCommand="%function(self) hymn_stars = self end"
+		OnCommand="playcommand,Name;customtexturerect,0,0,3,3;zoom,3;basezoomx,SCREEN_WIDTH/640;blend,add;diffusealpha,.5;fadebottom,0.5;cropbottom,0.5;texcoordvelocity,0,-.01;"
+		/>
+		
+		<Layer File="clouds" NameCommand="%function(self) hymn_clouds1 = self end"
+		OnCommand="playcommand,Name;customtexturerect,0,0,3,1;basezoomx,1.5;basezoomy,1.5;stretchto,-512,100-SCREEN_HEIGHT/2,512,356-SCREEN_HEIGHT/2;texcoordvelocity,.03,0;diffusealpha,.5;" />
+		
+		<Layer
+			File="n_cloud1" NameCommand="%function(self) hymn_clouds2 = self end"
+			OnCommand="customtexturerect,0,0,1,1;texcoordvelocity,0,0.003;zoomx,1200*1.2/512;zoomy,480*1.2/256;rotationz,-90;diffuse,0+.5,.03+.5,.06+.5,0;"
+			DefaultCommand="sleep,240/249.74/4;diffusealpha,0"
+			NightSkyCommand="diffusealpha,0.5"
+		/>
+
+		<Layer
+			File="n_cloud2" NameCommand="%function(self) hymn_clouds3 = self end"
+			OnCommand="customtexturerect,0,0,1,1;texcoordvelocity,0,0.008;zoomx,1200*1.2/512;zoomy,480*1.2/256;rotationz,-90;diffuse,0+.5,.03+.5,.06+.5,0;"
+			DefaultCommand="sleep,240/249.74/4;diffusealpha,0"
+			NightSkyCommand="diffusealpha,0.5"
+		/>
+		
+		<Layer
+			Type="Quad" NameCommand="%function(self) hymn_bgquad2=self end"
+			OnCommand="playcommand,Name;diffusealpha,0;stretchto,-SCREEN_WIDTH,-SCREEN_HEIGHT,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,0;diffusebottomedge,.5,0,0,0;diffusetopedge,.5,0,0,0;"
+		/>
+		
+		<Layer Type="ActorFrame" NameCommand="%function(self) hymn_treeline3 = self end"
+		OnCommand="playcommand,Name;zoom,376/1364;y,170" ><children>
+			<Layer File="trees1" OnCommand="x,-1100;diffuse,.6*238/255,.6*77/255,.6*135/255,1;" />
+			<Layer File="trees1" OnCommand="x,0;diffuse,.6*238/255,.6*77/255,.6*135/255,1;" />
+			<Layer File="trees1" OnCommand="x,1100;diffuse,.6*238/255,.6*77/255,.6*135/255,1;" />
+			<Layer Type="Quad" OnCommand="stretchto,-2000,127,2000,2000;diffuse,.6*238/255,.6*77/255,.6*135/255,1;" />
+		</children></Layer>
+		
+		<Layer Type="ActorFrame" NameCommand="%function(self) hymn_treeline2 = self end"
+		OnCommand="playcommand,Name;zoom,570/1364;basezoomx,-1;y,190" ><children>
+			<Layer File="trees1" OnCommand="x,-550;diffuse,.3*238/255,.3*77/255,.3*135/255,1;" />
+			<Layer File="trees1" OnCommand="x,550;diffuse,.3*238/255,.3*77/255,.3*135/255,1;" />
+			<Layer Type="Quad" OnCommand="stretchto,-2000,127,2000,2000;diffuse,.3*238/255,.3*77/255,.3*135/255,1;" />
+		</children></Layer>
+		
+		<Layer File="thund1" OnCommand="zoom,1.1;blend,add;diffusealpha,0;"
+		Thund1Command="croptop,-0.4;fadetop,0.5;diffusealpha,1;accelerate,.5;diffusealpha,0;" />
+		<Layer File="thund2" OnCommand="zoom,1.1;blend,add;diffusealpha,0;"
+		Thund2Command="croptop,-0.4;fadetop,0.5;diffusealpha,1;accelerate,.5;diffusealpha,0;" />
+		
+		<Layer Type="ActorFrame" NameCommand="%function(self) hymn_treeline1 = self end"
+		OnCommand="playcommand,Name;zoom,709/1364;y,230" ><children>
+			<Layer File="trees1" OnCommand="x,0;diffuse,0,0,0,1;" />
+			<Layer File="trees1" OnCommand="x,-1100;diffuse,0,0,0,1;" />
+			<Layer File="trees1" OnCommand="x,1100;diffuse,0,0,0,1;" />
+			<Layer Type="Quad" OnCommand="stretchto,-2000,127,2000,2000;diffuse,0,0,0,1;" />
+		</children></Layer>
+		
+		<Layer File="../lua/ame01" NameCommand="%function(self) hymn_rainfall1=self end" OnCommand="playcommand,Name;blend,add;x,0;y,0;wag;effectmagnitude,0,0,5;effectperiod,8;
+		customtexturerect,0,0,5,5;zoom,3*(SCREEN_WIDTH/640);zoomx,-3*(SCREEN_WIDTH/640);texcoordvelocity,0,-4;skewx,0.3;diffusealpha,0;"
+		HideCommand="hidden,1" RainAwayCommand="linear,1;diffusealpha,0;queuecommand,Hide" />
+		
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		<Layer File="raindrop" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makerain(self,1) end" HideCommand="hidden,1" />
+		
+	</children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,4) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,4) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,4) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,4) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,4) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,4) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,4) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;queuecommand,Make" MakeCommand="%function(self) hymn_makeparticle(self,4) end" HideCommand="hidden,1" ><children>
+	<Layer File="rbeam" /></children></Layer>
+	
+	<Layer File="chara" />
+	
+	<Layer Type="Quad" NameCommand="%function(self) hymn_bgcover = self end"
+		OnCommand="playcommand,Name;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,0;" />
+	
+	<Layer File="slep" NameCommand="%function(self) hymn_bglaer1 = self end"
+		OnCommand="playcommand,Name;zoom,72/80;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;addy,20;cropbottom,.1;fadebottom,.1;hidden,1;"
+		HideCommand="hidden,1" WakeCommand="hidden,0;diffusealpha,0;linear,.2;diffusealpha,.3;linear,1;diffusealpha,0;queuecommand,Hide" />
+	<Layer File="pised" NameCommand="%function(self) hymn_bglaer2 = self end"
+		OnCommand="playcommand,Name;zoom,80/80;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;addy,20;cropbottom,.1;fadebottom,.1;hidden,1;"
+		HideCommand="hidden,1" WakeCommand="hidden,0;diffusealpha,0;linear,.2;diffusealpha,.6;linear,1;diffusealpha,0;queuecommand,Hide" />
+	
+	<Layer File="sky1"
+		NameCommand="%function(self) hymn_sky1 = self end"
+		OnCommand="playcommand,Name;vertalign,bottom;x,SCREEN_CENTER_X;y,SCREEN_HEIGHT*(4/3);zoomto,SCREEN_WIDTH*(1000/640),SCREEN_HEIGHT*(4/3);diffusealpha,0;"
+	/>
+	<Layer File="sky2"
+		NameCommand="%function(self) hymn_sky2 = self end"
+		OnCommand="playcommand,Name;vertalign,bottom;x,SCREEN_CENTER_X;y,SCREEN_HEIGHT*1.5;zoomto,SCREEN_WIDTH*(1000/640),-SCREEN_HEIGHT*(4/3);diffuse,.5,.5,.5,0;"
+	/>
+	
+
+</children> </ActorFrame>

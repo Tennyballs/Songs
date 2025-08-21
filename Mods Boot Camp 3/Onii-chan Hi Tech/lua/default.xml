@@ -1,0 +1,3017 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	if FUCK_EXE then
+
+			songName = GAMESTATE:GetCurrentSong():GetSongDir();
+			
+			sw = SCREEN_WIDTH
+			sh = SCREEN_HEIGHT --shortcuts
+			
+			function Plr(pn)
+				return _G['P'..pn]
+			end
+			function GetJud(pn)
+				return _G['jud'..pn]
+			end
+			function GetCom(pn)
+				return _G['com'..pn]
+			end
+			
+			function mod_do(str,pn)
+				if pn then
+					GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+				else
+					GAMESTATE:ApplyGameCommand('mod,'..str)
+				end
+			end
+			
+			function taro_Sound(str)
+				local met = GAMESTATE:GetCurrentSong():GetSongDir();
+				SOUND:PlayOnce(met..'lua/'..str..'.ogg');
+			end
+			
+			if FUCK_EXE then
+				dw = DISPLAY:GetDisplayWidth()
+				dh = DISPLAY:GetDisplayHeight()
+			end
+			
+			function poly_npot(val)
+				local out = 2
+				while out < val do
+					out = out*2
+				end
+				return out
+			end
+			
+			-- hey alright
+			function modulo(a, b)
+				return a - math.floor(a/b)*b;
+			end
+			
+			function funny_random(t)
+				if t == 0 then return 0.5 else
+				return modulo(math.sin(t * 3229.3) * 43758.5453, 1) end
+			end
+		
+	else
+		
+		SCREENMAN:SystemMessage('Requires NotITG ver. 3.2!')
+		
+	end
+	
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers.xml" />
+	<Layer File="easing.xml" />
+	<Layer File="gallery_bounce.xml" />
+	<Layer File="cube_swagger.xml" />
+	<Layer File="weebing.xml" />
+	<Layer File="weebing2.xml" />
+	
+	<Layer File="spellcard.xml" />
+	
+	<!--Layer Type="Quad" OnCommand="%function(self) self:tween(9999,'shame_update()') end" /-->
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			if FUCK_EXE then
+		
+				if tonumber(GAMESTATE:GetVersionDate()) > 20190000 then
+		
+					checked = false; P1=nil;P2=nil;P3=nil;P4=nil;P5=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;jud4=nil;com4=nil;jud5=nil;com5=nil;
+					
+					slumpo = false
+					for pn=1,2 do
+						if GAMESTATE:IsPlayerEnabled(pn-1) then
+							if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 5 then
+								slumpo = true
+							end
+						end
+					end
+				
+					---------------------------------------------------------
+					---------DOCUMENTATION-----------------------------------
+					---------------------------------------------------------
+					
+					--function perframe( beat, endBeat )
+						--return true if the current beat is between 'beat' and 'endBeat'
+					
+					--function mod_shader(beat,key,which)
+						--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+						
+					--function mod_insert(beat,len,mod,len_or_end,pn)
+						--insert mod into beat mods table
+					--function mod_insert2(time,len,mod,len_or_end,pn)
+						--insert mod into time mods table
+						
+					--function mod_message(beat,msg,persistent)
+						--insert something into the actions table.
+						--msg can also be a function. If string, a message gets broadcast at that beat
+						--if 'persistent' is true, message will run even if editor starts at a beat past it
+						
+					--function mod_blacklist(t,n)
+						--check if number n occurs in table t
+						--useful for doing 'every beat EXCEPT the contents of t'
+						
+					--function simple_m0d(beat,strength,mult,mod)
+					--function simple_m0d2(beat,strength,mult,mod,pn)
+					--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+						--activate mods at specific beat but also deactivate them
+						
+					--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+						--alternates a mod back and forth before resetting to 0
+						
+					--function mod_springt(time,strength,dur,mod,pn)
+						--time-based per-frame alternating mod that decreases based on how much time is left.
+							--think doorstopper
+					
+					--function mod_springt2(time,strength,dur,mod,pn)
+						--time-based per-frame alternating mod
+					
+					--function mod_onebeat(beat,strength,pn)
+						--turns on beat for the beat specified, at the desired strength	
+					
+					--function switcheroo_add(beat,which,speed,len,pn)
+						--adds a column swap at the desired beat
+					--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+							flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+							ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+					]]
+					
+					--use a variable called 'switcheroo_width' to change how much space is between each column
+					--e.g. switcheroo_width = 2 for ayakashi
+					
+					--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+						--portable version of the effect from sugarkill X
+						
+					--function doSpline(spd, axis, path, col)
+						--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+						
+					--function doSplineAll(spd, axis, path)
+						--same as above, but for all columns
+						--(faster performance than using doSpline 4 times due to more efficient concat)
+					
+					--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+						--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+					
+					
+					---------------------------------------------------------
+					--------END DOCUMENTATION--------------------------------
+					---------------------------------------------------------
+					
+					local m = mod_insert
+					local m2 = mod_message
+					local me = mod_ease
+					
+					
+					local l = 'len'
+					local e = 'end'
+					
+					
+					
+					
+					
+					
+					
+					init_modsp1 = '';
+					init_modsp2 = '';
+					
+					mod_plr = {};
+					
+					mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+		---------------------------------------------------------------------------------------
+		----------------------Begin tables 'n stuff--------------------------------------------
+		---------------------------------------------------------------------------------------
+
+					--beat based mods
+					--{beat_start, beat_end, mods, len_or_end, player_number}
+					mods = {
+						{0,9999,'*2 2x, *1000 no beat, *1000 dizzyholds, *100000 -100000 cover, *1000 250 arrowcull','end'},
+					}
+					
+					--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+					
+					
+					
+					
+					
+					
+					
+					--time based mods
+					mod_time = 0;
+					--{time_start, time_end, mods, len_or_end, player_number}
+					mods2 = {
+						--{0,200.345,'3x','end',1},
+					}
+					
+					
+					
+					
+					--this is both a message broadcaster and a function runner
+					--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+					--if you put {beat,function() somecode end}, then function() is run at that beat
+					--see example on beat 32
+					
+					curaction = 1;
+					--{beat,thing,persists}
+					mod_actions = {
+						
+						
+						
+						
+					}
+					
+					
+					--beat-based ease mods
+					--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+					--valid ease types are:
+						--linear
+						--inQuad    outQuad    inOutQuad    outInQuad
+						--inCubic   outCubic   inOutCubic   outInCubic
+						--inQuart   outQuart   inOutQuart   outInQuart
+						--inQuint   outQuint   inOutQuint   outInQuint
+						--inSine    outSine    inOutSine    outInSine
+						--inExpo    outExpo    inOutExpo    outInExpo
+						--inCirc    outCirc    inOutCirc    outInCirc
+						--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+						--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+						--inBounce  outBounce  inOutBounce  outInBounce
+						
+					mods_ease = {
+						-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+						--{0,4,360,0,'rotationz','end',inOutBack},
+					}
+					
+					mod_perframes = {
+						
+					}
+					
+					function mpf(s,e,f)
+						table.insert(mod_perframes,{s,e,f})
+					end
+					
+					function shame_other(p)
+						if p == 1 then return 2 end
+						if p == 2 then return 1 end
+						return 0
+					end
+					
+					math.other = shame_other
+					
+					--m(0,999,'200 tiny',e)
+					
+					for pn=1,4 do
+						m(0,999,'*3 1000000 digitaloffset',e,pn)
+						m(200,999,'*1000 100 digitalsteps',e,pn)
+					end
+					
+					shame_curbg = 1
+					
+					function shame_swapBGs()
+						_G['shame_bg'..shame_curbg]:finishtweening()
+						_G['shame_bg'..shame_curbg]:z(1)
+						_G['shame_bg'..shame_curbg]:sleep(60/150)
+						_G['shame_bg'..shame_curbg]:diffusealpha(0)
+						_G['shame_bg'..shame_other(shame_curbg)]:z(2)
+						_G['shame_bg'..shame_other(shame_curbg)]:linear(60/150)
+						_G['shame_bg'..shame_other(shame_curbg)]:diffusealpha(1)
+						shame_curbg = shame_other(shame_curbg)
+					end
+					
+					--m(20,4,'*10 50 stealth',l)
+					
+					function shame_signal(i,col)
+						
+						for k=0,3 do
+							me(i+0,3,0,50,'stealth'..k,l,linear,col);
+							me(i+3,1,50,0,'stealth'..k,l,linear,col);
+							me(i+0,3,0,50,'stealth'..k,l,linear,col+2);
+							me(i+3,1,50,0,'stealth'..k,l,linear,col+2);
+						end
+						
+						m2(i,function()
+							for j=col,4,2 do
+								local a = Plr(j)
+								if a then
+									a:rotationz(10)
+									a:linear(60/150)
+									a:rotationz(0)
+									a:sleep(0)
+									a:rotationz(-10)
+									a:linear(60/150)
+									a:rotationz(0)
+									a:sleep(0)
+									a:rotationz(10)
+									a:linear(60/150)
+									a:rotationz(0)
+									a:sleep(0)
+								end
+							end
+						end)
+						
+					end
+					
+					m2(0,function()
+						for pn=1,4 do
+							local pr = math.mod(pn-1,2)+1
+							
+							local a = Plr(pn)
+							
+							if a then
+								a:SetAwake(true)
+								a:SetFarDist(10000)
+								--a:x(sw/2 + 160*(pr*2-3))
+								a:x(sw/2)
+								a:y(sh/2)
+								a:hidden(0)
+								a:SetInputPlayer(pr-1)
+								
+								if pn > 2 then
+									local b = GetJud(pn)
+									b:hidden(1)
+									local b = GetCom(pn)
+									b:hidden(1)
+								end
+							end
+							
+						end
+						
+						for pn=1,2 do
+							local d = 0.25; if pn == 2 then d = 0.75 end
+							
+							local b = _G['jud'..pn]
+							if b then
+								b:hidden(1);
+								b:sleep(999)
+								b:basezoomx(1);
+								b:basezoomy(1);
+							end
+							local c = _G['com'..pn]
+							if c then
+								c:hidden(1);
+								c:sleep(999)
+								c:basezoomx(1);
+								c:basezoomy(1);
+							end
+							
+							local b = _G['jud'..pn..'p']
+							if b then
+								b:hidden(0);
+								--b:basezoomx(.8);
+								--b:basezoomy(.8);
+								b:x(SCREEN_WIDTH*d)
+								b:y(SCREEN_HEIGHT*0.15)
+								--Trace(tostring(b));
+							end
+							local c = _G['com'..pn..'p']
+							if c then
+								c:hidden(0);
+								--c:basezoomx(.8);
+								--c:basezoomy(.8);
+								c:x(SCREEN_WIDTH*d)
+								c:y(SCREEN_HEIGHT*0.12)
+							end
+							
+						end
+						
+						MESSAGEMAN:Broadcast('GetProxy');
+						MESSAGEMAN:Broadcast('AFTOn');
+						
+					end,true)
+					
+					m2(8,function()
+						shame_bg1:linear(60/150)
+						shame_bg1:diffusealpha(1)
+					end)
+					
+					for i=0,71,4 do
+						m2(i,function()
+							
+							shame_disaster:finishtweening()
+							shame_disaster:decelerate(60/150)
+							shame_disaster:x(80)
+							shame_disaster:sleep(60/150)
+							shame_disaster:decelerate(60/150)
+							shame_disaster:x(-50)
+							
+						end)
+					end
+					
+					m2(6,function()
+						
+						for pn=1,4 do
+							local pr = math.mod(pn-1,2)+1
+							
+							local a = Plr(pn)
+							
+							if a then
+								a:tween(12/15,'inExpo(%f,0,1,1)')
+								a:x(sw/2 + 160*(pr*2-3))
+							end
+							
+						end
+						
+					end)
+					
+					me(0,0,2,0.5,'xmod',e,linear,nil,6)
+					me(6,2,0.5,2,'xmod',e,inCubic)
+					
+					for pn=1,4 do
+						m(0,8,'*1000 dark, *1000 hidemines',e,pn)
+					end
+					
+					m(2,.25,'*1000 1 hidemines',l,-1+4)
+					m(3,.25,'*1000 1 hidemines',l,-1+2)
+					m(3.5,.25,'*1000 1 hidemines',l,-1+2)
+					m(4,.25,'*1000 1 hidemines',l,-1+4)
+					m(5,.25,'*1000 1 hidemines',l,-1+4)
+					m(6,.25,'*1000 1 hidemines',l,-1+2)
+					m(7,.25,'*1000 1 hidemines',l,-1+2)
+					
+					m(2,8,'*1000 -100 dark0',e,-1+2)
+					m(3,8,'*1000 -100 dark1',e,-1+2)
+					m(3.5,8,'*1000 -100 dark2',e,-1+2)
+					m(4,8,'*1000 -100 dark3',e,-1+2)
+					
+					m(5,8,'*1000 -100 dark0',e,-1+4)
+					m(6,8,'*1000 -100 dark1',e,-1+4)
+					m(7,8,'*1000 -100 dark2',e,-1+4)
+					m(8,8,'*1000 -100 dark3',e,-1+4)
+					
+					for pn=2,4,2 do
+						m(0,8,'*10000 no stealth',e,pn-1)
+						m(0,8,'*10000 stealth',e,pn)
+					end
+					
+					
+					m(8,72,'30 mini, *1000 no dark',e)
+					
+					for i=8,71,8 do
+						local p = i
+						m2(i+4,function()
+							
+							for pn=1,2 do
+								local a = _G['shame_rot'..pn]
+								
+								a:decelerate(60/150)
+								a:addx(180)
+								a:decelerate(60/150)
+								a:addy(180)
+								if p < 36 then
+									a:tween(90/150, 'outQuart(%f,0,1,1)')
+									a:addz(180)
+								else
+									a:decelerate(60/150)
+									a:addx(180)
+								end
+								
+							end
+							
+						end)
+						
+						m2(i,function()
+							shame_vib:linear(30/150)
+							shame_vib:x(10)
+							shame_vib:linear(60/150)
+							shame_vib:x(0)
+							shame_vib:sleep(30/150)
+							shame_vib:linear(30/150)
+							shame_vib:x(10)
+							shame_vib:linear(60/150)
+							shame_vib:x(0)
+							shame_vib:sleep(30/150)
+							
+							shame_squag:tween(30/150, 'inOutQuad(%f,0,1,1)' )
+							shame_squag:xy(200,100)
+							shame_squag:tween(60/150, 'inOutQuad(%f,0,1,1)' )
+							shame_squag:xy(0,0)
+							shame_squag:linear(30/150)
+							shame_squag:xy(200,100)
+							shame_squag:tween(30/150, 'inOutQuad(%f,0,1,1)' )
+							shame_squag:xy(-200,-100)
+							shame_squag:tween(90/150, 'inOutQuad(%f,0,1,1)' )
+							shame_squag:xy(0,0)
+							
+						end)
+						
+						m(i,8,'*1000 100 digitalperiod, *1000 100 digitalsteps',l)
+						
+						me(i,.5,0,100,'digital',l,inOutQuad,1,2)
+						me(i+2.5,3.5,100,0,'digital',l,inOutQuad,1,2)
+						me(i,.5,0,-100,'digital',l,inOutQuad,2,2)
+						me(i+2.5,3.5,-100,0,'digital',l,inOutQuad,2,2)
+						me(i,.5,0,100,'digital',l,inOutQuad,3,2)
+						me(i+2.5,3.5,100,0,'digital',l,inOutQuad,3,2)
+						me(i,.5,0,-100,'digital',l,inOutQuad,4,2)
+						me(i+2.5,3.5,-100,0,'digital',l,inOutQuad,4,2)
+						
+						--simple_m0d2(i+5,500,.4,'bumpy')
+						
+						me(i+4,1,0,600,'bumpy',l,outQuad);
+						me(i+5,1,600,0,'bumpy',l,outQuad);
+						
+						--simple_m0d2(i,400,.4,'drunk');
+						--simple_m0d2(i,200,.4,'tipsy');
+						--simple_m0d2(i+1.5,-200,.2,'tipsy');
+						--simple_m0d2(i+2,600,1,'bumpy');
+						
+						me(i,.5,100,1,'hidemines',l,linear)
+						me(i+.5,1,1,100,'hidemines',l,linear)
+						
+						me(i+2,.5,100,1,'hidemines',l,linear)
+						me(i+2.5,1,1,100,'hidemines',l,linear)
+						
+						--simple_m0d2(i,150,1.5,'pulseouter')
+						me(i-.1,.3,0,80,'pulseouter',l,linear,nil,1.8)
+						me(i+2,2,80,0,'pulseouter',l,inQuad)
+						
+					end
+					
+					for i=8,71,16 do
+						for k=0,3 do
+							for j=0,3 do
+								m(i+7+j*0.25,0.125,'*1000 100 stealth'..k,l)
+								m(i+7+0.125+j*0.25,0.125,'*1000 no stealth'..k,l)
+							end
+							
+							--simple_m0d(i+8,50,.5,'stealth'..k)
+						end
+					end
+					
+					shame_signal(20,1)
+					shame_signal(36,2)
+					shame_signal(52,1)
+					shame_signal(68,2)
+					
+					function topscreen_flippy_shit()
+						shame_topscreenrot:finishtweening()
+						shame_topscreenrot:tween(90/150, 'outCirc(%f,0,1,1)')
+						shame_topscreenrot:addx( 180 )
+						
+						if GAMESTATE:GetSongBeat() < 212 then
+							shame_swapBGs()
+						else
+							shame_bg3:linear(6/15)
+							shame_bg3:diffusealpha(1)
+						end
+						
+						if GAMESTATE:GetSongBeat() < 70 then
+							for pn=1,4 do
+								local pr = math.mod(pn-1,2)+1
+								
+								local a = Plr(pn)
+								
+								if a then
+									a:finishtweening()
+									a:tween(90/150, 'outCirc(%f,0,1,1)')
+									a:x(sw/2 + (shame_curbg*2-3)*-160*(pr*2-3))
+								end
+								
+							end
+						end
+						
+					end
+					
+					function shame_which_way_is_up_even_wtf()
+						
+						shame_topscreenrot:finishtweening()
+						shame_topscreenrot:linear(60/150)
+						shame_topscreenrot:addy( 180 )
+						
+						shame_swapBGs()
+						
+					end
+					
+					for i=23,72,16 do
+						
+						--[[
+						simple_m0d(i-3,50,.3,'stealth',1)
+						simple_m0d(i-2,50,.3,'stealth',1)
+						simple_m0d(i-1,50,.3,'stealth',1)
+						]]
+						
+						
+						
+						if true then
+							m2(i,function()
+							
+								topscreen_flippy_shit()
+								
+							end,true)
+						end
+						
+					end
+					--m(0,100,'*100 100 bumpy',e)
+					
+					m(8,72,'hidemines',e)
+					
+					m(72,1,'*100000 no tinyx, *100000 no rotationx, *100000 no rotationy, *100000 no rotationz, *100000 no confusionxoffset, *100000 no confusionyoffset, *100000 no confusionoffset',l)
+					
+					mpf(0,72,function(beat,deltatime)
+						
+						local tamt = math.cos(math.rad(shame_topscreenrot:GetX()))
+							--mod_do( '*10000 '..tamt..' zoomx' )
+							
+						if beat < 72 then
+						
+							for pn=1,4 do
+								local a = Plr(pn)
+								
+								local pr = math.mod(pn-1,2)+1
+								
+								if a then
+									--[[
+									if shame_flicker == 1 then
+										mod_do( '*10000 hidden, *10000 no sudden, *10000 0 hiddenoffset, *10000 no reverse, *10000 dark', pn )
+									else
+										mod_do( '*10000 sudden, *10000 no hidden, *10000 -30 suddenoffset, *10000 99.9 reverse, *10000 no dark', pn )
+									end
+									]]
+									if beat < 71 then
+										if pn < 3 then
+											mod_do( '*10000 sudden, *10000 no hidden, *10000 '..(-50 + shame_disaster:GetX())..' suddenoffset, *10000 no reverse', pn )
+										else
+											mod_do( '*10000 sudden, *10000 no hidden, *10000 '..(-20 - shame_disaster:GetX())..' suddenoffset, *10000 99.9 reverse', pn )
+										end
+									else
+										if pn < 3 then
+											mod_do( '*10000 no reverse', pn )
+										else
+											mod_do( '*10000 99.9 reverse', pn )
+										end
+									end
+									
+									mod_do( mindf_rotateAndCounter( _G['shame_rot'..pr]:GetX() + shame_rotadd:GetX(), _G['shame_rot'..pr]:GetY(), _G['shame_rot'..pr]:GetZ(), pn), pn)
+									
+									mod_do( '*10000 '..( 200 - 200*tamt )..' tinyx', pn )
+									
+									
+									mod_do( '*10000 '..( shame_squag:GetX()*math.sin(beat*math.pi) )..' drunk', pn )
+									mod_do( '*10000 '..( shame_squag:GetY()*math.cos(beat*math.pi) )..' tipsy', pn )
+									
+									
+									a:vibrate()
+									a:effectmagnitude(shame_vib:GetX(),shame_vib:GetX(),0)
+									
+								end
+								
+							end
+						
+						end
+						
+					end)
+					
+					tr_71_got = {false,false,false,false}
+					tr_71_initx = {0,0,0,0}
+					tr_71_inity = {0,0,0,0}
+					
+					m2(70,function()
+						if not slumpo then
+							shame_flip1:x(1)
+						end
+					end,true)
+					
+					mpf(71,72,function(beat,deltatime)
+						
+						if beat > 71 and beat < 72 then
+							for i=1,8 do
+								local a = shame_boxes[i]
+								local x = math.mod(i,4) * 250
+								local y = sh/2 - 175 + math.mod(math.floor((i-1)/4),2)*350 + 175*math.mod(math.mod(i,4),2)
+								if a then
+									a:x( x )
+									a:y( y )
+									a:animate(0)
+									a:setstate(i-1)
+									a:diffusealpha(.5)
+									a:zoomx(math.cos(math.rad(shame_topscreenrot:GetX())))
+								end
+							end
+							
+							local lerp = beat-71
+							
+							for pn=1,4 do
+						
+								local a = Plr(pn)
+								local w = pn
+								if shame_flicker == -1 then
+									w = w+4
+								end
+								local b = shame_boxes[w]
+								if a and b then
+									
+									if not tr_71_got[pn] then
+										tr_71_initx[pn] = a:GetX()
+										tr_71_inity[pn] = a:GetY()
+										tr_71_got[pn] = true
+									end
+									
+									a:x( tr_71_initx[pn] + (b:GetX()-tr_71_initx[pn])*lerp )
+									a:y( tr_71_inity[pn] + (b:GetY()-tr_71_inity[pn])*lerp )
+									
+								end
+								
+								local pr = math.mod(pn-1,2)+1
+								mod_do( '*10000 '..(lerp*(100 - 100*_G['shame_flip'..pr]:GetX()))..' flip', pn )
+								
+							end
+							
+						end
+						
+					end)
+					
+					m2(72,function()
+						
+						for i=1,8 do
+							local a = shame_boxes[i]
+							local x = math.mod(i,4) * 250
+							local y = sh/2 - 175 + math.mod(math.floor((i-1)/4),2)*350 + 175*math.mod(math.mod(i,4),2)
+							if a then
+								a:x( x )
+								a:y( y )
+								a:animate(0)
+								a:setstate(i-1)
+								a:diffusealpha(.5)
+								a:zoomx(math.cos(math.rad(shame_topscreenrot:GetX())))
+							end
+						end
+						
+						for pn=1,4 do
+					
+							local a = Plr(pn)
+							local w = pn
+							if shame_flicker == -1 then
+								w = w+4
+							end
+							local b = shame_boxes[w]
+							if a and b then
+								
+								a:x( b:GetX() )
+								a:y( b:GetY() )
+								
+							end
+							
+						end
+						
+					end,true)
+					
+					mpf(72,136,function(beat,deltatime)
+					
+						local miniperc = 30 + 60*(beat-72)/(134-72)
+					
+						local speedmult = 0.2 + 0.8*((beat-72)/(134-72))
+					
+						local tamt = math.cos(math.rad(shame_topscreenrot:GetX()))
+							
+						for i=1,8 do
+						
+							local a = shame_boxes[i]
+							
+							local pair = math.mod(i,4) --math.floor((i-1)/2)
+							
+							if a then
+								a:animate(0)
+								a:setstate(i-1)
+								
+								a:diffusealpha(.5)
+								
+								local mult = 1
+								if i == 1 or i == 5 or i == 4 or i == 8 then
+									mult = -1
+								end
+								
+								if beat < 132 then
+									a:addx( 200*deltatime*speedmult )
+									a:addy( 240*deltatime * (1-(miniperc/200)) * ((vice_versa_reverser_device:GetX()+1)*2-3) * mult * ((math.mod(i,2)+1) *2 - 3) )
+								
+									--Trace(a:GetX())
+								
+									if a:GetX() > sw/2 + 500 then
+										a:addx( -1000 )
+									elseif a:GetX() < sw/2 - 500 then
+										a:addx( 1000 )
+									end
+									if a:GetY() > sh/2 + 330 then
+										a:addy( -700 )
+									elseif a:GetY() < sh/2 - 370 then
+										a:addy( 700 )
+									end
+								end
+								
+								a:zoomx(tamt)
+							
+							end
+							
+						end
+						
+						local zig = 17000
+						
+						local the_skew = 0
+						if beat > 90.5 and beat < 91.5 then
+							the_skew = 0.5*inOutQuad(beat-90.5,0,1,1)
+						elseif beat >= 91.5 and beat < 94 then
+							the_skew = 0.5-0.5*inOutQuad((beat-91.5)/2.5,0,1,1)
+						end
+						
+						local samt = 30 - 30*(beat-72)/(134-72)
+						if tamt < 0 then
+							--samt = 50-samt
+						end
+						
+						for pn=1,4 do
+						
+							local mult = 1
+							if pn == 2 or pn == 4 then
+								mult = -1
+							end
+						
+							local pr = math.mod(pn,2)+1
+						
+							local a = Plr(pn)
+							local w = pn
+							if shame_flicker == -1 then
+								w = w+4
+							end
+							local b = shame_boxes[w]
+							if a and b then
+							
+								if pn == 4 and beat < 134 or pn ~= 4 then
+								
+									a:x( b:GetX() )
+									a:y( b:GetY() )
+									
+									a:rotationz( shame_rotadd:GetZ() - 40*the_skew )
+									if beat > 101.5 and beat < 103 and w == 6 then
+										a:rotationz( shame_rotadd:GetZ() - 40*the_skew + 30*math.sin(beat*math.pi*2) )
+									end
+									
+									a:skewx( -1.5*the_skew )
+									
+									mod_do( '*10000 '..miniperc..' mini', pn )
+									--mod_do( '*1000 20000 zigzagperiod, *1000 '..((1+(miniperc/200)) * zig*mult)..' zigzag', pn )
+									
+									mod_do( '*10000 '..( 200 - 200*tamt )..' tinyx', pn )
+									
+									mod_do( mindf_rotateAndCounter( _G['shame_rot'..pr]:GetX() + shame_rotadd:GetX(), _G['shame_rot'..pr]:GetY(), _G['shame_rot'..pr]:GetZ(), pn), pn)
+									
+									if pn < 3 then
+										mod_do( '*10000 '..(99.9*vice_versa_reverser_device:GetX())..' reverse', pn )
+									else
+										mod_do( '*10000 '..(99.9 - 99.9*vice_versa_reverser_device:GetX())..' reverse', pn )
+									end
+									
+									if not slumpo then
+										mod_do( '*10000 '..(100 - 100*_G['shame_flip'..pr]:GetX())..' flip', pn )
+										if tamt > 0 then
+											if _G['shame_flip'..pr]:GetX() < 0.5 and pr == 1 or _G['shame_flip'..pr]:GetX() > 0.5 and pr == 2 then
+												mod_do( '*2 '..samt..' stealth', pn )
+											else
+												mod_do( '*2 no stealth', pn )
+											end
+										else
+											if _G['shame_flip'..pr]:GetX() > 0.5 and pr == 1 or _G['shame_flip'..pr]:GetX() < 0.5 and pr == 2 then
+												mod_do( '*2 '..samt..' stealth', pn )
+											else
+												mod_do( '*2 no stealth', pn )
+											end
+										end
+									else
+										mod_do( '*10000 '..(100*_G['shame_flip'..pr]:GetX())..' flip', pn )
+									end
+									
+									mod_do( '*10000 '..( shame_zoom:GetX()*100 )..' zoom', pn)
+									
+								end
+								
+							end
+						end
+						
+					end)
+					
+					
+					for i=1,table.getn(gallery_bounce)-1 do
+						
+						local b1 = gallery_bounce[i][1]
+						local b2 = gallery_bounce[i+1][1]
+						local c2 = gallery_bounce[i+1][2]
+						
+						local ang = 0
+						if c2 == 0 then
+							ang = -10
+						elseif c2 == 3 then
+							ang = 10
+						end
+						
+						local dur = (b2-b1)*60/150
+						
+						m2(b1,function()
+							
+							if b1 < 131.5 then
+								shame_rotadd:finishtweening()
+								shame_rotadd:linear(dur)
+								shame_rotadd:z(ang)
+								
+								shame_zoom:finishtweening()
+								shame_zoom:decelerate(dur/2)
+								shame_zoom:x(1.1)
+								shame_zoom:accelerate(dur/2)
+								shame_zoom:x(.7)
+							else
+								shame_rotadd:finishtweening()
+								shame_rotadd:linear(dur)
+								shame_rotadd:z(0)
+								shame_rotadd:decelerate(12/15)
+								shame_rotadd:z(180)
+								
+								shame_zoom:finishtweening()
+								shame_zoom:accelerate(dur)
+								shame_zoom:x(1)
+								shame_zoom:sleep(12/15)
+								shame_zoom:accelerate(12/15)
+								shame_zoom:x(0)
+							end
+							
+						end)
+						
+					end
+					
+					for i=72,114,8 do
+						
+						me(i,1,0,150,'drunk',l,outQuad)
+						mod_wiggle(i+1,4,4,150,1.5,'drunk',nil,true)
+						me(i+3,1,0,100,'brake',l,outQuad)
+						me(i+4,1,100,0,'brake',l,outQuad)
+						
+					end
+					
+					mod_wiggle(79,4,4,150,1.5,'drunk',nil)
+					
+					--[[
+					m(90.5,2,'*6 200 tipsy',l)
+					m(91.5,4,'*2 no tipsy',l)
+					]]
+					
+					
+					
+					for i=72,130,16 do
+						
+						local super_scope = i
+						
+						if i+4 < 132 then
+							m2(i+4,function()
+								
+								vice_versa_reverser_device:finishtweening()
+								vice_versa_reverser_device:linear(6/15)
+								vice_versa_reverser_device:x(1)
+								
+							end,true)
+						else
+							
+						end
+						m2(i+5,function()
+							
+							local tamt = math.cos(math.rad(shame_topscreenrot:GetX()))
+							
+							if super_scope == 72 and not slumpo then
+								
+									shame_flip1:finishtweening()
+									shame_flip1:linear(6/15)
+									shame_flip1:x(0)
+									shame_flip1:linear(6/15)
+									shame_flip1:x(1)
+									shame_flip2:finishtweening()
+									shame_flip2:linear(6/15)
+									shame_flip2:x(0)
+									shame_flip2:decelerate(6/15)
+									shame_flip2:x(1)
+								
+							else
+								if math.abs(tamt+1) < 0.5 then
+									shame_flip2:finishtweening()
+									shame_flip2:linear(6/15)
+									shame_flip2:x(1)
+									shame_flip1:finishtweening()
+									shame_flip1:linear(6/15)
+									shame_flip1:x(0)
+									shame_flip1:decelerate(6/15)
+									shame_flip1:x(1)
+								else
+									shame_flip1:finishtweening()
+									shame_flip1:linear(6/15)
+									shame_flip1:x(1)
+									shame_flip2:finishtweening()
+									shame_flip2:linear(6/15)
+									shame_flip2:x(0)
+									shame_flip2:decelerate(6/15)
+									shame_flip2:x(1)
+								end
+							end
+							
+						end,true)
+						if i+12 < 132 then
+							m2(i+12,function()
+								
+								vice_versa_reverser_device:finishtweening()
+								vice_versa_reverser_device:linear(6/15)
+								vice_versa_reverser_device:x(0)
+								
+							end,true)
+						end
+						if i < 72+48 then
+							m2(i+13,function()
+								
+								local tamt = math.cos(math.rad(shame_topscreenrot:GetX()))
+							
+								if math.abs(tamt-1) < 0.5 then
+									shame_flip2:finishtweening()
+									shame_flip2:linear(6/15)
+									shame_flip2:x(0)
+									shame_flip1:finishtweening()
+									shame_flip1:linear(6/15)
+									shame_flip1:x(1)
+									shame_flip1:decelerate(6/15)
+									shame_flip1:x(0)
+								else
+									shame_flip1:finishtweening()
+									shame_flip1:linear(6/15)
+									shame_flip1:x(0)
+									shame_flip2:finishtweening()
+									shame_flip2:linear(6/15)
+									shame_flip2:x(1)
+									shame_flip2:decelerate(6/15)
+									shame_flip2:x(0)
+								end
+								
+							end,true)
+						end
+					end
+					
+					me(71,72,2,1.5,'xmod',e,linear)
+					me(72,134,1.5,1.5,'xmod',e,linear)
+					
+					m(72,200,'*10000 stealthpastreceptors',e)
+					
+					--[[
+					me(72,60,30,100,'mini',l,linear)
+					me(132,2,100,0,'mini',l,outQuad)
+					]]
+					
+					me(71,72,-100,80,'suddenoffset',e,outQuad)
+					
+					me(72,134,80,50,'suddenoffset',e,outQuad)
+					
+					m(72,134,'*10000 sudden, *10000 hidden, *10000 -100 hiddenoffset',e)
+					
+					for pn=1,3 do
+						me(134,2,0,100,'stealth',l,linear,pn)
+						me(134,2,0,100,'dark',l,linear,pn)
+					end
+					
+					m(134,2.5,'*1000 100 zoom, *10000 no confusionoffset, *10000 no confusionyoffset, *10000 no confusionxoffset, *10000 no rotationx, *10000 no rotationy, *10000 no rotationz',l,4)
+					m(134,2.5,'*1000 no hidden, *1000 no sudden, *1000 no stealth, *1000 no tinyx, *1000 no reverse, *1000 no flip, *1000 no mini, *1000 no dark',l,4)
+					
+					for pn=1,4 do
+						m(136,2.5,'*1000 100 zoom, *10000 no confusionoffset, *10000 no confusionyoffset, *10000 no confusionxoffset, *10000 no rotationx, *10000 no rotationy, *10000 no rotationz',l,pn)
+						m(136,2.5,'*1000 no hidden, *1000 no sudden, *1000 no stealth, *1000 no tinyx, *1000 no reverse, *1000 no flip, *1000 no mini, *1000 no dark',l,pn)
+					end
+					
+					m2(134,function()
+						
+						if P4 then
+							Proxy4B:hidden(0)
+							Proxy4A:hidden(1)
+						end
+						
+						if P4 then
+							P4:xy(sw/2,sh/2)
+							P4:rotationz(0)
+						end
+						
+						shame_cube:hidden(0)
+						shame_cube:zoom(0)
+						shame_cube:zoomz(0)
+						shame_cube:decelerate(120/150)
+						shame_cube:zoom(0.5)
+						shame_cube:zoomz(1)
+						
+					end)
+					
+					m2(136,function()
+					
+						shame_cube:hidden(0)
+						shame_cube:zoom(0.5)
+						shame_cube:zoomz(1)
+						
+						for pn=1,4 do
+							_G['Proxy'..pn..'A']:hidden(1)
+							_G['Proxy'..pn..'B']:hidden(1)
+							local a = Plr(pn)
+							if a then
+								a:rotationz(0)
+								a:xy(sw/2,sh/2)
+							end
+						end
+						for pn=1,2 do
+							_G['Proxy'..pn..'B']:hidden(0)
+						end
+						
+					end,true)
+					
+					m2(87,topscreen_flippy_shit,true)			
+					m2(119,topscreen_flippy_shit,true)
+
+					--mpf(104,136,function(beat)
+					mpf(104,136,function(beat)
+						
+						shame_bg1:GetShader():uniform1f( 'exp', 1-.15*(inOutQuad((beat-104)/32,0,1,1)) )
+						shame_bg1:GetShader():uniform1f( 'yo', (inOutQuad((beat-104)/32,0,1,1))*((math.cos(beat*.05)/2)+.75) )
+						shame_bg1:GetShader():uniform1f( 'tx', (inOutQuad((beat-104)/32,0,1,1))*math.sin(beat*.1) )
+						shame_bg1:GetShader():uniform1f( 'ty', (inOutQuad((beat-104)/32,0,1,1))*math.cos(beat*.1) )
+						
+						shame_bg2:GetShader():uniform1f( 'exp', 1-.15*(inOutQuad((beat-104)/32,0,1,1)) )
+						shame_bg2:GetShader():uniform1f( 'yo', (inOutQuad((beat-104)/32,0,1,1))*((math.cos(beat*.05)/2)+.75) )
+						shame_bg2:GetShader():uniform1f( 'tx', (inOutQuad((beat-104)/32,0,1,1))*math.sin(beat*.1) )
+						shame_bg2:GetShader():uniform1f( 'ty', (inOutQuad((beat-104)/32,0,1,1))*math.cos(beat*.1) )
+						
+					end)
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					-------------------------
+					---HERE COMES THE BIGGER BOY
+					
+					m2(130,function()
+						shame_cube_aft:hidden(0)
+					end)
+					m2(204,function()
+						shame_cube_aft:hidden(1)
+					end)
+					
+					mpf(136,200,function(beat)
+						
+						shame_bg1:GetShader():uniform1f( 'exp', 1-.15 )
+						shame_bg1:GetShader():uniform1f( 'yo', ((math.cos(beat*.05)/2)+.75) )
+						shame_bg1:GetShader():uniform1f( 'tx', math.sin(beat*.1) )
+						shame_bg1:GetShader():uniform1f( 'ty', math.cos(beat*.1) )
+						
+						shame_bg2:GetShader():uniform1f( 'exp', 1-.15 )
+						shame_bg2:GetShader():uniform1f( 'yo', ((math.cos(beat*.05)/2)+.75) )
+						shame_bg2:GetShader():uniform1f( 'tx', math.sin(beat*.1) )
+						shame_bg2:GetShader():uniform1f( 'ty', math.cos(beat*.1) )
+						
+						effectmag = math.min((beat-136)/16,1)
+						
+						shame_cube:rotationy( 90*shame_cube_face:GetX() + 20*effectmag*math.sin(beat*math.pi*0.125) )
+						shame_cube:rotationx( 20*effectmag*math.cos(beat*math.pi*0.125) )
+						
+						shame_cube:effectmagnitude(shame_cube_vib:GetX(),shame_cube_vib:GetX(),shame_cube_vib:GetX())
+						
+						if beat > 196 then
+							
+							size = 1-inCubic((beat-196)/4,0,1,1)
+							
+							shame_cube:zoom(0.5*size)
+							shame_cube:zoomz(size)
+							
+						end
+						
+						local randompos = {{100,-60},{-120,40},{80,80}}
+						
+						for i=1,3 do
+							local a = _G['shamehead'..i]
+							if a then
+								
+								a:x(sw/2 + randompos[i][1])
+								a:y(sh/2 + randompos[i][2])
+								
+								a:addx( 80*math.sin(beat*0.3*funny_random(i*2))+funny_random(i)+60*math.cos(beat*0.5*funny_random(i*8)) )
+								a:addy( 70*math.cos(beat*0.7*funny_random(i*2))+funny_random(i)+40*math.sin(beat*0.6*funny_random(i*8)) )
+							end
+						end
+						
+					end)
+					
+					m2(200,function() shame_cube:hidden(1) end,true)
+					
+					function cube_shake(dur)
+						shame_cube_vib:linear(.1)
+						shame_cube_vib:x(20)
+						shame_cube_vib:sleep(.1)
+						shame_cube_vib:linear(dur*6/15)
+						shame_cube_vib:x(0)
+					end
+					function cube_shake2(dur)
+						shame_cube_vib:accelerate(24/15)
+						shame_cube_vib:x(100)
+					end
+					
+					m2(-.1+136,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(1) cube_shake(1) end)
+					m2(-.1+140,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(-1) cube_shake(1) end)
+					m2(-.1+144,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(1) cube_shake(1) end)
+					m2(-.1+148,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(-1) cube_shake(1) end)
+					m2(-.1+152,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(1) cube_shake(1) end)
+					m2(-.1+156,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(-1) cube_shake(1) end)
+					m2(-.1+160,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(1) cube_shake(1) end)
+					m2(-.1+164,function()
+						shame_cube_face:decelerate(4/15)
+						shame_cube_face:addx(1)
+						shame_cube_face:sleep(2/15)
+						shame_cube_face:decelerate(4/15)
+						shame_cube_face:addx(1)
+						shame_cube_face:sleep(2/15)
+						shame_cube_face:decelerate(4/15)
+						shame_cube_face:addx(1)
+						shame_cube_face:sleep(2/15)
+					end)
+					
+					m2(-.1+168,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(1) cube_shake(1) end)
+					m2(-.1+172,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(-1) cube_shake(1) end)
+					m2(-.1+176,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(1) cube_shake(1) end)
+					m2(-.1+180,function() shame_cube_face:decelerate(9/15) shame_cube_face:addx(-1) cube_shake(1) end)
+					m2(-.1+184,function() shame_cube_face:decelerate(6/15) shame_cube_face:addx(1) cube_shake(.5) end)
+					m2(-.1+186,function() shame_cube_face:decelerate(6/15) shame_cube_face:addx(1) cube_shake(.5) end)
+					m2(-.1+188,function() shame_cube_face:decelerate(6/15) shame_cube_face:addx(1) cube_shake(.5) end)
+					m2(-.1+190,function() shame_cube_face:decelerate(6/15) shame_cube_face:addx(1) cube_shake(.5) end)
+					
+					m2(-.1+192,function() shame_cube_face:decelerate(6/15) shame_cube_face:addx(1) cube_shake(.5) end)
+					m2(-.1+194,function() shame_cube_face:decelerate(6/15) shame_cube_face:addx(1) cube_shake(.5) end)
+					m2(-.1+196,function() shame_cube_face:tween(24/15, 'inQuad(%f,0,1,1)' ) shame_cube_face:addx(8) cube_shake2() end)
+					
+					local f = 1
+					for i=136,160,4 do
+						m2(i-.3,'Drudge')
+						
+						me(i-.1,.3,0,100,'invert',l,linear,nil,.3)
+						me(i+.5,2.5,100,0,'invert',l,inQuart,nil,.1)
+						
+						me(i-.1,.3,0,100,'drunk',l,linear,1,.3)
+						me(i+.5,2.5,100,0,'drunk',l,inQuart,1,.1)
+						me(i-.1,.3,0,100,'tipsy',l,linear,1,.3)
+						me(i+.5,2.5,100,0,'tipsy',l,inQuart,1,.1)
+						
+						local amt = (i-136)/32
+						me(i-.1,.3,0,100-200*amt,'drunk',l,linear,2,.3)
+						me(i+.5,2.5,100-200*amt,0,'drunk',l,inQuart,2,.1)
+						me(i-.1,.3,0,100-200*amt,'tipsy',l,linear,2,.3)
+						me(i+.5,2.5,100-200*amt,0,'tipsy',l,inQuart,2,.1)
+						
+						me(i+1,3,-360,0,'confusionxoffset',l,inOutCubic)
+						me(i+1,3,360,0,'confusionyoffset',l,inOutCubic)
+						me(i+1,3,360*f,0,'confusionoffset',l,inOutCubic)
+						
+						f = f*-1
+						
+					end
+					for i=168,182,4 do
+						m2(i-.3,'Drudge')
+					end
+					
+					for i=0,3 do
+						mod_wiggle(137+8*i,12,4,80,1,'bumpyx')
+						if i<3 then
+							mod_wiggle(141+8*i,8,4,80,1,'bumpyx')
+						end
+					end
+					
+					mod_wiggle(181,4,4,200,2,'drunk')
+					
+					m2(184-.3,'Drudge2')
+					m2(186-.3,'Drudge2')
+					m2(188-.3,'Drudge2')
+					m2(190-.3,'Drudge2')
+					m2(192-.3,'Drudge2')
+					m2(194-.3,'Drudge2')
+					
+					m2(196,'FinalDrudge')
+					
+					mod_onebeat(143,1000)
+					mod_onebeat(151,1000)
+					mod_onebeat(159,1000)
+					mod_onebeat(167,1000)
+					--mod_onebeat(175,1000)
+					mod_onebeat(183,1000)
+					--mod_onebeat(191,1000)
+					simple_m0d2(175-.1,-500,.5,'tinyx')
+					
+					for pn=1,2 do
+						m(164-.1,1,'*10 99.9 reverse',l,pn)
+						m(165-.1,1,'*10 no reverse',l,pn)
+						m(166-.1,192,'*10 centered, *10 split, *5 50 flip, *5 1.5x',e,pn)
+						
+						m(166-.1,192,'*15.7 -157.08 confusionoffset, *9 90 rotationz',e,2)
+						
+						m(166-.1,192,'*10 -90 drawsizeback',e,pn)
+						
+						me(196,3.9,0,-150,'skewx',l,linear,pn)
+						m(199.9,1,'*1000 no skewx',l,pn)
+					end
+						
+					m(166-.1,192,'*20 200 tiny0, *20 200 tiny3, *8 80 movey1, *8 -80 movey2',e,1)
+					m(166-.1,192,'*20 200 tiny1, *20 200 tiny2, *8 80 movey0, *8 -80 movey3',e,2)
+					
+					mpf(168,192,function(beat)
+						
+						local mult = 45*math.min((beat-168)/16,1)
+						local ang = mult*math.sin((beat-168)*math.pi*0.125)
+						
+						if slumpo then
+							ang = (-360*2)+(360*2)*inCubic((beat-168)/24,0,1,1)
+						end
+						
+						mod_do('*10000 '..(-100*math.rad(ang))..' confusionoffset, *10000 '..(ang)..' rotationz',1)
+						mod_do('*10000 '..(-100*math.rad(ang+90))..' confusionoffset, *10000 '..(ang+90)..' rotationz',2)
+						
+					end)
+					
+					m2(196,function()
+						for pn=3,4 do
+							local a = _G['Proxy'..pn..'A']
+							if a then
+								a:hidden(0)
+							end
+							local a = Plr(pn)
+							if a then
+								a:zoom(0)
+								a:x(sw/2 + 160*(pn*2 - 7) )
+								a:linear(18/15)
+								a:zoom(1)
+							end
+						end
+					end)
+					
+					
+					
+					mod_wiggle(193,2,2,200,1,'drunk')
+					mod_wiggle(195,2,2,-200,1,'drunk')
+					mod_wiggle(197,2,2,200,1,'drunk')
+					
+					function simple_swagger(b,st,dur,mod,pn)
+						me(b-.25,.25,0,st,mod,l,linear,pn)
+						me(b,dur*0.5,st,0,mod,l,linear,pn)
+					end
+					
+					for i=1,table.getn(cube_swagger)-1 do
+						
+						local mul = 0.4+0.2*(i/table.getn(cube_swagger))
+						local b1 = cube_swagger[i][1]
+						local b2 = cube_swagger[i+1][2]
+						local c = cube_swagger[i][2]
+						local dur = math.min(b2-b1,1)
+						
+						simple_swagger(b1,60,dur,'brake')
+						if c == 0 then
+							simple_swagger(b1,200*mul,dur,'drunk')
+						elseif c == 3 then
+							simple_swagger(b1,-200*mul,dur,'drunk')
+						elseif c == 1 then
+							simple_swagger(b1,200*mul,dur,'tipsy')
+						elseif c == 2 then
+							simple_swagger(b1,-200*mul,dur,'tipsy')
+						end
+						
+					end
+					
+					m2(199,function()
+						for pn=3,4 do
+							local a = _G['Proxy'..pn..'A']
+							if a then
+								a:hidden(0)
+							end
+							local a = Plr(pn)
+							if a then
+								a:sleep(0)
+								a:linear(6/15)
+								a:x(sw/2 + 120*(pn*2 - 7) )
+							end
+						end
+					end)
+					
+					m2(200,function()
+					
+						for pn=1,4 do
+							local a = _G['Proxy'..pn..'A']
+							if a then
+								a:hidden(1)
+							end
+							local a = _G['Proxy'..pn..'B']
+							if a then
+								a:hidden(1)
+							end
+						end
+						
+						for pn=1,4 do
+							local a = _G['Proxy'..pn..'A']
+							if a then
+								a:hidden(0)
+							end
+							local a = Plr(pn)
+							if a then
+								a:sleep(0)
+								a:x(sw/2 + 120*(pn*2 - 5) )
+								a:zoom(1)
+							end
+						end
+						
+					end,true)
+					
+					me(199,1,0,50,'mini',l,linear,3)
+					me(199,1,0,50,'mini',l,linear,4)
+					me(199,1,0,250,'invert',l,linear,3)
+					me(199,1,0,250,'invert',l,linear,4)
+					
+					for i=0,2 do
+						m(199 + i/3,.166,'*10000 stealth, *10000 dark',l,3)
+						m(199 + i/3,.166,'*10000 stealth, *10000 dark',l,4)
+						m(199.166 + i/3,.166,'*10000 no stealth, *10000 no dark',l,3)
+						m(199.166 + i/3,.166,'*10000 no stealth, *10000 no dark',l,4)
+					end
+					
+					m(196,269,'*1000 sudden, *1000 80 suddenoffset',e,3)
+					m(196,269,'*1000 sudden, *1000 80 suddenoffset',e,4)
+					m(200,269,'*100 50 mini, *100 250 invert, *1000 sudden, *1000 80 suddenoffset',e)
+					
+					for i=0,3 do
+					
+						local tamt = 1
+						if i >= 2 then
+							tamt = -1
+						end
+					
+						local mul = 0.5 + 0.5*(i/4)
+					
+						me(200.01+i*8,2,0,-100*math.pi*tamt,'confusionyoffset',l,linear,nil,2)
+						me(204.01+i*8,2,-100*math.pi*tamt,0,'confusionyoffset',l,linear,nil,2)
+						
+						if i < 2 then
+							me(200.01+i*8,2,250,350,'invert',l,linear,nil,2)
+							me(204.01+i*8,2,350,250,'invert',l,linear,nil,2)
+						end
+					
+						m2(200.01+i*8,function()
+							
+							for pn=1,4 do
+								local a = Plr(pn)
+								if a then
+									a:sleep(0)
+									a:linear(12/15)
+									a:addrotationy(180)
+									a:rotationz( mul*10*((math.mod(pn,2)+1) * 2 - 3) )
+									a:addx(120)
+								end
+							end
+							
+						end)
+					
+						m2(204.01+i*8,function()
+							
+							for pn=1,4 do
+								local a = Plr(pn)
+								if a then
+									a:sleep(0)
+									a:linear(12/15)
+									a:addrotationy(-180)
+									a:rotationz( (mul+(1/16))*10*((math.mod(pn,2)+1) * 2 - 3) )
+									a:addx(-120)
+								end
+							end
+							
+						end)
+					
+					end
+					
+					me(214,1,0,400,'tinyy',l,linear,nil,99)
+					me(215,1,0,400,'tinyx',l,linear,nil,99)
+					
+					m2(214,shame_which_way_is_up_even_wtf,true)
+					m2(215,topscreen_flippy_shit,true)
+					
+					m(0,999,'dizzyholds',e)
+					
+					for i=0,3 do
+						mod_wiggle(203+8*i-.08,3,4,100,1,'tornado')
+						
+						if i==0 or i == 2 then
+							mod_wiggle(207+8*i-.04,3,3,200,3,'drunky')
+						end
+						
+					end
+					
+					for pn=1,4 do
+					
+						local pr = math.mod(pn-1,2)+1
+					
+						me(200,230,0,50*(pr*2-3),'drunk',e,outQuad)
+						me(230,231,50*(pr*2-3),0,'drunk',e,linear)
+						me(200,220,0,100*(pr*2-3),'tipsy',e,outQuad)
+						me(220,224,100*(pr*2-3),0,'tipsy',e,linear)
+					end
+					
+					m(230,999,'*10000 250 invert',e)
+					me(231,1,0,100,'flip',l,outQuad,nil,99)
+					
+					m2(230,function()
+							
+						for pn=1,4 do
+							local a = Plr(pn)
+							if a then
+								a:sleep(0)
+								a:linear(6/15)
+								a:rotationz( 0 )
+							end
+						end
+						
+					end)
+					
+					function tiny_kick(b,a,dur)
+						if not dur then dur = 0.5 end
+						me(b,dur,a,0,'tiny',l,linear)
+					end
+					
+					tiny_kick(200,-200)
+					tiny_kick(202,-200)
+					tiny_kick(204,-200)
+					tiny_kick(205.5,-200)
+					tiny_kick(206,-200)
+					tiny_kick(208,-200)
+					tiny_kick(210,-200)
+					tiny_kick(212,-200)
+					tiny_kick(213.5,-200)
+					
+					tiny_kick(216,-200)
+					tiny_kick(220,-200)
+					tiny_kick(221.5,-200)
+					tiny_kick(222,-200)
+					tiny_kick(224,-200)
+					tiny_kick(226,-200)
+					tiny_kick(228,-200)
+					tiny_kick(229.5,-200)
+					
+					function shame_hop(b,d,p)
+						p = shame_other(p)
+						
+						for pn=1,4 do
+							if math.mod(pn-1,2) == p-1 then
+								me(b,d/2,0,15,'reverse',l,outQuad,pn)
+								me(b+d/2,d/2,15,0,'reverse',l,inQuad,pn)
+							end
+						end
+						
+						simple_m0d2(b-.15,60,.4*d,'brake')
+						
+						m2(b,function()
+							for pn=1,4 do
+								
+								if math.mod(pn-1,2) == p-1 then
+									
+									
+									
+									local a = Plr(pn)
+									if a then
+										
+										a:sleep(0)
+										a:linear(d*6/15)
+										a:addx(96)
+										
+										if a:GetX() > sw/2 + 470 - 96 then
+											a:sleep(0)
+											a:addx(-96*10)
+										end
+										
+									end
+									
+								end
+								
+							end
+						end)
+					end
+					
+					m(230,263,'*10000 20000 zigzagperiod',e)
+					for pn=1,4 do
+						
+						me(248,263,80,120,'suddenoffset',e,linear,pn)
+						me(248,263,2,2.75,'xmod',e,linear,pn)
+						
+						if not slumpo then
+							me(232,263,0,-3000,'zigzag',e,linear,pn)
+							me(263,266,-3000,0,'zigzag',e,linear,pn)
+						else
+							me(232,263,0,-10000,'zigzag',e,linear,pn)
+							me(263,266,-10000,0,'zigzag',e,linear,pn)
+						end
+						
+						local pr = math.mod(pn-1,2)+1
+						
+						me(248,263,0,200*(pr*2-3),'zigzagz',e,outQuad,pn)
+						me(263,266,200*(pr*2-3),0,'zigzagz',e,outQuad,pn)
+					end
+					
+					--[[
+						if p == 2 then
+							me(b,d,250,350,'invert',l,linear,pn,sus)
+						else
+							me(b,d,350,250,'invert',l,linear,pn,sus)
+						end
+						
+						local a = Plr(pn)
+						if a then
+							
+							a:sleep(0)
+							a:linear(d*6/15)
+							a:addx(96)
+							
+							if a:GetX() > sw/2 + 480 then
+								a:sleep(0)
+								a:addx(-960)
+							end
+							
+						end
+					]]
+					
+					shame_hop(232,1,2)
+					shame_hop(233,1,1)
+					shame_hop(234,1,2)
+					
+					shame_hop(236,1,1)
+					shame_hop(237,1,2)
+					shame_hop(238,1,1)
+					
+					shame_hop(240,1,2)
+					shame_hop(241,1,1)
+					shame_hop(242,1,2)
+					shame_hop(243,1,1)
+					shame_hop(244,1,2)
+					shame_hop(245,1,1)
+					shame_hop(246,1,2)
+					shame_hop(247,1,1)
+					
+					shame_hop(248,.5,2)
+					shame_hop(248.5,.5,1)
+					shame_hop(249,1,2)
+					
+					shame_hop(250,.5,1)
+					shame_hop(250.5,.5,2)
+					shame_hop(251,1,1)
+					
+					shame_hop(252,.5,2)
+					shame_hop(252.5,.5,1)
+					shame_hop(253,1,2)
+					
+					shame_hop(254,.5,1)
+					shame_hop(254.5,.5,2)
+					shame_hop(255,1,1)
+					
+					for i=256,262.5,1 do
+						shame_hop(i,.5,2)
+						shame_hop(i+.5,.5,1)
+					end
+					
+					shame_latch = {0,0,0,0}
+					
+					m2(248,function()
+						
+						shame_white:linear((263-248)*(6/15))
+						shame_white:diffuse(1,1,1,1)
+						shame_white:decelerate(12/15)
+						shame_white:diffusealpha(0)
+						
+					end)
+					
+					m2(263,function()
+						
+						for i=1,3 do
+							_G['shame_bg'..i]:hidden(1)
+						end
+						
+						for pn=1,4 do
+							local a = Plr(pn)
+							if a then
+								a:decelerate(18/15)
+								a:rotationz(180)
+								a:accelerate(24/15)
+								a:zoom(0)
+							end
+						end
+						
+						shame_bg:basezoomx(-1)
+						shame_bg:basezoomy(-1)
+						
+					end)
+					
+					mpf(200,263,function(beat)
+						
+						shame_bg1:GetShader():uniform1f( 'exp', 1-.15 )
+						shame_bg1:GetShader():uniform1f( 'yo', ((math.cos(beat*.05)/2)+.75) )
+						shame_bg1:GetShader():uniform1f( 'tx', math.sin(beat*.1) )
+						shame_bg1:GetShader():uniform1f( 'ty', math.cos(beat*.1) )
+						
+						shame_bg2:GetShader():uniform1f( 'exp', 1-.15 )
+						shame_bg2:GetShader():uniform1f( 'yo', ((math.cos(beat*.05)/2)+.75) )
+						shame_bg2:GetShader():uniform1f( 'tx', math.sin(beat*.1) )
+						shame_bg2:GetShader():uniform1f( 'ty', math.cos(beat*.1) )
+						
+						shame_bg3:GetShader():uniform1f( 'exp', 1-.15 )
+						shame_bg3:GetShader():uniform1f( 'yo', ((math.cos(beat*.05)/2)+.75) )
+						shame_bg3:GetShader():uniform1f( 'tx', math.sin(beat*.1) )
+						shame_bg3:GetShader():uniform1f( 'ty', math.cos(beat*.1) )
+					
+					end)
+					
+					me(216.00,.5,0,40,'skewx',l,linear)
+					me(216.50,.5,40,-40,'skewx',l,linear)
+					me(217.00,.5,-40,40,'skewx',l,linear)
+					me(217.50,.5,40,-40,'skewx',l,linear)
+					me(218.00,.5,-40,40,'skewx',l,linear)
+					me(218.50,.5,40,-40,'skewx',l,linear)
+					me(219.00,.5,-40,40,'skewx',l,linear)
+					me(219.50,.5,40,-40,'skewx',l,linear)
+					me(220.00,2,-40,100,'skewx',l,outQuad)
+					me(222.00,2,100,0,'skewx',l,outElastic)
+					
+					
+					for i=20,68,16 do
+						me(i,3,2,1.5,'xmod',l,linear)
+						me(i+3,1,1.5,2,'xmod',l,linear)
+					end
+					
+					--countdowns
+					m2(20,'Countdown')
+					m2(36,'Countdown')
+					m2(52,'Countdown')
+					m2(68,'Countdown')
+					m2(84,'Countdown')
+					m2(100,'CountdownFake')
+					m2(116,'Countdown')
+					m2(212,'Countdown2')
+					
+					local function mp(b,d,mod,le,pn)
+						m(b,d,mod,le,pn)
+						m(b,d,mod,le,pn+2)
+					end
+					
+					--BIG NERFY
+					if not slumpo then
+						
+						--[[
+						mp(8,72,'*2 no stealth',e,1)
+						mp(8,72,'*2 no stealth',e,2)
+						
+						mp(8,16,'*2 40 stealth',l,1)
+						mp(23,16,'*2 40 stealth',l,2)
+						mp(38,8,'*2 30 stealth',l,1)
+						mp(45,8,'*2 30 stealth',l,2)
+						mp(53,8,'*2 20 stealth',l,2)
+						mp(61,8,'*2 20 stealth',l,1)
+						]]
+						
+						shame_faker = 2 --I FOUND YOU, FAKER !
+						m2(8,function() shame_faker = 2 end)
+						m2(23,function() shame_faker = 1 end)
+						m2(38,function() shame_faker = 2 end)
+						m2(45,function() shame_faker = 1 end)
+						m2(53,function() shame_faker = 1 end)
+						m2(61,function() shame_faker = 2 end)
+						
+						mpf(8,70,function(beat)
+							
+							local beat2 = (beat-.05)
+							local ramp = math.max(0.5-(beat2-math.floor(beat2)),0)
+							
+							if beat < 40 then
+								shame_help:diffusealpha( 0.2 - 0.2*math.cos((beat-8)*math.pi*0.5) )
+							else
+								shame_help:diffusealpha( 0 )
+							end
+							
+							for i=0,2,2 do
+								local a = Plr(shame_faker+i)
+								if a then
+									
+									for c = 0,3 do
+										a:SetNumArrowGradientPoints(c,1)
+										a:SetArrowGradientColor(0,c,1,1-2*ramp,1-2*ramp,1)
+									end
+									
+								end
+								local a = Plr(shame_other(shame_faker)+i)
+								if a then
+									
+									for c = 0,3 do
+										a:SetNumArrowGradientPoints(c,1)
+										a:SetArrowGradientColor(0,c,1-2*ramp,1,1-2*ramp,1)
+									end
+									
+								end
+							end
+							
+						end)
+						
+					end
+					
+					
+					
+					--[[
+					for i=1,3,2 do
+						m(2,.25,'*10000 100 stealth',l,i)
+						m(3,.25,'*10000 100 stealth',l,i)
+						m(3.5,.25,'*10000 100 stealth',l,i)
+						m(4,.25,'*10000 100 stealth',l,i)
+						m(5,.25,'*10000 100 stealth',l,i)
+						m(6,.25,'*10000 100 stealth',l,i)
+						m(7,.25,'*10000 100 stealth',l,i)
+					end
+					]]
+					
+					m(0,12,'*1000 500 bumpyperiod',e)
+					m(12,13,'*1000 0 bumpyperiod',e)
+					
+					me(2,6,0,-5000,'bumpy',e,linear)
+					
+					me(6,8,-5000,500,'bumpy',e,inExpo)
+					me(8,12,500,0,'bumpy',e,outElastic)
+					me(6,8,0,-300,'tiny',e,inExpo)
+					me(8,12,-300,0,'tiny',e,outElastic)
+					
+					--washing machine
+					m2(136,function()
+						if not slumpo then
+							shame_washingmachine:decelerate(56*60/150)
+							shame_washingmachine:diffusealpha(.95)
+						else
+							shame_washingmachine:decelerate(16*60/150)
+							shame_washingmachine:diffusealpha(1)
+						end
+					end)
+					
+					
+					
+					
+					
+					
+					
+					--what a shame
+					
+					shame_side = 1
+					function shame_spawn(bt,dur,which,n,zm)
+						m2(bt,function()
+							local rx = (math.random(1,2)*2-3)*math.random(20,40)
+							local ry = math.random(-20,20)
+							
+							local a = _G['shame_spr'..which..n]
+							--Trace('shame_spr'..which..n)
+							--Trace(tostring(a))
+							
+							local b = a:GetChild('')
+							
+							if zm == 1 then zm = (math.random()*0.3 + 0.7)*1.1 end
+							
+							if bt > 90 and bt < 91 then
+								zm = 1.0
+							end
+							
+							rx = rx*(0.3 + math.min((dur)*0.1,0.7) )
+							ry = ry*(0.3 + math.min((dur)*0.1,0.7) )
+							
+							local rbx = math.random(0,20)*shame_side
+							local rby = math.random(-50,50)
+							
+							if bt > 136 and bt < 200 then
+								rbx = math.random(200,240)*shame_side
+								rby = math.random(100,150)*(math.random(1,2)*2-3)
+								zm = zm*0.9
+								rx = rx*0.5
+								ry = ry*0.5
+							end
+							
+							a:finishtweening()
+							a:xy(sw/2 + rbx + rx, sh/2 + rby + ry)
+							a:linear(dur*(6/15))
+							a:xy(sw/2 + rbx - rx, sh/2 + rby - ry)
+							
+							shame_side = shame_side*-1
+							
+							local fadetime = math.min(dur*6/15, 0.4)
+							local sleeptime = dur*6/15 - fadetime
+							
+							if fadetime < 0 then fadetime = 0.01 end
+							if sleeptime < 0 then sleeptime = 0.01 end
+							
+							--Trace( fadetime..' '..sleeptime..' '..dur..' '..zm )
+							
+							local facing = math.random(1,2)*2-3
+							
+							local alp = .4
+							if bt > 136 and bt < 200 then
+								alp = .5
+								b:blend('add')
+								facing = -shame_side
+							else
+								if rx > 0 then
+									facing = -1
+								else
+									facing = 1
+								end
+							end
+							
+							b:zoom(zm)
+							b:zoomx(zm*facing)
+							if bt > 136 and bt < 200 then
+								b:rotationz(rby*0.3)
+							else
+								b:rotationz(math.random(-5,5))
+							end
+							b:diffusealpha(0)
+							b:linear(fadetime/2)
+							b:diffusealpha(alp)
+							b:sleep(sleeptime)
+							b:linear(fadetime/2)
+							b:diffusealpha(0)
+							
+						end)
+					end
+					
+					
+					for i=1,table.getn(weebing) do
+						local a = weebing[i]
+						local b = a[1]
+						local c = a[2]
+						local t = a[3]
+						local d = 0
+						if a.length then d = a.length end
+						local w = ''
+						if t == 2 then w = 'a' end
+						if t == 4 then w = 'b' end
+						if b > 136 and b < 200 and w == 'a' then w = 'c' end
+						local zm = 1
+						if w == 'b' or w == 'c' then
+							if c == 0 then zm = 1.3 end
+							if c == 2 then zm = 1.5 end
+							if c == 1 then zm = 1.4 end
+						end
+						if w ~= '' then
+							shame_spawn(b,d,w,c+1,zm)
+						end
+					end
+					
+					m2(263,'FinalHit')
+					
+					shame_pq = {}
+					function shame_make_pq(obj)
+						table.insert(shame_pq,obj)
+					end
+					
+					shame_4q = {}
+					function shame_make_4q(obj)
+						table.insert(shame_4q,obj)
+					end
+					
+					shame_master = {}
+					shame_mptr = 1
+					function shame_make_master(obj)
+						table.insert(shame_master,obj)
+					end
+					
+					function shame_get_master()
+						
+						local a = shame_master[shame_mptr]
+					
+						shame_mptr = shame_mptr+1
+						if shame_mptr > table.getn(shame_master) then
+							shame_mptr = 1
+						end
+						
+						return a
+					end
+					
+					shame_cpq = 1
+					function shame_place_pq(bt,x,y)
+						m2(bt,function()
+							local a = shame_pq[shame_cpq]
+							if a then
+								a:hidden(0)
+								a:playcommand('Reset');
+								a:x(sw/2 + x)
+								a:y(sh/2 + y)
+								a:zoom(0)
+								a:tween(.2,'outCirc(%f,0,1,1)')
+								a:zoom(64/4)
+							end
+							local a = shame_4q[shame_cpq]
+							if a then
+								a:hidden(0)
+								a:x(sw/2 + x)
+								a:y(sh/2 + y)
+								a:zoom(0)
+								a:diffusealpha(0)
+								a:tween(.2,'outCirc(%f,0,1,1)')
+								a:zoom(.25)
+								a:diffusealpha(.5)
+								a:accelerate(1)
+								a:diffusealpha(0)
+								a:queuecommand('Hide')
+							end
+							shame_cpq = shame_cpq+1
+						end)
+					end
+					
+					if not slumpo then
+						shame_place_pq(200,-192,64)
+						shame_place_pq(202,-128,128)
+						shame_place_pq(204,64,-64)
+						shame_place_pq(205.667,128,64)
+						shame_place_pq(206.667,256,0)
+						shame_place_pq(208,-128,0)
+						shame_place_pq(211,0,-64)
+						shame_place_pq(211.667,0,128)
+					else
+						shame_place_pq(200,-192,64)
+						shame_place_pq(202,0,0)
+						shame_place_pq(202,-128,128)
+						shame_place_pq(204,-256,128)
+						shame_place_pq(204,64,-64)
+						shame_place_pq(205.667,128,64)
+						shame_place_pq(205.667,192,64)
+						shame_place_pq(206.667,256,0)
+						shame_place_pq(208,-128,0)
+						shame_place_pq(208,128,0)
+						shame_place_pq(211,0,-64)
+						shame_place_pq(211.667,0,128)
+						shame_place_pq(211.667,-64,-64)
+					end
+					
+					if slumpo then
+						shame_place_pq(216,-128,-64)
+						shame_place_pq(217,-64,-64)
+						shame_place_pq(218,-0,-64)
+						shame_place_pq(219,64,-64)
+						shame_place_pq(220,128,-64)
+					else
+						shame_place_pq(216,-256,-64)
+						shame_place_pq(217,-128,-64)
+						shame_place_pq(218,-0,-64)
+						shame_place_pq(219,128,-64)
+						shame_place_pq(220,256,-64)
+					end
+					
+					shame_place_pq(224,192,128)
+					shame_place_pq(225,-64,128)
+					shame_place_pq(226,64,128)
+					shame_place_pq(227,-192,128)
+					shame_place_pq(228,0,128)
+					
+					if slumpo then
+						shame_place_pq(224,0,0)
+						shame_place_pq(225,-128,0)
+						shame_place_pq(226,128,0)
+						shame_place_pq(227,-64,64)
+						shame_place_pq(228,64,64)
+					end
+					
+					m2(214,function()
+						
+						shame_cpq = 1
+						for i=1,table.getn(shame_pq) do
+							local a = shame_pq[i]
+							if a then
+								a:queuecommand('Finish')
+								a:sleep(6/15)
+								a:queuecommand('Hide')
+							end
+						end
+						
+					end)
+					
+					m2(230,function()
+						
+						shame_cpq = 1
+						for i=1,table.getn(shame_pq) do
+							local a = shame_pq[i]
+							if a then
+								a:queuecommand('Finish')
+								a:sleep(6/15)
+								a:queuecommand('Hide')
+							end
+						end
+						
+					end)
+					
+					shame_words = {m=0,e=1,a=2,o=3}
+					function shame_say(b,f)
+						m2(b,function()
+							shame_speech:setstate(shame_words[f])
+						end)
+					end
+					
+					m2(1,function()
+						shame_speech:blend('add')
+						shame_speech:diffusealpha(.5)
+						shame_speech:bounceend(6/15)
+						shame_speech:zoom(.8)
+					end)
+					
+					shame_say(2,'o')
+					shame_say(2.3,'m')
+					shame_say(2.5,'e')
+					shame_say(3.5,'m')
+					shame_say(3.8,'a')
+					shame_say(4.8,'m')
+					shame_say(6.0,'e')
+					shame_say(6.6,'m')
+					shame_say(7.0,'e')
+					shame_say(7.6,'m')
+					
+					m2(6,function()
+						shame_speech:bouncebegin(12/15)
+						shame_speech:zoom(0)
+						shame_speech:rotationz(360)
+					end)
+					
+					local rng = function(min,max)
+						return math.random(min,max)
+					end
+					
+					sh_tx = {sw/2 - 230,sw/2 + 180,sw/2 - 40}
+					sh_ty = {sh/2 - 50, sh/2 - 120, sh/2 + 90}
+					
+					m2(90.75,function()
+						for i=0,2 do
+							local a = shame_get_master()
+							if a then
+								a:xy( sh_tx[i+1], sh_ty[i+1] )
+								a:hidden(0)
+								a:zoom(math.random()*.4+.4)
+								a:animate(0)
+								a:setstate(8)
+								a:rotationz(rng(-20,20))
+								a:diffusealpha(0)
+								a:sleep(.1*i)
+								a:linear(.3)
+								a:addy(20*.3)
+								a:diffusealpha(.6)
+								a:linear(1)
+								a:addy(20*1)
+								a:linear(.3)
+								a:diffusealpha(0)
+								a:addy(20*.3)
+								a:queuecommand('Hide')
+							end
+						end
+					end)
+					
+					shame_side2 = 1
+					function shame_master_spawn(b,f)
+						if not f then f = math.random(0,7) end
+						m2(b,function()
+							local a = shame_get_master()
+							if a then
+								a:xy( sw/2+math.random(80,160)*shame_side2, sh/2+math.random(-120,120) )
+								a:hidden(0)
+								a:zoom(math.random()*.2+.3)
+								a:animate(0)
+								a:setstate(f)
+								a:rotationz(rng(-20,20))
+								a:diffusealpha(0)
+								a:linear(.3)
+								a:addy(20*.3)
+								a:diffusealpha(.4)
+								a:linear(.5)
+								a:addy(20*.5)
+								a:linear(.3)
+								a:diffusealpha(0)
+								a:addy(20*.3)
+								a:queuecommand('Hide')
+							end
+							shame_side2 = shame_side2*-1
+						end)
+					end
+					
+					for i=1,table.getn(weebing2) do
+						local a = weebing2[i]
+						local b = a[1]
+						shame_master_spawn(b)
+					end
+					
+					m2(120-.5,'Run1')
+					m2(122-.5,'Run2')
+					m2(124-.5,'Run1')
+					m2(126-.5,'Run2')
+					m2(128-.5,'Run1')
+					m2(130-.5,'Run2')
+					
+					m2(120-.5,'Shitty10')
+					m2(122-.5,'Shitty9')
+					m2(124-.5,'Shitty8')
+					m2(126-.5,'Shitty7')
+					m2(128-.2,'Shitty6')
+					m2(129-.2,'Shitty5')
+					m2(130-.2,'Shitty4')
+					m2(131-.2,'Shitty3')
+					m2(132-.2,'Shitty2')
+					m2(133-.2,'Shitty1')
+					m2(134-.2,'ShittyHi')
+					m2(135-.2,'ShittyTech')
+					
+					shame_flicker = 1;
+					
+					shame_lasttime = 0;
+					shame_curtime = 0;
+					
+					shame_boxes = {}
+					
+					me(232,263,0,-50,'tiny','end',linear)
+					me(232,263,0,7,'spiralx','end',linear)
+					me(232,263,0,7,'spiraly','end',linear)
+					me(232,263,0,7,'spiralz','end',linear)
+					me(232,263,100,200,'zoomz','end',linear)
+					me(232,263,100,180,'zoomy','end',linear)
+					
+		---------------------------------------------------------------------------------------
+		----------------------Sort the actions table-------------------------------------------
+		---------------------------------------------------------------------------------------
+					
+					function modtable_compare(a,b)
+						return a[1] < b[1]
+					end
+					
+					if table.getn(mod_actions) > 1 then
+						table.sort(mod_actions, modtable_compare)
+					end
+					
+					function shame_update()
+					
+						if GAMESTATE:GetSongBeat()>=0 and not checked then
+						
+							local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+													'Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+							local ThingsToHide = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+							
+							for i,v in ipairs(ThingsToGrab) do
+								_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+							end
+							
+							for i,v in ipairs(ThingsToHide) do
+								if _G[v] then _G[v]:hidden(1) end
+							end
+							
+							table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+							table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+							
+							--name players, judgment and combo
+							for pn=1,4 do
+								_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+								if _G['P'..pn] then
+									_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+									_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+								end
+							end
+							
+							screen = SCREENMAN:GetTopScreen();
+							checked = true; --let this only run once
+							
+						end
+
+						local beat = GAMESTATE:GetSongBeat()
+						
+						shame_curtime = GAMESTATE:GetSongTime()
+						local deltatime = shame_curtime - shame_lasttime
+						
+			---------------------------------------------------------------------------------------
+			----------------------Begin table handlers---------------------------------------------
+			---------------------------------------------------------------------------------------
+						
+						disable = false;
+						if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+							
+							-----------------------
+							-- Player mod resets --
+							-----------------------
+							if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+								for i=1,4 do
+									mod_do('clearall',i)
+								end
+								for i=3,4 do
+									
+									local pr = math.mod(i-1,2)+1
+									
+									if _G['P'..i] then
+									
+										--handle autoplay
+										if PREFSMAN:GetPreference('Autoplay') == 0 then
+											_G['P'..i]:SetInputPlayer(pr - 1)
+										else
+											_G['P'..i]:SetInputPlayer(3)
+										end
+									
+									end
+								end
+							end
+							
+							------------------------------------------------------------------------------
+							-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+							------------------------------------------------------------------------------
+							if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+								for i,v in pairs(mods) do
+									if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+										if beat >=v[1] then
+											if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+												if table.getn(v) == 5 then
+													mod_do(v[3],v[5]);
+												else
+													mod_do(v[3]);
+												end
+											end
+										end
+									else
+										v[1] = 0;
+										v[2] = 0;
+										v[3] = '';
+										v[4] = 'error';
+										SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+									end
+								end
+							end
+							
+							-----------------------------------------------------------------------------------------------------
+							-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+							-----------------------------------------------------------------------------------------------------
+							if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+								for i,v in pairs(mods2) do
+									if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+										if mod_time >=v[1] then
+											if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+												if table.getn(v) == 5 then
+													mod_do(v[3],v[5]);
+												else
+													mod_do(v[3]);
+												end
+											end
+										end
+									else
+										v[1] = 0;
+										v[2] = 0;
+										v[3] = 'error';
+										v[4] = 'error';
+										SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+									end
+								end
+							end
+						
+							--------------------------------------------------------------------------------------
+							-- i dont know who this reader is but he looks like he is made out of EASE HAHAHAHA --
+							-- original code by exschwasion, bastardized by taro for cmod support and less 'if' --
+							--------------------------------------------------------------------------------------
+							for i,v in pairs(mods_ease) do
+								if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+									if beat >=v[1] then
+										if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+											
+											local duration = v[2];
+											if v[6] == 'end' then duration = v[2] - v[1] end
+											local curtime = beat - v[1]
+											local diff = v[4] - v[3]
+											local startstrength = v[3]
+											local curve = v[7]
+											local mod = v[5]
+											
+											local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+											
+											local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+											mod_do('*10000 '..modstr,v[8]);
+											
+										elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+										
+											local strength = v[4]
+											
+											local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+											mod_do('*10000 '..modstr,v[8]);
+											
+										end
+									end
+								else
+									SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+								end
+							end
+							
+							--------------------
+							-- Perframe stuff --
+							--------------------
+							
+							if table.getn(mod_perframes)>0 then
+								for i=1,table.getn(mod_perframes) do
+									local a = mod_perframes[i]
+									if beat > a[1] and beat < a[2] then
+										a[3](beat,deltatime);
+									end
+								end
+							end
+							
+							shame_aft_sprite:rotationy(shame_topscreenrot:GetX())
+							shame_aft_sprite:rotationx(shame_topscreenrot:GetY())
+							
+							shame_flicker = shame_flicker*-1;
+							
+							---------------------------------------
+							-- ACTION RPGS AINT GOT SHIT ON THIS --
+							---------------------------------------
+							if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+								while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+									if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+										if type(mod_actions[curaction][2]) == 'function' then
+											mod_actions[curaction][2]()
+										elseif type(mod_actions[curaction][2]) == 'string' then
+											MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+										end
+									end
+									curaction = curaction+1;
+								end
+							end
+							
+						end
+						
+						shame_lasttime = shame_curtime
+						
+						return 0
+					end
+					
+					self:queuecommand('Update')
+					
+				else
+					
+					SCREENMAN:SystemMessage('NotITG version Too Old! Needs v3.2')
+					
+				end
+				
+			end
+			
+		end"
+		
+		UpdateCommand="%function(self)
+			
+			shame_update()
+			
+			self:sleep(1/60)
+			self:queuecommand('Update')
+			
+		end"
+		
+	/>
+	
+	<LAER Type="ActorFrame" Condition="FUCK_EXE"><children>
+	
+		<LAER File="_black" Shader="fuckyou.frag" OnCommand="stretchto,0,0,sw,sh;" />
+		
+		<LAER File="shamehead 2x2.png" Var="shamehead1"
+		ChangeCommand="%function(self) self:setstate(math.random(0,3)) self:rotationz(math.random(-20,20)) end" DrudgeMessageCommand="queuecommand,Change" Drudge2MessageCommand="queuecommand,Change"
+		OnCommand="animate,0;zoom,.55;pulse;effectmagnitude,1,1,1;effectperiod,1;effectclock,bgm;effectcolor2,.98,1.02,1,1;effectcolor1,1.02,.98,1,1;" />
+		<LAER File="shamehead 2x2.png" Var="shamehead2"
+		ChangeCommand="%function(self) self:setstate(math.random(0,3)) self:rotationz(math.random(-20,20)) end" DrudgeMessageCommand="queuecommand,Change" Drudge2MessageCommand="queuecommand,Change"
+		OnCommand="animate,0;zoom,.45;pulse;effectmagnitude,1,1,1;effectperiod,1;effectclock,bgm;effectcolor2,.98,1.02,1,1;effectcolor1,1.02,.98,1,1;" />
+		<LAER File="shamehead 2x2.png" Var="shamehead3"
+		ChangeCommand="%function(self) self:setstate(math.random(0,3)) self:rotationz(math.random(-20,20)) end" DrudgeMessageCommand="queuecommand,Change" Drudge2MessageCommand="queuecommand,Change"
+		OnCommand="animate,0;zoom,.5;pulse;effectmagnitude,1,1,1;effectperiod,1;effectclock,bgm;effectcolor2,.98,1.02,1,1;effectcolor1,1.02,.98,1,1;" />
+		
+		<LAER
+			Type="Quad"
+			Var="shame_underlay"
+			InitCommand="hidden,0;diffuse,0,0,0,1;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT"
+			
+			DrudgeMessageCommand="finishtweening;linear,3/15;diffuse,.3,0,0,.3;decelerate,18/15;diffuse,0,0,0,1"
+			Drudge2MessageCommand="finishtweening;linear,3/15;diffuse,.3,0,0,.3;decelerate,9/15;diffuse,0,0,0,1"
+			FinalDrudgeMessageCommand="finishtweening;linear,24/15;diffuse,.3,0,0,.3;"
+		/>
+		
+		<LAER Type="ActorFrame" OnCommand="zoomx,4/3;x,(-sw*1/6);" ><children>
+		
+			<LAER Type="Sprite"
+				InitCommand="%function(self)
+					shame_washingmachine=self;
+				end"
+				OnCommand="%function(self)
+					self:SetTextureFiltering(true)
+					self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth()));
+					self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()));
+					self:SetTexture(shame_cube_aft:GetTexture())
+					self:hidden(1);
+					self:diffuse(1,1,1,0);
+					self:zoomx(3/4);
+					self:xy(sw/2,sh/2);
+					self:rotationz(1)
+				end"
+				AFTOnMessageCommand="hidden,0" AFTOffMessageCommand="linear,8*60/200;diffusealpha,0;" AFTOffQMessageCommand="hidden,1"
+			/>
+		
+			<LAER Type="ActorProxy" OnCommand="hidden,1;" Var="Proxy1B" GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1) P1:hidden(1) end end" />
+			<LAER Type="ActorProxy" OnCommand="hidden,1;" Var="Proxy2B" GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2) P2:hidden(1) end end" />
+			<LAER Type="ActorProxy" OnCommand="hidden,1;" Var="Proxy3B" GetProxyMessageCommand="%function(self) if P3 then self:SetTarget(P3) P3:hidden(1) end end" />
+			<LAER Type="ActorProxy" OnCommand="hidden,1;" Var="Proxy4B" GetProxyMessageCommand="%function(self) if P4 then self:SetTarget(P4) P4:hidden(1) end end" />
+		
+		</children></LAER>
+		
+		<LAER
+			Type="ActorFrameTexture"
+			InitCommand="%function(self)
+				self:SetWidth( DISPLAY:GetDisplayWidth() );
+				self:SetHeight( DISPLAY:GetDisplayHeight() );
+				self:EnableDepthBuffer( true );
+				self:EnableAlphaBuffer( false );
+				self:EnableFloat( false );
+				self:EnablePreserveTexture( true );        
+				self:hidden(1);
+				self:Create();
+				shame_cube_aft=self
+			end"
+		/>
+		
+		<LAER Type="Quad" OnCommand="stretchto,0,0,sw,sh;diffuse,0,0,0,1;" />
+		
+		<!--what if you wanted to go to heaven, but god said <Layer Type="ActorFrame"><chi-->
+		
+		<LAER Type="ActorFrame" OnCommand="%function(self) self:SetDrawByZPosition(true) end" ><children>
+			<LAER
+				File="background" NameCommand="%function(self) shame_bg=self end"
+				OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.5,.5,.5,1;"
+			/>
+			
+			<LAER
+				File="shamebg1" NameCommand="%function(self) shame_bg1=self end" Shader="heat.frag"
+				OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.5,.5,.5,0;"
+			/>
+			<LAER
+				File="shamebg2" NameCommand="%function(self) shame_bg2=self end" Shader="heat.frag"
+				OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.5,.5,.5,0;"
+			/>
+			<LAER
+				File="corruption" NameCommand="%function(self) shame_bg3=self end" Shader="heat.frag"
+				OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;z,3;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.5,.5,.5,0;"
+			/>
+			<LAER
+				File="help" NameCommand="%function(self) shame_help=self end"
+				OnCommand="playcommand,Name;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;z,4;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0;blend,add;"
+			/>
+			
+			<LAER Var="shame_white" Type="Quad" OnCommand="z,4;stretchto,0,0,sw,sh;diffusealpha,0;" />
+		</children></LAER>
+		
+		<LAER Type="ActorFrame" Var="shame_spra1" OnCommand="xy,sw/2,sh/2;basezoomx,.6;basezoomy,.6;"><children>
+		<LAER File="chara/1" OnCommand="diffusealpha,0;" /></children></LAER>
+		<LAER Type="ActorFrame" Var="shame_spra2" OnCommand="xy,sw/2,sh/2;basezoomx,.6;basezoomy,.6;"><children>
+		<LAER File="chara/2" OnCommand="diffusealpha,0;" /></children></LAER>
+		<LAER Type="ActorFrame" Var="shame_spra3" OnCommand="xy,sw/2,sh/2;basezoomx,.6;basezoomy,.6;"><children>
+		<LAER File="chara/3" OnCommand="diffusealpha,0;" /></children></LAER>
+		
+		<LAER Type="ActorFrame" OnCommand="xy,0,sh/2;" Run1MessageCommand="y,math.random(sh/2-100,sh/2+100);playcommand,Run"><children>
+		<LAER File="chara/2" OnCommand="diffusealpha,.0;basezoomx,.4;basezoomy,.4;"
+		RunCommand="diffusealpha,.4;x,-300;linear,.3;x,sw/2-40;linear,.3;x,sw/2+40;linear,.3;x,sw+300;sleep,0;diffusealpha,0;"/>
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,0;"
+		Shitty10MessageCommand="sleep,.3;bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,2;"
+		Shitty8MessageCommand="sleep,.3;bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="xy,0,sh/2;" Run2MessageCommand="y,math.random(sh/2-100,sh/2+100);playcommand,Run"><children>
+		<LAER File="chara/2" OnCommand="diffusealpha,.0;basezoomx,.4;basezoomy,.4;"
+		RunCommand="diffusealpha,.4;x,-300;linear,.3;x,sw/2-40;linear,.3;x,sw/2+40;linear,.3;x,sw+300;sleep,0;diffusealpha,0;"/>
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,1;"
+		Shitty9MessageCommand="sleep,.3;bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,3;"
+		Shitty7MessageCommand="sleep,.3;bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		</children></LAER>
+		
+		<LAER Type="ActorFrame" OnCommand="xy,0,sh/2;" ><children>
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,4;"
+		Shitty6MessageCommand="bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,6;"
+		Shitty4MessageCommand="bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		</children></LAER>
+		
+		<LAER Type="ActorFrame" OnCommand="xy,0,sh/2;" ><children>
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,5;"
+		Shitty5MessageCommand="bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,7;"
+		Shitty3MessageCommand="bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		</children></LAER>
+		
+		<LAER Type="ActorFrame" OnCommand="xy,0,sh/2;"><children>
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,8;"
+		Shitty2MessageCommand="bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="xy,0,sh/2;"><children>
+		<LAER File="shitty_counter" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.5;basezoomx,.5;basezoomy,.5;animate,0;setstate,9;"
+		Shitty1MessageCommand="bounceend,.2;zoom,1;sleep,.3;linear,.4;diffusealpha,0;" />
+		</children></LAER>
+		
+		
+		
+		
+		
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		<LAER File="shame_master" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_master(self) end" />
+		
+		<LAER Type="ActorProxy" OnCommand="" Var="Proxy1A" GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1) P1:hidden(1) end end" />
+		<LAER Type="ActorProxy" OnCommand="" Var="Proxy2A" GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2) P2:hidden(1) end end" />
+		<LAER Type="ActorProxy" OnCommand="" Var="Proxy3A" GetProxyMessageCommand="%function(self) if P3 then self:SetTarget(P3) P3:hidden(1) end end" />
+		<LAER Type="ActorProxy" OnCommand="" Var="Proxy4A" GetProxyMessageCommand="%function(self) if P4 then self:SetTarget(P4) P4:hidden(1) end end" />
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<LAER File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) table.insert(shame_boxes,self) end" />
+		<LAER File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) table.insert(shame_boxes,self) end" />
+		<LAER File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) table.insert(shame_boxes,self) end" />
+		<LAER File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) table.insert(shame_boxes,self) end" />
+		<LAER File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) table.insert(shame_boxes,self) end" />
+		<LAER File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) table.insert(shame_boxes,self) end" />
+		<LAER File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) table.insert(shame_boxes,self) end" />
+		<LAER File="boxes" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" MakeCommand="%function(self) table.insert(shame_boxes,self) end" />
+		
+		<CODE Type="Quad" OnCommand="hidden,1;" InitCommand="%function(self) shame_disaster = self end" />
+		<CODE Type="Quad" OnCommand="hidden,1;" InitCommand="%function(self) shame_rot1 = self end" />
+		<CODE Type="Quad" OnCommand="hidden,1;" InitCommand="%function(self) shame_rotadd = self end" />
+		<CODE Type="Quad" OnCommand="hidden,1;y,180;" InitCommand="%function(self) shame_rot2 = self end" />
+		<CODE Type="Quad" OnCommand="hidden,1;" InitCommand="%function(self) shame_topscreenrot = self end" />
+		<CODE Type="Quad" OnCommand="hidden,1;" InitCommand="%function(self) shame_vib = self end" />
+		<CODE Type="Quad" OnCommand="hidden,1;" InitCommand="%function(self) shame_squag = self end" />
+		<CODE Type="Quad" OnCommand="hidden,1;x,1;" InitCommand="%function(self) shame_zoom = self end" />
+		
+		<Aux Var="vice_versa_reverser_device" />
+		<Aux Var="shame_flip1" OnCommand="x,0" />
+		<Aux Var="shame_flip2" OnCommand="x,0" />
+		
+		<Aux Var="shame_cube_face" OnCommand="x,2" />
+		<Aux Var="shame_cube_vib" OnCommand="" />
+		
+		<LAER
+			Type="ActorFrameTexture"
+			InitCommand="%function(self)
+				self:SetWidth( DISPLAY:GetDisplayWidth() );
+				self:SetHeight( DISPLAY:GetDisplayHeight() );
+				self:EnableDepthBuffer( true );
+				self:EnableAlphaBuffer( false );
+				self:EnableFloat( false );
+				self:EnablePreserveTexture( true );        
+				self:hidden(0);
+				self:Create();
+				shame_aft=self
+			end"
+		/>
+		
+		<LAER Type="Quad" OnCommand="stretchto,0,0,sw,sh;diffuse,0,0,0,1" />
+
+		<LAER Type="ActorFrame" OnCommand="fov,75" ><children>
+			<LAER Type="Sprite"
+				InitCommand="%function(self)
+					shame_aft_sprite=self;
+				end"
+				OnCommand="%function(self)
+					self:SetTextureFiltering(true)
+					self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth()));
+					self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()));
+					self:SetTexture(shame_aft:GetTexture())
+					self:hidden(1);
+					self:diffuse(1,1,1,1);
+					self:xy(sw/2,sh/2);
+					self:rotationz(0)
+				end"
+				AFTOnMessageCommand="hidden,0" AFTOffMessageCommand="linear,8*60/200;diffusealpha,0;" AFTOffQMessageCommand="hidden,1"
+			/>
+		</children></LAER>
+		
+		<!--This is for the time based mod reader-->
+		<BitmapText
+			Font="Common Normal"
+			Text="test"
+			OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+			SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+		/>
+		
+		
+		
+		
+		
+		
+		<LAER Type="ActorFrame" OnCommand="fov,50;"><children>
+			<LAER 
+				
+				File="3Dwacky.txt"
+				OnCommand="%function(self)
+					shame_cube=self;
+					self:hidden(1);
+					self:z(10);
+					self:zoomx(0.5);
+					self:zoomy(0.5);
+					--self:zoomz(0.5);
+					self:diffusealpha(1);
+					self:rotationx(0);
+					self:rotationy(-180);
+					self:x(SCREEN_CENTER_X+0);
+					self:y(SCREEN_CENTER_Y+0);
+					self:playanimation('default',0);
+					self:sleep(1);
+					
+					self:clearzbuffer(1)
+					
+					self:vibrate();
+					self:effectmagnitude(0,0,0);
+					self:queuecommand('blood_does');
+					
+				end"
+				
+				blood_doesCommand="%function(self)
+					
+					self:SetTexture(0,shame_cube_aft:GetTexture());
+					self:hidden(1)
+
+					local function poly_npot(val)
+						local out = 2
+						while out < val do
+							out = out*2
+						end
+						return out
+					end
+					
+					self:SetTextureScaleX(0,DISPLAY:GetDisplayWidth() / poly_npot(DISPLAY:GetDisplayWidth()));
+					self:SetTextureScaleY(0,-DISPLAY:GetDisplayHeight() / poly_npot(DISPLAY:GetDisplayHeight()));
+					--self:SetTextureTranslateX(0, (poly_npot(DISPLAY:GetDisplayWidth()) - poly_npot(DISPLAY:GetDisplayHeight()))*0.5 );
+					self:SetTextureTranslateY(0,DISPLAY:GetDisplayHeight() / poly_npot(DISPLAY:GetDisplayHeight()));
+					
+				end"
+				
+			/>
+		</children></LAER>
+		
+		
+		
+		
+		<LAER Type="ActorFrame" Var="shame_sprb1" OnCommand="xy,sw/2,sh/2;basezoomx,.6;basezoomy,.6;"><children>
+		<LAER File="chara/4" OnCommand="diffusealpha,0;" /></children></LAER>
+		<LAER Type="ActorFrame" Var="shame_sprb2" OnCommand="xy,sw/2,sh/2;basezoomx,.6;basezoomy,.6;"><children>
+		<LAER File="chara/4" OnCommand="diffusealpha,0;" /></children></LAER>
+		<LAER Type="ActorFrame" Var="shame_sprb3" OnCommand="xy,sw/2,sh/2;basezoomx,.6;basezoomy,.6;"><children>
+		<LAER File="chara/4" OnCommand="diffusealpha,0;" /></children></LAER>
+		
+		<LAER Type="ActorFrame" Var="shame_sprc1" OnCommand="xy,sw/2,sh/2;basezoomx,.6;basezoomy,.6;"><children>
+		<LAER File="chara/1" OnCommand="diffusealpha,0;" /></children></LAER>
+		<LAER Type="ActorFrame" Var="shame_sprc2" OnCommand="xy,sw/2,sh/2;basezoomx,.6;basezoomy,.6;"><children>
+		<LAER File="chara/2" OnCommand="diffusealpha,0;" /></children></LAER>
+		<LAER Type="ActorFrame" Var="shame_sprc3" OnCommand="xy,sw/2,sh/2;basezoomx,.6;basezoomy,.6;"><children>
+		<LAER File="chara/3" OnCommand="diffusealpha,0;" /></children></LAER>
+		
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" StopVibCommand="stopeffect;"
+		MakeCommand="%function(self) shame_make_pq(self) end"><children>
+			<LAER Type="Quad" OnCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,0;xy,0,-2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+			<LAER Type="Quad" OnCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,0;xy,-2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" ResetCommand="halign,1;xy,2,0;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomx,0;" />
+			<LAER Type="Quad" OnCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" ResetCommand="valign,1;xy,0,2;zoom,4;diffuse,0,0,0,1;" FinishCommand="linear,6/15;zoomy,0;" />
+		</children></LAER>
+		
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		<LAER File="blah.png" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1;" MakeCommand="%function(self) shame_make_4q(self) end" />
+		
+		
+		<LAER File="countdown" OnCommand="xy,sw/2,sh/2;animate,0;setstate,3;basezoomx,0.5;basezoomy,0.5;diffusealpha,0;"
+		CountdownMessageCommand="queuecommand,3;"
+		CountdownFakeMessageCommand="queuecommand,3F;"
+		Countdown2MessageCommand="queuecommand,3F2;"
+		3Command="diffusealpha,.6;setstate,3;zoom,1.2;linear,2/15;zoom,1;diffusealpha,.6;sleep,4/14;queuecommand,2;"
+		3FCommand="diffusealpha,.6;setstate,3;zoom,1.2;linear,2/15;zoom,1;diffusealpha,.6;sleep,4/14;queuecommand,2F;"
+		3F2Command="diffusealpha,.6;setstate,3;zoom,1.2;linear,2/15;zoom,1;diffusealpha,.6;sleep,4/14;queuecommand,2F2;"
+		2Command="diffusealpha,.6;setstate,2;zoom,1.2;linear,2/15;zoom,1;diffusealpha,.6;sleep,4/14;queuecommand,1;"
+		2FCommand="diffusealpha,.6;setstate,2;zoom,1.2;linear,2/15;zoom,1;diffusealpha,.6;sleep,4/14;queuecommand,Nah;"
+		2F2Command="diffusealpha,.6;setstate,2;zoom,1.2;linear,2/15;zoom,1;diffusealpha,.6;sleep,4/14;queuecommand,0;"
+		1Command="diffusealpha,.6;setstate,1;zoom,1.2;linear,2/15;zoom,1;diffusealpha,.6;sleep,4/14;queuecommand,0;"
+		NahCommand="diffusealpha,.6;setstate,0;zoom,1.6;linear,2/15;zoom,1.5;diffusealpha,.6;sleep,4/14;queuecommand,0;"
+		0Command="setstate,0;diffusealpha,0;"
+		/>
+		
+		
+		<LAER Type="ActorFrame" OnCommand="xy,sw/2,sh/2;basezoomx,.5;basezoomy,.5;"
+		FinalHitMessageCommand="playcommand,F;rotationz,-10;addx,0;addy,-20;linear,3;addx,40;addy,40;rotationz,10;" ><children>
+			<LAER File="chara/5" OnCommand="diffusealpha,0;"
+			FCommand="diffusealpha,1;vibrate;effectmagnitude,10,10,0;sleep,.4;queuecommand,GoAway" GoAwayCommand="stopeffect;sleep,0;linear,1.5;diffusealpha,0;" />
+		</children></LAER>
+		
+		<LAER Type="Quad" OnCommand="stretchto,0,0,sw,sh;diffuse,1,1,1,0" FinalHitMessageCommand="diffusealpha,1;linear,.4;diffusealpha,0;" />
+		
+		<LAER Type="ActorFrame" OnCommand="xy,0,sh/2;"><children>
+		<LAER File="s_hitec" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.8;basezoomx,1;basezoomy,1;animate,0;setstate,0;"
+		ShittyHiMessageCommand="bounceend,.2;zoom,.8;sleep,.3;linear,.4;diffusealpha,0;" />
+		</children></LAER>
+		<LAER Type="ActorFrame" OnCommand="xy,0,sh/2;"><children>
+		<LAER File="s_hitec" OnCommand="x,sw/2+math.random(-30,30);y,-110;zoomx,3;zoomy,0;diffusealpha,.8;basezoomx,1;basezoomy,1;animate,0;setstate,1;"
+		ShittyTechMessageCommand="bounceend,.2;zoom,.8;sleep,.3;linear,.4;diffusealpha,0;" />
+		</children></LAER>
+		
+		<LAER File="shamespeech" Var="shame_speech" HideCommand="hidden,1" OnCommand="animate,0;xy,sw/2,sh/2;zoom,0;" />
+		
+		<LAER Type="ActorFrame" InitCommand="%function(self) judc = self end"><children>
+		<LAER Type="ActorProxy" InitCommand="%function(self) jud1p = self end"
+		GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1:GetChild('Judgment')) end end"/>
+		<LAER Type="ActorProxy" InitCommand="%function(self) jud2p = self end"
+		GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2:GetChild('Judgment')) end end"/>
+		</children></LAER>
+		<LAER Type="ActorFrame" InitCommand="%function(self) comc = self end"><children>
+		<LAER Type="ActorProxy" InitCommand="%function(self) com1p = self end"
+		GetProxyMessageCommand="%function(self) if P1 then self:SetTarget(P1:GetChild('Combo')) end end"/>
+		<LAER Type="ActorProxy" InitCommand="%function(self) com2p = self end"
+		GetProxyMessageCommand="%function(self) if P2 then self:SetTarget(P2:GetChild('Combo')) end end"/>
+		</children></LAER>
+	</children></LAER>
+	
+</children></ActorFrame>

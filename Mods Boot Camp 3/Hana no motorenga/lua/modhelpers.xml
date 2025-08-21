@@ -1,0 +1,287 @@
+<ActorFrame><children>
+
+	<Actor
+		Type="Quad"
+		OnCommand="hidden,1"
+	InitCommand="%function(self)
+	
+---------------------------------------------------------------------------------------
+----------------------DON'T TOUCH IT KIDDO---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			condor_const1 = math.sqrt(math.pow(SCREEN_WIDTH/2,2)+math.pow(SCREEN_HEIGHT/2,2))
+			condor_const2 = 180+math.deg(math.atan(SCREEN_HEIGHT/SCREEN_WIDTH))
+			
+			function perframe( beat, endBeat )
+				if GAMESTATE:GetSongBeat() < mod_firstSeenBeat+1 then return false end
+				if not endBeat then endBeat = beat+1 end
+				local cur = GAMESTATE:GetSongBeat();
+				if cur>=beat and cur<endBeat then return true end
+				return false
+			end
+			
+			function mod_insert(beat,len,mod,t,pn)
+				if not t then t = 'len' end
+				table.insert(mods,{beat,len,mod,t,pn});
+			end
+			
+			function mod_message(beat,msg,p)
+				table.insert(messages,{beat,msg,p});
+			end
+			
+			function mod_ease(beat,len,str1,str2,mod,t,ease,pn,sus,opt1,opt2)
+				table.insert(mods_ease,{beat,len,str1,str2,mod,t,ease,pn,sus,opt1,opt2});
+			end
+			
+			function condor_screenmotion(zm,ang,len,tween,x,y)
+				
+				if not x then x = SCREEN_WIDTH/2 end
+				if not y then y = SCREEN_HEIGHT/2 end
+				
+				screen[tween](screen,len)
+				screen:x(x+(condor_const1*zm*math.cos((ang+condor_const2)/180*math.pi)));
+				screen:y(y+(condor_const1*zm*math.sin((ang+condor_const2)/180*math.pi)));
+				screen:rotationz(ang)
+				screen:zoom(zm)
+				auxvar[tween](auxvar,len)
+				auxvar:aux(ang/1500)
+				drm_bgvar[tween](drm_bgvar,len)
+				drm_bgvar:rotationz(ang*-1)
+			end
+			
+			--how can I make simple m0d?
+			--this will instantly turn a mod on to max and then quickly turn it off with the specified parameters
+			--it's a simple mod
+			
+			function simple_m0d(beat,strength,mult,mod)
+				if not strength then strength = 400 end
+				if not mult then mult = 1 end
+				if not mod then mod = 'drunk' end
+				
+				local alive = math.max(2*mult*math.abs(strength)/100,0.25)
+				
+				table.insert(mods,{beat,0.1,'*100000 '..strength..' '..mod,'len'});
+				table.insert(mods,{beat+.1,alive,'*'..((1/mult)*math.abs(strength)/100)..' no '..mod,'len'});
+			end
+			
+			function simple_m0d2(beat,strength,mult,mod,pn)
+				if not strength then strength = 400 end
+				if not mult then mult = 1 end
+				if not mod then mod = 'drunk' end
+				
+				local alive = math.max(10*mult*math.abs(strength)/100,0.25)
+				
+				table.insert(mods,{beat,0.3,'*'..math.abs(strength/10)..' '..strength..' '..mod,'len',pn});
+				table.insert(mods,{beat+.3,alive,'*'..((1/mult)*math.abs(strength)/100)..' no '..mod,'len',pn});
+			end
+			
+			function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				if not strength then strength = 400 end
+				if not duration then duration = 1 end
+				if not bpm then bpm = 120 end
+				if not mod then mod = 'drunk' end
+				
+				local alive = duration * (60/bpm)
+				local str = (1/(duration * 60/bpm)) * (math.abs(strength)/100)
+				
+				table.insert(mods,{beat-duration,duration,'*'..str..' '..strength..' '..mod,'len',pn});
+				table.insert(mods,{beat,duration*1.1,'*'..str..' no '..mod,'len',pn});
+			end
+			
+			--alternates a mod back and forth before resetting to 0
+			--beat,num,div,amt,speed,mod,pn
+			function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				if not speed then speed = 1 end
+				local fluct = 1
+				for i=0,(num-1) do
+					b = beat+(i/div)
+					local m = 1
+					if i==0 and not first then m = 0.5 end
+					table.insert(mods,{b,1,'*'..math.abs(m*speed*amt/10)..' '..(amt*fluct)..' '..mod..'','len',pn});
+					fluct = fluct*-1;
+				end
+				table.insert(mods,{beat+(num/div),1,'*'..math.abs(amt*speed/20)..' no '..mod..'','len',pn});
+			end
+			
+			--like wiggle, but springier
+			--beat,strength,num,mod,pn
+			function mod_spring(beat,strength,num,mod,pn)
+				local fluct = 1;
+				for i=0,num do
+					if i==0 then mult = 0.5 else mult = 1 end
+					local amt = (num-i)/num
+					local b = beat+(0.05*i)
+					
+					table.insert(mods,{b,0.3,'*'..math.max(math.abs(1000*strength*mult*amt),1)..' '..(strength*amt*fluct)..' '..mod,'len',pn});
+					
+					fluct = fluct*-1;
+				end
+			end
+			
+			function mod_springt(beat,strength,dur,mod,pn)
+				local fluct = 1;
+				dur = math.max(dur,0.02)
+				for i=0,dur,0.02 do
+					local mult = 1;
+					local amt = (dur-i)/dur
+					local b = beat+i
+					
+					table.insert(mods2,{b,0.02,'*100000 '..(strength*amt*fluct)..' '..mod,'len',pn});
+					
+					fluct = fluct*-1;
+				end
+			end
+			
+			function mod_springt2(beat,strength,dur,mod,pn)
+				local fluct = 1;
+				for i=0,dur,0.02 do
+					local b = beat+i
+					
+					table.insert(mods2,{b,0.02,'*100000 '..(strength*fluct)..' '..mod,'len',pn});
+					
+					fluct = fluct*-1;
+				end
+			end
+			
+			--beat,strength,num,period,mod,pn
+			function mod_spring_adjustable(beat,strength,num,period,mod,pn, first)
+				local fluct = 1;
+				for i=0,num do
+					if i==0 then mult = 0.5 else mult = 1 end
+					local amt = (num-i)/num
+					local b = beat+(period*0.5*i)
+					
+					local m = 1
+					if i==0 and not first then m = 0.5 end
+					
+					table.insert(mods,{b,0.3,'*'..math.max(m*math.abs((0.2/period)*strength*mult*amt),1)..' '..(strength*amt*fluct)..' '..mod,'len',pn});
+					
+					fluct = fluct*-1;
+				end
+			end
+			
+			--turns on beat for the beat specified, at the desired strength	
+			function mod_beat(beat,strength,pn)
+				if not strength then strength = 1000 end;
+				table.insert(mods,{beat-.5,1,'*10000 '..strength..' beat','len',pn});
+				table.insert(mods,{beat+.5,0.25,'*10000 no beat','len',pn});
+			end
+			
+			function ugly_count(beat,length,col,var)
+				--reverse alt cross split
+				if not var then var=1 end
+				local colrev = {
+					{50,-25,-25,-25},
+					{0,25,25,-25},
+					{0,-25,25,25},
+					{0,25,-25,25},
+				}
+				local lent = length/2
+				print(colrev[col][3])
+				table.insert(mods_ease,{beat,lent,0,colrev[col][1]*var,'reverse','len',outQuad})
+				table.insert(mods_ease,{beat+lent,lent,colrev[col][1]*var,0,'reverse','len',inQuad})
+
+				table.insert(mods_ease,{beat,lent,0,colrev[col][2]*var,'alternate','len',outQuad})
+				table.insert(mods_ease,{beat+lent,lent,colrev[col][2]*var,0,'alternate','len',inQuad})
+				
+				table.insert(mods_ease,{beat,lent,0,colrev[col][3]*var,'cross','len',outQuad})
+				table.insert(mods_ease,{beat+lent,lent,colrev[col][3]*var,0,'cross','len',inQuad})
+				
+				table.insert(mods_ease,{beat,lent,0,colrev[col][4]*var,'split','len',outQuad})
+				table.insert(mods_ease,{beat+lent,lent,colrev[col][4]*var,0,'split','len',inQuad})
+			end
+			
+			function swapshit(parity,intens)
+				
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:bounceend(spb*1.5)
+						v:z(parity * (i*2-3) * intens)
+						--v:rotationz(parity * 180+180)
+					end
+				end
+			
+			end
+			
+			
+			function switcheroo_reset()
+				switcheroo_flip = {0,0,0};
+				switcheroo_invert = {0,0,0};
+			end
+			
+			switcheroo_flip = {0,0,0};
+			switcheroo_invert = {0,0,0};
+			
+			switcheroo_width = 1;
+				
+			switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+				flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+				ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			function switcheroo_add(beat,which,speed,len,pn)
+
+				if not speed then speed = 1000000 end
+				
+				local mpn = 3
+				if pn then mpn = pn end
+				
+				local w = {0,0}
+				
+				if type(which) == 'string' then w = switcheroos[which] end
+				if type(which) == 'table' then w = which end
+				
+				if w then
+					local targf = (switcheroos[which][1]*switcheroo_width) + ( 50 - switcheroo_width*50 )
+					local targi = (switcheroos[which][2]*switcheroo_width)
+					local sw_modlist = ''
+					if switcheroo_flip[mpn] ~= targf then
+						sw_modlist = sw_modlist..'*'..(0.01*speed*math.abs(targf-switcheroo_flip[mpn]))..' '..(targf)..' flip,'
+					else
+						sw_modlist = sw_modlist..'*1 '..(targf)..' flip,'
+					end
+					if switcheroo_invert[mpn] ~= targi then
+						sw_modlist = sw_modlist..'*'..(0.01*speed*math.abs(targi-switcheroo_invert[mpn]))..' '..(targi)..' invert'
+					else
+						sw_modlist = sw_modlist..'*1 '..(targi)..' invert'
+					end
+					table.insert(mods,{beat,len,sw_modlist,'len',pn});
+					
+					--Trace('SPEED: '..(0.01*speed*math.abs(targf-switcheroo_flip)));
+					Trace(sw_modlist);
+					
+					if mpn == 3 then
+						for apn=1,3 do
+							switcheroo_flip[apn] = targf;
+							switcheroo_invert[apn] = targi;
+						end
+					else
+						switcheroo_flip[mpn] = targf;
+						switcheroo_invert[mpn] = targi;
+					end
+				
+				end
+				
+			end
+            
+            function sugaroo_add(beat,len,speed,stealthvalmain,stealthvalsec,pn)
+                local shp_switchtable = {'urld','rudl','dlru','ldur'}    
+                local shp_counter = 0
+                for i=beat,beat+len,speed do
+                    local shp_swap = shp_switchtable[shp_counter+1]
+                    switcheroo_add(i, shp_swap, 9999, speed, pn)
+                    if shp_counter == 3 then 
+                        table.insert(mods,{i,speed,'*9999 '.. stealthvalmain ..'% stealth','len',pn});
+                    else
+                        table.insert(mods,{i,speed,'*9999 '.. stealthvalsec ..'% stealth','len',pn});
+                    end
+                    shp_counter = math.mod(shp_counter+1,4)
+                end
+                switcheroo_add(beat+len+speed, 'ldur', 9999, speed, pn)
+            end
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+		
+	end"
+	/>
+
+</children></ActorFrame>

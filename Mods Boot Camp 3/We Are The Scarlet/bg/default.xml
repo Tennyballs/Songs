@@ -1,0 +1,56 @@
+<ActorFrame> <children>
+<ActorFrame OnCommand="playcommand,Name"> <children>
+
+	<ActorFrame OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;bob;effectmagnitude,0,64,0;effectclock,bgm;effectperiod,16"> <children>
+		<Layer
+			File="background.png"
+			OnCommand="ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0;diffusealpha,0.25;rainbow;effectclock,bgm;effectperiod,8;effectoffset,-0.702"
+		/>
+	</children> </ActorFrame>
+	
+	<ActorFrame OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;bob;effectmagnitude,0,-64,0;effectclock,bgm;effectperiod,16"> <children>
+		<Layer
+			File="background.png"
+			OnCommand="ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0;diffusealpha,0.25;rainbow;effectclock,bgm;effectperiod,8;effectoffset,-0.702"
+		/>
+	</children> </ActorFrame>
+	
+
+	<Layer
+		NameCommand="%function(self) flan_bg1=self end"
+		File="background"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.5,.5,.5,1;"
+	/>
+	
+	<Layer Type="ActorFrame" NameCommand="%function(self) flan_bg_space=self end" OnCommand="hidden,1" > <children>
+		<Layer
+			Type="Quad"
+			OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,#000000"
+		/>
+
+		<Layer
+			File="stars.png"
+			OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;customtexturerect,0,0,1,1;texcoordvelocity,0,-2"
+		/>
+		
+		<Layer
+			File="stars.png"
+			OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;customtexturerect,0,0,1,1;texcoordvelocity,0,-1"
+		/>
+		
+	</children> </Layer>
+	
+	<Layer
+		NameCommand="%function(self) patch_bg=self end"
+		File="patchbg.png"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+50;diffuse,.5,.5,.5,0;zoom,1.2;"
+	/>
+	
+	<Layer
+		NameCommand="%function(self) flan_bg2=self end"
+		File="background"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.5,.5,.5,0;"
+	/>
+
+</children> </ActorFrame>
+</children> </ActorFrame>

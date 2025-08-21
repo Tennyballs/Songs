@@ -1,0 +1,516 @@
+<ActorFrame><children>
+<ActorFrame OnCommand="x,-320;y,-240"><children>
+<ActorFrame OnCommand="zoomx,1;zoomy,1" ><children>
+	
+	<Layer
+	Type="Quad"
+	OnCommand="stretchto,0,0,640,480;diffuse,0,0,0,1;"
+	/>
+	
+	<Layer
+	File="bg.png"
+	OnCommand="x,320;y,240;"
+	/>
+	
+	<Layer
+	File="cock ring.png"
+	OnCommand="x,320;y,240;"
+	/>
+	
+	<Layer
+	File="cock ring bl.png"
+	OnCommand="x,320;y,240;blend,add;fadebottom,400;fadetop,400;"
+	P1FantasticMessageCommand="finishtweening;fadebottom,0;fadetop,0;accelerate,2;fadebottom,400;fadetop,400;"
+	P1ExcellentMessageCommand="finishtweening;fadebottom,0;fadetop,0;accelerate,2;fadebottom,400;fadetop,400;"
+	P1GreatMessageCommand="finishtweening;fadebottom,0;fadetop,0;accelerate,2;fadebottom,400;fadetop,400;"
+	P2FantasticMessageCommand="finishtweening;fadebottom,0;fadetop,0;accelerate,2;fadebottom,400;fadetop,400;"
+	P2ExcellentMessageCommand="finishtweening;fadebottom,0;fadetop,0;accelerate,2;fadebottom,400;fadetop,400;"
+	P2GreatMessageCommand="finishtweening;fadebottom,0;fadetop,0;accelerate,2;fadebottom,400;fadetop,400;"
+	/>
+	
+	<Code
+Type="Quad"
+OnCommand="hidden,1"
+InitCommand="%function(self)
+
+	loot_mai_speedmod = 2.5;
+
+	loot_curnote_mai = 1;
+	
+	loot_mai_npos = {{170,320,320,470},{240,390,90,240}}
+	loot_mai_ndir = {{-130,0,0,130},{0,130,-130,0}}
+	
+	local loot_mainfptr = 1;
+	loot_mai_noteflashes = {};
+	function loot_mai_spawn_noteflash(col)
+		local a = loot_mai_noteflashes[loot_mainfptr];
+		
+		a:finishtweening();
+		a:hidden(0);
+		a:animate(1);
+		a:setstate(0);
+		a:blend('add');
+		a:x(loot_mai_npos[1][col+1]);
+		a:y(loot_mai_npos[2][col+1]);
+		a:zoom(1.3);
+		a:linear(0.3);
+		a:zoom(1.6);
+		a:queuecommand('Hide');
+		
+		loot_mainfptr = loot_mainfptr+1
+		if loot_mainfptr > table.getn(loot_mai_noteflashes) then
+			loot_mainfptr = 1
+		end
+	end
+	
+	local loot_maiptr = 1;
+	loot_mai_notes = {};
+	function loot_mai_spawn_note(beat,col,speedmod)
+	
+		local a = loot_mai_notes[loot_maiptr];
+		
+		a:finishtweening();
+		a:hidden(0);
+		a:diffusealpha(1);
+		
+		loot_quantize(a,beat);
+		
+		a:rotationz(loot_dirs[col+1]);
+		
+		a:zoom(0);
+		a:x(loot_mai_npos[1][col+1]-loot_mai_ndir[1][col+1]);
+		a:y(loot_mai_npos[2][col+1]-loot_mai_ndir[2][col+1]);
+		a:zoom(0);
+		a:linear(((40/loot_bpm)/speedmod)/loot_ratemod);
+		a:zoom(1);
+		a:linear(((200/loot_bpm)/speedmod)/loot_ratemod);
+		a:x(loot_mai_npos[1][col+1]);
+		a:y(loot_mai_npos[2][col+1]);
+		a:linear(((90/loot_bpm)/speedmod)/loot_ratemod);
+		a:zoom(0);
+		a:rotationz(loot_dirs[col+1]+360);
+		a:sleep(0);
+		a:queuecommand('Hide');
+		
+		loot_maiptr = loot_maiptr+1
+		if loot_maiptr > table.getn(loot_mai_notes) then
+			loot_maiptr = 1
+		end
+		
+	end
+	
+end"
+/>
+
+	<CODE
+	Type="Quad"
+	OnCommand="hidden,1"
+	P1FantasticMessageCommand="%function(self)
+		
+		local a = loot_mai_jud1;
+		a:finishtweening();
+		a:x(246);
+		a:y(160);
+		a:glowshift();
+		a:effectperiod(0.05);
+		a:effectcolor1(1,1,1,0);
+		a:effectcolor2(1,1,1,0.5);
+		a:animate(0);
+		a:setstate(0);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P1ExcellentMessageCommand="%function(self)
+		
+		local a = loot_mai_jud1;
+		a:finishtweening();
+		a:x(246);
+		a:y(160);
+		a:stopeffect();
+		a:animate(0);
+		a:setstate(1);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P1GreatMessageCommand="%function(self)
+		
+		local a = loot_mai_jud1;
+		a:finishtweening();
+		a:x(246);
+		a:y(160);
+		a:stopeffect();
+		a:animate(0);
+		a:setstate(2);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P1DecentMessageCommand="%function(self)
+		
+		local a = loot_mai_jud1;
+		a:finishtweening();
+		a:x(246);
+		a:y(160);
+		a:stopeffect();
+		a:animate(0);
+		a:setstate(3);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P1WayOffMessageCommand="%function(self)
+		
+		local a = loot_mai_jud1;
+		a:finishtweening();
+		a:x(246);
+		a:y(160);
+		a:stopeffect();
+		a:animate(0);
+		a:setstate(4);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P1MissMessageCommand="%function(self)
+		
+		if loot_isActive(0) then
+			local a = loot_mai_jud1;
+			a:finishtweening();
+			a:x(246);
+			a:y(160);
+			a:stopeffect();
+			a:animate(0);
+			a:setstate(4);
+			a:zoom(1.1);
+			a:spring(0.3);
+			a:zoom(0.8);
+			a:sleep(1);
+			a:linear(0.2);
+			a:zoomy(0); a:zoomx(2);
+		end
+		
+	end"
+	P2FantasticMessageCommand="%function(self)
+		
+		local a = loot_mai_jud2;
+		a:finishtweening();
+		a:x(394);
+		a:y(160);
+		a:glowshift();
+		a:effectperiod(0.05);
+		a:effectcolor1(1,1,1,0);
+		a:effectcolor2(1,1,1,0.5);
+		a:animate(0);
+		a:setstate(0);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P2ExcellentMessageCommand="%function(self)
+		
+		local a = loot_mai_jud2;
+		a:finishtweening();
+		a:x(394);
+		a:y(160);
+		a:stopeffect();
+		a:animate(0);
+		a:setstate(1);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P2GreatMessageCommand="%function(self)
+		
+		local a = loot_mai_jud2;
+		a:finishtweening();
+		a:x(394);
+		a:y(160);
+		a:stopeffect();
+		a:animate(0);
+		a:setstate(2);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P2DecentMessageCommand="%function(self)
+		
+		local a = loot_mai_jud2;
+		a:finishtweening();
+		a:x(394);
+		a:y(160);
+		a:stopeffect();
+		a:animate(0);
+		a:setstate(3);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P2WayOffMessageCommand="%function(self)
+		
+		local a = loot_mai_jud2;
+		a:finishtweening();
+		a:x(394);
+		a:y(160);
+		a:stopeffect();
+		a:animate(0);
+		a:setstate(4);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+		
+	end"
+	P2MissMessageCommand="%function(self)
+		
+		if loot_isActive(1) then
+			local a = loot_mai_jud2;
+			a:finishtweening();
+			a:x(394);
+			a:y(160);
+			a:stopeffect();
+			a:animate(0);
+			a:setstate(4);
+			a:zoom(1.1);
+			a:spring(0.3);
+			a:zoom(0.8);
+			a:sleep(1);
+			a:linear(0.2);
+			a:zoomy(0); a:zoomx(2);
+		end
+		
+	end"
+	P1UpdateCurComboMessageCommand="%function(self)
+		
+		local a = loot_mai_com1;
+		a:finishtweening();
+		a:hidden(0);
+		a:x(246);
+		a:y(182);
+		a:animate(0);
+		a:setstate(4);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomx(2);
+		a:zoomy(0);
+	end"
+	P2UpdateCurComboMessageCommand="%function(self)
+		
+		local a = loot_mai_com2;
+		a:finishtweening();
+		a:hidden(0);
+		a:x(394);
+		a:y(182);
+		a:animate(0);
+		a:setstate(4);
+		a:zoom(1.1);
+		a:spring(0.3);
+		a:zoom(0.8);
+		a:sleep(1);
+		a:linear(0.2);
+		a:zoomy(0); a:zoomx(2);
+	end"
+	P1BrokeComboMessageCommand="%function(self)
+		local a = loot_mai_com1;
+		a:finishtweening();
+		a:zoomy(0); a:zoomx(2);
+	end"
+	P2BrokeComboMessageCommand="%function(self)
+		local a = loot_mai_com2;
+		a:finishtweening();
+		a:zoomy(0); a:zoomx(2);
+	end"
+	/>
+	
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	<Layer File="note.sprite" OnCommand="hidden,1;sleep,0.02;queuecommand,SetMe"
+	SetMeCommand="%function(self) table.insert(loot_mai_notes,self) end" HideCommand="hidden,1" />
+	
+<VLayer File="_notehit.sprite" OnCommand="hidden,1;animate,0;sleep,0.015;queuecommand,SetMe"
+SetMeCommand="%function(self) table.insert(loot_mai_noteflashes,self) end" HideCommand="hidden,1"/>
+<VLayer File="_notehit.sprite" OnCommand="hidden,1;animate,0;sleep,0.015;queuecommand,SetMe"
+SetMeCommand="%function(self) table.insert(loot_mai_noteflashes,self) end" HideCommand="hidden,1"/>
+<VLayer File="_notehit.sprite" OnCommand="hidden,1;animate,0;sleep,0.015;queuecommand,SetMe"
+SetMeCommand="%function(self) table.insert(loot_mai_noteflashes,self) end" HideCommand="hidden,1"/>
+<VLayer File="_notehit.sprite" OnCommand="hidden,1;animate,0;sleep,0.015;queuecommand,SetMe"
+SetMeCommand="%function(self) table.insert(loot_mai_noteflashes,self) end" HideCommand="hidden,1"/>
+<VLayer File="_notehit.sprite" OnCommand="hidden,1;animate,0;sleep,0.015;queuecommand,SetMe"
+SetMeCommand="%function(self) table.insert(loot_mai_noteflashes,self) end" HideCommand="hidden,1"/>
+<VLayer File="_notehit.sprite" OnCommand="hidden,1;animate,0;sleep,0.015;queuecommand,SetMe"
+SetMeCommand="%function(self) table.insert(loot_mai_noteflashes,self) end" HideCommand="hidden,1"/>
+<VLayer File="_notehit.sprite" OnCommand="hidden,1;animate,0;sleep,0.015;queuecommand,SetMe"
+SetMeCommand="%function(self) table.insert(loot_mai_noteflashes,self) end" HideCommand="hidden,1"/>
+<VLayer File="_notehit.sprite" OnCommand="hidden,1;animate,0;sleep,0.015;queuecommand,SetMe"
+SetMeCommand="%function(self) table.insert(loot_mai_noteflashes,self) end" HideCommand="hidden,1"/>
+
+<ZZZLayer File="judgment 1x6" InitCommand="%function(self) loot_mai_jud1 = self end"
+OnCommand="animate,0;zoomy,0;" />
+<ZZZLayer Type="ActorFrame" InitCommand="%function(self) loot_mai_com1 = self; self:hidden(1); end"><children>
+	<Layer File="combo.sprite"
+	InitCommand="animate,0; setstate,10; croptop,0.015; cropright,0.015; zoom,0.8; x,(20*-1);"
+	P1BrokeComboMessageCommand="setstate,10"
+	P1UpdateCurComboMessageCommand="%function(self) local ass = loot_comboP1 if ass >= 100 then local str = string.format('%05d', ass);
+	local digit = string.sub(str, 3, 3); self:setstate(tonumber(digit)); else self:setstate(10) end end" />
+	<Layer File="combo.sprite"
+	InitCommand="animate,0; setstate,10; croptop,0.015; cropright,0.015; zoom,0.8; x,(20*0);"
+	P1BrokeComboMessageCommand="setstate,10"
+	P1UpdateCurComboMessageCommand="%function(self) local ass = loot_comboP1 if ass >= 10 then local str = string.format('%05d', ass);
+	local digit = string.sub(str, 4, 4); self:setstate(tonumber(digit)); else self:setstate(10) end end" />
+	<Layer File="combo.sprite"
+	InitCommand="animate,0; setstate,10; croptop,0.015; cropright,0.015; zoom,0.8; x,(20*1);"
+	P1BrokeComboMessageCommand="setstate,10"
+	P1UpdateCurComboMessageCommand="%function(self) local ass = loot_comboP1 local str = string.format('%05d', ass);
+	local digit = string.sub(str, 5, 5); self:setstate(tonumber(digit)); end" />
+</children></ZZZLayer>
+<ZZZLayer File="judgment 1x6" InitCommand="%function(self) loot_mai_jud2 = self end"
+OnCommand="animate,0;zoomy,0;" />
+<ZZZLayer Type="ActorFrame" InitCommand="%function(self) loot_mai_com2 = self; self:hidden(1); end"><children>
+	<Layer File="combo.sprite"
+	InitCommand="animate,0; setstate,10; croptop,0.015; cropright,0.015; zoom,0.8; x,(20*-1);"
+	P2BrokeComboMessageCommand="setstate,10"
+	P2UpdateCurComboMessageCommand="%function(self) local ass = loot_comboP2 if ass >= 100 then local str = string.format('%05d', ass);
+	local digit = string.sub(str, 3, 3); self:setstate(tonumber(digit)); else self:setstate(10) end end" />
+	<Layer File="combo.sprite"
+	InitCommand="animate,0; setstate,10; croptop,0.015; cropright,0.015; zoom,0.8; x,(20*0);"
+	P2BrokeComboMessageCommand="setstate,10"
+	P2UpdateCurComboMessageCommand="%function(self) local ass = loot_comboP2 if ass >= 10 then local str = string.format('%05d', ass);
+	local digit = string.sub(str, 4, 4); self:setstate(tonumber(digit)); else self:setstate(10) end end" />
+	<Layer File="combo.sprite"
+	InitCommand="animate,0; setstate,10; croptop,0.015; cropright,0.015; zoom,0.8; x,(20*1);"
+	P2BrokeComboMessageCommand="setstate,10"
+	P2UpdateCurComboMessageCommand="%function(self) local ass = loot_comboP2 local str = string.format('%05d', ass);
+	local digit = string.sub(str, 5, 5); self:setstate(tonumber(digit)); end" />
+</children></ZZZLayer>
+
+	<Layer
+	File="chamber.png"
+	OnCommand="x,320;y,240;"
+	/>
+	
+	<Layer
+	File="block"
+	OnCommand="x,120;y,240;fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	StepP1LeftPressMessageCommand="finishtweening;fadetop,0;fadebottom,0;fadeleft,0;faderight,0;accelerate,4;
+	fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	StepP2LeftPressMessageCommand="finishtweening;fadetop,0;fadebottom,0;fadeleft,0;faderight,0;accelerate,4;
+	fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	/>
+	<Layer
+	File="block"
+	OnCommand="x,320;y,440;fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	StepP1DownPressMessageCommand="finishtweening;fadetop,0;fadebottom,0;fadeleft,0;faderight,0;accelerate,4;
+	fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	StepP2DownPressMessageCommand="finishtweening;fadetop,0;fadebottom,0;fadeleft,0;faderight,0;accelerate,4;
+	fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	/>
+	<Layer
+	File="block"
+	OnCommand="x,320;y,40;fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	StepP1UpPressMessageCommand="finishtweening;fadetop,0;fadebottom,0;fadeleft,0;faderight,0;accelerate,4;
+	fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	StepP2UpPressMessageCommand="finishtweening;fadetop,0;fadebottom,0;fadeleft,0;faderight,0;accelerate,4;
+	fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	/>
+	<Layer
+	File="block"
+	OnCommand="x,520;y,240;fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	StepP1RightPressMessageCommand="finishtweening;fadetop,0;fadebottom,0;fadeleft,0;faderight,0;accelerate,4;
+	fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	StepP2RightPressMessageCommand="finishtweening;fadetop,0;fadebottom,0;fadeleft,0;faderight,0;accelerate,4;
+	fadebottom,50;fadetop,50;faderight,50;fadeleft,50;"
+	/>
+
+	<Layer
+	File="Receptor.sprite"
+	OnCommand="x,120;y,240;rotationz,90;"
+	/>
+
+	<Layer
+	File="Receptor.sprite"
+	OnCommand="x,520;y,240;rotationz,-90;"
+	/>
+
+	<Layer
+	File="Receptor.sprite"
+	OnCommand="x,320;y,440;rotationz,0;"
+	/>
+
+	<Layer
+	File="Receptor.sprite"
+	OnCommand="x,320;y,40;rotationz,180;"
+	/>
+	
+</children></ActorFrame>
+</children></ActorFrame>
+</children></ActorFrame>

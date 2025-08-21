@@ -1,0 +1,27 @@
+<ActorFrame
+	OnCommand="queuecommand,bgcommandfuck;x,SCREEN_CENTER_X;y,SCREEN_HEIGHT*1.25;hidden,1;rotationx,-20"
+	bgcommandfuckCommand="%function(self)
+		table.insert(hnm_butts,self)
+	end"
+	buttsCommand="%function(self)
+		self:zoom(math.random()*.75 +.25)
+		self:z(100)
+		self:y(SCREEN_HEIGHT*1.1)
+		self:x(math.random()*SCREEN_WIDTH)
+		self:linear(math.random()*10/2+2)
+		self:y(SCREEN_HEIGHT*-.1)
+		self:z(-100)
+		self:queuecommand('butts')
+	end"
+><children>
+	<ActorFrame FOV="50"><children>
+		<Layer
+			File="butterfly"
+			OnCommand="cropright,0.5;wag;EffectMagnitude,0,50,0;EffectPeriod,1.8;diffuse,.75,.75,.75,1"
+		/>
+		<Layer
+			File="butterfly"
+			OnCommand="cropleft,0.5;wag;EffectMagnitude,0,-50,0;EffectPeriod,1.8;diffuse,.75,.75,.75,1"
+		/>
+	</children></ActorFrame>
+</children></ActorFrame>

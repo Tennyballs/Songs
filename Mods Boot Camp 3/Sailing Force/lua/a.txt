@@ -1,0 +1,183 @@
+<ActorFrame><children>
+
+	<Actor
+	InitCommand="%function(self)
+	
+		function buildMods(mod_tbl, numPlr)
+	
+			-----setup table, one for each numPlr.  
+				--each player table represents a collection of mods, and their timelines essentially
+			local plr_tbl = {}
+			if numPlr then numPlr = 2 end
+			for i=1,numPlr,1 do
+				table.insert(plr_tbl,{})
+			end
+			print('tada')
+			-----step 1 build separate tables for each separate mod indicating start and stop preferences
+				---this should go backwards from the end of the file to preserve the behavior of the normal mods table
+				---one table per player
+				
+			for i=table.getn(mod_tbl),1,-1 do
+				
+				local plrChk = nil --determine which player to affect
+				if table.getn(mod_tbl[i]) == 5 then plrChk = mod_tbl[i][5] end
+				
+				local startBeat = mod_tbl[i][1]
+				local endConvert = mod_tbl[i][2]	--if mod is len, convert to end
+				if mod_tbl[i][4] == 'len' then endConvert = endConvert + startBeat end
+				
+				if not plrChk then
+					for j,v in pairs(plr_tbl) do
+						parseMod(v, startBeat, endConvert, mod_tbl[i][3])	--call function to add the mod line to every player
+					end
+				else						
+					parseMod(plr_tbl[plrChk], startBeat, endConvert, mod_tbl[i][3]) --call function to add the mod line to only 1 player based on plrChk
+				end
+				print('tabetemas')
+			end
+			
+			--for i,v in pairs(plr_tbl) do
+				print(table.getn(plr_tbl))
+			--end
+			
+			-----step 2 is to try and be as not-wasteful as possible for the final array, so remove any duplicate breakpoints
+			-----step 3 is to find all the breakpoints, and set up a blank table of those, then iterate through all of the different mods to setup the final table
+	
+		end
+		
+		--takes a player's table of mods, beat start and end of the mods to insert, and the mods
+		--separates out mods
+		function parseMod(plr_tbl, bStart, bEnd, mods)
+			--check what mod it is
+				--special cases
+					--xmod/cmod might need special tables? maybe just one ultra condensed one that's janky as fuck
+					--mods with the | shit
+					--what are more things idk
+			local modSep = modSplit(mods,',')
+			for i=table.getn(modSep),1,-1 do
+				local curMod = modSplit(modSep[i],' ')
+				local strLen = table.getn(curMod)
+				if strLen > 0 then
+					local modname = (string.lower(curMod[strLen]))
+					local prefixes = ''
+					for j=1,strLen-1,1 do
+						prefixes = prefixes .. ' ' .. curMod[j]
+					end
+					--let's assume for now that there's no special cases LOL
+					if plr_tbl[modname] then
+						plr_tbl[modname] = insertMod(plr_tbl[modname],bStart,bEnd,prefixes)
+					else
+						plr_tbl[modname] = insertMod({{},{}},bStart, bEnd, prefixes)
+					end
+				end
+			end
+		end
+		
+		--here's where the fuckery is hhhhh
+		--takes a mod's table, which consists of the block table, and the info table
+			--block table [1] consists of information of which blocks of beats are full and taken up
+			--separation table [2] consists of actual divisions between the mod lines, with activation rate, and amount stored
+			--assume both tables are sorted properly
+		--after implementation this isn't actually all that fucked
+		--returns {new_block_tbl,new_separation_tbl}
+		function insertMod(mod_tbl, bStart, bEnd, prefixes)
+			
+			--first go through block table to figure out what packages need to be taken out from the mod being inserted
+				--update the block table as you go?
+				
+			local block_tbl = mod_tbl[1]
+			local separ_tbl = mod_tbl[2]
+			
+			--5 cases
+			--block is before main block
+			--block consumes main block's start pos [start case]
+			--block is contained by main block
+			--block consumes main block's end pos (not mutually exclusive) [end case]
+			--block is after main block 
+			
+			local blk = 1
+			local curLoc = bStart
+			local loopFlag = true
+			while (blk < table.getn(block_tbl) and loopFlag) do
+				
+				local curBlock = block_tbl[blk]
+				--is the block before the chain?
+				if curBlock[2] > curLoc then
+					--there is some cutoff, check where start is, only if end is contained within the mod
+					if curBlock[2] < bEnd then
+						if curBlock[1] > curLoc then
+							--inner chop, add stuff to addblock
+							table.insert(separ_tbl,{curLoc,curBlock[1],prefixes})
+							curLoc = curBlock[2]
+						else
+							--chop contains the curLoc, so chop and don't add
+							curLoc = curBlock[2]
+						end
+					else	--end is greater or equal to the mod thing, either start cuts off before or after beat end, determine what to add then
+						if curBlock[1] < bEnd then
+							table.insert(separ_tbl,{curLoc,curBlock[1],prefixes})
+							curLoc = curBlock[2]
+						else
+							curLoc = curBlock[2]
+						end
+						loopFlag = false;
+					end
+				end
+				blk = blk + 1
+			end
+			
+			if loopFlag then
+				table.insert(separ_tbl,{curLoc,bEnd,prefixes})
+			end
+			
+			---if this worked properly, this actually really simple thing of code will have generated the mod chunks and added to table
+			---sort table pls
+			if table.getn(separ_tbl) > 1 then
+				table.sort(separ_tbl,sort_by_first)
+			end
+			
+			local new_block_tbl = {}
+			local curStart = -1
+			local curEnd = -1
+			--generate block table (is there a better inline way of doing this? probably, but the table inserts and removals would be dumb)
+			for i,v in pairs(separ_tbl) do
+				if curStart == -1 then
+					curStart = v[1]
+					curEnd = v[2]
+				elseif curEnd == v[1] then
+					curEnd = v[2]
+				else
+					table.insert(new_block_tbl,{curStart,curEnd})
+					curStart = v[1]
+					curEnd = v[2]
+				end
+			end
+			table.insert(new_block_tbl,{curstart,curEnd})
+			
+			return {new_block_tbl,separ_tbl}
+		end
+		
+		function modSplit(inputstr, delimiter)
+			 local result = { }
+			  local from  = 1
+			  local delim_from, delim_to = string.find( inputstr, delimiter, from  )
+			  while delim_from do
+				table.insert( result, string.sub( inputstr, from , delim_from-1 ) )
+				from  = delim_to + 1
+				delim_from, delim_to = string.find( inputstr, delimiter, from  )
+			  end
+			  table.insert( result, string.sub( inputstr, from  ) )
+			  return result
+		end
+		
+		function trim(s)
+			return s:gsub('^%s+', ''):gsub('%s+$','')
+		end
+	
+		function sort_by_first(a,b)
+			return a[1] < b[1]
+		end
+		
+	end"/>
+
+</children></ActorFrame>

@@ -1,0 +1,17 @@
+<ActorFrame><children>
+<ActorFrame OnCommand="x,-SCREEN_CENTER_X;y,-SCREEN_CENTER_Y"><children>
+
+	<Layer File="road.png" OnCommand="x,320;y,240;" />
+	
+	<Layer File="car" InitCommand="%function(self) if FUCK_EXE then self:SetTextureFiltering(false) end end" OnCommand="zoom,4;rotationz,-90;x,400+350;y,165+14;"
+	PlayCommand="linear,90/137;addx,-360;
+	sleep,0;rotationz,180;linear,30/137;addy,120;
+	sleep,0;rotationz,-90;linear,30/137;addx,-120;
+	sleep,0;rotationz,180;linear,30/137;addy,120;
+	sleep,0;rotationz,-90;linear,30/137;addx,-120;
+	sleep,0;rotationz,0;linear,90/137;addy,-360;
+	sleep,0;rotationz,-90;linear,90/137;addx,-360;"
+	/>
+
+</children></ActorFrame>
+</children></ActorFrame>

@@ -1,0 +1,27 @@
+<ActorFrame><children>
+	
+	<Layer Type="ActorFrame" OnCommand="%function (self) char_daikyi=self; self:bob();
+	self:effectclock('bgm'); self:effectmagnitude(0,4,0); self:effectperiod(8); self:zoom(1); self:x(SCREEN_CENTER_X); self:y(SCREEN_CENTER_Y); self:hidden(1) end" HideCommand="bouncebegin,0.2;zoomy,0;zoomx,3;" HideICommand="zoomy,0;zoomx,3;" SpawnCommand="bounceend,0.3;zoom,1;" SpawnICommand="zoom,1" CastCommand="%function(self) self:bounceend(.3);self:zoom(1); end"> <children>
+		
+		<ActorFrame OnCommand="zoom,0.65" ><children>
+		
+			<Actor
+				File="daikyi/idle.sprite"
+				OnCommand="diffusealpha,1"
+				SpawnCommand="diffusealpha,1"
+				IdleCommand="diffusealpha,1"
+				AttackCommand="diffusealpha,0"
+				CastCommand="diffusealpha,0"
+			/>
+			
+			<Actor
+				File="daikyi/cast.sprite"
+				OnCommand="diffusealpha,0;"
+				IdleCommand="diffusealpha,0"
+				SpawnCommand="diffusealpha,0"
+				AttackCommand="diffusealpha,1;setstate,0;zoom,1.1;linear,0.2;zoom,1"
+				CastCommand="%function(self) self:setstate(0);self:diffusealpha(1);self:zoom(1.1);self:bounceend(spb*.5);self:zoom(1);self:bouncebegin(spb*.75);self:zoomx(3);self:zoomy(0); end"
+			/>
+		</children></ActorFrame>		
+	</children>	</Layer>    
+</children></ActorFrame>

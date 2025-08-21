@@ -1,0 +1,169 @@
+<ActorFrame FOV="60"><children>	
+
+	<Layer File="A"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_A = self;
+		end"
+		HideSelfCommand="hidden,1"
+	/>
+	<Layer File="B"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_B = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="C"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_C = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="D"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_D = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="E.png"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_E = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="F"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_F = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="G"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_G = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="H"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			self:blend('add')
+			vtdt_H = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="I.png"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_I = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="J"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_J = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="K"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			self:blend('add')
+			vtdt_K = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="L"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			self:blend('add')
+			vtdt_L = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="M"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_M = self;
+		end" HideSelfCommand="hidden,1"
+		cameCommand="vibrate;effectmagnitude,3,3,3"
+	/>
+	<Layer File="N"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_N = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="O"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_O = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="P"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_P = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="Q"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_Q = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="R"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_R = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="S"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_S = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="T.png"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			vtdt_T = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="inhale"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:diffusealpha(.8)
+			self:blend('add')
+			vtdt_inhale = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	<Layer File="exhale"
+		OnCommand="%function(self)
+			self:hidden(1)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:diffusealpha(.8)
+			self:blend('add')
+			vtdt_exhale = self;
+		end" HideSelfCommand="hidden,1"
+	/>
+	
+</children></ActorFrame>

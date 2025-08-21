@@ -1,0 +1,876 @@
+<ActorFrame
+InitCommand="%function(self)
+	songName = GAMESTATE:GetCurrentSong():GetSongDir()
+	sw,sh = SCREEN_WIDTH,SCREEN_HEIGHT
+	scx,scy = SCREEN_CENTER_X,SCREEN_CENTER_Y
+	checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+	spb = (60/196)
+end" ><children>
+	<Layer Type="Quad" InitCommand="hidden,1" OnCommand="sleep,1000"/>
+	<Layer File="modhelpers.xml" /> <Layer File="tweens.xml" /> <Layer File="c2l.xml"/>
+	<Layer File="readers.xml" /> 
+
+	<Layer Type="Quad" InitCommand="%function(self) self:hidden(1) self:x(7.5) des_pacito = self end"/>
+	<Layer Type="Quad" InitCommand="%function(self) self:hidden(1) self:x(0) des_aux = self end"/>
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1;"
+		InitCommand="%function(self)
+			mod_plr = {}; mod_firstSeenBeat = GAMESTATE:GetSongBeat(); mods, curaction, mod_actions, mods_ease = {}, 1, {}, {}
+			local m,mm,me,l,e,str = mod_insert,mod_message,mod_ease,'len','end',''
+			local function r(float) return ((math.rad(float)*100)*-1) end
+			function oitg_counterReverse(reverseAmount) return 100-5000/(50-(reverseAmount)) end
+			m(0, 9999, '*9999 overhead,*9999 1.5x,*9999 no beat,*9999 -10000 cover', l, nil)
+
+			function des_tiny(beat,amount)
+				me(beat, 1, -amount, 0, 'mini', l, outExpo,nil)
+				me(beat, 1, (amount/10), 0, 'flip', l, outExpo,nil)
+			end
+			mm(0,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomz(2)
+						a:x(scx)
+						_G['jud'..pn]:x(160*(pn*2-3))
+						_G['com'..pn]:x(160*(pn*2-3))
+					end
+				end
+			end,true)
+			me(0, 4, 0, 1, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(sw*normalize(pn,1,2,0.25,0.75)-t*normalize(pn,1,2,-sw/4,sw/4)) end end end, l, inExpo,nil,1)
+			--me(0, 4, -40, 0, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationx(t) end end end, l, inExpo,nil,1)
+			--me(0, 4, 4, 2, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoomz(t) end end end, l, inExpo,nil,1)
+
+			me(0, 4, -300, 0, 'mini', l, inExpo,nil,1)
+			me(0, 4, 30, 0, 'flip', l, inExpo,nil,1)
+			--me(0, 4, 30, 0, 'reverse', l, inExpo,nil,1)
+			me(0, 4, 0.6, 1.5, 'xmod', l, inExpo,nil,1)
+			--me(0, 4, 50, 0, 'tornado', l, inExpo,nil,1)
+			m(0, 0.5, '*999 100 stealth,*999 100 dark',l,nil)
+			m(0.5, 3.5, '*1 no stealth,*1 no dark',l,nil)
+			
+			
+			m(0, 999, '*10000000 -1000000 cover',l,nil)
+
+
+			local function des_someshit(beat)
+				mod_bounce(beat,2,0,20,'reverse','Expo',false,nil)
+				me(beat, 0.75, 0, 100, 'invert', l, outBack,nil)
+				me(beat+.75, 0.75, 100, 0, 'invert', l, outBack,nil)
+				me(beat+1.5, 0.75, 0, 100, 'invert', l, outBack,nil)
+
+				me(beat+2, 1, 100, 0, 'invert', l, outBack,nil) me(beat+2, 1, 0, 100, 'flip', l, outBack,nil)
+				me(beat+3, 1, 100, 0, 'flip', l, outBack,nil)
+
+				mod_bounce(beat+2,1,0,50,'mini','Circ',false,nil)
+				mod_bounce(beat+3,1,0,-50,'mini','Circ',false,nil)
+				mod_bounce(beat+2,1,0,-150,'tipsy','Circ',false,nil)
+				mod_bounce(beat+3,1,0,150,'tipsy','Circ',false,nil)
+			end
+
+			des_someshit(8)
+
+			me(16, 1, 1.75, 1.25, 'xmod', l, outExpo,nil)
+			m(17, 0.5, '*20 0.75x',l,nil)
+			m(17.5, 0.5, '*20 0.5x',l,nil)
+
+			me(16, 1, 0, 60, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy(v) end end end, l, outBack,nil)
+			me(17, 0.5, 60, -60, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy(v) end end end, l, outExpo,nil)
+			me(17.5, 0.5, -60, 60, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy(v) end end end, l, outExpo,nil)
+			me(18, 1, 40, 0, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy(v) end end end, l, outExpo,nil, 1)
+			me(18, 2, 360*1.5, 0, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(v*-(pn*2-3)) end end end, l, outQuad,nil, 1)
+
+			me(18, 2, 4, 0, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(v*(pn*2-3)) end end end, l, outElastic,nil,0.5,10,0.002)
+			me(18, 2, 700, 0, 'drunk', l, outElastic,nil,0.5,4000,0.002)
+			me(18, 2, -400, 0, 'mini', l, outElastic,nil,0.5,4000,0.002)
+
+			bouncy_wiggle(25,3,1,0,100,'hallway',l,'Circ',false,nil,50)
+			des_tiny(25,400)
+			des_tiny(26,400)
+			des_tiny(27,400)
+
+			me(28, 2, 700, 0, 'tipsy', l, outExpo,nil)
+			me(30, 2, -700, 0, 'tipsy', l, outExpo,nil)
+			me(32, 2, 700, 0, 'tipsy', l, outExpo,nil)
+			me(33, 2, -700, 0, 'tipsy', l, outExpo,nil)
+			me(34, 2, 700, 0, 'tipsy', l, outExpo,nil)
+
+			bouncy_wiggle(32,3,1,0,150,'invert',l,'Circ',true,nil)
+
+			mod_bounce(28,2,0,10, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Expo',false)
+			me(28, 2, 0, 50, 'mini', l, outBack,nil,1)
+			mod_bounce(30,2,0,-20, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Expo',false)
+			me(30, 2, 50, 100, 'mini', l, outBack,nil)
+			m(32, 2, '*'.. spb*6 ..' no mini',l,nil)
+			bouncy_wiggle(32,2,1,0,-50, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:y(scy+t) end end end,l,'Quad',true,nil)
+			bouncy_wiggle(32,3,1,0,20, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,l,'Circ',false,nil)
+
+
+			m(36, 63, '*0.2 wave,*9999 reverse,*0.5 150 tipsy,*9999 -150 space,*999 sudden,*999 200 suddenoffset,*999 10 drunk',e,nil)
+			me(35, 1, 50, 0, 'flip', l, inCirc,nil,0.1)
+			me(35, 1, -1000, 0, 'mini', l, inCirc,nil,0.1)
+			me(35, 1, 50, 0, 'reverse', l, inCirc,nil,0.1)
+
+			mm(36,'WhiteFlash')
+
+			me(36, 1, 0, -50, 'flip', l, outBack,nil,28)
+			mm(36,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(spb*0.5)
+						a:x(scx+32*(pn*2-3))
+					end
+				end
+			end,true)
+
+			me(63, 1, 7.5, 0, function(v) des_pacito:x(v) end, l, inBack,nil, 1)
+
+			me(63, 2, 314, 0, 'dizzy', l, outCirc,nil,0.1)
+			me(63, 2, 100, 0, 'reverse', l, inOutCirc,nil,0.1)
+			me(63, 2, -150, 0, 'space', l, inOutCirc,nil,0.1)
+
+			bouncy_wiggle(64,4.5,0.667,0,50,'tipsy',l,'Circ',false,nil,50)
+			bouncy_wiggle(64,4.5,0.667,0,2, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,l,'Circ',false,nil,2)
+			me(64, 4, -50, 0, 'flip', l, inOutExpo,nil)
+			mm(0,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					local c,j = _G['com'..pn],_G['jud'..pn]
+					if a and c and j then
+						me(64, 4, scx+32*(pn*2-3), scx*(pn-0.5), function(t) a:x(t) end, l, inOutExpo,nil)
+						me(64, 4, 160*(pn*2-3), 0, function(t) c:x(t) j:x(t) end, l, inOutExpo,nil)
+					end
+				end
+			end,true)
+
+			m(64-0.5, 1, '*999 2000 beat',l,nil)
+			me(64.667, 1, -50, 0, 'mini', l, outExpo,nil)
+			me(65.333, 1, -250, 0, 'mini', l, outExpo,nil)
+			m(66-0.5, 1, '*999 -2000 beat',l,nil)
+			me(66.667, 1, -50, 0, 'mini', l, outExpo,nil)
+			me(67.333, 1, -250, 0, 'mini', l, outExpo,nil)
+
+			ease_wiggle(68,24,100,2,'reverse',inOutExpo,l,1,true)
+			ease_wiggle(70,24,100,2,'reverse',inOutExpo,l,2,true)
+			bouncy_wiggle(69,24,2,0,-5, function(t) condor_screenrotation(t) end,l,'Quart',false,nil,-5)
+			bouncy_wiggle(69,24,2,0,-5, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(-t) a:skewx(-t/75) end end end,l,'Quart',false,nil,-5)
+			m(67.5, 92, '*999 100 beat,*0.5 100 wave',e,nil)
+
+			mm(68,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					local c,j = _G['com'..pn],_G['jud'..pn]
+					if a and c and j then
+						a:x(scx*(pn-0.5))
+						c:x(0)
+						j:x(0)
+					end
+				end
+			end,true)
+			me(68, 1, 50, 0, 'stealth', l, outSine,nil)
+
+			local c,f = 50,1
+			for i = 0,11.667,0.333 do
+				me(84+i, 0.5, (c*f)*2, 0, 'bumpy', l, outExpo,nil)
+				f=-f
+				c=c+50
+			end
+
+			me(84, 8, 0, 100, 'distant', l, outSine,nil)
+
+			me(84, 1, 50, 0, 'stealth', l, outSine,nil)
+			me(88, 1, 50, 0, 'stealth', l, outSine,nil)
+
+			me(92, 6, (360*4)+60, 0, function(t) condor_screenrotation(t) end, l, outQuad,nil)
+			me(92, 6, (360*4)+60, 0, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(-t) a:rotationy(0) end end end, l, outQuad,nil)
+
+			me(98, 1, 0, 75, 'mini', l, outCirc,nil)
+			mod_bounce(98,1,0,0.35, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(t) end end end,'Expo',false)
+
+			me(99, 1, 75, 150, 'mini', l, outCirc,nil)
+			mod_bounce(99,1,0,20, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,'Expo',false)
+
+			me(100, 1, 150, 0, 'mini', l, outCirc,nil)
+
+			mod_quickswaps(101,2,'invert',10,0.667,nil)
+			mod_quickswaps(105,2,'invert',10,0.667,nil)
+			mod_quickswaps(109,2,'invert',10,0.667,nil)
+			m(114-0.5, 1, '*9999 1000 beat',l,nil)
+			des_someshit(112)
+			mod_quickswaps(117,2,'invert',10,0.667,nil)
+			mod_quickswaps(121,2,'invert',10,0.667,nil)
+			mod_quickswaps(125,2,'invert',10,0.667,nil)
+			mod_quickswaps(127,1,'urld',9999,0.333,nil)
+
+			me(128-0.25, 0.5, 0, 10, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(v) end end end, l, inCirc,nil)
+			me(128.5-0.25, 0.5, -10, 0, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(v) end end end, l, outCirc,nil)
+
+			me(129-0.25, 0.5, 0, 10, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(v) end end end, l, inCirc,nil)
+			me(129.5-0.25, 0.5, -10, 0, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(v) end end end, l, outCirc,nil,0.5)
+
+			mod_bounce(130,2,0,100,'mini','Circ',false)
+			mod_bounce(130,2,1,0.95, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:zoom(v) end end end,'Circ',false)
+			mod_bounce(130,2,0,-10, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(v*(pn*2-3)) end end end,'Circ',false)
+			ease_wiggle(130,3,100,0.5,'tipsy',outExpo,l,nil,false)
+			ease_wiggle(130,3,100,0.5,'drunk',outExpo,l,nil,false)
+			m(130-0.5, 1, '*9999 1000 beat',l,nil)
+
+			mm(0,function(self) mod_drivendrop(133,2,0.667,1.5,false,nil) end,true)
+			mod_quickswaps(133,2,'invert',10,0.667,nil)
+			mm(0,function(self) mod_drivendrop(137,2,0.667,1.5,false,nil) end,true)
+			mod_quickswaps(137,2,'invert',10,0.667,nil)
+			mm(0,function(self) mod_drivendrop(141,2,0.667,1.5,false,nil) end,true)
+			mod_quickswaps(141,2,'invert',10,0.667,nil)
+			mm(0,function(self) mod_drivendrop(143,0.667,0.333,1.5,false,nil) end,true)
+			mod_quickswaps(143,1,'urld',9999,0.333,nil)
+
+			mod_bounce(144,2,0,20,'reverse','Circ',false)
+			mod_bounce(144,2,0,200,'bumpy','Circ',false)
+
+			me(146, 2, -360, 0, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end, l, outCirc,nil)
+
+
+			me(149, 6, 1.5, 2, 'xmod', l, inOutSine,nil)
+			me(149, 6, 0, 200, 'bumpy', l, inOutSine,nil)
+			me(149, 6, 0, 100, 'wave', l, inOutSine,nil)
+
+			local z1,z2 = 1,1
+			for i = 0,6,0.667 do
+				z1,z2 = z1 + 0.1 ,z2 - 0.1
+				me(149+i, 0.667, z1, z2, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoom(t) end end end, l, linear,nil)
+			end
+
+			local divisor = 10
+			local counter = (160/divisor)
+			for i = 0,6,0.667 do
+				mm(149+i,function()
+					local count = counter
+					for pn = 1,2 do
+						local div = (pn-0.5)
+						local a = Plr(pn)
+						local j,c = _G['jud'..pn],_G['com'..pn]
+						if a then
+							a:x((scx*div)-count*(pn*2-3))
+							j:x((sw/4)*(pn*2-3)*(counter/100))
+						end
+					end
+					counter = counter + (160/divisor)
+				end)
+
+			end
+
+			bouncy_wiggle(149,155.333,0.667,0,5, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,e,'Expo',false,nil,5)
+			mm(0,function(self) mod_drivendrop(155,0.667,0.333,3,false,nil) end,true)
+
+			mm(155,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					local j,c = _G['jud'..pn],_G['com'..pn]
+					if a then
+						a:zoom(1)
+						a:x(scx)
+					end
+					if j and c then
+						j:hidden(1)
+						c:hidden(1)
+					end
+				end
+			end,true)
+
+			bouncy_wiggle(156,7,1,1,1.1,function(v) for pn = 1,2 do local a = Plr(pn) if a then a:zoom(v) end end end,l,'Circ',true,nil,0.1)
+
+			m(156-0.5, 4, '*9999 500 beat',l,1)
+			m(156-0.5, 4, '*9999 -500 beat',l,2)
+
+			ease_wiggle(156,4,100,1,'reverse',outExpo,l,nil,true)
+			ease_wiggle(160,2,100,0.5,'drunk',outExpo,l,nil,false)
+			ease_wiggle(160,2,100,0.5,'tipsy',outExpo,l,nil,false)
+			ease_wiggle(160,2,100,0.5,'reverse',outExpo,l,nil,true)
+			ease_wiggle(162,1,100,0.25,'reverse',outExpo,l,nil,true)
+			mod_quickswaps(162,0.5,'invert',50,0.25,nil)
+			me(163, 1, 10, 1, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoomx(t) end end end, l, outExpo,nil)
+
+			mm(163,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(scx*(pn-0.5))
+					end
+				end
+			end,true)
+
+			m(163, 228, '*9999 -200 reverse,*100 0.35x,*9999 '.. oitg_counterReverse(-200) ..' centered',e,nil)
+
+			mm(164,function(self) des_aux:x(1) end,true)
+
+			m(164-0.5, 228-0.5, '*9999 400 beat',e,1)
+			m(164-0.5, 228-0.5, '*9999 -400 beat',e,2)
+
+			local f = 1
+			for i = 0,60,2 do
+				me(165+i, 1, -150, 0, 'mini', l, outExpo,nil)
+				me(165+i, 1, 200*f, 0, 'tipsy', l, outExpo,nil)
+				f=-f
+			end
+
+			mm(179,function(self) des_aux:decelerate(spb) des_aux:x(0) end,true)
+
+			mm(181,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(scx)
+					end
+				end
+			end,true)
+
+			bouncy_wiggle(180,3,1.5,0,300,'bumpy',l,'Circ',false,1)
+			bouncy_wiggle(180,3,1.5,0,-300,'bumpy',l,'Circ',false,2)
+			bouncy_wiggle(180,3,1.5,0,400,'drunk',l,'Circ',false,1)
+			bouncy_wiggle(180,3,1.5,0,-400,'drunk',l,'Circ',false,2)
+
+
+			bouncy_wiggle(188,4,2,0,150,'hallway',l,'Circ',false,nil)
+			bouncy_wiggle(184,3,1.5,0,300,'bumpy',l,'Circ',false,1)
+			bouncy_wiggle(184,3,1.5,0,-300,'bumpy',l,'Circ',false,2)
+			bouncy_wiggle(184,3,1.5,0,400,'drunk',l,'Circ',false,1)
+			bouncy_wiggle(184,3,1.5,0,-400,'drunk',l,'Circ',false,2)
+
+			bouncy_wiggle(192,4,0.75,0,100,'tornado',l,'Circ',false,nil)
+			bouncy_wiggle(192,4,0.75,0,50,'tipsy',l,'Circ',false,nil,50)
+			mod_bounce(195,1,0,-100,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:y(scy+t) end end end,'Circ',false)
+
+			mm(196,function(self) des_aux:decelerate(spb*0.5) des_aux:x(1) end,true)
+			mm(211,function(self) des_aux:decelerate(spb) des_aux:x(0) end,true)
+
+
+
+
+			bouncy_wiggle(212,3,1.5,0,500,'bumpy',l,'Circ',false,1)
+			bouncy_wiggle(212,3,1.5,0,-500,'bumpy',l,'Circ',false,2)
+			bouncy_wiggle(212,3,1.5,0,400,'drunk',l,'Circ',false,1)
+			bouncy_wiggle(212,3,1.5,0,-400,'drunk',l,'Circ',false,2)
+
+
+			bouncy_wiggle(216,3,1.5,0,500,'bumpy',l,'Circ',false,1)
+			bouncy_wiggle(216,3,1.5,0,-500,'bumpy',l,'Circ',false,2)
+			bouncy_wiggle(216,3,1.5,0,200,'tipsy',l,'Circ',false,1)
+			bouncy_wiggle(216,3,1.5,0,-200,'tipsy',l,'Circ',false,2)
+
+			me(220, 1, 0, 20, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end, l, outBack,nil)
+			me(222, 1, 20, -20, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end, l, outBack,nil)
+			me(223.5, 0.5, -20, 0, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end, l, inCirc,nil)
+
+			bouncy_wiggle(224,4,1,0,20,function(v) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(v) end end end,l,'Circ',false,nil,10)
+
+			me(224, 4, 0, -100, 'mini', l, inOutSine,nil)
+			me(224, 4, 0.35, 0.25, 'xmod', l, inOutSine,nil)
+			me(227, 1, -100, 0, 'mini', l, inBack,nil,0.5)
+			me(227, 1, 0.25, 0.35, 'xmod', l, inBack,nil)
+
+			m(228, 1, '*9999 no reverse,*9999 no centered,',l,nil)
+			m(228, 288, '*9999 -200 flip,*9999 200 invert',e,nil)
+
+			mm(228,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					local j,c = _G['jud'..pn],_G['com'..pn]
+					if a then
+						--a:x(scx*(pn-0.5)+((64*3)/2)*(pn*2-3))
+						a:x(scx+256*(pn*2-3))
+						a:zoomz(4)
+						a:skewx(0)
+					end
+					if j and c then
+						j:x(0)
+						j:hidden(0)
+						c:hidden(0)
+					end
+				end
+			end,true)
+
+			me(243, 1, 0, 50, 'distant', l, inOutBack,nil,2)
+			me(245.5, 1, 50, -50, 'distant', l, inOutBack,nil,2)
+			me(247.5, 1, -50, 0, 'distant', l, inOutBack,nil,2)
+			mod_bounce(248.75,1,0,-1, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(v*(pn*2-3)) end end end,'Circ',false)
+
+			mod_bounce(253.5,2.5,0,100, 'bumpy','Circ',false)
+			bouncy_wiggle(256,4,1,0,10,function(v) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(v) end end end,l,'Circ',false,nil,-(10/4))
+
+			me(268, 1, 314, 0, 'dizzy', l, outSine,nil)
+			me(275, 1, 314, 0, 'dizzy', l, outSine,nil)
+
+			me(275, 1, 0, 50, 'hallway', l, inOutBack,nil,2)
+			me(277.5, 1, 50, -50, 'hallway', l, inOutBack,nil,2)
+			me(279.5, 1, -50, 0, 'hallway', l, inOutBack,nil,2)
+
+			mod_quickswaps(101+192,2,'invert',10,0.667,nil)
+			mod_quickswaps(105+192,2,'invert',10,0.667,nil)
+			mod_quickswaps(109+192,2,'invert',10,0.667,nil)
+			m(114-0.5+192, 1, '*9999 1000 beat',l,nil)
+			des_someshit(112+192)
+			mod_quickswaps(117+192,2,'invert',10,0.667,nil)
+			mod_quickswaps(121+192,2,'invert',10,0.667,nil)
+			mod_quickswaps(125+192,2,'invert',10,0.667,nil)
+			mod_quickswaps(127+192,1,'urld',9999,0.333,nil)
+
+			
+			ease_wiggle(320,2,100,0.5,'tipsy',outExpo,l,nil,false)
+			ease_wiggle(320,2,100,0.5,'drunk',outExpo,l,nil,false)
+			ease_wiggle(320,2,10,0.5,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end,outExpo,l,nil,false)
+			m(130-0.5+192, 1, '*9999 1000 beat',l,nil)
+			bouncy_wiggle(322,3,1,0,100,'mini',l,'Circ',true,nil)
+
+
+			mm(324,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:addy(-20)
+					end
+				end
+			end,true)
+			mm(0,function(self) mod_drivendrop(133+192,10,1,1.5,false,nil) end,true)
+			mod_quickswaps(133+192,2,'invert',10,0.667,nil)
+			--mm(0,function(self) mod_drivendrop(137+192,2,0.667,1.5,false,nil) end,true)
+			mod_quickswaps(137+192,2,'invert',10,0.667,nil)
+			--mm(0,function(self) mod_drivendrop(141+192,2,0.667,1.5,false,nil) end,true)
+			mod_quickswaps(141+192,2,'invert',10,0.667,nil)
+			--mm(0,function(self) mod_drivendrop(143+192,0.667,0.333,1.5,false,nil) end,true)
+			mod_quickswaps(143+192,1,'urld',9999,0.333,nil)
+
+			mod_bounce(144+192,2,0,20,'reverse','Circ',false)
+			mod_bounce(144+192,2,0,200,'bumpy','Circ',false)
+
+			me(146+192, 2, -360, 0, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end, l, outCirc,nil)
+
+			mm(336,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:addy(20)
+					end
+				end
+			end,true)
+
+			local f = 1
+			for i = 0,12,8 do
+				me(228+(i)+0.25, 0.75, 0, 100, 'reverse', l, inOutCirc,1,7)
+				me(228+(i+1.25)+0.5, 0.75, 0, 100, 'reverse', l, inOutCirc,2,7)
+				me(228+(i)+0.25, 0.75, 0, -40*f, function(t) local a = Plr(1) if a then a:rotationx(t) a:skewx((t/100)*2) end end, l, inOutCirc,nil,0.5)
+				me(228+(i+1.25)+0.5, 0.75, 0, -40*f, function(t) local a = Plr(2) if a then a:rotationx(t) a:skewx((-t/100)*2) end end, l, inOutCirc,nil,0.5)
+				mod_bounce(231+i,1,0,-10*f,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy(t) end end end,'Circ',false)
+
+				me(232+(i)+0.25, 0.75, 100, 0, 'reverse', l, inOutCirc,1,7)
+				me(232+(i+1.25)+0.5, 0.75, 100, 0, 'reverse', l, inOutCirc,2,7)
+				me(232+(i)+0.25, 0.75, -40*f, 0, function(t) local a = Plr(1) if a then a:rotationx(t) a:skewx((t/100)*2) end end, l, inOutCirc,nil,0.5)
+				me(232+(i+1.25)+0.5, 0.75, -40*f, 0, function(t) local a = Plr(2) if a then a:rotationx(t) a:skewx((-t/100)*2) end end, l, inOutCirc,nil,0.5)
+				mod_bounce(235+i,1,0,10*f,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy(t) end end end,'Circ',false)
+				f=-f
+			end
+
+			local f = 1
+			for i = 0,12,8 do
+				me(260+(i)-0.75, 0.75, 0, 100, 'reverse', l, inOutCirc,1,7)
+				me(260+(i+1.25)+0.5-1, 0.75, 0, 100, 'reverse', l, inOutCirc,2,7)
+				me(260+(i)-0.75, 0.75, 0, -40*f, function(t) local a = Plr(1) if a then a:rotationx(t) a:skewx((t/100)*2) end end, l, inOutCirc,nil,0.5)
+				me(260+(i+1.25)+0.5-1, 0.75, 0, -40*f, function(t) local a = Plr(2) if a then a:rotationx(t) a:skewx((-t/100)*2) end end, l, inOutCirc,nil,0.5)
+				mod_bounce(263+i,1,0,-10*f,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy(t) end end end,'Circ',false)
+
+				me(264+(i)-0.75, 0.75, 100, 0, 'reverse', l, inOutCirc,1,7)
+				me(264+(i+1.25)+0.5-1, 0.75, 100, 0, 'reverse', l, inOutCirc,2,7)
+				me(264+(i)-0.75, 0.75, -40*f, 0, function(t) local a = Plr(1) if a then a:rotationx(t) a:skewx((t/100)*2) end end, l, inOutCirc,nil,0.5)
+				me(264+(i+1.25)+0.5-1, 0.75, -40*f, 0, function(t) local a = Plr(2) if a then a:rotationx(t) a:skewx((-t/100)*2) end end, l, inOutCirc,nil,0.5)
+				mod_bounce(267+i,1,0,10*f,function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationy(t) end end end,'Circ',false)
+				f=-f
+			end
+
+			for i = 0,12,1 do
+				me(324+i, 1, 2, 1, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoom(t) end end end, l, outExpo,nil)
+			end
+
+			m(248-0.5, 11, '*9999 -200 beat',l,nil)
+
+			mod_bounce(280.75,1,0,1.5, function(v) for pn = 1,2 do local a = Plr(pn) if a then a:skewx(v*(pn*2-3)) end end end,'Circ',false)
+
+			local f = 1
+			for i = 0,2,0.25 do
+				me(286+i, 1, 500*f, 0, 'tipsy', l, outExpo,nil)
+				me(286+i, 1, 500*f, 0, 'drunk', l, outExpo,nil)
+				f=-f
+			end
+
+			me(284, 4, 0, 200, 'mini', l, inQuart,nil)
+			me(288, 4, 200, 0, 'mini', l, outQuart,nil)
+			me(284, 4, 1.75, 0.5, 'xmod', l, outQuart,nil)
+			m(288, 1, '*9999 no invert,*9999 no flip',l,nil)
+			me(288, 4, -30, 0, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:rotationz(t) end end end, l, outQuart,nil)
+			mm(288,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(scx*(pn-0.5))
+					end
+				end
+			end,true)
+
+			me(227, 2, 25, 4, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoomz(t) end end end, l, outExpo,nil)
+			me(227, 2, 100, 0, 'mini', l, outExpo,nil)
+			me(227, 2, 50, 0, 'stealth', l, outSine,nil)
+
+			me(291, 2, 100, 1, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoomz(t) end end end, l, outExpo,nil)
+			me(291, 2, 200, 0, 'mini', l, outExpo,nil)
+			me(291, 2, 50, 0, 'stealth', l, outSine,nil)
+
+			local z1,z2 = 1,1
+			for i = 0,4,0.667 do
+				z1,z2 = z1 + 0.2 ,z2 - 0.2
+				me(341+i, 0.667, z1, z2, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoom(t) end end end, l, linear,nil)
+			end
+
+			local f,z1,z2 = 1,1,1
+			for i = 0,4,0.333 do
+				z1,z2 = z1 + 0.2 ,z2 - 0.2
+				me(343.667+i, 0.667, z1, z2, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoom(t) end end end, l, linear,nil)
+				me(343.667+i, 1, 200*z1*f, 0, 'drunk', l, outExpo,nil)
+				f=-f
+			end
+
+
+			me(344, 4, 0, -400, 'reverse', l, outSine,nil)
+			me(344, 4, 0, oitg_counterReverse(-400), 'centered', l, outCirc,nil)
+			me(344, 4, 0, -200, 'bumpy', l, outQuart,nil)
+			me(344, 4, 1.75, 0.2, 'xmod', l, outQuart,nil)
+			me(344, 4, 0, 100, 'wave', l, outQuart,nil)
+			me(344, 4, 0, 100, 'distant', l, outQuart,nil)
+
+			me(348, 1, 1, 1, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoom(t) end end end, l, linear,nil)
+
+			mm(348,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					local j,c = _G['jud'..pn],_G['com'..pn]
+					if a then
+						a:x(scx)
+					end
+					if j and c then
+						j:hidden(1)
+						c:hidden(1)
+					end
+				end
+				MESSAGEMAN:Broadcast('WhiteFlash')
+				des_aux:x(1)
+				des_background_black:hidden(0)
+				des_background_black:diffusealpha(1)
+				des_background:hidden(1)
+			end,true)
+			m(348, 1, '*999 no bumpy,*999 no centered,*999 no distant,*999 no wave,*999 dark',l,nil)
+			m(348, 999, '*999 50 reverse,*9999 50 flip,*999 stealth',l,nil)
+			me(348, 14, -2000, -100, 'mini', l, outSine,nil)
+
+			me(362, 2, -100, -2000, 'mini', l, inExpo,nil)
+			me(364, 2, -2000, 0, 'mini', l, outQuad,nil)
+			me(363, 1, 0, 100, 'dark', l, outQuad,nil,99)
+
+			mm(366,function(self)
+				for pn = 1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(9999) -- bye
+					end
+				end
+			end,true)
+
+			local f = 1
+			for i = 1,table.getn(des_percussion) do
+				local beat = des_percussion[i][1]
+				me(beat, 1, 1.8, 1, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:zoom(t) end end end,l,outExpo,nil)
+				me(beat, 2, 1000*f, 0, 'drunk', l, outExpo,nil)
+				me(beat, 2, 100, 0, 'brake', l, outExpo,nil)
+				f=-f
+			end
+
+			local f = 1
+			for i = 1,table.getn(des_wingle)-1 do
+				local beat,diff = des_wingle[i][1],des_wingle[i+1][1]-des_wingle[i][1]
+				me(beat, 1, 600*f, 0, 'drunk', l, outExpo,nil,0.2)
+				me(beat, 1, 600*f, 0, 'wave', l, outExpo,nil,0.2)
+				me(beat, 1, 100*f, 0, 'dizzy', l, outExpo,nil)
+				f=-f
+			end
+
+			des_cracks = {{},{},{}}
+			local f = 1
+			local function des_zoom(beat,offset,crack)
+				me(beat-offset, offset, 0, 1, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(sw*normalize(pn,1,2,0.25,0.75)-t*normalize(pn,1,2,-sw/4,sw/4)) end end end, l, inExpo,nil)
+				me(beat, 1.5, 1, 0, function(t) for pn = 1,2 do local a = Plr(pn) if a then a:x(sw*normalize(pn,1,2,0.25,0.75)-t*normalize(pn,1,2,-sw/4,sw/4)) end end end, l, inOutExpo,nil)
+				me(beat-offset, 1, 0, 20, 'flip', l, inExpo,nil)
+				me(beat, 1.5, 20, 0, 'flip', l, inOutExpo,nil)
+				me(beat-offset, 1, 0, 35, 'reverse', l, inExpo,nil)
+				me(beat, 1.5, 35, 0, 'reverse', l, inOutExpo,nil)
+				me(beat, 1, 25, 0, function(t) mod_screen:vibrate() mod_screen:effectmagnitude(t,t,0) end, l, outQuad,nil,2)
+				me(beat-offset, offset, 1, 6, function(t) condor_screenzoom(t) end, l, inExpo,nil)
+				me(beat, 1.5, 6, 1, function(t) condor_screenzoom(t) end, l, inOutExpo,nil)
+				mod_bounce(beat,offset,0,160, function(t) for pn = 1,2 do local c,j = _G['com'..pn],_G['jud'..pn] if c and j then c:x(t*(pn*2-3)) j:x(t*(pn*2-3)) end end end,'Expo',false)
+				
+				mm(beat-0.25,function()
+					local c = des_cracks[crack][math.random(1,3)]
+					c:hidden(0)
+					c:finishtweening()
+					c:zoomto(sw*f,sh)
+					c:x(scx)
+					c:y(scy)
+					c:rotationz(180*f)
+					c:diffusealpha((1/3)*crack)
+					c:sleep(1)
+					c:linear(0.25)
+					c:diffusealpha(0)
+
+					des_background:finishtweening()
+					des_background:rotationz(20*f)
+					des_background:zoom(1.2)
+					des_background:decelerate(1)
+					des_background:rotationz(0)
+					des_background:zoom(1)
+
+					destroy_tenshi:zoom(1.25)
+					destroy_tenshi:decelerate(1)
+					destroy_tenshi:zoom(1)
+					f=-f
+				end)
+
+				mm(beat-offset-0.25,function()
+					destroy_tenshi:playcommand('ChargeStart')
+				end)
+				mm(beat+0.5,function()
+					destroy_tenshi:playcommand('Release')
+				end)
+				mm(beat+1.5,function()
+					destroy_tenshi:playcommand('ReleaseEnd')
+				end)
+			end
+
+			for i = 1,table.getn(des_slams) do
+				des_zoom(des_slams[i][1],0.75,des_slams[i][2])
+			end
+
+			local f = 1
+			for i = 1,table.getn(des_theShadowRealm) do
+				local beat,w = des_theShadowRealm[i][1],des_theShadowRealm[i][2]
+				if w == 0 then
+					me(beat, 1, 0, 100*f, 'tipsy', l, outExpo,nil)
+					me(beat, 1, 0, 100*f, 'drunk', l, outExpo,nil)
+					f=-f
+				elseif w == 1 then
+					me(beat, 1, -100, 0, 'mini', l, outExpo,nil)
+				end
+			end
+
+			function mod_perframes(beat)
+				local beat = GAMESTATE:GetSongBeat()
+
+				if perframe(36,63) then
+					for pn = 1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationz(((pn*2-3)*des_pacito:GetX())*math.sin((beat/6)*math.pi))
+						end
+					end
+				end
+
+				if perframe(164,181) then
+					local aux = des_aux:GetX()
+					for pn = 1,2 do
+						local a = Plr(pn)
+						if a then
+							a:x(scx+(math.cos(beat/2*math.pi+(pn*math.pi))*150)*aux)
+							a:z((math.sin(beat/2*math.pi+(pn*math.pi))*150)*aux)
+							a:rotationz(((pn)*math.sin(beat/2*math.pi+(pn*math.pi))*-10)*aux)
+						end
+					end
+				end
+
+				if perframe(196,213) then
+					local aux = des_aux:GetX()
+					for pn = 1,2 do
+						local a = Plr(pn)
+						if a then
+							a:x(scx-(math.cos(beat/2*math.pi+(pn*math.pi))*150)*aux)
+							a:z((math.sin(beat/2*math.pi+(pn*math.pi))*150)*aux)
+							a:rotationz(((pn)*math.sin(beat/2*math.pi+(pn*math.pi))*10)*aux)
+						end
+					end
+				end
+
+				if perframe(348,364) then
+					local aux = des_aux:GetX()
+					for pn = 1,2 do
+						local a = Plr(pn)
+						if a then
+							a:x(scx+(math.cos(beat/2*math.pi+(pn*math.pi))*150)*aux)
+							a:y(scy+(math.sin(beat/2*math.pi+(pn*math.pi))*150)*aux)
+							a:rotationz(beat*100*(pn*2-3))
+						end
+					end
+				end
+
+			end
+			
+			--bg stuff t. taro
+			
+			mm(98,function()
+				
+				destroy_tenshi:bounceend(.3)
+				destroy_tenshi:zoom(1)
+				
+			end,true)
+			mm(156,function()
+				
+				destroy_tenshi:playcommand('ChargeStart')
+				
+			end)
+			mm(163,function()
+				
+				destroy_tenshi:playcommand('Release')
+				
+			end)
+			mm(164,function()
+				des_seismo_bg:hidden(0)
+				des_background:linear(1)
+				des_background:zoom(0)
+				des_background:rotationx(180)
+				des_background:rotationy(180)
+				des_background:rotationz(180)
+				des_background_black:linear(1)
+				des_background_black:diffusealpha(.4)
+			end)
+			mm(178,function()
+				
+				destroy_tenshi:bouncebegin(.3)
+				destroy_tenshi:zoomy(0)
+				destroy_tenshi:zoomx(3)
+				
+			end)
+			mm(196,function()
+				
+				destroy_tenshi:bounceend(.3)
+				destroy_tenshi:zoom(1)
+				
+			end)
+			mm(212,function()
+				
+				destroy_tenshi:bouncebegin(.3)
+				destroy_tenshi:zoomy(0)
+				destroy_tenshi:zoomx(3)
+				
+			end)
+			mm(214,function()
+				
+				destroy_tenshi:playcommand('ReleaseEnd')
+				
+			end)
+			mm(288,function()
+				
+				destroy_tenshi:decelerate(.3)
+				destroy_tenshi:zoom(1)
+				
+				des_background_black:linear(1)
+				des_background_black:diffusealpha(0)
+				
+				des_background:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT)
+				des_background:diffuse(0,0,0,0)
+				des_background:linear(240/195)
+				des_background:diffuse(0,0,0,1)
+				des_background:linear(480/195)
+				des_background:diffuse(.5,.5,.5,1)
+				
+			end)
+
+			self:queuecommand('Update')
+		end"
+		UpdateCommand="%function(self)
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+				local ThingsToGrab = {'BPMDisplay','LifeFrame','ScoreFrame','Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						table.insert(mod_plr, _G['P'..pn])
+						_G['jud'..pn]=_G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn]=_G['P'..pn]:GetChild('Combo');
+					end
+					table.insert(ThingsToGrab,'LifeP'..pn); table.insert(ThingsToGrab,'ScoreP'..pn);
+					table.insert(ThingsToHide,'LifeP'..pn); table.insert(ThingsToHide,'ScoreP'..pn);
+				end	
+				for i,v in ipairs(ThingsToGrab) do _G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil end	
+				for i,v in ipairs(ThingsToHide) do if _G[v] then _G[v]:hidden(1) end end
+				if table.getn(mod_actions) > 1 then table.sort(mod_actions, modtable_compare) end
+				checked = true;
+				mod_screen = SCREENMAN:GetTopScreen()
+			end
+			
+			if GAMESTATE:GetSongBeat() > mod_firstSeenBeat+0.1 and checked then
+				mod_do('clearall')
+				mod_beat_reader(GAMESTATE:GetSongBeat())
+				mod_ease_reader(GAMESTATE:GetSongBeat())
+				actions_reader(GAMESTATE:GetSongBeat())
+				mod_perframes(GAMESTATE:GetSongBeat())
+			end
+			self:sleep(1/75)
+			self:queuecommand('Update')
+		end"
+	/>
+
+	<Layer Type="Quad" InitCommand="x,scx;y,scy;zoomto,sw,sh;hidden,1;diffuse,1,1,1,0;" OnCommand="%function(self) des_whitequad = self end" WhiteFlashMessageCommand="hidden,0;diffusealpha,1;linear,4;diffusealpha,0;"/>
+
+	<Layer
+		File="cracks/small/1.png"
+		InitCommand="hidden,1;"
+		OnCommand="%function(self) table.insert(des_cracks[1],self) end"
+	/>
+	<Layer
+		File="cracks/small/2.png"
+		InitCommand="hidden,1;"
+		OnCommand="%function(self) table.insert(des_cracks[1],self) end"
+	/>
+	<Layer
+		File="cracks/small/3.png"
+		InitCommand="hidden,1;"
+		OnCommand="%function(self) table.insert(des_cracks[1],self) end"
+	/>
+
+	<Layer
+		File="cracks/med/1.png"
+		InitCommand="hidden,1;"
+		OnCommand="%function(self) table.insert(des_cracks[2],self) end"
+	/>
+	<Layer
+		File="cracks/med/2.png"
+		InitCommand="hidden,1;"
+		OnCommand="%function(self) table.insert(des_cracks[2],self) end"
+	/>
+	<Layer
+		File="cracks/med/3.png"
+		InitCommand="hidden,1;"
+		OnCommand="%function(self) table.insert(des_cracks[2],self) end"
+	/>
+
+	<Layer
+		File="cracks/large/1.png"
+		InitCommand="hidden,1;"
+		OnCommand="%function(self) table.insert(des_cracks[3],self) end"
+	/>
+	<Layer
+		File="cracks/large/2.png"
+		InitCommand="hidden,1;"
+		OnCommand="%function(self) table.insert(des_cracks[3],self) end"
+	/>
+	<Layer
+		File="cracks/large/3.png"
+		InitCommand="hidden,1;"
+		OnCommand="%function(self) table.insert(des_cracks[3],self) end"
+	/>
+	<Layer File="spellcard.xml"/>
+
+</children></ActorFrame>

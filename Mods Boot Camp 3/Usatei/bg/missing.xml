@@ -1,0 +1,42 @@
+<ActorFrame><children>
+	
+	<Layer File="bgp1"
+		OnCommand="%function(self)
+			self:horizalign('right');
+			self:vertalign('bottom');
+			self:x(SCREEN_WIDTH);
+			self:y(SCREEN_HEIGHT*.5);
+			self:zoomtoheight(SCREEN_HEIGHT/2);
+			self:queuecommand('Update')
+			usa_bgp1 = self
+		end"
+		UpdateCommand="x,SCREEN_WIDTH;linear,0.2;addx,696;sleep,0;queuecommand,Update" />
+	<Layer File="bgp2"
+		OnCommand="%function(self)
+			self:horizalign('right');
+			self:vertalign('bottom');
+			self:x(SCREEN_WIDTH);
+			self:y(SCREEN_HEIGHT);
+			self:zoomtoheight(SCREEN_HEIGHT/2);
+			self:queuecommand('Update')
+			usa_bgp2 = self
+			end"
+		UpdateCommand="x,SCREEN_WIDTH;linear,0.2;addx,696;sleep,0;queuecommand,Update" />
+
+	<Layer File="../lua/divline" OnCommand="hidden,0;zoomtowidth,SCREEN_WIDTH;zoomtoheight,20;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;
+		customtexturerect,0,0,10,1;texcoordvelocity,-5,0;"
+		LLOLMessageCommand="hidden,0;sleep,spb*3;bounceend,spb;zoomtoheight,20"
+		FadeDivMessageCommand="decelerate,spb*4;diffusealpha,0"
+	/>
+	
+	<Layer File="../lua/divline" OnCommand="hidden,0;zoomtowidth,SCREEN_WIDTH;zoomtoheight,20;x,SCREEN_CENTER_X;y,-10;
+		customtexturerect,0,0,10,1;texcoordvelocity,-5,0;"
+		FadeDivMessageCommand="hidden,0;decelerate,spb*4;y,10"
+	/>
+	
+	<Layer File="../lua/divline" OnCommand="hidden,0;zoomtowidth,SCREEN_WIDTH;zoomtoheight,20;x,SCREEN_CENTER_X;y,SCREEN_HEIGHT+10;
+		customtexturerect,0,0,10,1;texcoordvelocity,-5,0;"
+		FadeDivMessageCommand="hidden,0;decelerate,spb*4;y,SCREEN_HEIGHT-10"
+	/>
+	
+</children></ActorFrame>

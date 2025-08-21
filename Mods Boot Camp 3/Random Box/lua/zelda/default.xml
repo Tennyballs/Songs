@@ -1,0 +1,145 @@
+<ActorFrame><children>
+<ActorFrame OnCommand="x,-SCREEN_CENTER_X;y,-SCREEN_CENTER_Y"><children>
+<Layer Type="ActorFrame" OnCommand="x,0;y,0;"><children>
+
+	<CODE Type="Quad"
+		InitCommand="%function()
+		
+			loot_zelda_notes = {{},{}}
+			loot_zelda_nptr = {0,0}
+			
+			loot_zelda_nposa = {{-150,0,0,150},{0,150,-150,0}}
+			loot_zelda_nposb = {{-50,0,0,50},{0,50,-50,0}}
+			
+			loot_curnote_zelda = 1
+			
+			function zelda_make_octo(obj,q)
+				
+				if FUCK_EXE then
+					obj:SetTextureFiltering(false)
+				end
+			
+				table.insert(loot_zelda_notes[q],obj)
+			end
+			
+			function loot_zelda_get_octo(q)
+				
+				loot_zelda_nptr[q] = loot_zelda_nptr[q]+1
+				local n = math.mod(loot_zelda_nptr[q],table.getn(loot_zelda_notes[q]))+1
+				local a = loot_zelda_notes[q][ n ]
+				
+				return a
+				
+			end
+			
+			function loot_zelda_spawn_note(beat,col)
+				
+				local q = 1
+				if beat-math.floor(beat) ~= 0 then q = 2 end
+				local a = loot_zelda_get_octo(q)
+				
+				if a then
+					a:hidden(0)
+					a:zoom(4)
+					a:rotationz( loot_dirs[col+1] )
+					a:x( sw/2 + loot_zelda_nposa[1][col+1]*2 )
+					a:y( sh/2 + loot_zelda_nposa[2][col+1]*2 )
+					a:linear(90/137)
+					a:x( sw/2 + loot_zelda_nposb[1][col+1]*1.5 )
+					a:y( sh/2 + loot_zelda_nposb[2][col+1]*1.5 )
+					a:queuecommand('Hide')
+				end
+				
+			end
+			
+		end"
+	/>
+	
+	<Layer File="link_background" OnCommand="x,sw/2;y,sh/2;" />
+	
+	<Layer Type="ActorFrame" OnCommand="x,sw/2;y,sh/2;zoom,4;"
+	StepP1LeftPressMessageCommand="playcommand,Left;"
+	StepP1DownPressMessageCommand="playcommand,Down;"
+	StepP1UpPressMessageCommand="playcommand,Up;"
+	StepP1RightPressMessageCommand="playcommand,Right;"
+	StepP2LeftPressMessageCommand="playcommand,Left;"
+	StepP2DownPressMessageCommand="playcommand,Down;"
+	StepP2UpPressMessageCommand="playcommand,Up;"
+	StepP2RightPressMessageCommand="playcommand,Right;"
+	><children>
+		
+		<Layer File="link_sword_down"
+		InitCommand="%function(self) if FUCK_EXE then self:SetTextureFiltering(false) end end" OnCommand="hidden,1;"
+		LeftCommand="finishtweening;hidden,1;"
+		UpCommand="finishtweening;hidden,1;"
+		RightCommand="finishtweening;hidden,1;"
+		DownCommand="finishtweening;hidden,0;sleep,0.2;queuecommand,Hide" HideCommand="hidden,1;" />
+		<Layer File="link_down" 
+		InitCommand="%function(self) if FUCK_EXE then self:SetTextureFiltering(false) end end" OnCommand="hidden,0;"
+		LeftCommand="finishtweening;hidden,1;"
+		UpCommand="finishtweening;hidden,1;"
+		RightCommand="finishtweening;hidden,1;"
+		DownCommand="finishtweening;hidden,1;sleep,0.2;queuecommand,Show" ShowCommand="hidden,0;" />
+		
+		<Layer File="link_sword_left" 
+		InitCommand="%function(self) if FUCK_EXE then self:SetTextureFiltering(false) end end" OnCommand="hidden,1;"
+		DownCommand="finishtweening;hidden,1;"
+		UpCommand="finishtweening;hidden,1;"
+		RightCommand="finishtweening;hidden,1;"
+		LeftCommand="finishtweening;hidden,0;sleep,0.2;queuecommand,Hide" HideCommand="hidden,1;" />
+		<Layer File="link_left" 
+		InitCommand="%function(self) if FUCK_EXE then self:SetTextureFiltering(false) end end" OnCommand="hidden,1;"
+		DownCommand="finishtweening;hidden,1;"
+		UpCommand="finishtweening;hidden,1;"
+		RightCommand="finishtweening;hidden,1;"
+		LeftCommand="finishtweening;hidden,1;sleep,0.2;queuecommand,Show" ShowCommand="hidden,0;" />
+		
+		<Layer File="link_sword_right" 
+		InitCommand="%function(self) if FUCK_EXE then self:SetTextureFiltering(false) end end" OnCommand="hidden,1;"
+		LeftCommand="finishtweening;hidden,1;"
+		UpCommand="finishtweening;hidden,1;"
+		DownCommand="finishtweening;hidden,1;"
+		RightCommand="finishtweening;hidden,0;sleep,0.2;queuecommand,Hide" HideCommand="hidden,1;" />
+		<Layer File="link_right" 
+		InitCommand="%function(self) if FUCK_EXE then self:SetTextureFiltering(false) end end" OnCommand="hidden,1;"
+		LeftCommand="finishtweening;hidden,1;"
+		UpCommand="finishtweening;hidden,1;"
+		DownCommand="finishtweening;hidden,1;"
+		RightCommand="finishtweening;hidden,1;sleep,0.2;queuecommand,Show" ShowCommand="hidden,0;" />
+		
+		<Layer File="link_sword_up" 
+		InitCommand="%function(self) if FUCK_EXE then self:SetTextureFiltering(false) end end" OnCommand="hidden,1;"
+		LeftCommand="finishtweening;hidden,1;"
+		RightCommand="finishtweening;hidden,1;"
+		DownCommand="finishtweening;hidden,1;"
+		UpCommand="finishtweening;hidden,0;sleep,0.2;queuecommand,Hide" HideCommand="hidden,1;" />
+		<Layer File="link_up" 
+		InitCommand="%function(self) if FUCK_EXE then self:SetTextureFiltering(false) end end" OnCommand="hidden,1;"
+		LeftCommand="finishtweening;hidden,1;"
+		RightCommand="finishtweening;hidden,1;"
+		DownCommand="finishtweening;hidden,1;"
+		UpCommand="finishtweening;hidden,1;sleep,0.2;queuecommand,Show" ShowCommand="hidden,0;" />
+		
+	</children></Layer>
+	
+	<Layer File="octorok_red" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,1) end" />
+	<Layer File="octorok_red" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,1) end" />
+	<Layer File="octorok_red" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,1) end" />
+	<Layer File="octorok_red" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,1) end" />
+	<Layer File="octorok_red" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,1) end" />
+	<Layer File="octorok_red" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,1) end" />
+	<Layer File="octorok_red" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,1) end" />
+	<Layer File="octorok_red" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,1) end" />
+	
+	<Layer File="octorok_blue" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,2) end" />
+	<Layer File="octorok_blue" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,2) end" />
+	<Layer File="octorok_blue" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,2) end" />
+	<Layer File="octorok_blue" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,2) end" />
+	<Layer File="octorok_blue" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,2) end" />
+	<Layer File="octorok_blue" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,2) end" />
+	<Layer File="octorok_blue" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,2) end" />
+	<Layer File="octorok_blue" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) zelda_make_octo(self,2) end" />
+
+</children></Layer>
+</children></ActorFrame>
+</children></ActorFrame>

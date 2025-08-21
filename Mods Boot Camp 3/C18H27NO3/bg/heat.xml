@@ -1,0 +1,177 @@
+<ActorFrame> <children>
+
+	<Layer
+		File="_black" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;"
+	/>
+	<Layer File="metal.png" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;texcoordvelocity,0,.2;customtexturerect,0,0,2,3;zoomtowidth,SCREEN_WIDTH;zoomtoheight,SCREEN_HEIGHT;diffuse,.7,.6,.6,.8"/>
+	<Layer Type="ActorFrame" OnCommand="fov,60"><children>
+		<Layer Type="ActorFrame" OnCommand="x,SCREEN_CENTER_X - 160;zoom,.7;y,SCREEN_CENTER_Y - 120;rotationx,20;rotationy,-10"><children>
+			<Layer Type="ActorFrame" OnCommand=""><children>
+				<Layer
+					File="dimsum" OnCommand="zoom,1.075;blend,add;diffusealpha,.5"
+				/>
+				<Layer
+					File="dim1" OnCommand=""
+				/>
+				<Layer
+					File="text" OnCommand="texcoordvelocity,0,1;zoom,.9;fadetop,.1;fadebottom,.1;cropbottom,.1;croptop,.1;diffuseblink;effectclock,bgm;effectoffset,0;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+				<Layer
+					File="glow" OnCommand="blend,add;diffuseshift;effectdelay,0;effectclock,timer;effectperiod,1;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					GlowCommand="effectclock,timer;diffuseshift;effectperiod,1;effectdelay,0;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					PulseCommand="effectclock,bgm;diffuseramp;effectoffset,0.05;effectdelay,.5;effectperiod,.5;effectcolor1,1,1,1,0;effectcolor2,1,1,1,.8;"
+				/>
+				<Layer
+					File="no" OnCommand="diffuseblink;effectclock,bgm;effectoffset,.05;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+			</children></Layer>
+			<Layer Type="ActorFrame" OnCommand="addx,115;addy,-65;zoom,.7;"><children>
+			<Layer
+					File="dimsum" OnCommand="zoom,1.075;blend,add;diffusealpha,.5"
+				/>
+				<Layer
+					File="dim1" OnCommand=""
+				/>
+				<Layer
+					File="text" OnCommand="texcoordvelocity,0,1;zoom,.9;fadetop,.1;fadebottom,.1;cropbottom,.1;croptop,.1;diffuseblink;effectclock,bgm;effectoffset,0;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+				<Layer
+					File="glow" OnCommand="blend,add;diffuseshift;effectdelay,0;effectclock,timer;effectperiod,1;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					GlowCommand="effectclock,timer;diffuseshift;effectperiod,1;effectdelay,0;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					PulseCommand="effectclock,bgm;diffuseramp;effectoffset,0.05;effectdelay,.5;effectperiod,.5;effectcolor1,1,1,1,0;effectcolor2,1,1,1,.8;"
+				/>
+				<Layer
+					File="no" OnCommand="diffuseblink;effectclock,bgm;effectoffset,.05;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+			</children></Layer>
+			<Layer Type="ActorFrame" OnCommand="addx,-115;addy,-65;zoom,.7;"><children>
+			<Layer
+					File="dimsum" OnCommand="zoom,1.075;blend,add;diffusealpha,.5"
+				/>
+				<Layer
+					File="dim1" OnCommand=""
+				/>
+				<Layer
+					File="text" OnCommand="texcoordvelocity,0,1;zoom,.9;fadetop,.1;fadebottom,.1;cropbottom,.1;croptop,.1;diffuseblink;effectclock,bgm;effectoffset,0;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+				<Layer
+					File="glow" OnCommand="blend,add;diffuseshift;effectdelay,0;effectclock,timer;effectperiod,1;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					GlowCommand="effectclock,timer;diffuseshift;effectperiod,1;effectdelay,0;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					PulseCommand="effectclock,bgm;diffuseramp;effectoffset,0.05;effectdelay,.5;effectperiod,.5;effectcolor1,1,1,1,0;effectcolor2,1,1,1,.8;"
+				/>
+				<Layer
+					File="no" OnCommand="diffuseblink;effectclock,bgm;effectoffset,.05;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+			</children></Layer>
+			<Layer Type="ActorFrame" OnCommand="addx,-115;addy,65;zoom,.7;"><children>
+			<Layer
+					File="dimsum" OnCommand="zoom,1.075;blend,add;diffusealpha,.5"
+				/>
+				<Layer
+					File="dim1" OnCommand=""
+				/>
+				<Layer
+					File="text" OnCommand="texcoordvelocity,0,1;zoom,.9;fadetop,.1;fadebottom,.1;cropbottom,.1;croptop,.1;diffuseblink;effectclock,bgm;effectoffset,0;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+				<Layer
+					File="glow" OnCommand="blend,add;diffuseshift;effectdelay,0;effectclock,timer;effectperiod,1;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					GlowCommand="effectclock,timer;diffuseshift;effectperiod,1;effectdelay,0;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					PulseCommand="effectclock,bgm;diffuseramp;effectoffset,0.05;effectdelay,.5;effectperiod,.5;effectcolor1,1,1,1,0;effectcolor2,1,1,1,.8;"
+				/>
+				<Layer
+					File="no" OnCommand="diffuseblink;effectclock,bgm;effectoffset,.05;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+			</children></Layer>
+		</children></Layer>
+		<Layer Type="ActorFrame" OnCommand="x,SCREEN_CENTER_X + 160;zoom,.7;y,SCREEN_CENTER_Y - 120;rotationx,20;rotationy,10;playcommand,Name" NameCommand="%function(self) cap_right = self end"><children>
+			<Layer Type="ActorFrame" OnCommand=""><children>
+			<Layer
+					File="dimsum" OnCommand="zoom,1.075;blend,add;diffusealpha,.5"
+				/>
+				<Layer
+					File="dim1" OnCommand=""
+				/>
+				<Layer
+					File="text" OnCommand="texcoordvelocity,0,1;zoom,.9;fadetop,.1;fadebottom,.1;cropbottom,.1;croptop,.1;diffuseblink;effectclock,bgm;effectoffset,0;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+				<Layer
+					File="glow" OnCommand="blend,add;diffuseshift;effectdelay,0;effectclock,timer;effectperiod,1;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					GlowCommand="effectclock,timer;diffuseshift;effectperiod,1;effectdelay,0;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					PulseCommand="effectclock,bgm;diffuseramp;effectoffset,0.05;effectdelay,.5;effectperiod,.5;effectcolor1,1,1,1,0;effectcolor2,1,1,1,.8;"
+				/>
+				<Layer
+					File="no" OnCommand="diffuseblink;effectclock,bgm;effectoffset,.05;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+			</children></Layer>
+			<Layer Type="ActorFrame" OnCommand="addx,115;addy,-65;zoom,.7;"><children>
+			<Layer
+					File="dimsum" OnCommand="zoom,1.075;blend,add;diffusealpha,.5"
+				/>
+				<Layer
+					File="dim1" OnCommand=""
+				/>
+				<Layer
+					File="text" OnCommand="texcoordvelocity,0,1;zoom,.9;fadetop,.1;fadebottom,.1;cropbottom,.1;croptop,.1;diffuseblink;effectclock,bgm;effectoffset,0;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+				<Layer
+					File="glow" OnCommand="blend,add;diffuseshift;effectdelay,0;effectclock,timer;effectperiod,1;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					GlowCommand="effectclock,timer;diffuseshift;effectperiod,1;effectdelay,0;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					PulseCommand="effectclock,bgm;diffuseramp;effectoffset,0.05;effectdelay,.5;effectperiod,.5;effectcolor1,1,1,1,0;effectcolor2,1,1,1,.8;"
+				/>
+				<Layer
+					File="no" OnCommand="diffuseblink;effectclock,bgm;effectoffset,.05;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+			</children></Layer>
+			<Layer Type="ActorFrame" OnCommand="addx,-115;addy,-65;zoom,.7;"><children>
+			<Layer
+					File="dimsum" OnCommand="zoom,1.075;blend,add;diffusealpha,.5"
+				/>
+				<Layer
+					File="dim1" OnCommand=""
+				/>
+				<Layer
+					File="text" OnCommand="texcoordvelocity,0,1;zoom,.9;fadetop,.1;fadebottom,.1;cropbottom,.1;croptop,.1;diffuseblink;effectclock,bgm;effectoffset,0;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+				<Layer
+					File="glow" OnCommand="blend,add;diffuseshift;effectdelay,0;effectclock,timer;effectperiod,1;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					GlowCommand="effectclock,timer;diffuseshift;effectperiod,1;effectdelay,0;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					PulseCommand="effectclock,bgm;diffuseramp;effectoffset,0.05;effectdelay,.5;effectperiod,.5;effectcolor1,1,1,1,0;effectcolor2,1,1,1,.8;"
+				/>
+				<Layer
+					File="no" OnCommand="diffuseblink;effectclock,bgm;effectoffset,.05;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+			</children></Layer>
+			<Layer Type="ActorFrame" OnCommand="addx,115;addy,65;zoom,.7;"><children>
+			<Layer
+					File="dimsum" OnCommand="zoom,1.075;blend,add;diffusealpha,.5"
+				/>
+				<Layer
+					File="dim1" OnCommand=""
+				/>
+				<Layer
+					File="text" OnCommand="texcoordvelocity,0,1;zoom,.9;fadetop,.1;fadebottom,.1;cropbottom,.1;croptop,.1;diffuseblink;effectclock,bgm;effectoffset,0;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+				<Layer
+					File="glow" OnCommand="blend,add;diffuseshift;effectdelay,0;effectclock,timer;effectperiod,1;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					GlowCommand="effectclock,timer;diffuseshift;effectperiod,1;effectdelay,0;effectcolor1,1,1,1,.2;effectcolor2,1,1,1,.8;"
+					PulseCommand="effectclock,bgm;diffuseramp;effectoffset,0.05;effectdelay,.5;effectperiod,.5;effectcolor1,1,1,1,0;effectcolor2,1,1,1,.8;"
+				/>
+				<Layer
+					File="no" OnCommand="diffuseblink;effectclock,bgm;effectoffset,.05;effectperiod,1;effectcolor1,1,1,1,1;effectcolor2,1,1,1,0;"
+				/>
+			</children></Layer>
+		</children></Layer>
+		
+		<Layer Type="ActorFrame" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-100;rotationz,-5;"><children>
+			<Layer File="tape.png" OnCommand="texcoordvelocity,.5,0;customtexturerect,0,0,2,1;zoomx,3;diffusealpha,1" />
+		</children></Layer>
+		<Layer Type="ActorFrame" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+100;rotationz,5;"><children>
+			<Layer File="tape.png" OnCommand="texcoordvelocity,.5,0;customtexturerect,0,0,2,1;zoomx,-3;diffusealpha,1" />
+		</children></Layer>
+		
+	</children></Layer>
+	<Layer
+		Type="Quad" OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffuse,.1,0,0,.6;"
+	/>
+	<Layer InitCommand="%function(self) fd_cap_eye = self end" File="../lua/eggeye" OnCommand="diffusealpha,1;blend,add;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,1;glowshift;effectclock,bgm;effectcolor1,1,0,0,.1;effectcolor2,1,0,0,0;effectperiod,8" />
+</children> </ActorFrame>

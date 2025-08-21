@@ -1,0 +1,4 @@
+<Layer Type="ActorFrame"><children>
+	<Layer File="overlay2" InitCommand="%function(self) kana_grain=self end" OnCommand="stretchto,0,0,sw,sh;diffusealpha,.9;"/>
+	<Layer File="darkvig" OnCommand="stretchto,0,0,sw,sh;diffusealpha,0;linear,1;diffusealpha,1;"/>
+</children></Layer>

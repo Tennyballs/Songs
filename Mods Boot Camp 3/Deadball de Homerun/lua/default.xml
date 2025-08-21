@@ -1,0 +1,1659 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	slumpo = false
+	for pn=1,2 do
+		if GAMESTATE:IsPlayerEnabled(pn-1) then
+			if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 5 then
+				slumpo = true
+			end
+		end
+	end
+	
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT --shortcuts
+	
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+	function GetJud(pn)
+		return _G['jud'..pn]
+	end
+	function GetCom(pn)
+		return _G['com'..pn]
+	end
+	
+	function mod_do(str,pn)
+		if pn then
+			GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+		else
+			GAMESTATE:ApplyGameCommand('mod,'..str)
+		end
+	end
+	
+	function taro_Sound(str)
+		local met = GAMESTATE:GetCurrentSong():GetSongDir();
+		SOUND:PlayOnce(met..'lua/'..str..'.ogg');
+	end
+	
+	function ded_getquant(b)
+		if b-math.floor(b) == 0 then
+			return 1
+		elseif b-math.floor(b) == 0.5 then
+			return 2
+		elseif b-math.floor(b) == 0.25 or b-math.floor(b) == 0.75 then
+			return 3
+		else
+			return 4
+		end
+	end
+	
+	ded_dirs = {90,0,180,-90}
+	
+	loot_scoreP1 = 0
+	loot_scoreP1prev = 0
+	loot_scoreP2 = 0
+	loot_scoreP2prev = 0
+	
+	ded_good = PREFSMAN:GetPreference('JudgeWindowSecondsGood');
+	
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers.xml" />
+	<Layer File="easing.xml" />
+	<Layer File="spellcard.xml" />
+	
+	<Layer File="../ded_ball1.xml" />
+	<Layer File="../ded_ball2.xml" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+		
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_shader(beat,key,which)
+				--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+				
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_onebeat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--use a variable called 'switcheroo_width' to change how much space is between each column
+			--e.g. switcheroo_width = 2 for ayakashi
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+				
+			--function doSpline(spd, axis, path, col)
+				--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+				
+			--function doSplineAll(spd, axis, path)
+				--same as above, but for all columns
+				--(faster performance than using doSpline 4 times due to more efficient concat)
+			
+			--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+				--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+			
+			
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local m = mod_insert
+			local m2 = mod_message
+			local me = mod_ease
+			
+			
+			local l = 'len'
+			local e = 'end'
+			
+			
+			
+			
+			
+			
+			
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*2 2.5x, *1000 no beat, *10000 -999999 cover','end'},
+			}
+			
+			--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+			
+			
+			
+			
+			
+			
+			
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+				--{0,200.345,'3x','end',1},
+			}
+			
+			
+			
+			
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 32
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {
+			
+			
+				
+			}
+			
+			
+			
+			
+			
+			
+			--beat-based ease mods
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--valid ease types are:
+				--linear
+				--inQuad    outQuad    inOutQuad    outInQuad
+				--inCubic   outCubic   inOutCubic   outInCubic
+				--inQuart   outQuart   inOutQuart   outInQuart
+				--inQuint   outQuint   inOutQuint   outInQuint
+				--inSine    outSine    inOutSine    outInSine
+				--inExpo    outExpo    inOutExpo    outInExpo
+				--inCirc    outCirc    inOutCirc    outInCirc
+				--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+				--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+				--inBounce  outBounce  inOutBounce  outInBounce
+				
+			mods_ease = {
+				-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+				--{0,4,360,0,'rotationz','end',inOutBack},
+			}
+			
+			
+			m(4,11,'*10000 -100 reverse, *10000 0.66x, *10000 66 centered',e)
+			
+			m(0,4,'*10 dark',l)
+			me(4,8,1000,0,'drunk',e,outElastic,nil,nil,1,1)
+			me(4,8,1000,0,'tipsy',e,outElastic,nil,nil,1,1)
+			
+			me(18,2,9,1256,'dizzy',l,outQuad)
+			me(20,0.5,1256,0,'dizzy',l,outQuad)
+			
+			me(18.5,1,0,100,'tornado',l,outSine)
+			me(19.5,1,100,0,'tornado',l,inSine)
+			
+			m(7.5,12.5,'*1000 150 beat',e)
+			
+			me(8,11.5,0,-200,'mini',e,linear)
+			me(11.5,12,200,-100,'mini',e,linear)
+			me(8,11.5,0,50,'flip',e,linear)
+			me(11.5,0.5,-100,10,'flip',l,linear)
+			
+			me(8,11.5,0.66,0.3,'xmod',e,linear)
+			
+			me(11,11.5,0,100,'stealth',e,linear)
+			me(11.5,12,100,0,'stealth',e,linear)
+			me(11,11.5,50,100,'dark',e,linear)
+			me(11.5,12,100,50,'dark',e,linear)
+			
+			
+			m2(11,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(30/145)
+						a:addy(-600)
+						a:sleep(0)
+						a:addy(600)
+						a:sleep(0)
+					end
+				end
+			end)
+			
+			m(11.5,1,'*10000 no reverse, *2 2.5x, *10000 no centered',l)
+			
+			function minibump(b)
+				m(b+0-.1,1,'*6 -50 mini, *0.2 10 flip, *3 1x',l)
+				m(b+1-.1,1,'*20 50 mini, *0.6 no flip, *9 2.5x',l)
+				m(b+2-.1,1,'*20 -50 mini, *0.6 10 flip, *9 1x',l)
+				m(b+3-.1,1,'*6 -16 mini, *0.2 6 flip, *3 1.5x',l)
+				m(b+3.5-.1,1,'*6 15 mini, *0.2 3 flip, *3 2x',l)
+				if b ~= 36 then
+					m(b+4-.1,1,'*6 50 mini, *0.2 no flip, *3 2.5x',l)
+					m(b+5-.1,1,'*20 -50 mini, *0.6 10 flip, *9 1x',l)
+					m(b+6-.1,1,'*20 50 mini, *0.6 no flip, *9 2.5x',l)
+					m(b+7-.1,1,'*6 16 mini, *0.2 3 flip, *3 2x',l)
+					m(b+7.5-.1,1,'*6 -16 mini, *0.2 6 flip, *3 1.5x',l)
+				end
+			end
+			
+			minibump(12)
+			minibump(20)
+			minibump(28)
+			minibump(36)
+			
+			function hallwaybump(b)
+				m(b+0-.1,1,'*6 -100 hallway',l)
+				m(b+1-.1,1,'*20 100 hallway',l)
+				m(b+2-.1,1,'*20 -100 hallway',l)
+				m(b+3-.1,1,'*6 -33 hallway',l)
+				m(b+3.5-.1,1,'*6 33 hallway',l)
+				if b ~= 36 then
+					m(b+4-.1,1,'*6 100 hallway',l)
+					m(b+5-.1,1,'*20 -100 hallway',l)
+					m(b+6-.1,1,'*20 100 hallway',l)
+					m(b+7-.1,1,'*6 33 hallway',l)
+					m(b+7.5-.1,1,'*6 -33 hallway',l)
+				end
+			end
+			
+			hallwaybump(44)
+			hallwaybump(52)
+			hallwaybump(60)
+			hallwaybump(68)
+			
+			m(60,4,'*10 no hallway',l)
+			
+			for i=0,3 do
+				m(26.5+i*4-.1,1,'*5 50 distant',l)
+				m(27.5+i*4-.1,1,'*5 100 distant',l)
+				m(28+i*4-.1,1,'*5 150 distant',l)
+				m(29+i*4-.1,1,'*15 0 distant',l)
+			end
+			
+			me(36,40,1.5,0.4,'xmod',e,linear)
+			
+			me(40,44,150,0,'distant',e,outElastic)
+			me(40,44,0.4,2.5,'xmod',e,outElastic)
+			
+			
+			m(43.5,107.5,'*1000 150 beat',e)
+			
+			function ded_HEY(b)
+				me(b,b+.5,0,200,'brake',e,outCirc)
+				me(b+.5,b+1,200,0,'brake',e,inCirc)
+			end
+			
+			--mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+			mod_sugarkiller(24.5,0.5,2,50,80)
+			mod_sugarkiller(25.5,0.5,2,50,80)
+			mod_sugarkiller(26.5,.25,2,50,80)
+			mod_sugarkiller(27,.25,2,50,80)
+			mod_sugarkiller(27.5,.25,2,50,80)
+			
+			mod_sugarkiller(93.5,.5,2,50,80)
+			
+			function ded_wotwot(b,num,amt)
+				if not num then num = 3 end
+				if not amt then amt = 200 end
+				local fluct = 1
+				for i=0,num do
+					simple_m0d2(b+i*0.5-.1,50,.2,'brake')
+					simple_m0d2(b+i*0.5-.1,amt*fluct,.2,'drunk')
+					fluct = fluct*-1
+				end
+			end
+			function ded_ditdit(b)
+				for i=0,2 do
+					simple_m0d(b+i*0.5-.1,50,.1,'stealth')
+				end
+			end
+			function ded_durdur(b)
+				local fluct = 1
+				for i=0,2 do
+					simple_m0d2(b+i*0.5-.1,50,.2,'brake')
+					simple_m0d2(b+i*0.5-.1,200*fluct,.2,'drunk')
+					fluct = fluct*-1
+				end
+			end
+			
+			local b = 28.5
+			local fluct = 1
+			for i=0,5 do
+				simple_m0d2(b+i*1-.1,50,.2,'brake')
+				simple_m0d2(b+i*1-.1,200*fluct,.2,'drunk')
+				fluct = fluct*-1
+			end
+			simple_m0d2(34.5-.1,50,.2,'brake')
+			simple_m0d2(34.5-.1,200,.2,'drunk')
+			simple_m0d2(35-.1,50,.2,'brake')
+			simple_m0d2(35-.1,-200,.2,'drunk')
+			simple_m0d2(35.5-.1,50,.2,'brake')
+			
+			me(41.5,1,0,100,'tornado',l,outSine)
+			me(42.5,1,100,0,'tornado',l,inSine)
+			me(43,.5,1256,0,'dizzy',l,outQuad)
+			
+			mod_wiggle(36-.1,4,4,150,2,'drunk')
+			m(37,1,'*10 150 drunk',l)
+			mod_wiggle(38-.1,4,4,-150,2,'drunk')
+			m(39,1,'*10 -150 drunk',l)
+			me(40,4,-150,0,'drunk',l,outElastic,nil,nil,2,1)
+			
+			function lowstrum(b,mod,amt, amt2)
+				if not mod then mod = 'drunk' end
+				if not amt then amt = 100 end
+				if not amt2 then amt2 = -amt end
+				me(b+0.000,0.333,0,amt,mod,l,linear)
+				me(b+0.333,0.166,amt,amt2,mod,l,linear)
+				me(b+0.500,0.333,amt2,amt,mod,l,linear)
+				me(b+0.833,0.166,amt,amt2,mod,l,linear)
+				me(b+1.000,0.5,amt2,0,mod,l,linear)
+				
+				me(b+1.500,0.333,0,amt,mod,l,linear)
+				me(b+1.833,0.166,amt,amt2,mod,l,linear)
+				me(b+2.000,0.333,amt2,amt,mod,l,linear)
+				me(b+2.333,0.166,amt,amt2,mod,l,linear)
+				me(b+2.500,0.5,amt2,0,mod,l,linear)
+				
+				m(b+2,0.5,'*1000 1256 dizzy',l)
+				m(b+2.5,0.5,'*1000 no dizzy',l)
+			end
+			function highstrum(b,mod,extra)
+				if not mod then mod = 'tipsy' end
+				me(b+0.000,0.333,0,169,mod,l,linear)
+				me(b+0.333,0.166,169,-169,mod,l,linear)
+				me(b+0.500,0.333,-169,169,mod,l,linear)
+				me(b+0.833,0.166,169,-169,mod,l,linear)
+				me(b+1.000,0.5,-169,0,mod,l,linear)
+				
+				me(b+1.500,0.333,0,169,mod,l,linear)
+				me(b+1.833,0.166,169,-169,mod,l,linear)
+				me(b+2.000,0.333,-169,169,mod,l,linear)
+				me(b+2.333,0.166,169,-169,mod,l,linear)
+				
+				if extra then
+					me(b+2.500,0.333,-169,169,mod,l,linear)
+					me(b+2.833,0.166,169,-169,mod,l,linear)
+					me(b+3.000,0.333,-169,169,mod,l,linear)
+					me(b+3.333,0.166,169,-169,mod,l,linear)
+					me(b+3.500,1,-169,0,mod,l,linear)
+				else
+					me(b+2.500,1,-169,0,mod,l,linear)
+				end
+			end
+			
+			m(60-.1,2.5,'*5 100 brake, *8 80 stealth',l)
+			m(62.5-.1,4,'*5 75 brake',l)
+			m(63-.1,4,'*5 50 brake',l)
+			m(63.5-.1,4,'*5 25 brake',l)
+			m(64-.1,4,'*5 no brake',l)
+			
+			lowstrum(48.5,'drunk',100)
+			highstrum(56.5)
+			lowstrum(64.5,'drunk',100)
+			highstrum(72.5,nil,true)
+			lowstrum(80.5,'drunk',100)
+			highstrum(96.833)
+			
+			lowstrum(112.5,'brake',-50,0)
+			highstrum(120.5)
+			
+			simple_m0d2(76.5-.1,-50,.2,'brake')
+			simple_m0d2(77.5-.1,-50,.2,'brake')
+			
+			simple_m0d2(84.5-.1,-50,.2,'brake')
+			
+			simple_m0d2(85.5-.1,50,.2,'brake')
+			simple_m0d2(85.5-.1,200,.2,'drunk')
+			
+			m(88,91,'*10000 0.8x, *10000 C487, *20 250 wave, *3 300 dizzy',e)
+			m(91,92,'*1000 1x, *10000 C350, *20 no wave, *9 no dizzy',e)
+			
+			simple_m0d2(92.5-.1,-50,.2,'brake')
+			
+			simple_m0d2(100-.1,-100,.2,'mini')
+			simple_m0d2(100-.1,20,.2,'flip')
+			simple_m0d2(101-.1,-100,.2,'mini')
+			simple_m0d2(101-.1,20,.2,'flip')
+			
+			simple_m0d(124-.05,-100,.2,'mini')
+			simple_m0d(125-.05,-100,.2,'mini')
+			simple_m0d(128-.05,-100,.2,'mini')
+			simple_m0d(129-.05,-100,.2,'mini')
+			
+			for i=104,106.5,.5 do
+				simple_m0d(i-.05,-100,.08,'mini')
+				simple_m0d(i-.05,10,.08,'flip')
+			end
+			
+			m2(126,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(45/145)
+						a:skewx(1)
+						a:rotationz(20)
+						a:decelerate(45/145)
+						a:rotationz(-20)
+						a:skewx(-1)
+						a:decelerate(30/145)
+						a:rotationz(0)
+						a:skewx(0)
+					end
+				end
+			end)
+			m2(130,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(45/145)
+						a:skewx(1)
+						a:rotationz(20)
+						a:decelerate(45/145)
+						a:rotationz(-20)
+						a:skewx(-1)
+						a:decelerate(30/145)
+						a:rotationz(0)
+						a:skewx(0)
+					end
+				end
+			end)
+			m2(132.5,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						local f = 1
+						for i=0,7 do
+							local r = 5+25*(i/8)
+							a:decelerate(45/145)
+							a:rotationz(r*f)
+							a:zoomy(1-(i/10))
+							a:zoomx(1+(i/10))
+							a:y(sh*0.5 - sh*0.5*(i/8))
+							f = f*-1
+						end
+					end
+				end
+			end)
+			m2(138.5,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(30/145)
+						a:rotationz(40)
+						a:zoomy(0.15)
+						a:zoomx(1.7)
+						a:y(sh*0.075)
+						a:decelerate(30/145)
+						a:rotationz(-45)
+						a:zoomy(0.1)
+						a:zoomx(1.8)
+						a:y(sh*0.05)
+						a:decelerate(30/145)
+						a:rotationz(50)
+						a:zoomy(0.05)
+						a:zoomx(1.9)
+						a:y(sh*0.025)
+						a:decelerate(30/145)
+						a:rotationz(0)
+						a:zoomy(0)
+						a:zoomx(2)
+						a:y(0)
+					end
+				end
+			end)
+			
+			
+			
+			
+			
+			ded_wotwot(78.5)
+			ded_ditdit(86.5)
+			ded_wotwot(94.5)
+			ded_durdur(102.5)
+			
+			simple_m0d(127-.05,1000,.6,'bumpy')
+			simple_m0d(131-.05,1000,.6,'bumpy')
+			simple_m0d(135-.05,1000,.6,'bumpy')
+			
+			ded_HEY(91)
+			ded_HEY(139)
+			
+			for i=108.5,123.5,2 do
+				m(i-.1,2,'*3 30 reverse',l)
+				m(i+1-.1,2,'*3 no reverse',l)
+			end
+			for i=124.5,139.5,2 do
+				m(i-.1,2,'*3 30 reverse',l)
+				m(i+1-.1,2,'*3 no reverse',l)
+			end
+			
+			local b = 107
+			me(b,b+.5,0,-200,'mini',e,outCirc)
+			me(b+.5,b+1,-200,50,'mini',e,inCirc)
+			me(b,b+.5,0,70,'flip',e,outCirc)
+			me(b+.5,b+1,70,0,'flip',e,inCirc)
+			
+			me(108,8,0,100,'mini',l,linear)
+			me(116,8,100,0,'mini',l,linear)
+			me(108,8,0,40,'brake',l,linear)
+			me(116,8,40,0,'brake',l,linear)
+			me(108,8,2,3.5,'xmod',l,linear)
+			me(116,8,3.5,2,'xmod',l,linear)
+			me(108,8,0,150,'drunk',l,linear)
+			me(116,8,150,0,'drunk',l,linear)
+			--me(108,8,0,150,'tipsy',l,linear)
+			--me(116,8,150,0,'tipsy',l,linear)
+			
+			
+			m(41.5,1.5,'*10000 1256 dizzy',l)
+			m(43,1,'*10000 no dizzy',l)
+			m(74,1,'*10000 1256 dizzy',l)
+			m(75,1,'*10000 no dizzy',l)
+			
+			
+			
+			m2(132.5,function()
+			
+				local tl = (140-132.5)*(60/145)
+				
+				ded_bg:linear(tl)
+				ded_bg:addy(-sh-40)
+				
+				ded_bg2:linear(tl)
+				ded_bg2:addy(-sh)
+				
+				ded_curtain:sleep(tl)
+				ded_curtain:diffusealpha(0)
+				ded_curtain2:sleep(tl)
+				ded_curtain2:diffusealpha(1)
+				
+			end)
+			
+			
+			
+			m2(140,function()
+				ded_bg:y(sh/2)
+				ded_bg:addy(-sh-40)
+				
+				ded_bg2:y(sh/2)
+				ded_bg2:addy(-sh)
+			end,true)
+			
+			
+			ded_chart1 = ded_ball1
+			ded_chart2 = ded_ball2
+			
+			if slumpo then
+				ded_chart1 = ded_ball_s1
+				ded_chart2 = ded_ball_s2
+			end
+			
+			m2(1,function()
+				
+				for pn=1,2 do
+					
+					local a = Plr(pn)
+					if FUCK_EXE then
+						if a and tonumber(GAMESTATE:GetVersionDate()) > 20190000 then
+							
+							ded_chart1 = a:GetNoteData(140.05,173)
+							ded_chart2 = a:GetNoteData(236.05,259)
+							
+							for i=1,table.getn(ded_chart2) do
+								if ded_chart2[i][1] == 258 then
+									ded_chart2[i][1] = 256
+								end
+							end
+							
+							for i=table.getn(ded_chart1),1,-1 do
+								if ded_chart1[i][3] == 'M' or ded_chart1[i][3] >= 100 then
+									table.remove(ded_chart1,i)
+								end
+							end
+							for i=table.getn(ded_chart2),1,-1 do
+								if ded_chart2[i][3] == 'M' or ded_chart2[i][3] >= 100 then
+									table.remove(ded_chart2,i)
+								end
+							end
+							
+							break;
+							
+						end
+					end
+					
+				end
+				
+			end,true)
+			
+			ded_throw1 = 1
+			for i=1,table.getn(ded_chart1) do
+				local a = ded_chart1[i]
+				m2(a[1]-4.5,function()
+					if ded_throwt:GetX() > 30 then
+						MESSAGEMAN:Broadcast('MimiDelayed')
+					else
+						ded_mimi:playcommand('Throw')
+					end
+					ded_throwt:finishtweening()
+					ded_throwt:x(0)
+					ded_throwt:sleep(12/15)
+					ded_throwt:x(100)
+					ded_throwt:sleep(0)
+					ded_throwt:x(0)
+				end)
+			end
+			ded_throw2 = 1
+			for i=1,table.getn(ded_chart2) do
+				local a = ded_chart2[i]
+				m2(a[1]-3.5,function()
+					if ded_throwt:GetX() > 30 then
+						MESSAGEMAN:Broadcast('MimiDelayed')
+					else
+						ded_mimi:playcommand('Throw')
+					end
+					ded_throwt:finishtweening()
+					ded_throwt:x(0)
+					ded_throwt:sleep(12/15)
+					ded_throwt:x(100)
+					ded_throwt:sleep(0)
+					ded_throwt:x(0)
+				end)
+			end
+			
+			ded_done256 = false
+			
+			ded_arrows = {{},{},{},{},{},{},{},{}}
+			ded_aptr = {0,0,0,0,0,0,0,0}
+			
+			function ded_add_arrow(obj,w)
+				obj:effectclock('bgm')
+				table.insert(ded_arrows[w],obj)
+			end
+			
+			function ded_get_arrow(w)
+				ded_aptr[w] = ded_aptr[w]+1
+				return ded_arrows[w][math.mod(ded_aptr[w],table.getn(ded_arrows[w]))+1]
+			end
+			
+			m(143,172,'*1000 stealth,*1000 reverse,*1000 centered, *1000 50 flip',e)
+			m2(143,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw*0.85-60)
+						a:y(sh*0.8-52)
+						a:rotationz(0)
+						a:zoom(1)
+					end
+					local a = GetJud(pn)
+					if a then
+						a:x(80*(pn*2-3))
+						a:basezoomx(.7)
+						a:basezoomy(.7)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(80*(pn*2-3))
+						a:basezoomx(.7)
+						a:basezoomy(.7)
+						a:bob()
+						a:effectmagnitude(0,130,0)
+						a:effectperiod(1000000)
+						a:effectoffset(250000)
+					end
+				end
+			end)
+			
+			m2(172,function()
+				ded_bg:decelerate(240/145)
+				ded_bg:y(sh/2)
+				
+				ded_bg2:decelerate(240/145)
+				ded_bg2:y(sh/2)
+				
+				ded_curtain:diffusealpha(1)
+				ded_curtain2:diffusealpha(0)
+				
+			end)
+			
+			m2(176,function()
+				ded_bg:y(sh/2)
+				
+				ded_bg2:y(sh/2)
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2 + 160*(pn*2-3))
+						a:y(sh/2)
+						a:rotationz(0)
+						a:zoom(1)
+					end
+					local a = GetJud(pn)
+					if a then
+						a:x(320*(pn*2-3))
+						a:basezoomx(1)
+						a:basezoomy(1)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(320*(pn*2-3))
+						a:effectmagnitude(0,0,0)
+						a:basezoomx(1)
+						a:basezoomy(1)
+					end
+				end
+				
+			end,true)
+			
+			m2(180,function()
+			
+				for pn=1,2 do
+					local a = GetJud(pn)
+					if a then
+						a:decelerate(240/145)
+						a:x(0)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:decelerate(240/145)
+						a:x(0)
+					end
+				end
+				
+			end)
+			m2(184,function()
+			
+				for pn=1,2 do
+					local a = GetJud(pn)
+					if a then
+						a:x(0)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(0)
+					end
+				end
+				
+			end,true)
+			
+			
+			m(140,187,'dark',e)
+			m(176,231,'*1000 1.8x, *1000 drunk',e)
+			m(176,192,'*1000 150 wave',e)
+			
+			m(187.5,233.5,'*1000 150 beat, no dark',e)
+			
+			m(195.5,1,'*1000 1000 beat',l)
+			m(197.5,1,'*1000 1000 beat',l)
+			m(199.5,1,'*1000 1000 beat',l)
+			m(200.5,1,'*1000 -1000 beat',l)
+			m(201.5,1,'*1000 1000 beat',l)
+			m(202.5,1,'*1000 -1000 beat',l)
+			
+			local b = 203
+			me(b,b+.5,0,-250,'mini',e,outQuad)
+			me(b+.5,b+1,-250,50,'mini',e,inQuad,nil,b+2)
+			me(b,b+.5,0,100,'flip',e,outQuad)
+			me(b+.5,b+1,100,0,'flip',e,inQuad,nil,b+2)
+			
+			m(203,232,'*1000 -350 reverse, *1000 87 centered, *1000 0.2x',e)
+			m(204,232,'*1000 -1000 bumpy, *1000 distant',e)
+			
+			me(203,1,0,-1000,'bumpy',l,inOutElastic)
+			me(203,1,0,100,'distant',l,linear)
+			
+			m(203,232,'*2 200 sudden, *1000 -80 suddenoffset',e)
+			
+			me(232,1,-350,0,'reverse',l,inSine)
+			me(232,1,87,0,'centered',l,outSine)
+			me(232,1,200,0,'sudden',l,linear)
+			me(232,1,0.2,2.5,'xmod',l,linear)
+			me(232,1,100,0,'distant',l,linear)
+			me(232,1,-1000,0,'bumpy',l,linear)
+			
+			m(233.4,8,'*10 100 flip',l)
+			me(233.833,236.5,100,-200,'flip',e,outQuart,nil)
+			me(233.833,236.5,0,200,'drunk',e,outQuart,nil)
+			--me(233.833,236.5,50,100,'dark',l,outQuart,nil)
+			me(233.833,1,0,100,'stealth',l,outQuart,nil,999)
+			
+			for i=0,7 do
+				if i > 0 then
+					m(202.5+i*4-.1,2,'*5 16 mini',l)
+					m(203.5+i*4-.1,2,'*5 -16 mini',l)
+					m(204+i*4-.1,2,'*5 -50 mini',l)
+					m(205+i*4-.1,2,'*10 50 mini',l)
+				else
+					m(204+i*4-.1,2,'*5 -50 mini',l)
+					m(205+i*4-.1,2,'*10 50 mini',l)
+				end
+			end
+			
+			simple_m0d2(196,80,.6,'brake')
+			simple_m0d2(198,80,.6,'brake')
+			simple_m0d2(200,80,.3,'brake')
+			simple_m0d2(201,80,.3,'brake')
+			simple_m0d2(202,80,.3,'brake')
+			
+			
+			m2(232,function()
+			
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationx(0)
+					end
+				end
+				
+			end,true)
+			m2(233.833,function()
+			
+				local tl = (180/145)
+				
+				ded_bg:decelerate(tl)
+				ded_bg:addy(-sh-40)
+				
+				ded_bg2:decelerate(tl)
+				ded_bg2:addy(-sh)
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:decelerate(180/145)
+						a:addy(-sh)
+					end
+				end
+				
+				ded_curtain:sleep(tl)
+				ded_curtain:diffusealpha(0)
+				ded_curtain2:diffusealpha(1)
+				ded_curtain2:croptop(1.5) --I HATE HOW YOU CAN'T TELL THIS IS ACTUALLY WHAT'S HAPPENING
+				ded_curtain2:decelerate(tl)
+				ded_curtain2:croptop(0)
+				
+			end)
+			
+			m2(237.833,function()
+				ded_bg:y(sh/2)
+				ded_bg:addy(-sh-40)
+				
+				ded_bg2:y(sh/2)
+				ded_bg2:addy(-sh)
+			end,true)
+			
+			m(236.5,999,'*1000 stealth,*1000 reverse,*1000 centered, *1000 50 flip, *1000 no invert, *1000 no drunk, *1000 100 dark',e)
+			m(252,999,'*0.7 dark',e)
+			m(256,999,'*5 25 flip, 25 invert',e)
+			m(258,999,'dark',e)
+			
+			m2(248,function()
+				ded_curtain2:linear(240/145)
+				ded_curtain2:addy(sh*-0.6)
+			end)
+			
+			if FUCK_EXE then
+				m(263,999,'disablemines,stealthpastreceptors',e)
+			end
+			
+			m2(236.5,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw*0.85-60)
+						a:y(sh*0.8-52)
+						a:rotationz(0)
+						a:zoom(1)
+					end
+					local a = GetJud(pn)
+					if a then
+						a:x(80*(pn*2-3))
+						a:basezoomx(.7)
+						a:basezoomy(.7)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(80*(pn*2-3))
+						a:basezoomx(.7)
+						a:basezoomy(.7)
+						a:bob()
+						a:effectmagnitude(0,130,0)
+						a:effectperiod(1000000)
+						a:effectoffset(250000)
+					end
+				end
+			end)
+			
+			m2(256,function()
+				ded_pandy:playcommand('Final');
+			end)
+			
+			ded_discard = {}
+			ded_dptr = 0
+			ded_dtimer = 0
+			
+			function ded_add_discard(obj)
+				table.insert(ded_discard,obj)
+			end
+			
+			function ded_get_discard()
+				ded_dptr = ded_dptr+1
+				return ded_discard[math.mod(ded_dptr,table.getn(ded_discard))+1]
+			end
+			
+			ded_bubble = {}
+			ded_bptr = 0
+			
+			function ded_add_bubble(obj)
+				table.insert(ded_bubble,obj)
+			end
+			
+			function ded_get_bubble()
+				ded_bptr = ded_bptr+1
+				return ded_bubble[math.mod(ded_bptr,table.getn(ded_bubble))+1]
+			end
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			self:queuecommand('Update');
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'LifeP1','LifeP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				
+				--name players, judgment and combo
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+					
+					if _G['ScoreP'..pn] then 
+						_G['ScoreP'..pn]:zoom(0)
+					end
+					
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				checked = true; --let this only run once
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i=1,2 do
+						mod_do('clearall',i)
+					end
+				end
+				
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if beat >=v[1] then
+								if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = '';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+						end
+					end
+				end
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					for i,v in pairs(mods2) do
+						if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+							if mod_time >=v[1] then
+								if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+									if table.getn(v) == 5 then
+										mod_do(v[3],v[5]);
+									else
+										mod_do(v[3]);
+									end
+								end
+							end
+						else
+							v[1] = 0;
+							v[2] = 0;
+							v[3] = 'error';
+							v[4] = 'error';
+							SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+						end
+					end
+				end
+				
+				--------------------------------------------------------------------------------------
+				-- i dont know who this reader is but he looks like he is made out of EASE HAHAHAHA --
+				-- original code by exschwasion, bastardized by taro for cmod support and less 'if' --
+				--------------------------------------------------------------------------------------
+				for i,v in pairs(mods_ease) do
+					if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+						if beat >=v[1] then
+							if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+								
+								local duration = v[2];
+								if v[6] == 'end' then duration = v[2] - v[1] end
+								local curtime = beat - v[1]
+								local diff = v[4] - v[3]
+								local startstrength = v[3]
+								local curve = v[7]
+								local mod = v[5]
+								
+								local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+							
+								local strength = v[4]
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							end
+						end
+					else
+						SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+					end
+				end
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				if GAMESTATE:IsHumanPlayer(PLAYER_1) then
+					if SCREENMAN:GetTopScreen():GetChild('ScoreP1') and
+						SCREENMAN:GetTopScreen():GetChild('ScoreP1'):GetChild('ScoreDisplayPercentage Percent'):GetChild('PercentP1') then
+						local loot_scoreP1s = SCREENMAN:GetTopScreen():GetChild('ScoreP1'):GetChild('ScoreDisplayPercentage Percent'):GetChild('PercentP1'):GetText();
+						
+						if loot_scoreP1s then
+							loot_scoreP1 = tonumber(string.sub(loot_scoreP1s,1,string.len(loot_scoreP1s) - 1) * 100);
+						end
+					else
+						loot_scoreP1 = 0
+					end
+				end
+				if GAMESTATE:IsHumanPlayer(PLAYER_2) then
+					if SCREENMAN:GetTopScreen():GetChild('ScoreP2') and
+						SCREENMAN:GetTopScreen():GetChild('ScoreP2'):GetChild('ScoreDisplayPercentage Percent'):GetChild('PercentP2') then
+						local loot_scoreP2s = SCREENMAN:GetTopScreen():GetChild('ScoreP2'):GetChild('ScoreDisplayPercentage Percent'):GetChild('PercentP2'):GetText();
+						if loot_scoreP2s then
+							loot_scoreP2 = tonumber(string.sub(loot_scoreP2s,1,string.len(loot_scoreP2s) - 1) * 100);
+						end
+					else
+						loot_scoreP2 = 0
+					end
+				end
+				
+				if not FUCK_EXE then
+					if loot_scoreP1 > loot_scoreP1prev and GAMESTATE:IsPlayerEnabled(0) then
+						MESSAGEMAN:Broadcast('PHit');
+					end
+					if loot_scoreP2 > loot_scoreP2prev and GAMESTATE:IsPlayerEnabled(1) then
+						MESSAGEMAN:Broadcast('PHit')
+					end
+				end
+				
+				loot_scoreP1prev = loot_scoreP1;
+				loot_scoreP2prev = loot_scoreP2;
+				
+				while ded_throw1 <= table.getn(ded_chart1) and beat > ded_chart1[ded_throw1][1]-4 do
+					if beat < ded_chart1[ded_throw1][1]-2 and ded_chart1[ded_throw1][3] ~= 'M' then
+						local a = ded_get_arrow(ded_getquant(ded_chart1[ded_throw1][1]))
+						local dir = ded_chart1[ded_throw1][2]
+						if a then
+							--zoom,.9;x,sw*0.2-30;y,sh*0.8-56
+							a:hidden(0)
+							a:zoom(1)
+							a:GetChild(''):rotationz(ded_dirs[dir+1])
+							a:x(sw*0.15+10)
+							a:y(sh*0.8-90)
+							a:linear(60/145)
+							
+							a:GetChild(''):diffusealpha(1)
+							a:GetChild(''):decelerate(60/145)
+							a:GetChild(''):addy(sh*-0.4)
+							a:GetChild(''):sleep(120/145)
+							if ded_chart1[ded_throw1][1] > 167 and ded_chart1[ded_throw1][1] < 180 then
+								a:GetChild(''):diffusealpha(0)
+							end
+							a:GetChild(''):accelerate(60/145)
+							a:GetChild(''):addy(sh*0.4)
+							
+							a:x(sw/2)
+							
+							a:sleep(120/145)
+							a:linear(60/145)
+							a:x(sw*0.85-60)
+							a:y(sh*0.8-52)
+							a:queuecommand('Hide');
+						end
+						
+						if ded_chart1[ded_throw1][1] > 167 and ded_chart1[ded_throw1][1] < 180 then
+							
+							local a = ded_get_arrow(8)
+							if a then
+								--zoom,.9;x,sw*0.2-30;y,sh*0.8-56
+								a:hidden(0)
+								a:zoom(1)
+								a:x(sw*0.15+10)
+								a:y(sh*0.8-90)
+								a:linear(60/145)
+								
+								a:GetChild(''):diffusealpha(0)
+								a:GetChild(''):decelerate(60/145)
+								a:GetChild(''):addy(sh*-0.4)
+								a:GetChild(''):sleep(120/145)
+								a:GetChild(''):diffusealpha(1)
+								a:GetChild(''):accelerate(60/145)
+								a:GetChild(''):addy(sh*0.4)
+								
+								a:x(sw/2)
+								
+								a:sleep(120/145)
+								a:linear(60/145)
+								a:x(sw*0.85-60)
+								a:y(sh*0.8-52)
+								a:queuecommand('Hide');
+							end
+							
+						end
+						
+					end
+					ded_throw1 = ded_throw1+1
+				end
+				
+				while ded_throw2 <= table.getn(ded_chart2) and beat > ded_chart2[ded_throw2][1]-3 do
+					if beat < ded_chart2[ded_throw2][1] and ded_chart2[ded_throw2][3] ~= 'M' then
+						local a = ded_get_arrow(ded_getquant(ded_chart2[ded_throw2][1]))
+						dir = ded_chart2[ded_throw2][2]
+						
+						if a then
+							--zoom,.9;x,sw*0.2-30;y,sh*0.8-56
+							a:hidden(0)
+							a:zoom(1)
+							a:GetChild(''):finishtweening()
+							a:GetChild(''):rotationz(ded_dirs[dir+1])
+							if ded_chart2[ded_throw2][1] == 256 then
+								a:GetChild(''):addx( -10 + (ded_done256 and 20 or 0) )
+							end
+							a:x(sw*0.15+10)
+							a:y(sh*0.8-90)
+							a:linear(60/145)
+							
+							a:GetChild(''):diffusealpha(1)
+							a:GetChild(''):decelerate(60/145)
+							a:GetChild(''):addy(sh*-0.4)
+							
+							
+							if ded_chart2[ded_throw2][1] == 256 then
+								a:GetChild(''):decelerate(120/145)
+								a:GetChild(''):addx(-11.333 + (ded_done256 and 22.666 or 0))
+								a:GetChild(''):addy( 10 + (ded_done256 and -20 or 0) )
+								a:GetChild(''):sleep(0)
+							else
+								a:GetChild(''):linear(60/145)
+							end
+							
+							if ded_chart2[ded_throw2][1] == 256 then
+								a:GetChild(''):decelerate(40/145)
+								a:GetChild(''):addy(sh*-0.1)
+								a:GetChild(''):accelerate(80/145)
+								a:GetChild(''):addy(sh*0.5)
+							else
+								a:GetChild(''):accelerate(60/145)
+								a:GetChild(''):addy(sh*0.4)
+							end
+							
+							if ded_chart2[ded_throw2][1] == 256 then
+								a:GetChild(''):addy(-10 + (ded_done256 and 20 or 0))
+							end
+							
+							a:x(sw/2 - 15)
+							
+							if ded_chart2[ded_throw2][1] == 256 then
+								a:linear(120/145)
+								a:addx(40)
+							else
+								a:linear(60/145)
+								a:addx(40)
+							end
+							
+							if ded_chart2[ded_throw2][1] == 256 then
+								a:linear(120/145)
+							else
+								a:linear(60/145)
+							end
+							a:x(sw*0.85-60)
+							a:y(sh*0.8-52)
+							a:queuecommand('Hide');
+						end
+						
+						if ded_chart2[ded_throw2][1] == 256 and not ded_done256 or ded_chart2[ded_throw2][1] ~= 256 then
+							
+							if ded_chart2[ded_throw2][1] == 256 then
+								ded_done256 = true
+							end
+							
+							local a = ded_get_bubble()
+							local mult = 1
+							if ded_chart2[ded_throw2][1] == 256 then mult = 3 end
+							if a then
+								a:hidden(0)
+								a:x(sw/2 - 20)
+								a:y(sh*0.8-90 - sh*0.4)
+								a:zoom(0)
+								a:sleep(50/145)
+								a:bounceend(30/145)
+								if ded_chart2[ded_throw2][1] == 256 then
+									a:zoom(.6)
+									a:sleep(200/145)
+								else
+									a:zoom(.4)
+									a:sleep(50/145)
+								end
+								a:queuecommand('Hide')
+								
+								a:GetChild(''):x(0)
+								a:GetChild(''):sleep(50/145)
+								a:GetChild(''):diffusealpha(0)
+								a:GetChild(''):linear(20/145)
+								a:GetChild(''):diffusealpha(.5)
+								a:GetChild(''):addx(12.5/0.4)
+								a:GetChild(''):linear(mult*40/145)
+								a:GetChild(''):addx(25/0.4)
+								a:GetChild(''):linear(20/145)
+								a:GetChild(''):addx(12.5/0.4)
+								a:GetChild(''):diffusealpha(0)
+								
+							end
+						end
+						
+					end
+					ded_throw2 = ded_throw2+1
+				end
+				
+				if ded_dtimer > 0 then
+					ded_dtimer = ded_dtimer-(1/60)
+				end
+				
+				if beat > 220 and beat < 228 then
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationx( 25*math.sin(beat*math.pi) )
+						end
+					end
+				end
+				
+				if beat > 228 and beat < 232 then
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationx( 25*math.sin(beat*2*math.pi) )
+						end
+					end
+				end
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+					while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+						if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+							if type(mod_actions[curaction][2]) == 'function' then
+								mod_actions[curaction][2]()
+							elseif type(mod_actions[curaction][2]) == 'string' then
+								MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+							end
+						end
+						curaction = curaction+1;
+					end
+				end
+				
+			end
+			
+			self:sleep(1/60);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	
+	<!--Handling messages here is still fun and profitable-->
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) rb_aux = self end"
+	StepP1MessageCommand="%function(self) if GAMESTATE:GetSongBeat() > 142 and GAMESTATE:GetSongBeat() < 176 or GAMESTATE:GetSongBeat() > 236.5 then ded_condor:playcommand('Swing') end end"
+	StepP2MessageCommand="%function(self) if GAMESTATE:GetSongBeat() > 142 and GAMESTATE:GetSongBeat() < 176 or GAMESTATE:GetSongBeat() > 236.5 then ded_condor:playcommand('Swing') end end"
+	PHitMessageCommand="%function(self)
+	
+		local beat = GAMESTATE:GetSongBeat()
+	
+		if ded_dtimer <= 0 and beat > 142 and beat < 176 or beat > 236.5 then
+			
+			local a = ded_get_discard()
+			
+			if a then
+			
+				local rz = math.random(0,360)
+				
+				a:hidden(0)
+				a:zoom(1)
+				a:rotationz(rz)
+				a:x(sw*0.85-60)
+				a:y(sh*0.8-52)
+				if math.abs(beat-258)*(60/145) < ded_good then
+					a:addx(-32)
+				end
+				a:diffusealpha(0.6)
+				a:linear(60/145)
+				a:rotationz(rz+540)
+				a:zoom(7+(math.random(-100,100)/100))
+				a:addx(-600+math.random(-100,100))
+				a:addy(-450+math.random(-100,100))
+				a:diffusealpha(0)
+				a:queuecommand('Hide')
+				
+			end
+			
+			if math.abs(beat-258)*(60/145) < ded_good then
+				local a = ded_get_discard()
+				
+				local rz = math.random(0,360)
+				
+				if a then
+					a:hidden(0)
+					a:zoom(1)
+					a:rotationz(rz)
+					a:x(sw*0.85-60)
+					a:y(sh*0.8-52)
+					if math.abs(beat-258)*(60/145) < ded_good then
+						a:addx(32)
+					end
+					a:diffusealpha(0.6)
+					a:linear(60/145)
+					a:rotationz(rz+540)
+					a:zoom(6+(math.random(-100,100)/100))
+					a:addx(-200+math.random(-100,100))
+					a:addy(-500+math.random(-100,100))
+					a:diffusealpha(0)
+					a:queuecommand('Hide')
+				end
+			end
+			
+			ded_dtimer = 30/145
+		end
+	end"
+	/>
+	
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) rb_aux2 = self end"
+	MimiDelayedMessageCommand="stoptweening;sleep,2/15;queuecommand,Do"
+	DoCommand="%function(self) ded_mimi:playcommand('Throw2') end"
+	/>
+	
+	<Layer Type="Quad" InitCommand="%function(self) ded_throwt=self end" OnCommand="hidden,1;" />
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<!--zoom,.9;x,sw*0.2-30;y,sh*0.8-56-->
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,1) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/4th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,1) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/4th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,1) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/4th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,1) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/4th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,1) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/4th.model" /> </children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,2) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/8th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,2) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/8th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,2) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/8th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,2) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/8th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,2) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/8th.model" /> </children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,3) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/16th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,3) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/16th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,3) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/16th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,3) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/16th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,3) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/16th.model" /> </children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,4) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/24th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,4) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/24th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,4) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/24th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,4) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/24th.model" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,4) end" HideCommand="hidden,1"><children>
+	<Layer File="scalable/24th.model" /> </children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,8) end" HideCommand="hidden,1"><children>
+	<Layer File="dunno1" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,8) end" HideCommand="hidden,1"><children>
+	<Layer File="dunno1" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,8) end" HideCommand="hidden,1"><children>
+	<Layer File="dunno1" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,8) end" HideCommand="hidden,1"><children>
+	<Layer File="dunno1" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_arrow(self,8) end" HideCommand="hidden,1"><children>
+	<Layer File="dunno1" /> </children></Layer>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_bubble(self) end" HideCommand="hidden,1"><children>
+	<Layer File="bubble" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_bubble(self) end" HideCommand="hidden,1"><children>
+	<Layer File="bubble" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_bubble(self) end" HideCommand="hidden,1"><children>
+	<Layer File="bubble" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_bubble(self) end" HideCommand="hidden,1"><children>
+	<Layer File="bubble" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_bubble(self) end" HideCommand="hidden,1"><children>
+	<Layer File="bubble" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_bubble(self) end" HideCommand="hidden,1"><children>
+	<Layer File="bubble" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_bubble(self) end" HideCommand="hidden,1"><children>
+	<Layer File="bubble" /> </children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;sleep,0.02;fov,60;queuecommand,Make" MakeCommand="%function(self) ded_add_bubble(self) end" HideCommand="hidden,1"><children>
+	<Layer File="bubble" /> </children></Layer>
+	
+	<Layer File="curtain" NameCommand="%function(self) ded_curtain2 = self end" OnCommand="playcommand,Name;diffusealpha,0;x,sw/2;vertalign,top;y,0;" />
+	
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	<Layer File="white" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) ded_add_discard(self) end" />
+	
+	<ZZZZLAER Type="Quad" OnCommand="x,sw/2;y,sh/2;zoomto,sw,sh;cropright,0.4;faderight,0.5;diffuse,1,0,0,0"
+	Fk_P1_W8MessageCommand="%function(self)
+		if GAMESTATE:GetSongBeat() > 142 and GAMESTATE:GetSongBeat() < 176 or GAMESTATE:GetSongBeat() > 236.5 then
+			self:finishtweening()
+			self:diffusealpha(0.4)
+			self:linear(0.3)
+			self:diffusealpha(0)
+		end
+	end" />
+	
+	<ZZZZLAER Type="Quad" OnCommand="x,sw/2;y,sh/2;zoomto,sw,sh;cropleft,0.4;fadeleft,0.5;diffuse,1,0,0,0"
+	Fk_P2_W8MessageCommand="%function(self)
+		if GAMESTATE:GetSongBeat() > 142 and GAMESTATE:GetSongBeat() < 176 or GAMESTATE:GetSongBeat() > 236.5 then
+			self:finishtweening()
+			self:diffusealpha(0.4)
+			self:linear(0.3)
+			self:diffusealpha(0)
+		end
+	end" />
+	
+	<ZZLAER Type="Quad" OnCommand="hidden,1"
+		Fk_P1_Complete_W1MessageCommand="%function(self) MESSAGEMAN:Broadcast('PHit') end"
+		Fk_P1_Complete_W2MessageCommand="%function(self) MESSAGEMAN:Broadcast('PHit') end"
+		Fk_P1_Complete_W3MessageCommand="%function(self) MESSAGEMAN:Broadcast('PHit') end"
+		Fk_P2_Complete_W1MessageCommand="%function(self) MESSAGEMAN:Broadcast('PHit') end"
+		Fk_P2_Complete_W2MessageCommand="%function(self) MESSAGEMAN:Broadcast('PHit') end"
+		Fk_P2_Complete_W3MessageCommand="%function(self) MESSAGEMAN:Broadcast('PHit') end"
+	/>
+	
+</children></ActorFrame>

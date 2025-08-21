@@ -1,0 +1,77 @@
+<Layer Type="ActorFrame"><children>
+	
+	<Layer File="aurora" OnCommand="scaletofit,0,0,sw,sh;diffusealpha,0;blend,add;"
+	Launch1Command="finishtweening;zoom,1.5*(SCREEN_WIDTH/640);linear,.2;diffusealpha,.4;linear,1;diffusealpha,0;"
+	Launch2Command="finishtweening;zoom,1.5*(SCREEN_WIDTH/640);linear,.2;diffusealpha,.4;linear,1;diffusealpha,0;"
+	/>
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,1;" HideCommand="hidden,1"
+	Launch1Command="%function(self)
+		local a = self
+		if a then
+		
+			b = a:GetChild('')
+		
+			a:finishtweening()
+			a:hidden(0)
+			
+			b:x(sw/2)
+			b:zoom(1.4)
+			b:blend('add')
+			b:y(-100)
+			
+			if not slumpo then
+				b:diffusealpha(.8)
+			else
+				b:diffusealpha(1)
+			end
+			
+			b:linear(.3)
+			b:y(sh*1.5)
+			
+			
+			a:sleep(.5)
+			a:queuecommand('Hide')
+			
+			--Trace('haha1')
+			
+		end
+	end"
+	><children>
+	<Layer File="rbeam" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="hidden,1;" HideCommand="hidden,1"
+	Launch2Command="%function(self)
+		local a = self
+		if a then
+		
+			b = a:GetChild('')
+		
+			a:finishtweening()
+			a:hidden(0)
+			
+			b:x(sw/2)
+			b:zoom(1.4)
+			b:blend('add')
+			b:y(-100)
+			
+			if not slumpo then
+				b:diffusealpha(.8)
+			else
+				b:diffusealpha(1)
+			end
+			
+			b:linear(.3)
+			b:y(sh*1.5)
+			
+			
+			a:sleep(.5)
+			a:queuecommand('Hide')
+			
+			--Trace('haha2')
+			
+		end
+	end"
+	><children>
+	<Layer File="rbeam" /></children></Layer>
+	
+</children></Layer>

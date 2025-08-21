@@ -1,0 +1,40 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {16,64,'Gridlock X4',5,{1,0,0,.5}},
+                {64,96,'Warming Up',6,{1,0,0,.75}},
+                {96,160,'Spheroid -Rolling Feint-',7,{1,0,0,1}},
+                {160,200,'Refraction -Sugar Mesh Filter-',6,{1,.5,0,1}},
+                {200,248,'Energy Release -Suddenshower-',6,{1,1,0,1}},
+                {248,266,'Recharge and recollect',4,{1,1,.5,1}},
+                {266,304,'Guardian Spirit -Soul Crash-',7,{1,1,1,1}},
+                {304,320,'And now, I will try.',5,{0,1,1,1}},
+                {320,352,'Mysterious Girl\'s Ability -Erased Light-',8,{0,.5,1,1}},
+                {352,384,'Sick Tricks -Aileron roll-',7,{0,0,1,1}},
+                {384,416,'Piece of Mind',7,{.3,0,1,1}},
+                {416,436,'Cooling down',6,{.3,0,1,.75}},
+                {436,471,'Serenity -Shooting Star-',4,{.3,0,1,.5}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

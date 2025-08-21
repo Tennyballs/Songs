@@ -1,0 +1,33 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {40,68,'Icicle Fall -Easy-',2,{0,.6,1,1}},
+                {72,132,'Mint Sign -Window Hold-',2,{1,1,1,1}},
+                {168,200,'Icicle World Domination',3,{0,.6,1,1}},
+                {200,232,'P8107 Sign -Perfect Freeze-',3,{0,1,.7,1}},
+                {252,312,'Mint Sign -Window Hold EX-',3,{1,1,1,1}},
+                {315,317,'The Least Haunted Jump Ever',1,{0,.6,1,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

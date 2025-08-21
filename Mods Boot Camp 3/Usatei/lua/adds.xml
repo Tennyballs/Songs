@@ -1,0 +1,83 @@
+<ActorFrame><children>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_CENTER_Y;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP1MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+	<Layer File="_missing" OnCommand="hidden,1;vertalign,bottom;x,SCREEN_CENTER_X*-1.5 + math.random(SCREEN_CENTER_X*-1.25,SCREEN_CENTER_X*1.25);y,SCREEN_HEIGHT;bounce;effectmagnitude,0,SCREEN_HEIGHT*-.25+math.random(SCREEN_HEIGHT*-.1,SCREEN_HEIGHT*.1),0;zoom,math.random()*.25+.75;effectperiod,math.random()+.25"
+	BallP2MessageCommand="hidden,0;linear,spb*12;x,SCREEN_CENTER_X*3 + math.random(SCREEN_CENTER_X*-.75,SCREEN_CENTER_X*.75);queuecommand,Hideself"
+	HideselfCommand="hidden,1"
+	/>
+</children></ActorFrame>

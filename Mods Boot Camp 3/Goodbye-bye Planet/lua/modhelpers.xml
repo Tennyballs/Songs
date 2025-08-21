@@ -1,0 +1,206 @@
+<ActorFrame><children>
+<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self)
+
+		function math.clamp(val,min,max)
+			if val > max then return max end
+			if val < min then return min end
+			return val
+		end
+
+		function Plr(pn) 
+			return _G['P'..pn]
+		end
+
+		function normalize(value,min,max,nmin,nmax)
+			return nmin + (value-min)*(nmax-nmin)/(max-min)
+		end
+
+		function mod_do(str,pn)
+			if pn then
+				GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+			else
+				GAMESTATE:ApplyGameCommand('mod,'..str)
+			end
+		end
+
+		function modtable_compare(a,b)
+			return a[1] < b[1]
+		end
+
+		function perframe( beat, endBeat )
+			local cur = GAMESTATE:GetSongBeat();
+			return cur >= mod_firstSeenBeat+1 and cur >= beat and cur < (endBeat or beat+1);
+		end
+
+		function mod_insert(beat,len,mod,t,pn)
+			if not t then t = 'len' end
+			table.insert(mods,{beat,len,mod,t,pn});
+		end
+		
+		function mod2_insert(beat,len,mod,t,pn)
+			if not t then t = 'len' end
+			table.insert(mods2,{beat,len,mod,t,pn});
+		end
+		
+		function mod_ease(beat,len,str1,str2,mod,t,ease,pn,sus,a,p)
+			table.insert(mods_ease,{beat,len,str1,str2,mod,t,ease,pn,sus,a,p})
+		end
+		
+		function mod_message(beat,msg,p)
+			table.insert(mod_actions,{beat,msg,p});
+		end
+
+		-- world's ugliest function
+		-- ease_wiggle now supports absolute values
+		function ease_wiggle(beat,len,amt,step,str,ease,t,pn,abs)
+		    local s,count,pStart,pEnd,cur,prev,e = 0,1,0,0,-amt,amt,0
+		    abs = abs or false
+		    if t == 'end' then e = len elseif t == 'len' then e = (beat+len) end
+		    if abs == true then prev,cur,s = 0,-cur,step end
+		    for i = beat,(e-s),step do
+		        if abs == false then
+		            if i == beat then pStart = 0 else pStart = prev end
+		            if i == e then pEnd = 0  else pEnd = cur end
+		        elseif abs == true then
+		            if count == -1 then cur,prev = 0,amt elseif count == 1 then cur,prev = amt,0 end
+		            pStart,pEnd = prev,cur
+		        end
+		        mod_ease(i,step,pStart,pEnd,str,'len',ease,pn)
+		        if abs == false then cur,prev = -cur,-prev
+		        elseif abs == true then count = -count
+		        end
+		    end
+		end
+
+		function modulo(a, b)
+			return a - math.floor(a/b)*b;
+		end
+
+		function mod_bounce(beat,length,start,apex,mod,ease,inverse,pn)
+			local i,o = 'in','out'
+			if inverse == true then i,o = 'out','in' end
+			mod_ease(beat, (length/2), start, apex, mod, 'len', _G[o..''..tostring(ease)],pn)
+			mod_ease(beat+(length/2), (length/2), apex, start, mod, 'len', _G[i..''..tostring(ease)],pn,0.2)
+		end
+
+		function randomXD(t)
+			if t == 0 then return 0.5 else
+			return modulo(math.sin(t * 3229.3) * 43758.5453, 1) end
+		end
+		
+		local switcheroo_flip = {0,0,0};
+		local switcheroo_invert = {0,0,0};
+		local switcheroo_width = 1;
+		function switcheroo_add(beat,which,speed,len,pn)
+		local switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+			flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+			ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			if not speed then speed = 1000000 end
+			
+			local mpn = 3
+			if pn then mpn = pn end
+			
+			local w = {0,0}
+			
+			if type(which) == 'string' then w = switcheroos[which] end
+			if type(which) == 'table' then w = which end
+			
+			if w then
+				local targf = (switcheroos[which][1]*switcheroo_width) + ( 50 - switcheroo_width*50 )
+				local targi = (switcheroos[which][2]*switcheroo_width)
+				local sw_modlist = ''
+				if switcheroo_flip[mpn] ~= targf then
+					sw_modlist = sw_modlist..'*'..(0.01*speed*math.abs(targf-switcheroo_flip[mpn]))..' '..(targf)..' flip,'
+				else
+					sw_modlist = sw_modlist..'*1 '..(targf)..' flip,'
+				end
+				if switcheroo_invert[mpn] ~= targi then
+					sw_modlist = sw_modlist..'*'..(0.01*speed*math.abs(targi-switcheroo_invert[mpn]))..' '..(targi)..' invert'
+				else
+					sw_modlist = sw_modlist..'*1 '..(targi)..' invert'
+				end
+				table.insert(mods,{beat,len,sw_modlist,'len',pn});
+				
+				if mpn == 3 then
+					for apn=1,3 do
+						switcheroo_flip[apn] = targf;
+						switcheroo_invert[apn] = targi;
+					end
+				else
+					switcheroo_flip[mpn] = targf;
+					switcheroo_invert[mpn] = targi;
+				end
+			
+			end
+			
+		end
+
+		function mod_quickswaps(beat,len,which,speed,step,pn)
+			for i = beat,(beat+len)-(step*2),(step*2) do
+				switcheroo_add(i,tostring(which),speed,step,nil)
+				switcheroo_add(i+step,'normal',speed,step,nil)
+			end
+		end
+
+		function bouncy_wiggle(beat,len,step,start,apex,mod,t,ease,abs,pn,inc)
+			if not inc then inc = 0 end
+			local f = 1 if t == 'end' then shit = len else shit = (beat+len) end
+			local ass = 0
+			for i = beat,(shit-step),step do
+				if abs == true then fuck = (apex+ass) else fuck = (apex+ass)*f end
+				mod_bounce(i,step,start,fuck,mod,tostring(ease),false,pn)
+				f=-f
+				ass = ass + inc
+			end
+		end
+
+		function mod_beat(beat,strength,pn)
+			if not strength then strength = 1000 end;
+			table.insert(mods,{beat-.5,1,'*10000 '..strength..' beat','len',pn});
+			table.insert(mods,{beat+.5,0.25,'*10000 no beat','len',pn});
+		end
+
+		local condor_const1 = math.sqrt(math.pow(SCREEN_WIDTH/2,2)+math.pow(SCREEN_HEIGHT/2,2))
+		local condor_const2 = 180+math.deg(math.atan(SCREEN_HEIGHT/SCREEN_WIDTH))
+
+		function condor_screenzoom(zm)
+			mod_screen:x(SCREEN_WIDTH/2+(condor_const1*zm*math.cos((condor_const2)/180*math.pi)));
+			mod_screen:y(SCREEN_HEIGHT/2+(condor_const1*zm*math.sin((condor_const2)/180*math.pi)));
+			mod_screen:zoom(zm)
+		end
+		
+		function condor_screenrotation(ang)
+			mod_screen:x(SCREEN_WIDTH/2+(condor_const1*math.cos((ang+condor_const2)/180*math.pi)));
+			mod_screen:y(SCREEN_HEIGHT/2+(condor_const1*math.sin((ang+condor_const2)/180*math.pi)));
+			mod_screen:rotationz(ang)
+		end
+
+		function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+			if not speed then speed = 1 end
+			local fluct = 1
+			for i=0,(num-1) do
+				b = beat+(i/div)
+				local m = 1
+				if i==0 and not first then m = 0.5 end
+					table.insert(mods,{b,1,'*'..math.abs(m*speed*amt/10)..' '..(amt*fluct)..' '..mod..'','len',pn});
+					fluct = fluct*-1;
+				end
+			table.insert(mods,{beat+(num/div),1,'*'..math.abs(amt*speed/20)..' no '..mod..'','len',pn});
+		end
+
+		function mod_drivendrop(beat,length,step,speedmod,isCentered2,pn)
+			local str = ''
+			local calc = speedmod
+			if not isCentered2 then isCentered2 = false end
+			if isCentered2 == false then str = 'centered' calc = speedmod*(185/128) else mod_insert(beat, length, '*-1 1 approachtype','len',pn) str = 'centered2' end
+			for i = beat,(beat+length)-step,step do
+				local cutoff = (step-0.1)
+				mod_insert(i, cutoff, '*'..calc..' 10000 '..str,'len',pn)
+				mod_insert(i+cutoff, 0.1, '*-1 no '..str,'len',pn)
+			end
+		end
+
+	end"
+/>
+</children></ActorFrame>

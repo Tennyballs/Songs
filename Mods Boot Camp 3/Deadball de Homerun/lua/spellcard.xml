@@ -1,0 +1,35 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {12,44,'Batter up!',1,{1,.6,.8,1}},
+                {44,108,'Who\'s on first!',1,{1,.2,.4,1}},
+                {108,140,'What\'s on second!',2,{1,.6,.8,1}},
+                {144,173,'Strike!! Batting Show',1,{.7,.7,.7,1}},
+                {180,204,'I don\'t know\'s on third.',1,{1,.2,.4,1}},
+                {204,236,'I don\'t give a darn! (Shortstop)',2,{1,.6,.8,1}},
+                {239,256,'Strike 2!! Batting No',2,{.7,.7,.7,1}},
+                {257,259,'Strike 3!! You\'re OUT!',2,{.4,0,.8,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

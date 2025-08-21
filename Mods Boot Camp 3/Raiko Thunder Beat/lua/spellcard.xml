@@ -1,0 +1,36 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {4,40,'Introducing, Horikawa Raiko!!',2,{.6,0,0,1}},
+                {40,72,'Sin Sack Symphony',3,{.8,.6,.4,1}},
+                {72,104,'All Clear, Go!!',3,{0,.7,1,1}},
+                {104,128,'Raiko No Tatsujin',2,{.6,0,0,1}},
+                {136,160,'Raiko No Tatsujin ~Artistically~',3,{.8,0,0,1}},
+                {168,232,'Ayakashi Kawaii',3,{.8,.6,.4,1}},
+                {232,288,'Storm Ensemble -Hidden Parts-',3,{.6,0,0,1}},
+                {296,304,'Raiko No Tatsujin Finale',3,{.8,0,0,1}},
+                {319,321,'Bongo Boy',1,{0,.7,1,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

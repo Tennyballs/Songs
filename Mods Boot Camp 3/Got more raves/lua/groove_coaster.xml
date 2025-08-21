@@ -1,0 +1,2162 @@
+<ActorFrame><children>
+
+	<Code
+		InitCommand="%function(self)
+		
+			checked = false
+		
+			groove_fc = {true,true}
+		
+			groove_aldelay = {0,0}
+			groove_goodjudge = {0,0}
+			groove_greatwindow = PREFSMAN:GetPreference('JudgeWindowSecondsGreat');
+			
+			gmr_curcombo = {0,0}
+			gmr_lastcombo = {0,0}
+			gmr_nextcombo = {25,25}
+			
+			gmr_star_threshold = 50
+			if uksrt_tournament_mode then
+				gmr_star_threshold = 25
+			end
+			
+			function groove_checkadlibs(pn)
+				if groove_goodjudge[pn] > 0 or groove_aldelay[pn] <= 0 then
+					local beat = GAMESTATE:GetSongBeat()
+					local found = false
+					for i=1,table.getn(groove_adlibs) do
+						if not groove_hitadlibs[pn][i] and math.abs(beat-groove_adlibs[i]) < groove_greatwindow*(groove_bpm/60) then
+							groove_hitadlibs[pn][i] = true
+							MESSAGEMAN:Broadcast('AdlibP'..pn);
+							
+							local a = Plr(pn)
+							if a then
+								a:DidTapNote(0,5,false)
+								a:SendJudgment(1,true,0,groove_adlibs[i])
+								a:finishtweening();
+								
+								a:SetCombo( a:GetCombo() + 1 )
+							end
+							
+							found = true
+						end
+					end
+					if not found then
+						groove_aldelay[pn] = groove_greatwindow*0.5;
+					end
+				end
+			end
+		
+			groove_bpm = 133
+			
+			function gmr_trace_worldpos()
+				Trace( groove_world:GetX()..' '..groove_world:GetY()..' '..groove_world:GetZ()..' ' )
+			end
+		
+			function t_linear(t)
+				return linear(t,0,1,1)
+			end
+			function t_inQuad(t)
+				return inQuad(t,0,1,1)
+			end
+			function t_outQuad(t)
+				return outQuad(t,0,1,1)
+			end
+			function t_inOutQuad(t)
+				return inOutQuad(t,0,1,1)
+			end
+			function t_outInQuad(t)
+				return outInQuad(t,0,1,1)
+			end
+			function t_inQuart(t)
+				return inQuart(t,0,1,1)
+			end
+			function t_outQuart(t)
+				return outQuart(t,0,1,1)
+			end
+			function t_inOutQuart(t)
+				return inOutQuart(t,0,1,1)
+			end
+			function t_outInQuart(t)
+				return outInQuart(t,0,1,1)
+			end
+			function t_inSine(t)
+				return inSine(t,0,1,1)
+			end
+			function t_outSine(t)
+				return outSine(t,0,1,1)
+			end
+			function t_inOutSine(t)
+				return inOutSine(t,0,1,1)
+			end
+			function t_outInSine(t)
+				return outInSine(t,0,1,1)
+			end
+			
+			groove_dirs = {90,0,180,-90}
+			
+			local m = mod_insert
+			local m2 = mod_message
+			local me = mod_ease
+			
+			
+			local l = 'len'
+			local e = 'end'
+		
+			function groove_fakestep(col)
+				local beat = GAMESTATE:GetSongBeat()
+				if checked and beat and beat > 4 then
+					local a = Plr(2)
+					if a then
+						a:FakeStep(col) --send a press anim message to player object
+					end
+				end
+			end
+			
+			function groove_faketaphit(col,w,pn)
+				local beat = GAMESTATE:GetSongBeat()
+				if checked and beat and beat > 4 then
+					local a = Plr(2)
+					if a then
+						a:DidTapNote(col,w) --generate noteflash
+					end
+				end
+			end
+			
+			function groove_fakeholdhit(col)
+				local beat = GAMESTATE:GetSongBeat()
+				if checked and beat and beat > 4 then
+					local a = Plr(2)
+					if a then
+						--a:DidHoldNote(col) --generate hold success flash
+					end
+				end
+			end
+			
+			function groove_judge(pn,w)
+				local a = Plr(pn)
+				if a then
+					_G['groove_adlib'..pn]:finishtweening();
+				end
+				if w < 4 then
+					groove_goodjudge[pn] = groove_greatwindow
+				else
+					groove_fc[pn] = false
+				end
+			end
+		
+			groove_camfollow = {true,true,true}
+			
+			function groove_registerpath( num )
+				
+				_G['groove_splines_'..num..'_x'] = {}
+				_G['groove_splines_'..num..'_y'] = {}
+				_G['groove_splines_'..num..'_z'] = {}
+				_G['groove_splines_'..num..'_stealth1'] = {}
+				_G['groove_splines_'..num..'_stealth2'] = {}
+				
+				for i=1,4 do
+					table.insert( _G['groove_splines_'..num..'_x'], {{num=0,0,0}} )
+					table.insert( _G['groove_splines_'..num..'_y'], {{num=0,0,0}} )
+					table.insert( _G['groove_splines_'..num..'_z'], {{num=0,0,0}} )
+					table.insert( _G['groove_splines_'..num..'_stealth1'], {{0,100}} )
+					table.insert( _G['groove_splines_'..num..'_stealth2'], {{0,0}} )
+				end
+			
+			end
+			
+			groove_res = 50;
+		
+			function groove_splineRegion(path,begin,range)
+				local backtrace = 200
+				local newpath = {}
+				local gotone = false
+				for i=1,table.getn(path) do
+					if path[i][1] > begin-backtrace then
+						if i > 1 and not gotone then
+							table.insert(newpath,path[i-1])
+							gotone = true
+						end
+						table.insert(newpath,path[i])
+						if path[i][1] > begin+range then
+							break;
+						end
+					end
+				end
+				return newpath
+			end
+			
+			function groove_path( s, l, loc, tween, col )
+				
+				local tab = 1
+				
+				for i=1,4 do
+				
+					if not col or i == col+1 then
+			
+						local tx = _G['groove_splines_'..tab..'_x'][i]
+						local ty = _G['groove_splines_'..tab..'_y'][i]
+						local tz = _G['groove_splines_'..tab..'_z'][i]
+						
+						local cx = tx[table.getn(tx)]
+						local cy = ty[table.getn(ty)]
+						local cz = tz[table.getn(tz)]
+						
+						local crx = {cx[1],cx[2]}
+						local cry = {cy[1],cy[2]}
+						local crz = {cz[1],cz[2]}
+						
+						if loc[1] then
+							if not tween or not tween[1] or tween[1] == linear then
+								table.insert(tx,{num = s+table.getn(tx)/100000,crx[1]+l*200,crx[2]+loc[1]/2})
+							else
+								for i=0,l,groove_res/200 do
+									table.insert(tx,{num = s+table.getn(tx)/100000,crx[1]+i*200,tween[1](i,crx[2],loc[1]/2,l)})
+								end
+							end
+						else
+							table.insert(tx,{num = s+table.getn(tx)/100000,crx[1]+l*200,crx[2]})
+						end
+						
+						if loc[2] then
+							if not tween or not tween[2] or tween[2] == linear then
+								table.insert(ty,{num = s+table.getn(ty)/100000,cry[1]+l*200,cry[2]+loc[2]/2})
+							else
+								for i=0,l,groove_res/200 do
+									table.insert(ty,{num = s+table.getn(ty)/100000,cry[1]+i*200,tween[2](i,cry[2],loc[2]/2,l)})
+								end
+							end
+						else
+							table.insert(ty,{num = s+table.getn(ty)/100000,cry[1]+l*200,cry[2]})
+						end
+						
+						if loc[3] then
+							if not tween or not tween[3] or tween[3] == linear then
+								table.insert(tz,{num = s+table.getn(tz)/100000,crz[1]+l*200,crz[2]+loc[3]/2})
+							else
+								for i=0,l,groove_res/200 do
+									table.insert(tz,{num = s+table.getn(tz)/100000,crz[1]+i*200,tween[3](i,crz[2],loc[3]/2,l)})
+								end
+							end
+						else
+							table.insert(tz,{num = s+table.getn(tz)/100000,crz[1]+l*200,crz[2]})
+						end
+					
+					end
+				
+				end
+				
+			end
+			
+			function groove_path_stealth( s, amt, col,pn )
+			
+				local tab = 1
+				
+				for i=1,4 do
+				
+					if not col or i == col+1 then
+			
+						local ts = _G['groove_splines_'..tab..'_stealth'..pn][i]
+						
+						table.insert(ts,{s*200,amt})
+						
+						--if i==1 then
+						--	Trace('TABLE INSERT: {'..s..','..amt..'}' );
+						--end
+						
+					end
+				
+				end
+				
+			end
+			
+			function groove_caf( beat, x,y,z )
+				m2(beat, function()
+					groove_camfollow = {x,y,z}
+				end,true)
+			end
+			
+			function groove_cat( beat,len,tween,x,y,z, pers )
+				m2(beat,function()
+					if x then
+						groove_camaddx:stoptweening()
+						groove_camaddx:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+						groove_camaddx:x(x)
+					end
+					if y then
+						groove_camaddy:stoptweening()
+						groove_camaddy:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+						groove_camaddy:y(y)
+					end
+					if z then
+						groove_camaddz:stoptweening()
+						groove_camaddz:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+						groove_camaddz:z(z)
+					end
+				end, pers)
+			end
+			
+			function groove_caz( beat,len,tween, amt, pers )
+				m2(beat,function()
+					groove_camzoom:stoptweening()
+					groove_camzoom:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+					groove_camzoom:x(amt)
+				end, pers)
+			end
+			
+			function groove_car( beat,len,tween,x,y,z, pers )
+				m2(beat,function()
+					if x then
+						if pers then
+							groove_camanglex:finishtweening()
+						else
+							groove_camanglex:stoptweening()
+						end
+						groove_camanglex:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+						groove_camanglex:x(x)
+					end
+					if y then
+						if pers then
+							groove_camangley:finishtweening()
+						else
+							groove_camangley:stoptweening()
+						end
+						groove_camangley:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+						groove_camangley:y(y)
+					end
+					if z then
+						if pers then
+							groove_camanglez:finishtweening()
+						else
+							groove_camanglez:stoptweening()
+						end
+						groove_camanglez:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+						groove_camanglez:z(z)
+					end
+				end, pers)
+			end
+			
+			function groove_fall( beat,len,tween, amp, fall, p, pers )
+				m2(beat,function()
+					for pn=1,2 do
+						if p == pn or not p then
+							
+							if amp then
+								_G['groove_fall_amp'..pn]:stoptweening()
+								_G['groove_fall_amp'..pn]:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+							end
+							
+							if amp and type(amp) == 'number' then
+								_G['groove_fall_amp'..pn]:x(amp)
+								_G['groove_fall_amp'..pn]:y(amp)
+							elseif amp and type(amp) == 'table' then
+								_G['groove_fall_amp'..pn]:x(amp[1])
+								_G['groove_fall_amp'..pn]:y(amp[2])
+								_G['groove_fall_amp'..pn]:z(amp[3])
+							end
+							
+							if fall then
+								_G['groove_fall_dist'..pn]:stoptweening()
+								_G['groove_fall_dist'..pn]:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+							end
+							
+							if fall and type(fall) == 'number' then
+								_G['groove_fall_dist'..pn]:y(fall)
+							elseif fall and type(fall) == 'table' then
+								_G['groove_fall_dist'..pn]:x(fall[1])
+								_G['groove_fall_dist'..pn]:y(fall[2])
+							end
+							
+						end
+					end
+				end, pers)
+			end
+			
+			function groove_hidden( beat,len,tween,x, p, pers )
+				m2(beat,function()
+					for pn=1,2 do
+						if p == pn or not p then
+							_G['groove_hid'..pn]:stoptweening()
+							_G['groove_hid'..pn]:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+							_G['groove_hid'..pn]:x(x)
+						end
+					end
+				end,pers)
+			end
+			
+			function groove_sudden( beat,len,tween,x, p, pers )
+				m2(beat,function()
+					for pn=1,2 do
+						if p == pn or not p then
+							_G['groove_sud'..pn]:stoptweening()
+							_G['groove_sud'..pn]:tween(len*60/groove_bpm,'t_'..tween..'(%f)')
+							_G['groove_sud'..pn]:x(x)
+						end
+					end
+				end,pers)
+			end
+		
+			function groove_opposite(pn)
+				if pn == 1 then return 2 end
+				if pn == 2 then return 1 end
+				return 0
+			end
+			
+			function groove_active_player(b,pn)
+				groove_path_stealth( b, 100, nil, pn)
+				groove_path_stealth( b+.1, 0, nil, pn)
+				groove_path_stealth( b, 0, nil, groove_opposite(pn))
+				groove_path_stealth( b+.1, 100, nil, groove_opposite(pn))
+			end
+			
+			function groove_both_players(b,pn)
+				groove_path_stealth( b, 100, nil, pn)
+				groove_path_stealth( b+.1, 0, nil, pn)
+				groove_path_stealth( b, 0, nil, groove_opposite(pn))
+				groove_path_stealth( b+.1, 0, nil, groove_opposite(pn))
+			end
+		
+			groove_fx1 = {0,0,0,0}
+			groove_fx2 = {0,0,0,0}
+			groove_fy1 = {0,0,0,0}
+			groove_fy2 = {0,0,0,0}
+			groove_fz1 = {0,0,0,0}
+			groove_fz2 = {0,0,0,0}
+			
+			function groove_fall_x( b, l, d, u, r, p )
+				m2(b,function()
+					for pn=1,2 do
+						if p == pn or not p then
+							_G['groove_fx'..pn] = {l,d,u,r}
+						end
+					end
+				end,true)
+			end
+			function groove_fall_y( b, l, d, u, r, p )
+				m2(b,function()
+					for pn=1,2 do
+						if p == pn or not p then
+							_G['groove_fy'..pn] = {l,d,u,r}
+						end
+					end
+				end,true)
+			end
+			function groove_fall_z( b, l, d, u, r, p )
+				m2(b,function()
+					for pn=1,2 do
+						if p == pn or not p then
+							_G['groove_fz'..pn] = {l,d,u,r}
+						end
+					end
+				end,true)
+			end
+			
+			function groove_fall_xall(b, a, p)
+				groove_fall_x(b, a, a, a, a, p)
+			end
+			function groove_fall_yall(b, a, p)
+				groove_fall_y(b, a, a, a, a, p)
+			end
+			function groove_fall_zall(b, a, p)
+				groove_fall_z(b, a, a, a, a, p)
+			end
+			
+			function groove_fall_angle( b, m, a, l, d, u, r, p )
+				m2(b,function()
+					for pn=1,2 do
+						if p == pn or not p then
+							_G['groove_f'..string.sub(a,1,1)..pn] = {m*math.sin(math.rad(l)),m*math.sin(math.rad(d)),m*math.sin(math.rad(u)),m*math.sin(math.rad(r))}
+							_G['groove_f'..string.sub(a,2,2)..pn] = {-m*math.cos(math.rad(l)),-m*math.cos(math.rad(d)),-m*math.cos(math.rad(u)),-m*math.cos(math.rad(r))}
+						end
+					end
+				end,true)
+			end
+			
+			groove_curtime = 0
+			groove_lasttime = 0
+		
+			function groove_update(beat)
+				
+				groove_curtime = GAMESTATE:GetSongTime()
+				local delta_time = groove_curtime - groove_lasttime
+				
+				for pn=1,2 do
+					if groove_goodjudge[pn] > 0 then
+						groove_goodjudge[pn] = groove_goodjudge[pn]-delta_time
+					end
+					if groove_aldelay[pn] > 0 then
+						groove_aldelay[pn] = groove_aldelay[pn]-delta_time
+					end
+				end
+				
+				for i=1,table.getn(groove_sections)-1,2 do
+					if beat >= groove_sections[i] and beat < groove_sections[i+1] then
+						
+						local s = groove_sections[i]
+						local e = groove_sections[i+1]
+						
+						if beat > groove_sections[i] and beat < groove_sections[i+1] then
+						
+							if beat > s and beat < e+1 then
+							
+								local centered = 200*(beat-s)
+								
+								if beat < e then
+									
+									for i=0,3 do
+								
+										local spx = groove_splineRegion(groove_splines_1_x[i+1],centered,1200)
+										local spy = groove_splineRegion(groove_splines_1_y[i+1],centered,1200)
+										local spz = groove_splineRegion(groove_splines_1_z[i+1],centered,1200)
+										
+										local sps1 = groove_splineRegion(groove_splines_1_stealth1[i+1],centered,1200)
+										local sps2 = groove_splineRegion(groove_splines_1_stealth2[i+1],centered,1200)
+										
+										--[[
+										local splines = ''
+										splines = splines..doSplineAll(100000,'x',spx)
+										splines = splines..doSplineAll(100000,'y',spy)
+										splines = splines..doSplineAll(100000,'z',spz)
+										]]
+										
+										applySplineP(10000,'x',i,spx)
+										applySplineP(10000,'y',i,spy)
+										applySplineP(10000,'z',i,spz)
+										
+										applySpline(10000,'stealth',i,sps1,1)
+										applySpline(10000,'stealth',i,sps2,2)
+									
+									end
+									
+									mod_do('*10000 2x, *10000 '..centered..' centered2, *10000 50 reverse');
+									
+									mod_do('*10000 '..(centered*16/40 + groove_sud1:GetX())..' suddenoffset,*10000 '..(centered*16/40 + groove_hid1:GetX())..' hiddenoffset,',1);
+									mod_do('*10000 '..(centered*16/40 + groove_sud2:GetX())..' suddenoffset,*10000 '..(centered*16/40 + groove_hid2:GetX())..' hiddenoffset,',2);
+									
+									for pn=1,2 do
+										local amp = {_G['groove_fall_amp'..pn]:GetX(),_G['groove_fall_amp'..pn]:GetY(),_G['groove_fall_amp'..pn]:GetZ()}
+										if amp[1]+amp[2]+amp[3] > 0 then
+											--fallx%d|%f|%f|%f
+											
+											local dist = {_G['groove_fall_dist'..pn]:GetX(),_G['groove_fall_dist'..pn]:GetY()}
+											local str = ''
+											..'*10000 fallx0|'..(amp[1]*_G['groove_fx'..pn][1])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fally0|'..(amp[2]*_G['groove_fy'..pn][1])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fallz0|'..(amp[3]*_G['groove_fz'..pn][1])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fallx1|'..(amp[1]*_G['groove_fx'..pn][2])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fally1|'..(amp[2]*_G['groove_fy'..pn][2])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fallz1|'..(amp[3]*_G['groove_fz'..pn][2])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fallx2|'..(amp[1]*_G['groove_fx'..pn][3])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fally2|'..(amp[2]*_G['groove_fy'..pn][3])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fallz2|'..(amp[3]*_G['groove_fz'..pn][3])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fallx3|'..(amp[1]*_G['groove_fx'..pn][4])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fally3|'..(amp[2]*_G['groove_fy'..pn][4])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])..','
+											..'*10000 fallz3|'..(amp[3]*_G['groove_fz'..pn][4])..'|'
+											..(centered+dist[1])..'|'..(centered+dist[2])
+											mod_do(str,pn)
+										end
+									end
+									
+									--mod_do('*10000 2x');
+								else
+									mod_do('*10000 no centered2,splinexreset,splineyreset,splinezreset');
+								end
+								
+								--Trace( GAMESTATE:GetY(0, 0, 0) )
+								
+								--groove_world:rotationx(-20)
+								
+								local x = (-GAMESTATE:GetX(0, 1, 0)+-GAMESTATE:GetX(0, 2, 0))/2
+								local y = (-GAMESTATE:GetY(0, 1, 0)+-GAMESTATE:GetY(0, 2, 0))/2
+								local z = (-GAMESTATE:GetZ(0, 1, 0)+-GAMESTATE:GetZ(0, 2, 0))/2
+								
+								gmr_minetrack:xyz(-x + sw/2 ,-y + sh/2 ,-z)
+								
+								mindf_counterRotateObject(groove_camanglex:GetX(), groove_camangley:GetY(), groove_camanglez:GetZ(), gmr_mine1)
+								mindf_counterRotateObject(groove_camanglex:GetX(), groove_camangley:GetY(), groove_camanglez:GetZ(), gmr_mine2)
+								
+								for mn=1,2 do
+									local a = _G['gmr_mine'..mn]
+									a:x( -160*math.sin(beat*math.pi*0.5)*(mn*2-3) )
+									a:y( -120*math.cos(beat*math.pi*0.5)*(mn*2-3) )
+								end
+								
+								local num = 1
+								
+								if beat > s and beat < e then
+										
+									if groove_camfollow[1] then groove_world:x(x-sw/2 - groove_camaddx:GetX()) end
+									if groove_camfollow[2] then groove_world:y(y-sh/2 - groove_camaddy:GetY()) end
+									if groove_camfollow[3] then groove_world:z(z - groove_camaddz:GetZ()) end
+									
+									groove_world2:x(sw/2)
+									groove_world2:y(sh/2)
+									groove_world2:rotationx(groove_camanglex:GetX())
+									groove_world2:rotationy(groove_camangley:GetY())
+									groove_world2:rotationz(groove_camanglez:GetZ())
+									
+									--groove_world2:zoom(groove_camzoom:GetX())
+									groove_world2:z((groove_camzoom:GetX()-1)*1000)
+									
+								end
+								
+								--mod_do('*-1 '..(math.cos(math.pi*(beat+((5*-math.tan(math.tan(beat/2)))))/.5)*100)+5*((0.1*-math.tan(beat/2))*150)..' drunk')
+								
+								--mod_do('*10000 '..(-100*math.rad(groove_camangley:GetY()))..' confusionyoffset, *10000 '..(-100*math.rad(groove_camangley:GetX()))..' confusionxoffset')
+							
+							end
+							
+							local angs = mod_GetCounterRotation(groove_camanglex:GetX(),groove_camangley:GetY(),groove_camanglez:GetZ())
+							
+							local rx = angs[1]+(100*math.rad(groove_confuser:GetX()))
+							local ry = angs[2]+(100*math.rad(groove_confuser:GetY()))
+							local rz = angs[3]+(100*math.rad(groove_confuser:GetZ()))
+							
+							mod_do('*10000 '..rx..' confusionxoffset,*10000 '..ry..' confusionyoffset,*10000 '..rz..' confusionoffset')
+							
+						end
+						
+						
+					end
+					
+					
+					---------------------------------------------------------------------
+					------bg update stuff goes heeeeeeere
+					---------------------------------------------------------------------
+					
+					local rx, ry, rz = gmr_stars:getrotation()
+					gmr_stars:rotationy(ry+gmr_starvars:GetY()*delta_time)
+					
+					local maxcombo = 0
+					for pn=1,2 do
+						
+						local a = Plr(pn)
+						if a then
+							if a:GetCombo() > maxcombo then
+								maxcombo = a:GetCombo()
+							end
+							gmr_curcombo[pn] = a:GetCombo()
+							
+							if gmr_curcombo[pn] >= gmr_nextcombo[pn] then
+								MESSAGEMAN:Broadcast('ExpandQuadP'..pn)
+								if gmr_nextcombo[pn] < 50 then
+									gmr_nextcombo[pn] = gmr_nextcombo[pn]+50
+								else
+									gmr_nextcombo[pn] = gmr_nextcombo[pn]+25
+								end
+							end
+							
+							if gmr_curcombo[pn] < gmr_lastcombo[pn] then
+								gmr_nextcombo[pn] = 25 --reset the thing since we missed...
+							end
+							
+							gmr_lastcombo[pn] = gmr_curcombo[pn]
+						end
+						
+					end
+					
+					if maxcombo > gmr_star_threshold then
+						gmr_combotimer = 0.5
+					else
+						gmr_combotimer = gmr_combotimer - delta_time
+					end
+					
+					if gmr_combotimer > 0 and beat < 299.5 then
+						if gmr_comboalpha < 1 then
+							gmr_comboalpha = gmr_comboalpha+(delta_time/2)
+						else
+							gmr_comboalpha = 1
+						end
+					else
+						if gmr_comboalpha > 0 then
+							gmr_comboalpha = gmr_comboalpha-(delta_time)
+						else
+							gmr_comboalpha = 0
+						end
+					end
+					gmr_stars:diffusealpha( gmr_comboalpha*0.8 )
+					
+					gmr_gradientbg:SetVertexColor(0,gmr_gradient_col0:GetX(),gmr_gradient_col0:GetY(),gmr_gradient_col0:GetZ(),gmr_gradient_col0:getaux())
+					gmr_gradientbg:SetVertexColor(1,gmr_gradient_col1:GetX(),gmr_gradient_col1:GetY(),gmr_gradient_col1:GetZ(),gmr_gradient_col1:getaux())
+					gmr_gradientbg:SetVertexColor(2,gmr_gradient_col3:GetX(),gmr_gradient_col3:GetY(),gmr_gradient_col3:GetZ(),gmr_gradient_col3:getaux())
+					gmr_gradientbg:SetVertexColor(3,gmr_gradient_col2:GetX(),gmr_gradient_col2:GetY(),gmr_gradient_col2:GetZ(),gmr_gradient_col2:getaux())
+					
+					gmr_gradientbg3:SetVertexColor(0,gmr_gradient3_col0:GetX(),gmr_gradient3_col0:GetY(),gmr_gradient3_col0:GetZ(),gmr_gradient3_col0:getaux())
+					gmr_gradientbg3:SetVertexColor(1,gmr_gradient3_col1:GetX(),gmr_gradient3_col1:GetY(),gmr_gradient3_col1:GetZ(),gmr_gradient3_col1:getaux())
+					gmr_gradientbg3:SetVertexColor(2,gmr_gradient3_col3:GetX(),gmr_gradient3_col3:GetY(),gmr_gradient3_col3:GetZ(),gmr_gradient3_col3:getaux())
+					gmr_gradientbg3:SetVertexColor(3,gmr_gradient3_col2:GetX(),gmr_gradient3_col2:GetY(),gmr_gradient3_col2:GetZ(),gmr_gradient3_col2:getaux())
+					
+					gmr_gradientbg2:SetVertexColor(0,gmr_gradient2_col0:GetX(),gmr_gradient2_col0:GetY(),gmr_gradient2_col0:GetZ(),gmr_gradient2_col0:getaux())
+					gmr_gradientbg2:SetVertexColor(1,gmr_gradient2_col1:GetX(),gmr_gradient2_col1:GetY(),gmr_gradient2_col1:GetZ(),gmr_gradient2_col1:getaux())
+					gmr_gradientbg2:SetVertexColor(2,gmr_gradient2_col3:GetX(),gmr_gradient2_col3:GetY(),gmr_gradient2_col3:GetZ(),gmr_gradient2_col3:getaux())
+					gmr_gradientbg2:SetVertexColor(3,gmr_gradient2_col2:GetX(),gmr_gradient2_col2:GetY(),gmr_gradient2_col2:GetZ(),gmr_gradient2_col2:getaux())
+					gmr_gradientbg2:SetVertexColor(4,gmr_gradient2_col2:GetX(),gmr_gradient2_col2:GetY(),gmr_gradient2_col2:GetZ(),gmr_gradient2_col2:getaux())
+					gmr_gradientbg2:SetVertexColor(5,gmr_gradient2_col3:GetX(),gmr_gradient2_col3:GetY(),gmr_gradient2_col3:GetZ(),gmr_gradient2_col3:getaux())
+					gmr_gradientbg2:SetVertexColor(6,gmr_gradient2_col5:GetX(),gmr_gradient2_col5:GetY(),gmr_gradient2_col5:GetZ(),gmr_gradient2_col5:getaux())
+					gmr_gradientbg2:SetVertexColor(7,gmr_gradient2_col4:GetX(),gmr_gradient2_col4:GetY(),gmr_gradient2_col4:GetZ(),gmr_gradient2_col4:getaux())
+					
+					gmr_gradientbg4:SetVertexColor(0,gmr_gradient4_col0:GetX(),gmr_gradient4_col0:GetY(),gmr_gradient4_col0:GetZ(),gmr_gradient4_col0:getaux())
+					gmr_gradientbg4:SetVertexColor(1,gmr_gradient4_col1:GetX(),gmr_gradient4_col1:GetY(),gmr_gradient4_col1:GetZ(),gmr_gradient4_col1:getaux())
+					gmr_gradientbg4:SetVertexColor(2,gmr_gradient4_col4:GetX(),gmr_gradient4_col4:GetY(),gmr_gradient4_col4:GetZ(),gmr_gradient4_col4:getaux())
+					gmr_gradientbg4:SetVertexColor(3,gmr_gradient4_col3:GetX(),gmr_gradient4_col3:GetY(),gmr_gradient4_col3:GetZ(),gmr_gradient4_col3:getaux())
+					gmr_gradientbg4:SetVertexColor(4,gmr_gradient4_col1:GetX(),gmr_gradient4_col1:GetY(),gmr_gradient4_col1:GetZ(),gmr_gradient4_col1:getaux())
+					gmr_gradientbg4:SetVertexColor(5,gmr_gradient4_col2:GetX(),gmr_gradient4_col2:GetY(),gmr_gradient4_col2:GetZ(),gmr_gradient4_col2:getaux())
+					gmr_gradientbg4:SetVertexColor(6,gmr_gradient4_col5:GetX(),gmr_gradient4_col5:GetY(),gmr_gradient4_col5:GetZ(),gmr_gradient4_col5:getaux())
+					gmr_gradientbg4:SetVertexColor(7,gmr_gradient4_col4:GetX(),gmr_gradient4_col4:GetY(),gmr_gradient4_col4:GetZ(),gmr_gradient4_col4:getaux())
+					gmr_gradientbg4:SetVertexColor(8,gmr_gradient4_col3:GetX(),gmr_gradient4_col3:GetY(),gmr_gradient4_col3:GetZ(),gmr_gradient4_col3:getaux())
+					gmr_gradientbg4:SetVertexColor(9,gmr_gradient4_col4:GetX(),gmr_gradient4_col4:GetY(),gmr_gradient4_col4:GetZ(),gmr_gradient4_col4:getaux())
+					gmr_gradientbg4:SetVertexColor(10,gmr_gradient4_col7:GetX(),gmr_gradient4_col7:GetY(),gmr_gradient4_col7:GetZ(),gmr_gradient4_col7:getaux())
+					gmr_gradientbg4:SetVertexColor(11,gmr_gradient4_col6:GetX(),gmr_gradient4_col6:GetY(),gmr_gradient4_col6:GetZ(),gmr_gradient4_col6:getaux())
+					gmr_gradientbg4:SetVertexColor(12,gmr_gradient4_col4:GetX(),gmr_gradient4_col4:GetY(),gmr_gradient4_col4:GetZ(),gmr_gradient4_col4:getaux())
+					gmr_gradientbg4:SetVertexColor(13,gmr_gradient4_col5:GetX(),gmr_gradient4_col5:GetY(),gmr_gradient4_col5:GetZ(),gmr_gradient4_col5:getaux())
+					gmr_gradientbg4:SetVertexColor(14,gmr_gradient4_col8:GetX(),gmr_gradient4_col8:GetY(),gmr_gradient4_col8:GetZ(),gmr_gradient4_col8:getaux())
+					gmr_gradientbg4:SetVertexColor(15,gmr_gradient4_col7:GetX(),gmr_gradient4_col7:GetY(),gmr_gradient4_col7:GetZ(),gmr_gradient4_col7:getaux())
+					
+					
+				end
+				
+				groove_lasttime = groove_curtime
+				
+			end
+		end"
+	/>
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,0" InitCommand="%function(self) groove_camanglex = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,0" InitCommand="%function(self) groove_camangley = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,0" InitCommand="%function(self) groove_camanglez = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,1" InitCommand="%function(self) groove_camzoom = self end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,-320" InitCommand="%function(self) groove_camxpos = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,0" InitCommand="%function(self) groove_camaddx = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,0" InitCommand="%function(self) groove_camaddy = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,0" InitCommand="%function(self) groove_camaddz = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,0" InitCommand="%function(self) groove_confuser = self end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,0" InitCommand="%function(self) groove_fall_dist1 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,0" InitCommand="%function(self) groove_fall_dist2 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;xyz,1,1,1" InitCommand="%function(self) groove_fall_amp1 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;xyz,1,1,1" InitCommand="%function(self) groove_fall_amp2 = self end" />
+	
+	<CODE Type="Quad" OnCommand="hidden,1;x,100" InitCommand="%function(self) groove_sud1 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,100" InitCommand="%function(self) groove_sud2 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,-100" InitCommand="%function(self) groove_hid1 = self end" />
+	<CODE Type="Quad" OnCommand="hidden,1;x,-100" InitCommand="%function(self) groove_hid2 = self end" />
+	
+	
+	
+	
+	
+	
+	<LAER Type="Polygon"
+	DrawMode="quads"
+	Vertices="4"
+	Var="gmr_gradientbg"
+	OnCommand="x,sw/2;y,sh/2;zoom,.5;queuecommand,Make"
+	MakeCommand="%function(self)
+		self:SetVertexPosition(0,-sw,-sh,0)
+		self:SetVertexPosition(1,sw,-sh,0)
+		self:SetVertexPosition(2,sw,sh,0)
+		self:SetVertexPosition(3,-sw,sh,0)
+		
+		for i=0,3 do
+			self:SetVertexColor(i,0,0,0,0)
+		end
+		
+	end"
+	/>
+	
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,1;" Var="gmr_gradient_col0" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,1;" Var="gmr_gradient_col1" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,1;" Var="gmr_gradient_col2" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,1;" Var="gmr_gradient_col3" />
+	
+	<LAER Type="Polygon"
+	DrawMode="quads"
+	Vertices="4"
+	HideCommand="hidden,1"
+	Var="gmr_gradientbg3"
+	OnCommand="x,sw/2;y,sh/2;zoom,.5;queuecommand,Make"
+	MakeCommand="%function(self)
+		self:SetVertexPosition(0,-sw,-sh,0)
+		self:SetVertexPosition(1,sw,-sh,0)
+		self:SetVertexPosition(2,sw,sh,0)
+		self:SetVertexPosition(3,-sw,sh,0)
+		
+		for i=0,3 do
+			self:SetVertexColor(i,0,0,0,0)
+		end
+	end"
+	/>
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient3_col0" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient3_col1" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient3_col2" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient3_col3" />
+	
+	<LAER Type="Polygon"
+	DrawMode="quads"
+	Vertices="16"
+	Var="gmr_gradientbg4"
+	OnCommand="x,sw/2;y,sh/2;zoom,.5;queuecommand,Make"
+	MakeCommand="%function(self)
+		self:SetVertexPosition(0,-sw,-sh,0)
+		self:SetVertexPosition(1,0,-sh,0)
+		self:SetVertexPosition(2,0,0,0)
+		self:SetVertexPosition(3,-sw,0,0)
+		
+		self:SetVertexPosition(4,0,-sh,0)
+		self:SetVertexPosition(5,sw,-sh,0)
+		self:SetVertexPosition(6,sw,0,0)
+		self:SetVertexPosition(7,0,0,0)
+		
+		self:SetVertexPosition(8,-sw,0,0)
+		self:SetVertexPosition(9,0,0,0)
+		self:SetVertexPosition(10,0,sh,0)
+		self:SetVertexPosition(11,-sw,sh,0)
+		
+		self:SetVertexPosition(12,0,0,0)
+		self:SetVertexPosition(13,sw,0,0)
+		self:SetVertexPosition(14,sw,sh,0)
+		self:SetVertexPosition(15,0,sh,0)
+		
+		for i=0,15 do
+			self:SetVertexColor(i,0,0,0,0)
+		end
+	end"
+	/>
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient4_col0" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient4_col1" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient4_col2" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient4_col3" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient4_col4" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient4_col5" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient4_col6" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient4_col7" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient4_col8" />
+	
+	<LAER Type="Polygon"
+	DrawMode="quads"
+	Vertices="8"
+	Var="gmr_gradientbg2"
+	OnCommand="x,sw/2;y,sh/2;zoom,.5;queuecommand,Make"
+	MakeCommand="%function(self)
+		self:SetVertexPosition(0,-sw,-sh,0)
+		self:SetVertexPosition(1,sw,-sh,0)
+		self:SetVertexPosition(2,sw,0,0)
+		self:SetVertexPosition(3,-sw,0,0)
+		self:SetVertexPosition(4,-sw,0,0)
+		self:SetVertexPosition(5,sw,0,0)
+		self:SetVertexPosition(6,sw,sh,0)
+		self:SetVertexPosition(7,-sw,sh,0)
+		
+		for i=0,7 do
+			self:SetVertexColor(i,0,0,0,0)
+		end
+	end"
+	/>
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient2_col0" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient2_col1" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient2_col2" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient2_col3" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient2_col4" />
+	<LAER Type="Actor" OnCommand="xyza,0,0,0,0;" Var="gmr_gradient2_col5" />
+	
+	
+	<LAER Type="Quad" Var="gmr_underquad" HideCommand="hidden,1" OnCommand="stretchto,0,sh,sw,sh*2;hidden,1;valign,0;diffuse,0,0,0,1;" />
+	<LAER File="stars" Var="gmr_skystars" HideCommand="hidden,1"
+	OnCommand="x,sw/2;y,0;fadebottom,.5;cropbottom,.3;hidden,1;blend,add;customtexturerect,0,0,4,4;zoom,4;texcoordvelocity,0,-.03;" />
+	
+	<LAER Type="ActorFrame" OnCommand="fov,80;"><children>
+		<LAER File="_green aurora" Var="gmr_aurora" HideCommand="hidden,1"
+		OnCommand="rotationx,40;fadebottom,1;blend,add;hidden,1;diffusealpha,.2;customtexturerect,0,0,3,1;zoomx,6;zoomy,2;x,sw/2;y,sh*0.25;texcoordvelocity,.1,0;" />
+	</children></LAER>
+	
+	
+	<LAER Type="Quad" Var="gmr_solidbg" HideCommand="hidden,1" OnCommand="hidden,1;stretchto,0,0,sw,sh;hidden,1;" />
+	
+	<LAER Type="ActorFrame" Var="gmr_maimai"
+	InitCommand="%function(self) gmr_maimai_stuff = {{},{}} function gmr_mai_make(obj,w) table.insert(gmr_maimai_stuff[w],obj) end end"
+	OnCommand="hidden,1;x,sw/2;y,sh/2;" HideCommand="hidden,1" ><children>
+		
+		<LAER Type="Polygon" DrawMode="quads" OnCommand="%function(self) self:SetNumVertices(32*4); self:hidden(1) gmr_mai_make(self,2) end" HideCommand="hidden,1" />
+		<LAER Type="Polygon" DrawMode="quads" OnCommand="%function(self) self:SetNumVertices(32*4); self:hidden(1) gmr_mai_make(self,2) end" HideCommand="hidden,1" />
+		<LAER Type="Polygon" DrawMode="quads" OnCommand="%function(self) self:SetNumVertices(32*4); self:hidden(1) gmr_mai_make(self,2) end" HideCommand="hidden,1" />
+		<LAER Type="Polygon" DrawMode="quads" OnCommand="%function(self) self:SetNumVertices(32*4); self:hidden(1) gmr_mai_make(self,2) end" HideCommand="hidden,1" />
+		<LAER Type="Polygon" DrawMode="quads" OnCommand="%function(self) self:SetNumVertices(32*4); self:hidden(1) gmr_mai_make(self,2) end" HideCommand="hidden,1" />
+		<LAER Type="Polygon" DrawMode="quads" OnCommand="%function(self) self:SetNumVertices(32*4); self:hidden(1) gmr_mai_make(self,2) end" HideCommand="hidden,1" />
+		<LAER Type="Polygon" DrawMode="quads" OnCommand="%function(self) self:SetNumVertices(32*4); self:hidden(1) gmr_mai_make(self,2) end" HideCommand="hidden,1" />
+		<LAER Type="Polygon" DrawMode="quads" OnCommand="%function(self) self:SetNumVertices(32*4); self:hidden(1) gmr_mai_make(self,2) end" HideCommand="hidden,1" />
+		
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		<LAER File="maimai" OnCommand="hidden,1;queuecommand,Make" HideCommand="hidden,1" MakeCommand="%function(self) gmr_mai_make(self,1) end" />
+		
+	</children></LAER>
+	
+	<LAER Type="Polygon"
+	Var="gmr_unitHexagonbg"
+	DrawMode="triangles"
+	HideCommand="hidden,1"
+	OnCommand="hidden,1;zoom,0;x,sw/2;y,sh/2;queuecommand,Make"
+	MakeCommand="%function(self)
+		
+		local bars = 6
+		self:SetNumVertices(bars*3)
+		local radius = 1
+		
+		for i=0,bars*3 - 1,3 do
+			
+			local ang = (((i/3)+0.5)/bars)*2*math.pi
+			local ang2 = ((((i/3)+0.5)+1)/bars)*2*math.pi
+			
+			self:SetVertexPosition(i+0,0,0,0)
+			self:SetVertexPosition(i+1,radius*math.sin(ang),radius*math.cos(ang),0)
+			self:SetVertexPosition(i+2,radius*math.sin(ang2),radius*math.cos(ang2),0)
+			
+		end
+		
+	end"
+	/>
+	
+	<LAER Type="Quad"
+	Var="gmr_unitQuadbg1"
+	OnCommand="hidden,1"
+	HideCommand="hidden,1"
+	/>
+
+	<LAER Type="Quad"
+	Var="gmr_unitQuadbg2"
+	OnCommand="hidden,1"
+	HideCommand="hidden,1"
+	/>
+	
+	<LAER Type="Quad" OnCommand="stretchto,0,0,sw,sh;diffuse,1,1,1,0;" WhiteFlashBGMessageCommand="diffusealpha,.7;linear,.3;diffusealpha,0;" />
+	
+	<LAER Type="Polygon"
+	Texture="tex2.png"
+	DrawMode="triangles"
+	RaysOnMessageCommand="linear,ray_onspeed;diffuse,.8,.5,1,.8"
+	RaysOffMessageCommand="linear,ray_offspeed;diffuse,.8,.5,1,0"
+	OnCommand="x,sw/2;y,sh/2;zoom,1;diffusealpha,0;queuecommand,Make"
+	MakeCommand="%function(self)
+		
+		self:diffuseshift();
+		self:effectperiod(3);
+		self:effectcolor1(.5,.2,1,1);
+		self:effectcolor2(.4,.6,1,0.5);
+	
+		local bars = 256
+		self:SetNumVertices(bars*3)
+		local radius = 800
+		
+		for i=0,bars*3 - 1,3 do
+			
+			local ang = ((i/3)/bars)*2*math.pi
+			local ang2 = (((i/3)+1)/bars)*2*math.pi
+			
+			local uv1 = ((i/3)/bars)
+			local uv2 = (((i/3)+0.5)/bars)
+			local uv3 = (((i/3)+1)/bars)
+			
+			self:SetVertexPosition(i+0,0,0,0)
+			self:SetVertexPosition(i+1,radius*math.sin(ang),radius*math.cos(ang),0)
+			self:SetVertexPosition(i+2,radius*math.sin(ang2),radius*math.cos(ang2),0)
+			
+			self:SetVertexTexCoord(i+0,0,uv2);
+			self:SetVertexTexCoord(i+1,1,uv1);
+			self:SetVertexTexCoord(i+2,1,uv3);
+			
+			self:SetVertexColor(i+1,1,0,1,1);
+			self:SetVertexColor(i+2,1,0,1,1);
+			
+		end
+		self:blend('normal');
+		
+	end"
+	/>
+	
+	<LAER Type="Polygon"
+	Texture="tex2.png"
+	DrawMode="triangles"
+	RaysOnMessageCommand="linear,ray_onspeed;diffuse,.1,.8,.6,.6"
+	RaysOffMessageCommand="linear,ray_offspeed;diffuse,.1,.8,.6,0"
+	RaysOffSlowMessageCommand="linear,3;diffuse,.1,.8,.6,0"
+	OnCommand="x,sw/2;y,sh/2;zoom,1;diffusealpha,0;queuecommand,Make"
+	MakeCommand="%function(self)
+	
+		self:rotationz(200);
+		
+		self:diffuseshift();
+		self:effectperiod(4);
+		self:effectcolor1(1,1,1,0.5);
+		self:effectcolor2(0.4,1,0.6,1);
+	
+		local bars = 256
+		self:SetNumVertices(bars*3)
+		local radius = 800
+		
+		for i=0,bars*3 - 1,3 do
+			
+			local ang = ((i/3)/bars)*2*math.pi
+			local ang2 = (((i/3)+1)/bars)*2*math.pi
+			
+			local uv1 = ((i/3)/bars)
+			local uv2 = (((i/3)+0.5)/bars)
+			local uv3 = (((i/3)+1)/bars)
+			
+			self:SetVertexPosition(i+0,0,0,0)
+			self:SetVertexPosition(i+1,radius*math.sin(ang),radius*math.cos(ang),0)
+			self:SetVertexPosition(i+2,radius*math.sin(ang2),radius*math.cos(ang2),0)
+			
+			self:SetVertexTexCoord(i+0,0,uv2);
+			self:SetVertexTexCoord(i+1,1,uv1);
+			self:SetVertexTexCoord(i+2,1,uv3);
+			
+			self:SetVertexColor(i+1,1,0,1,1);
+			self:SetVertexColor(i+2,1,0,1,1);
+			
+		end
+		self:blend('normal');
+		
+	end"
+	/>
+	
+	<LAER Type="Polygon"
+	Texture="tex2.png"
+	DrawMode="triangles"
+	RaysOnMessageCommand="linear,ray_onspeed;diffuse,.1,.8,.6,.6"
+	RaysOffMessageCommand="linear,ray_offspeed;diffuse,.1,.8,.6,0"
+	OnCommand="x,sw/2;y,sh/2;zoom,1;diffusealpha,0;queuecommand,Make"
+	MakeCommand="%function(self)
+	
+		self:rotationz(300);
+		
+		self:diffuseshift();
+		self:effectperiod(5);
+		self:effectcolor1(1,1,1,0.5);
+		self:effectcolor2(1,.3,0.4,1);
+	
+		local bars = 256
+		self:SetNumVertices(bars*3)
+		local radius = 800
+		
+		for i=0,bars*3 - 1,3 do
+			
+			local ang = ((i/3)/bars)*2*math.pi
+			local ang2 = (((i/3)+1)/bars)*2*math.pi
+			
+			local uv1 = ((i/3)/bars)
+			local uv2 = (((i/3)+0.5)/bars)
+			local uv3 = (((i/3)+1)/bars)
+			
+			self:SetVertexPosition(i+0,0,0,0)
+			self:SetVertexPosition(i+1,radius*math.sin(ang),radius*math.cos(ang),0)
+			self:SetVertexPosition(i+2,radius*math.sin(ang2),radius*math.cos(ang2),0)
+			
+			self:SetVertexTexCoord(i+0,0,uv2);
+			self:SetVertexTexCoord(i+1,1,uv1);
+			self:SetVertexTexCoord(i+2,1,uv3);
+			
+			self:SetVertexColor(i+1,1,0,1,1);
+			self:SetVertexColor(i+2,1,0,1,1);
+			
+		end
+		self:blend('add');
+		
+	end"
+	/>
+	
+	<LAER Type="ActorFrame" OnCommand="fov,60" ><children>
+	<LAER Type="Polygon"
+	DrawMode="quads"
+	Vertices="16"
+	HideCommand="hidden,1"
+	Var="gmr_ayafill"
+	OnCommand="hidden,1;x,sw/2;y,sh/2;zoom,192;queuecommand,Make"
+	MakeCommand="%function(self)
+	
+		self:SetTextureFiltering(false)
+		self:SetTexture( gmr_ayaW:GetTexture() )
+	
+		self:SetVertexPosition(0,-1,-1,0)
+		self:SetVertexPosition(1,0,-1,0)
+		self:SetVertexPosition(2,0,0,0)
+		self:SetVertexPosition(3,-1,0,0)
+		
+		self:SetVertexPosition(4,0,-1,0)
+		self:SetVertexPosition(5,1,-1,0)
+		self:SetVertexPosition(6,1,0,0)
+		self:SetVertexPosition(7,0,0,0)
+		
+		self:SetVertexPosition(8,-1,0,0)
+		self:SetVertexPosition(9,0,0,0)
+		self:SetVertexPosition(10,0,1,0)
+		self:SetVertexPosition(11,-1,1,0)
+		
+		self:SetVertexPosition(12,0,0,0)
+		self:SetVertexPosition(13,1,0,0)
+		self:SetVertexPosition(14,1,1,0)
+		self:SetVertexPosition(15,0,1,0)
+		
+		self:SetVertexTexCoord(0,0,0)
+		self:SetVertexTexCoord(1,0.5,0)
+		self:SetVertexTexCoord(2,0.5,0.5)
+		self:SetVertexTexCoord(3,0,0.5)
+		
+		self:SetVertexTexCoord(4,0.5,0)
+		self:SetVertexTexCoord(5,1,0)
+		self:SetVertexTexCoord(6,1,0.5)
+		self:SetVertexTexCoord(7,0.5,0.5)
+		
+		self:SetVertexTexCoord(8,0,0.5)
+		self:SetVertexTexCoord(9,0.5,0.5)
+		self:SetVertexTexCoord(10,0.5,1)
+		self:SetVertexTexCoord(11,0,1)
+		
+		self:SetVertexTexCoord(12,0.5,0.5)
+		self:SetVertexTexCoord(13,1,0.5)
+		self:SetVertexTexCoord(14,1,1)
+		self:SetVertexTexCoord(15,0.5,1)
+		
+	end"
+	/>
+	</children></LAER>
+	
+	
+	<LAER Type="Polygon"
+		DrawMode="quads"
+		NameCommand="%function(self) groove_eq_ray = self end" HideCommand="hidden,1"
+		OnCommand="playcommand,Name;hidden,1;zoom,8;diffuse,1,1,1,.5;x,sw/2;y,sh/2;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			self:SetNumVertices( 3*4*32 )
+			
+			for i=0,31 do
+				
+				local ang1 = (i/32)*math.pi*2
+				local ang2 = ((i+(2/3))/32)*math.pi*2
+				local r1 = 3
+				local r2 = 6
+				local r3 = r2+1+(5*1) --(this is going to be based on the eq data eventually)
+				local r4 = r3+3
+				
+				self:SetVertexPosition(i*12 + 0, r2*math.sin(ang1), -r2*math.cos(ang1), 0)
+				self:SetVertexPosition(i*12 + 1, r2*math.sin(ang2), -r2*math.cos(ang2), 0)
+				self:SetVertexPosition(i*12 + 2, r1*math.sin(ang2), -r1*math.cos(ang2), 0)
+				self:SetVertexPosition(i*12 + 3, r1*math.sin(ang1), -r1*math.cos(ang1), 0)
+				
+				self:SetVertexPosition(i*12 + 4, r3*math.sin(ang1), -r3*math.cos(ang1), 0)
+				self:SetVertexPosition(i*12 + 5, r3*math.sin(ang2), -r3*math.cos(ang2), 0)
+				self:SetVertexPosition(i*12 + 6, r2*math.sin(ang2), -r2*math.cos(ang2), 0)
+				self:SetVertexPosition(i*12 + 7, r2*math.sin(ang1), -r2*math.cos(ang1), 0)
+				
+				self:SetVertexPosition(i*12 + 8, r4*math.sin(ang1), -r4*math.cos(ang1), 0)
+				self:SetVertexPosition(i*12 + 9, r4*math.sin(ang2), -r4*math.cos(ang2), 0)
+				self:SetVertexPosition(i*12 + 10, r3*math.sin(ang2), -r3*math.cos(ang2), 0)
+				self:SetVertexPosition(i*12 + 11, r3*math.sin(ang1), -r3*math.cos(ang1), 0)
+				
+				self:SetVertexColor(i*12 + 2, 1, 1, 1, 0 )
+				self:SetVertexColor(i*12 + 3, 1, 1, 1, 0 )
+				self:SetVertexColor(i*12 + 8, 1, 1, 1, 0 )
+				self:SetVertexColor(i*12 + 9, 1, 1, 1, 0 )
+				
+			end
+			
+		end"
+	/>
+	
+	<LAER Type="ActorFrame" Var="groove_eq_bars_af" OnCommand="xy,sw/2,sh/2" ><children>
+	<LAER Type="Polygon"
+		DrawMode="quads"
+		NameCommand="%function(self) groove_eq_bars = self end" HideCommand="hidden,1"
+		OnCommand="playcommand,Name;hidden,1;diffuse,1,1,1,.5;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			self:SetNumVertices( 8*4*4*2 )
+			
+			local barheight = 48
+			local yoff = 0
+			
+			for i=0,31 do
+				
+				local h = 64
+				local ypos = i*barheight - (16*barheight) + yoff
+				
+				if ypos > 16*barheight then
+					ypos = ypos - 32*barheight
+				end
+				
+				self:SetVertexPosition(i*8 + 0, 0, ypos, 0 )
+				self:SetVertexPosition(i*8 + 1, h, ypos, 0 )
+				self:SetVertexPosition(i*8 + 2, h, ypos+barheight, 0 )
+				self:SetVertexPosition(i*8 + 3, 0, ypos+barheight, 0 )
+				
+				self:SetVertexPosition(i*8 + 4, -h, ypos, 0 )
+				self:SetVertexPosition(i*8 + 5, 0, ypos, 0 )
+				self:SetVertexPosition(i*8 + 6, 0, ypos+barheight, 0 )
+				self:SetVertexPosition(i*8 + 7, -h, ypos+barheight, 0 )
+				
+				self:SetVertexColor(i*8 + 1, 1, 1, 1, 0 )
+				self:SetVertexColor(i*8 + 2, 1, 1, 1, 0 )
+				self:SetVertexColor(i*8 + 4, 1, 1, 1, 0 )
+				self:SetVertexColor(i*8 + 7, 1, 1, 1, 0 )
+				
+			end
+			
+		end"
+	/>
+	</children></LAER>
+	
+	<LAER File="treeline" Var="gmr_treeline" HideCommand="hidden,1" OnCommand="x,sw/2;y,sh/2;hidden,1;valign,0;diffuse,0,0,0,1;" />
+	
+	<LAER File="orangeglow" Var="groove_orangeglow"
+		HideCommand="hidden,1"
+		OnCommand="hidden,1;diffusealpha,1;x,sw/2;y,sh/2;"
+	/>
+	
+	<LAER Type="Polygon"
+		DrawMode="quads"
+		NameCommand="%function(self) groove_waves = self end" HideCommand="hidden,1"
+		OnCommand="playcommand,Name;hidden,1;diffusealpha,1;blend,add;x,sw/2;y,sh/2;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			local grain = 128
+			
+			self:SetNumVertices(grain*3)
+			
+			self:cullmode('none');
+			
+			self:SetPolygonMode(0)
+			
+			local rings = {64,52,40,28,16,4}
+			
+			for j=0,2 do
+				for i=0,grain-1,4 do
+						
+					local r1, r2 = rings[j*2 + 2],rings[j*2 + 1]
+			
+					local ang1 = (i/(grain))*2*math.pi
+					local ang2 = ((i+4)/(grain))*2*math.pi
+					
+					self:SetVertexPosition(i+j*grain,r2*math.cos(ang1),r2*math.sin(ang1),0)
+					self:SetVertexColor(i+j*grain,.6,.3,0,1)
+					
+					self:SetVertexPosition(i+1+j*grain,r2*math.cos(ang2),r2*math.sin(ang2),0)
+					self:SetVertexColor(i+1+j*grain,.6,.3,0,1)
+					
+					self:SetVertexPosition(i+2+j*grain,r1*math.cos(ang2),r1*math.sin(ang2),0)
+					self:SetVertexColor(i+2+j*grain,.6,.3,0,0)
+					
+					self:SetVertexPosition(i+3+j*grain,r1*math.cos(ang1),r1*math.sin(ang1),0)
+					self:SetVertexColor(i+3+j*grain,.6,.3,0,0)
+					
+				end
+			end
+			
+		end"
+	/>
+	
+<LAER Type="ActorFrame" OnCommand="hidden,1;" GearFallMessageCommand="hidden,0;playcommand,Fall;y,-300;linear,2.5;y,sh+600;" Var="gmr_falling" ><children>
+<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,sw/2;y,0;z,-100;rotationx,90;queuecommand,Setup;diffuse,.5,.2,0,1;"
+SetupCommand="%function(self) self:SetPolygonMode(1) end" FallCommand="addx,-100;addy,0;rotationx,30;rotationz,50;linear,2.5;rotationz,300;rotationx,180;rotationy,400" />
+<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,sw/2;y,0;z,-100;rotationx,90;queuecommand,Setup;diffuse,.5,.2,0,1;"
+SetupCommand="%function(self) self:SetPolygonMode(1) end" FallCommand="addx,-160;addy,-120;rotationx,190;rotationz,150;linear,2.5;rotationz,-180;rotationx,300;rotationy,200" />
+<LAER File="gear" OnCommand="zoom,20*1.0;zoomz,20*.2;x,sw/2;y,0;z,-100;rotationx,90;queuecommand,Setup;diffuse,.5,.2,0,1;"
+SetupCommand="%function(self) self:SetPolygonMode(1) end" FallCommand="addx,100;addy,-190;rotationx,200;rotationz,-10;linear,2.5;rotationz,300;rotationx,-250;rotationy,-400" />
+<LAER File="gear" OnCommand="zoom,20*0.8;zoomz,20*.2;x,sw/2;y,0;z,-100;rotationx,90;queuecommand,Setup;diffuse,.5,.2,0,1;"
+SetupCommand="%function(self) self:SetPolygonMode(1) end" FallCommand="addx,160;addy,-260;rotationx,30;rotationz,200;linear,2.5;rotationz,-250;rotationx,180;rotationy,500" />
+<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,sw/2;y,0;z,-100;rotationx,90;queuecommand,Setup;diffuse,.5,.2,0,1;"
+SetupCommand="%function(self) self:SetPolygonMode(1) end" FallCommand="addx,200;addy,-340;rotationx,100;rotationz,-180;linear,2.5;rotationz,300;rotationx,90;rotationy,-200" />
+<LAER File="gear" OnCommand="zoom,20*1.5;zoomz,20*.2;x,sw/2;y,0;z,-100;rotationx,90;queuecommand,Setup;diffuse,.5,.2,0,1;"
+SetupCommand="%function(self) self:SetPolygonMode(1) end" FallCommand="addx,-200;addy,-500;rotationx,0;rotationz,-200;linear,2.5;rotationz,100;rotationx,-100;rotationy,-500" />
+</children></LAER>
+	
+	<!--so this is a thing I guess-->
+	<LAER Type="Polygon"
+		DrawMode="quads"
+		OnCommand="hidden,1;blend,add;diffuse,1,.3,0,1;x,sw/2;y,sh/2;queuecommand,Do"
+		DoCommand="%function(self)
+			self:SetPolygonMode(1)
+			
+			self:SetNumVertices(4)
+			
+			self:SetVertexPosition(0,-4,-3,0)
+			self:SetVertexPosition(1,4,-3,0)
+			self:SetVertexPosition(2,4,3,0)
+			self:SetVertexPosition(3,-4,3,0)
+			
+		end"
+		HideCommand="hidden,1"
+		ExpandQuadP1MessageCommand="stoptweening;hidden,0;zoom,1;linear,90/133;zoom,SCREEN_WIDTH/4;queuecommand,Hide"
+	/>
+	<LAER Type="Polygon"
+		DrawMode="quads"
+		OnCommand="hidden,1;blend,add;diffuse,0,.3,1,1;x,sw/2;y,sh/2;queuecommand,Do"
+		DoCommand="%function(self)
+			self:SetPolygonMode(1)
+			
+			self:SetNumVertices(4)
+			
+			self:SetVertexPosition(0,-4,-3,0)
+			self:SetVertexPosition(1,4,-3,0)
+			self:SetVertexPosition(2,4,3,0)
+			self:SetVertexPosition(3,-4,3,0)
+			
+		end"
+		HideCommand="hidden,1"
+		ExpandQuadP2MessageCommand="stoptweening;hidden,0;zoom,1;linear,90/133;zoom,SCREEN_WIDTH/4;queuecommand,Hide"
+	/>
+	
+	
+	
+	<LAER Type="ActorFrame" FOV="40" FarDist="200000" ><children>
+	<LAER Type="Polygon"
+	DrawMode="quads"
+	Texture="tex3.png"
+	Var="gmr_stars"
+	InitCommand="%function(self)
+		gmr_combotimer = 0;
+		gmr_comboalpha = 0;
+	end"
+	OnCommand="x,sw/2;y,sh/2;diffusealpha,0;queuecommand,Make"
+	MakeCommand="%function(self)
+		local particles = 32
+		local radiusx = 600
+		local radiusz = 600
+		local w = 32
+		local h = 16
+		self:SetNumVertices(particles*4)
+		for i=0,particles-1 do
+			local j = i*4
+			local y = math.random(-300,300);
+			local ang = math.random()*math.pi*2
+			local z0 = radiusz*math.cos(ang) - w*math.sin(ang)
+			local x0 = radiusx*math.sin(ang) + w*math.cos(ang)
+			local z1 = radiusz*math.cos(ang) + w*math.sin(ang)
+			local x1 = radiusx*math.sin(ang) - w*math.cos(ang)
+			local color = {math.random(),math.random(),math.random()}
+			local cr = math.random(1,3)
+			color[cr] = 1;
+			
+			self:SetVertexPosition(j+0,x0,y-h,z0)
+			self:SetVertexPosition(j+1,x0,y+h,z0)
+			self:SetVertexPosition(j+2,x1,y+h,z1)
+			self:SetVertexPosition(j+3,x1,y-h,z1)
+			self:SetVertexTexCoord(j+0,1,0)
+			self:SetVertexTexCoord(j+1,1,1)
+			self:SetVertexTexCoord(j+2,0,1)
+			self:SetVertexTexCoord(j+3,0,0)
+			for k=0,3 do
+				self:SetVertexColor(j+k,color[1],color[2],color[3],1)
+			end
+		end
+		self:cullmode('back');
+		self:blend('add');
+		self:ztest(1);
+	end"
+	/>
+	<LAER Type="Actor" OnCommand="xyz,0,100,0;" Var="gmr_starvars" />
+	</children></LAER>
+	
+	<LAER Type="ActorFrame" FarDist="70000000" InitCommand="%function(self) self:fov(60); self:rotationx(30) end"><children>
+	
+	</children></LAER>
+	
+	<LAER Type="ActorFrame" FarDist="70000000" InitCommand="%function(self) self:fov(60) groove_world2 = self; end"><children>
+	<LAER Type="ActorFrame" FarDist="70000000" InitCommand="%function(self) self:fov(60) groove_world = self end"><children>
+		
+		<!--BG Elements in world space-->
+		<LAER File="cube.txt" Var="test_cube" InitCommand="%function(self) self:SetTextureFiltering(false) end" OnCommand="hidden,1;zoom,5000;zoomz,5000;cullmode,none;diffuse,.3,.3,.3,1;" />
+		
+		<LAER File="sphere.txt" Var="groove_sphere" InitCommand="%function(self) self:SetTextureFiltering(false) self:SetPolygonMode(1) end"
+		HideCommand="hidden,1;" OnCommand="hidden,1;zoom,5000;zoomz,5000;cullmode,none;diffuse,1,1,1,1;" />
+		
+		<LAER Type="Polygon" DrawMode="quads"
+		InitCommand="%function(self) self:SetPolygonMode(1) self:SetNumVertices(4) self:SetVertexPosition(0,-1,-1,0) self:SetVertexPosition(1,1,-1,0) self:SetVertexPosition(2,1,1,0) self:SetVertexPosition(3,-1,1,0) end"
+		OnCommand="rotationx,90;zoom,00000;zoomz,00000;y,1000000;x,0;z,400000;" IntroSquaresOn1MessageCommand="linear,80/133;zoom,100000;zoomz,100000;" IntroSquaresOffMessageCommand="hidden,1;" />
+		<LAER Type="Polygon" DrawMode="quads"
+		InitCommand="%function(self) self:SetPolygonMode(1) self:SetNumVertices(4) self:SetVertexPosition(0,-1,-1,0) self:SetVertexPosition(1,1,-1,0) self:SetVertexPosition(2,1,1,0) self:SetVertexPosition(3,-1,1,0) end"
+		OnCommand="rotationx,90;zoom,00000;zoomz,00000;y,1000000;x,200000;z,200000;" IntroSquaresOn1MessageCommand="linear,80/133;zoom,100000;zoomz,100000;" IntroSquaresOffMessageCommand="hidden,1;" />
+		<LAER Type="Polygon" DrawMode="quads"
+		InitCommand="%function(self) self:SetPolygonMode(1) self:SetNumVertices(4) self:SetVertexPosition(0,-1,-1,0) self:SetVertexPosition(1,1,-1,0) self:SetVertexPosition(2,1,1,0) self:SetVertexPosition(3,-1,1,0) end"
+		OnCommand="rotationx,90;zoom,00000;zoomz,00000;y,1000000;x,-200000;z,200000;" IntroSquaresOn2MessageCommand="linear,80/133;zoom,100000;zoomz,100000;" IntroSquaresOffMessageCommand="hidden,1;" />
+		<LAER Type="Polygon" DrawMode="quads"
+		InitCommand="%function(self) self:SetPolygonMode(1) self:SetNumVertices(4) self:SetVertexPosition(0,-1,-1,0) self:SetVertexPosition(1,1,-1,0) self:SetVertexPosition(2,1,1,0) self:SetVertexPosition(3,-1,1,0) end"
+		OnCommand="rotationx,90;zoom,00000;zoomz,00000;y,1000000;x,0;z,-400000;" IntroSquaresOn3MessageCommand="linear,80/133;zoom,100000;zoomz,100000;" IntroSquaresOffMessageCommand="hidden,1;" />
+		<LAER Type="Polygon" DrawMode="quads"
+		InitCommand="%function(self) self:SetPolygonMode(1) self:SetNumVertices(4) self:SetVertexPosition(0,-1,-1,0) self:SetVertexPosition(1,1,-1,0) self:SetVertexPosition(2,1,1,0) self:SetVertexPosition(3,-1,1,0) end"
+		OnCommand="rotationx,90;zoom,00000;zoomz,00000;y,1000000;x,200000;z,-200000;" IntroSquaresOn2MessageCommand="linear,80/133;zoom,100000;zoomz,100000;" IntroSquaresOffMessageCommand="hidden,1;" />
+		<LAER Type="Polygon" DrawMode="quads"
+		InitCommand="%function(self) self:SetPolygonMode(1) self:SetNumVertices(4) self:SetVertexPosition(0,-1,-1,0) self:SetVertexPosition(1,1,-1,0) self:SetVertexPosition(2,1,1,0) self:SetVertexPosition(3,-1,1,0) end"
+		OnCommand="rotationx,90;zoom,00000;zoomz,00000;y,1000000;x,-200000;z,-200000;" IntroSquaresOn3MessageCommand="linear,80/133;zoom,100000;zoomz,100000;" IntroSquaresOffMessageCommand="hidden,1;" />
+		
+		<LAER Type="ActorFrame" Var="groove_gears" OnCommand="diffuse,.5,.2,0,1;hidden,1;"><children>
+			<LAER Type="ActorFrame" OnCommand="zoom,10;zoomz,10;z,-20000;y,-1000;rotationz,90;"><children>
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,85;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,0;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*0.9;zoomz,20*.2;x,-60;y,30;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,-120;y,60;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-160;y,-10;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-180;y,110;z,0;rotationx,90;queuecommand,Setup;rotationy,40;linear,999;rotationy,40+90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+			</children></LAER>
+			<LAER Type="ActorFrame" OnCommand="zoom,10;zoomz,10;z,-15000;y,500;rotationx,90;"><children>
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,85;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,0;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*0.9;zoomz,20*.2;x,-60;y,30;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,-120;y,60;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-160;y,-10;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-180;y,110;z,0;rotationx,90;queuecommand,Setup;rotationy,40;linear,999;rotationy,40+90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+			</children></LAER>
+			<LAER Type="ActorFrame" OnCommand="zoom,10;zoomz,10;z,-3000;y,-500;x,1000;"><children>
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,85;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,0;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*0.9;zoomz,20*.2;x,-60;y,30;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,-120;y,60;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-160;y,-10;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-180;y,110;z,0;rotationx,90;queuecommand,Setup;rotationy,40;linear,999;rotationy,40+90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+			</children></LAER>
+			<LAER Type="ActorFrame" OnCommand="zoom,10;zoomz,10;z,-15000;y,-2000;x,1000;rotationz,45;"><children>
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,85;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,0;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*0.9;zoomz,20*.2;x,-60;y,30;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,-120;y,60;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-160;y,-10;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-180;y,110;z,0;rotationx,90;queuecommand,Setup;rotationy,40;linear,999;rotationy,40+90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+			</children></LAER>
+			<LAER Type="ActorFrame" OnCommand="zoom,10;zoomz,10;z,-20000;y,1000;x,5000;rotationy,-90;"><children>
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,85;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,0;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*0.9;zoomz,20*.2;x,-60;y,30;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,-120;y,60;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-160;y,-10;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-180;y,110;z,0;rotationx,90;queuecommand,Setup;rotationy,40;linear,999;rotationy,40+90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+			</children></LAER>
+			<LAER Type="ActorFrame" OnCommand="zoom,10;zoomz,10;z,-18000;y,-5000;x,1000;rotationy,0;rotationx,80;"><children>
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,85;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,0;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*0.9;zoomz,20*.2;x,-60;y,30;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,-120;y,60;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-160;y,-10;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-180;y,110;z,0;rotationx,90;queuecommand,Setup;rotationy,40;linear,999;rotationy,40+90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+			</children></LAER>
+		</children></LAER>
+		
+		<LAER Type="ActorFrame" Var="groove_gears2" OnCommand="diffuse,.5,.2,0,1;hidden,1;"><children>
+			<LAER Type="ActorFrame" OnCommand="zoom,10;zoomz,10;rotationz,90;"><children>
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,85;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,0;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*0.9;zoomz,20*.2;x,-60;y,30;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,-120;y,60;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-160;y,-10;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,-180;y,110;z,0;rotationx,90;queuecommand,Setup;rotationy,40;linear,999;rotationy,40+90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+			</children></LAER>
+		</children></LAER>
+		
+		<LAER Type="ActorFrame" Var="groove_gears3" OnCommand="diffuse,.5,.2,0,1;hidden,1;"><children>
+			<LAER Type="ActorFrame" OnCommand="zoom,10;zoomz,10;rotationz,90;"><children>
+				<LAER File="gear" OnCommand="zoom,20*1.4;zoomz,20*.2;x,85;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*1.2;zoomz,20*.2;x,0;y,0;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*-999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+				<LAER File="gear" OnCommand="zoom,20*0.9;zoomz,20*.2;x,-60;y,30;z,0;rotationx,90;queuecommand,Setup;linear,999;rotationy,90*999;"
+				SetupCommand="%function(self) self:SetPolygonMode(1) end" />
+			</children></LAER>
+		</children></LAER>
+		
+		<LAER Type="Polygon"
+			DrawMode="quads"
+			NameCommand="%function(self) groove_grid = self end" HideCommand="hidden,1"
+			OnCommand="playcommand,Name;diffusealpha,0;hidden,1;x,0;y,5000;z,-20000;zoom,2000;zoomz,2000;rotationx,90;queuecommand,Make"
+			MakeCommand="%function(self)
+				
+				local diam = 24;
+				
+				self:SetNumVertices(diam*diam*4)
+				
+				self:cullmode('none');
+				
+				self:SetPolygonMode(1)
+				
+				for i=0,diam*diam-1 do
+					local x = math.mod(i,diam) - diam/2
+					local x2 = math.mod(i+1,diam) - diam/2
+					local y = math.floor(i/diam) - diam/2
+					local y2 = (math.floor(i/diam)+1) - diam/2
+					
+					local z1 = 0.2*math.sin(y*math.pi*0.4) + 0.2*math.cos(x*math.pi*0.4)
+					local z2 = 0.2*math.sin(y*math.pi*0.4) + 0.2*math.cos(x2*math.pi*0.4)
+					local z3 = 0.2*math.sin(y2*math.pi*0.4) + 0.2*math.cos(x2*math.pi*0.4)
+					local z4 = 0.2*math.sin(y2*math.pi*0.4) + 0.2*math.cos(x*math.pi*0.4)
+					
+					self:SetVertexPosition(i*4+0,x,y,0)
+					self:SetVertexPosition(i*4+1,x+1,y,0)
+					self:SetVertexPosition(i*4+2,x+1,y+1,0)
+					self:SetVertexPosition(i*4+3,x,y+1,0)
+					
+				end
+				
+			end"
+		/>
+		
+		<!--this geometry is too fucking random and I can't be fucked to pixel measure it-->
+		<!--so I'm going to randomly generate it myself-->
+		<LAER Type="Polygon"
+			DrawMode="quads"
+			NameCommand="%function(self) groove_random_bars = self end" HideCommand="hidden,1"
+			OnCommand="playcommand,Name;hidden,1;diffuse,0,0,0,1;zoom,100;x,sw/2;y,sh/2;queuecommand,Make"
+			MakeCommand="%function(self)
+				
+				local row1 = {}
+				local row2 = {}
+				
+				local rp = -10
+				for i=1,60 do
+					local w = math.random()*0.3 + 0.05
+					local g = math.random()*0.3 + 0.05
+					table.insert(row1,{rp,w})
+					rp = rp+w+g
+					if rp > 10 then
+						break
+					end
+				end
+				local rp = 10
+				for i=1,60 do
+					local w = math.random()*0.3 + 0.05
+					local g = math.random()*0.3 + 0.05
+					table.insert(row2,{rp,w})
+					rp = rp-w-g
+					if rp < -10 then
+						break
+					end
+				end
+				
+				self:SetNumVertices((table.getn(row1)+table.getn(row2))*4)
+				
+				local v = 0
+				for i=0,table.getn(row1)-1 do
+					
+					local a = row1[i+1]
+					local x1 = a[1]
+					local x2 = a[1]+a[2]
+					
+					self:SetVertexPosition(v+0,x1,-20,0)
+					self:SetVertexPosition(v+1,x2,-20,0)
+					self:SetVertexPosition(v+2,x2,0,0)
+					self:SetVertexPosition(v+3,x1,0,0)
+					
+					v = v+4
+				end
+				for i=0,table.getn(row2)-1 do
+					
+					local a = row2[i+1]
+					local x1 = a[1]
+					local x2 = a[1]-a[2]
+					
+					self:SetVertexPosition(v+0,x2,0,0)
+					self:SetVertexPosition(v+1,x1,0,0)
+					self:SetVertexPosition(v+2,x1,20,0)
+					self:SetVertexPosition(v+3,x2,20,0)
+					
+					v = v+4
+				end
+			end"
+		/>
+		
+		<LAER Type="Quad"
+		Var="gmr_unitQuad1"
+		OnCommand="hidden,1"
+		HideCommand="hidden,1"
+		/>
+		<LAER Type="Quad"
+		Var="gmr_unitQuad2"
+		OnCommand="hidden,1"
+		HideCommand="hidden,1"
+		/>
+		<LAER Type="Quad"
+		Var="gmr_unitQuad3"
+		OnCommand="hidden,1"
+		HideCommand="hidden,1"
+		/>
+		
+		<LAER Type="ActorFrame" Var="gmr_smashQuads" OnCommand="hidden,1" HideCommand="queuecommand,Hide" ><children>
+			<LAER Type="Quad"
+			OnCommand="diffuse,1,.5,0,1;zoomto,0,0"
+			SmashCommand="zoomto,0,10000;linear,60/133;zoomto,200,10000;"
+			Smash2Command="linear,120/133;diffuse,.5,.25,0,1"
+			HideCommand="hidden,1"
+			/>
+			<LAER Type="Quad"
+			OnCommand="diffuse,1,.5,0,1;zoomto,0,0"
+			SmashCommand="sleep,60/133;zoomto,10000,0;linear,60/133;zoomto,10000,200;"
+			Smash2Command="linear,120/133;diffuse,.5,.25,0,1"
+			HideCommand="hidden,1"
+			/>
+		</children></LAER>
+		
+		<LAER Type="ActorFrame" Var="gmr_jubeat" OnCommand="hidden,1;x,sw/2;y,sh/2;" HideCommand="hidden,1"><children>
+		
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,-38-76;y,-38-76;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat1MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,-38-0;y,-38-76;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat2MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,38+0;y,-38-76;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat3MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,38+76;y,-38-76;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat4MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,-38-76;y,-38;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat5MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,-38-0;y,-38;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat6MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,38+0;y,-38;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat7MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,38+76;y,-38;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat8MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,-38-76;y,38;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat9MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,-38;y,38;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat10MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,38;y,38;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat11MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,38+76;y,38;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat12MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,-38-76;y,38+76;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat13MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,-38;y,38+76;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat14MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,38;y,38+76;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat15MessageCommand="setstate,0;" />
+			<LAER File="jubeat.sprite" OnCommand="setstate,14;x,38+76;y,38+76;cropleft,.03;cropright,.03;croptop,.03;cropbottom,.03;" Jubeat16MessageCommand="setstate,0;" />
+			
+		</children></LAER>
+		
+		<LAER Type="Polygon"
+		Var="gmr_unitCircle1"
+		DrawMode="triangles"
+		HideCommand="hidden,1"
+		OnCommand="hidden,1;x,sw/2;y,sh/2;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			local bars = 128
+			self:SetNumVertices(bars*3)
+			local radius = 1
+			
+			for i=0,bars*3 - 1,3 do
+				
+				local ang = ((i/3)/bars)*2*math.pi
+				local ang2 = (((i/3)+1)/bars)*2*math.pi
+				
+				local uv1 = ((i/3)/bars)
+				local uv2 = (((i/3)+0.5)/bars)
+				local uv3 = (((i/3)+1)/bars)
+				
+				self:SetVertexPosition(i+0,0,0,0)
+				self:SetVertexPosition(i+1,radius*math.sin(ang),radius*math.cos(ang),0)
+				self:SetVertexPosition(i+2,radius*math.sin(ang2),radius*math.cos(ang2),0)
+				
+			end
+			
+		end"
+		/>
+		<LAER Type="Polygon"
+		Var="gmr_unitCircle2"
+		DrawMode="triangles"
+		HideCommand="hidden,1"
+		OnCommand="hidden,1;x,sw/2;y,sh/2;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			local bars = 128
+			self:SetNumVertices(bars*3)
+			local radius = 1
+			
+			for i=0,bars*3 - 1,3 do
+				
+				local ang = ((i/3)/bars)*2*math.pi
+				local ang2 = (((i/3)+1)/bars)*2*math.pi
+				
+				local uv1 = ((i/3)/bars)
+				local uv2 = (((i/3)+0.5)/bars)
+				local uv3 = (((i/3)+1)/bars)
+				
+				self:SetVertexPosition(i+0,0,0,0)
+				self:SetVertexPosition(i+1,radius*math.sin(ang),radius*math.cos(ang),0)
+				self:SetVertexPosition(i+2,radius*math.sin(ang2),radius*math.cos(ang2),0)
+				
+			end
+			
+		end"
+		/>
+		<LAER Type="Polygon"
+		Var="gmr_unitHexagon1"
+		DrawMode="triangles"
+		HideCommand="hidden,1"
+		OnCommand="hidden,1;zoom,0;x,sw/2;y,sh/2;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			local bars = 6
+			self:SetNumVertices(bars*3)
+			local radius = 1
+			
+			for i=0,bars*3 - 1,3 do
+				
+				local ang = (((i/3)+0.5)/bars)*2*math.pi
+				local ang2 = ((((i/3)+0.5)+1)/bars)*2*math.pi
+				
+				self:SetVertexPosition(i+0,0,0,0)
+				self:SetVertexPosition(i+1,radius*math.sin(ang),radius*math.cos(ang),0)
+				self:SetVertexPosition(i+2,radius*math.sin(ang2),radius*math.cos(ang2),0)
+				
+			end
+			
+		end"
+		/>
+		<LAER Type="Polygon"
+		Var="gmr_unitHexagon2"
+		DrawMode="triangles"
+		HideCommand="hidden,1"
+		OnCommand="hidden,1;x,sw/2;y,sh/2;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			local bars = 6
+			self:SetNumVertices(bars*3)
+			local radius = 1
+			
+			for i=0,bars*3 - 1,3 do
+				
+				local ang = (((i/3)+0.5)/bars)*2*math.pi
+				local ang2 = ((((i/3)+0.5)+1)/bars)*2*math.pi
+				
+				self:SetVertexPosition(i+0,0,0,0)
+				self:SetVertexPosition(i+1,radius*math.sin(ang),radius*math.cos(ang),0)
+				self:SetVertexPosition(i+2,radius*math.sin(ang2),radius*math.cos(ang2),0)
+				
+			end
+			
+		end"
+		/>
+		<LAER Type="Polygon"
+		Var="gmr_unitLineHexagon1"
+		DrawMode="linestrip"
+		HideCommand="hidden,1"
+		OnCommand="hidden,1;zoom,0;x,sw/2;y,sh/2;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			self:SetNumVertices(7)
+			local radius = 1
+			
+			for i=0,6 do
+				
+				local ang = ((i+0.5)/6)*2*math.pi
+				
+				self:SetVertexPosition(i,radius*math.sin(ang),radius*math.cos(ang),0)
+				
+			end
+			
+		end"
+		/>
+		<LAER Type="Polygon"
+		Var="gmr_unitLineHexagon2"
+		DrawMode="linestrip"
+		HideCommand="hidden,1"
+		OnCommand="hidden,1;zoom,0;x,sw/2;y,sh/2;queuecommand,Make"
+		MakeCommand="%function(self)
+			
+			self:SetNumVertices(7)
+			local radius = 1
+			
+			for i=0,6 do
+				
+				local ang = ((i+0.5)/6)*2*math.pi
+				
+				self:SetVertexPosition(i,radius*math.sin(ang),radius*math.cos(ang),0)
+				
+			end
+			
+		end"
+		/>
+		
+		<LAER Type="ActorFrame" Var="gmr_sdvx" OnCommand="hidden,1;" HideCommand="hidden,1" ><children>
+			
+			<LAER File="sdvx_l" OnCommand="valign,1;skewx,1.5;x,-32;y,0*(100);zoomx,.9;zoomy,.75*(100/64)" />
+			<LAER File="sdvx_r" OnCommand="valign,1;skewx,1.5;x,32;y,0*(100);zoomx,.9;zoomy,.75*(100/64)" />
+			
+			<LAER File="sdvx_l" OnCommand="valign,1;skewx,-1.5;x,-32;y,-1.5*(100);zoomx,.9;zoomy,.75*(100/64)" />
+			<LAER File="sdvx_r" OnCommand="valign,1;skewx,-1.5;x,32;y,-1.5*(100);zoomx,.9;zoomy,.75*(100/64)" />
+			
+			<LAER File="sdvx_l" OnCommand="valign,1;skewx,-4;x,-160;y,-3*(100);zoomx,.9;zoomy,2*(100/64)" />
+			<LAER File="sdvx_l" OnCommand="valign,1;skewx,4;x,68;y,-5*(100);zoomx,.9;zoomy,4*(100/64)" />
+			
+		</children></LAER>
+		
+		<LAER Type="ActorFrame" Var="gmr_taiko" InitCommand="%function(self) gmr_taiko_chart = {0,.75,1.25,1.5,2,2.25,2.5,3.25,3.75,3.875,4,4.25,4.5,4.75,5} end"
+		OnCommand="hidden,1;" HideCommand="hidden,1" ><children>
+			
+			<LAER File="taiko_r" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[1]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[2]*300" />
+			<LAER File="taiko_r" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[3]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[4]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[5]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[6]*300" />
+			<LAER File="taiko_r" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[7]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[8]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[9]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[10]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[11]*300" />
+			<LAER File="taiko_r" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[12]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[13]*300" />
+			<LAER File="taiko_b" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[14]*300" />
+			<LAER File="taiko_r" OnCommand="effectclock,bgm;y,-gmr_taiko_chart[15]*300" />
+			
+		</children></LAER>
+		
+		<LAER File="ayaW" Var="gmr_ayaW" OnCommand="hidden,1" />
+		<LAER File="aya1" InitCommand="%function(self) self:SetTextureFiltering(false) end"
+		OnCommand="rotationx,90;zoom,2500;zoomz,2500;y,1000000;diffuse,0,0,0,0;" Aya1FlashMessageCommand="diffusealpha,1;linear,120/133;diffusealpha,0;" />
+		<LAER File="aya2" InitCommand="%function(self) self:SetTextureFiltering(false) end" OnCommand="rotationx,90;zoom,2500;zoomz,2500;y,1000000;diffuse,0,0,0,0;"
+		Aya2FlashMessageCommand="diffusealpha,1;linear,120/133;diffusealpha,0;" Aya2FlashEMessageCommand="diffusealpha,1;basezoomx,-1;"
+		Aya2FlashAwayMessageCommand="diffusealpha,1;linear,120/133;diffusealpha,0;addx,800000;addz,600000;rotationz,-120;" />
+		
+		<LAER Type="Polygon" DrawMode="quads"
+			Var="gmr_tunnel2"
+			HideCommand="hidden,0"
+			OnCommand="zoom,1000;zoomz,2000;z,-15000;xy,sw/2,sh/2;hidden,1;"
+			InitCommand="%function(self)
+				self:SetNumVertices(10*4*12)
+				
+				self:SetPolygonMode(1)
+				
+				for i=0,11 do
+					local ang = (2*math.pi)*((i+0)/12)
+					
+					local function xp(rad)
+						return rad*math.sin(ang)
+					end
+					local function yp(rad)
+						return -rad*math.cos(ang)
+					end
+					
+					local dist = 3
+					local swid = 0.75
+					local slen = 4
+					
+					for sh=0,9 do
+					
+						local dist = 3
+						self:SetVertexPosition( 10*4*i+sh*4+0, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), -slen*sh )
+						self:SetVertexPosition( 10*4*i+sh*4+1, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), -slen*sh )
+						self:SetVertexPosition( 10*4*i+sh*4+2, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), -slen*(sh+1) )
+						self:SetVertexPosition( 10*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), -slen*(sh+1) )
+						
+					end
+					
+				end
+				
+			end"
+		/>
+		
+		<LAER Type="Polygon" DrawMode="quads"
+			Var="gmr_tunnel1"
+			OnCommand="zoom,1500;zoomz,1500;z,-24000;xy,sw/2,sh/2 + 9000;diffuse,0,0,0,0;"
+			HideCommand="hidden,1"
+			InitCommand="%function(self)
+				self:SetNumVertices(14*4*12)
+				
+				for i=0,11 do
+					
+					local ang = (2*math.pi)*((i+0.5)/12)
+					
+					local function xp(rad)
+						return rad*math.sin(ang)
+					end
+					local function yp(rad)
+						return -rad*math.cos(ang)
+					end
+					
+					local dist = 3
+					local swid = 0.75
+					local slen = 4.5
+					
+					local sh = 0
+					local dist = 3.75
+					
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), 0 )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), 0 )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), 0 )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), 0 )
+					
+					local sh = 1
+					local dist = 5.25
+					
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), 0 )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), 0 )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), 0 )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), 0 )
+					
+					local sh = 2
+					local dist = 3
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), 0 )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), 0 )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen )
+					
+					local sh = 3
+					local dist = 3.75
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen+slen )
+					local sh = 4
+					local dist = 3.75
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen+slen )
+					local sh = 5
+					local dist = 5.25
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen+slen )
+					local sh = 6
+					local dist = 5.25
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen+slen )
+					
+					local sh = 7
+					local dist = 6
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen+slen )
+					
+					
+					local sh = 8
+					local dist = 3
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen*2+0 )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen*2+0 )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen*2+slen )
+					
+					local sh = 9
+					local dist = 3.75
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), slen*2+slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen*2+slen+slen )
+					local sh = 10
+					local dist = 3.75
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), slen*2+slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen*2+slen+slen )
+					local sh = 11
+					local dist = 5.25
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist+swid) - yp(swid/2), yp(dist+swid) + xp(swid/2), slen*2+slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen*2+slen+slen )
+					local sh = 12
+					local dist = 5.25
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist+swid) + yp(swid/2), yp(dist+swid) - xp(swid/2), slen*2+slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen*2+slen+slen )
+					
+					local sh = 13
+					local dist = 6
+					self:SetVertexPosition( 14*4*i+sh*4+0, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+1, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen*2+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+2, xp(dist) + yp(swid/2), yp(dist) - xp(swid/2), slen*2+slen+slen )
+					self:SetVertexPosition( 14*4*i+sh*4+3, xp(dist) - yp(swid/2), yp(dist) + xp(swid/2), slen*2+slen+slen )
+					
+				end
+				
+			end"
+		/>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<!--Playfields-->
+		<LAER Type="ActorProxy" OnCommand="hidden,0"
+		GetProxyMessageCommand="%function(self) groove_P3p = self;
+		if P3 then P3:hidden(1) self:SetTarget(P3) end end"/>
+		
+		<LAER Type="ActorProxy" OnCommand="hidden,0;"
+		GetProxyMessageCommand="%function(self) groove_P1p = self;
+		if P1 then P1:hidden(1) self:SetTarget(P1) end end"/>
+		
+		<LAER Type="ActorProxy" OnCommand="hidden,0"
+		GetProxyMessageCommand="%function(self) groove_P2p = self;
+		if P2 then P2:hidden(1) self:SetTarget(P2) end end"/>
+		
+		<ZLAER Type="ActorFrame" Var="gmr_minetrack"><children>
+		<ZLAER Type="ActorFrame" OnCommand="zoom,0" ShowMinesMessageCommand="linear,2.5*60/133;zoom,1;zoomz,1;"
+		HideMinesMessageCommand="linear,2.5*60/133;zoom,0;zoomz,0;"><children>
+			<LAER Var="gmr_mine1" File="mine/_mine.model" OnCommand="xy,sw/2,SCREEN_CENTER_Y;zoom,1;zoomz,1;diffusealpha,1" />
+			<LAER Var="gmr_mine2" File="mine/_mine.model" OnCommand="xy,sw/2,SCREEN_CENTER_Y;zoom,1;zoomz,1;diffusealpha,1" />
+		</children></ZLAER>
+		</children></ZLAER>
+	
+	</children></LAER>
+	</children></LAER>
+	
+	
+	
+	<INPUTGAME
+		Type="Aux"
+		Debug1MessageCommand="%function(self)
+		end"
+		
+		StepP1MessageCommand="%function(self)
+			groove_checkadlibs(1)
+		end"
+		StepP2MessageCommand="%function(self)
+			groove_checkadlibs(2)
+		end"
+		
+		StepP1LeftPressMessageCommand="%function (self)
+			groove_fakestep(0)
+		end"
+		StepP1DownPressMessageCommand="%function (self)
+			groove_fakestep(1)
+		end"
+		StepP1UpPressMessageCommand="%function (self)
+			groove_fakestep(2)
+		end"
+		StepP1RightPressMessageCommand="%function (self)
+			groove_fakestep(3)
+		end"
+		
+		StepP2LeftPressMessageCommand="%function (self)
+			groove_fakestep(0)
+		end"
+		StepP2DownPressMessageCommand="%function (self)
+			groove_fakestep(1)
+		end"
+		StepP2UpPressMessageCommand="%function (self)
+			groove_fakestep(2)
+		end"
+		StepP2RightPressMessageCommand="%function (self)
+			groove_fakestep(3)
+		end"
+		
+		Fk_P1_0_W1MessageCommand="%function(self) groove_faketaphit(0,1,1) end"
+		Fk_P1_0_W2MessageCommand="%function(self) groove_faketaphit(0,2,1) end"
+		Fk_P1_0_W3MessageCommand="%function(self) groove_faketaphit(0,3,1) end"
+		Fk_P1_0_W4MessageCommand="%function(self) groove_faketaphit(0,4,1) end"
+		Fk_P1_0_OKMessageCommand="%function(self) groove_fakeholdhit(0,1) end"
+		Fk_P1_1_W1MessageCommand="%function(self) groove_faketaphit(1,1,1) end"
+		Fk_P1_1_W2MessageCommand="%function(self) groove_faketaphit(1,2,1) end"
+		Fk_P1_1_W3MessageCommand="%function(self) groove_faketaphit(1,3,1) end"
+		Fk_P1_1_W4MessageCommand="%function(self) groove_faketaphit(1,4,1) end"
+		Fk_P1_1_OKMessageCommand="%function(self) groove_fakeholdhit(1,1) end"
+		Fk_P1_2_W1MessageCommand="%function(self) groove_faketaphit(2,1,1) end"
+		Fk_P1_2_W2MessageCommand="%function(self) groove_faketaphit(2,2,1) end"
+		Fk_P1_2_W3MessageCommand="%function(self) groove_faketaphit(2,3,1) end"
+		Fk_P1_2_W4MessageCommand="%function(self) groove_faketaphit(2,4,1) end"
+		Fk_P1_2_OKMessageCommand="%function(self) groove_fakeholdhit(2,1) end"
+		Fk_P1_3_W1MessageCommand="%function(self) groove_faketaphit(3,1,1) end"
+		Fk_P1_3_W2MessageCommand="%function(self) groove_faketaphit(3,2,1) end"
+		Fk_P1_3_W3MessageCommand="%function(self) groove_faketaphit(3,3,1) end"
+		Fk_P1_3_W4MessageCommand="%function(self) groove_faketaphit(3,4,1) end"
+		Fk_P1_3_OKMessageCommand="%function(self) groove_fakeholdhit(3,1) end"
+		
+		Fk_P1_Complete_W1MessageCommand="%function(self) groove_judge(1,1) end"
+		Fk_P1_Complete_W2MessageCommand="%function(self) groove_judge(1,2) end"
+		Fk_P1_Complete_W3MessageCommand="%function(self) groove_judge(1,3) end"
+		Fk_P1_Complete_W4MessageCommand="%function(self) groove_judge(1,4) end"
+		Fk_P1_Complete_W5MessageCommand="%function(self) groove_judge(1,5) end"
+		Fk_P1_Complete_W6MessageCommand="%function(self) groove_judge(1,6) end"
+		
+		Fk_P2_0_W1MessageCommand="%function(self) groove_faketaphit(0,1,2) end"
+		Fk_P2_0_W2MessageCommand="%function(self) groove_faketaphit(0,2,2) end"
+		Fk_P2_0_W3MessageCommand="%function(self) groove_faketaphit(0,3,2) end"
+		Fk_P2_0_W4MessageCommand="%function(self) groove_faketaphit(0,4,2) end"
+		Fk_P2_0_OKMessageCommand="%function(self) groove_fakeholdhit(0,2) end"
+		Fk_P2_1_W1MessageCommand="%function(self) groove_faketaphit(1,1,2) end"
+		Fk_P2_1_W2MessageCommand="%function(self) groove_faketaphit(1,2,2) end"
+		Fk_P2_1_W3MessageCommand="%function(self) groove_faketaphit(1,3,2) end"
+		Fk_P2_1_W4MessageCommand="%function(self) groove_faketaphit(1,4,2) end"
+		Fk_P2_1_OKMessageCommand="%function(self) groove_fakeholdhit(1,2) end"
+		Fk_P2_2_W1MessageCommand="%function(self) groove_faketaphit(2,1,2) end"
+		Fk_P2_2_W2MessageCommand="%function(self) groove_faketaphit(2,2,2) end"
+		Fk_P2_2_W3MessageCommand="%function(self) groove_faketaphit(2,3,2) end"
+		Fk_P2_2_W4MessageCommand="%function(self) groove_faketaphit(2,4,2) end"
+		Fk_P2_2_OKMessageCommand="%function(self) groove_fakeholdhit(2,2) end"
+		Fk_P2_3_W1MessageCommand="%function(self) groove_faketaphit(3,1,2) end"
+		Fk_P2_3_W2MessageCommand="%function(self) groove_faketaphit(3,2,2) end"
+		Fk_P2_3_W3MessageCommand="%function(self) groove_faketaphit(3,3,2) end"
+		Fk_P2_3_W4MessageCommand="%function(self) groove_faketaphit(3,4,2) end"
+		Fk_P2_3_OKMessageCommand="%function(self) groove_fakeholdhit(3,2) end"
+		
+		Fk_P2_Complete_W1MessageCommand="%function(self) groove_judge(2,1) end"
+		Fk_P2_Complete_W2MessageCommand="%function(self) groove_judge(2,2) end"
+		Fk_P2_Complete_W3MessageCommand="%function(self) groove_judge(2,3) end"
+		Fk_P2_Complete_W4MessageCommand="%function(self) groove_judge(2,4) end"
+		Fk_P2_Complete_W5MessageCommand="%function(self) groove_judge(2,5) end"
+		Fk_P2_Complete_W6MessageCommand="%function(self) groove_judge(2,6) end"
+		
+	/>
+	
+	
+
+</children></ActorFrame>

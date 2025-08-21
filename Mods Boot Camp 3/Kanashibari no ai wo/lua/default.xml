@@ -1,0 +1,1970 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	mod_globaloffset = PREFSMAN:GetPreference('GlobalOffsetSeconds');
+	
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT --shortcuts
+	
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+	function GetJud(pn)
+		return _G['jud'..pn]
+	end
+	function GetCom(pn)
+		return _G['com'..pn]
+	end
+	
+	function mod_do(str,pn)
+		if pn then
+			GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+		else
+			GAMESTATE:ApplyGameCommand('mod,'..str)
+		end
+	end
+	
+	slumpo = false
+	for pn=1,2 do
+		if GAMESTATE:IsPlayerEnabled(pn-1) then
+			if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 5 then
+				slumpo = true
+			end
+		end
+	end
+	
+	function taro_Sound(str)
+		local met = GAMESTATE:GetCurrentSong():GetSongDir();
+		SOUND:PlayOnce(met..'lua/'..str..'.ogg');
+	end
+	
+	function math.other(pn)
+		if pn == 1 then return 2 end
+		if pn == 2 then return 1 end
+		return 0
+	end
+	
+	kana_graves = {}
+	kana_gptr = 0
+	
+	function kana_get_grave()
+		
+		kana_gptr = kana_gptr+1
+		local a = kana_graves[ math.mod(kana_gptr,table.getn(kana_graves)) + 1 ]
+		
+		return a 
+	end
+	
+	function kana_make_grave(obj)
+		obj:vertalign('bottom');
+		table.insert(kana_graves,obj)
+	end
+	
+	kana_hands = {}
+	kana_hptr = 0
+	
+	function kana_get_hand()
+		
+		kana_hptr = kana_hptr+1
+		local a = kana_hands[ math.mod(kana_hptr,table.getn(kana_hands)) + 1 ]
+		
+		return a 
+	end
+	
+	function kana_make_hand(obj)
+		obj:fadebottom(.2)
+		obj:cropbottom(.1)
+		table.insert(kana_hands,obj)
+	end
+	
+	kana_zombs = {}
+	kana_zptr = 0
+	
+	function kana_get_zomb()
+		
+		kana_zptr = kana_zptr+1
+		local a = kana_zombs[ math.mod(kana_zptr,table.getn(kana_zombs)) + 1 ]
+		
+		return a 
+	end
+	
+	function kana_make_zomb(obj)
+		obj:vertalign('bottom');
+		table.insert(kana_zombs,obj)
+	end
+	
+	kana_flames = {}
+	kana_fptr = 0
+	
+	function kana_get_flame()
+		
+		kana_fptr = kana_fptr+1
+		local a = kana_flames[ math.mod(kana_fptr,table.getn(kana_flames)) + 1 ]
+		
+		return a 
+	end
+	
+	function kana_make_flame(obj)
+		obj:vertalign('bottom');
+		obj:diffuseshift()
+		obj:effectclock('bgm')
+		obj:blend('add')
+		obj:effectcolor1(1,1,1,.8)
+		obj:effectcolor2(1,1,1,.5)
+		obj:effectperiod(math.random()+2)
+		table.insert(kana_flames,obj)
+	end
+	
+	kana_lanterns = {}
+	kana_lptr = 0
+	
+	function kana_get_lantern()
+		
+		kana_lptr = kana_lptr+1
+		local a = kana_lanterns[ math.mod(kana_lptr,table.getn(kana_lanterns)) + 1 ]
+		
+		return a 
+	end
+	
+	function kana_make_lantern(obj)
+		obj:vertalign('bottom');
+		obj:diffuse(.4,.4,.4,1)
+		table.insert(kana_lanterns,obj)
+	end
+	
+	kana_trees = {}
+	kana_tptr = 0
+	
+	function kana_get_tree()
+		
+		kana_tptr = kana_tptr+1
+		local a = kana_trees[ math.mod(kana_tptr,table.getn(kana_trees)) + 1 ]
+		
+		return a 
+	end
+	
+	function kana_make_tree(obj)
+		obj:vertalign('bottom');
+		table.insert(kana_trees,obj)
+	end
+	
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="modhelpers.xml" />
+	<Layer File="easing.xml" />
+	<Layer File="spellcard.xml" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+		
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_shader(beat,key,which)
+				--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+				
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_onebeat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--use a variable called 'switcheroo_width' to change how much space is between each column
+			--e.g. switcheroo_width = 2 for ayakashi
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+				
+			--function doSpline(spd, axis, path, col)
+				--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+				
+			--function doSplineAll(spd, axis, path)
+				--same as above, but for all columns
+				--(faster performance than using doSpline 4 times due to more efficient concat)
+			
+			--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+				--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+			
+			
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local m = mod_insert
+			local m2 = mod_message
+			local me = mod_ease
+			
+			
+			local l = 'len'
+			local e = 'end'
+			
+			
+			
+			
+			
+			
+			
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*2 1.5x, *1000 no beat, *10000 -99999 cover','end'},
+			}
+			
+			--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+			
+			
+			
+			
+			
+			
+			
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+				--{0,200.345,'3x','end',1},
+			}
+			
+			
+			
+			
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 32
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {
+			
+			
+				
+			}
+			
+			
+			
+			
+			
+			
+			--beat-based ease mods
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--valid ease types are:
+				--linear
+				--inQuad    outQuad    inOutQuad    outInQuad
+				--inCubic   outCubic   inOutCubic   outInCubic
+				--inQuart   outQuart   inOutQuart   outInQuart
+				--inQuint   outQuint   inOutQuint   outInQuint
+				--inSine    outSine    inOutSine    outInSine
+				--inExpo    outExpo    inOutExpo    outInExpo
+				--inCirc    outCirc    inOutCirc    outInCirc
+				--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+				--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+				--inBounce  outBounce  inOutBounce  outInBounce
+				
+			mods_ease = {
+				-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+				--{0,4,360,0,'rotationz','end',inOutBack},
+			}
+			
+			
+			
+			mod_perframes = {
+				
+			}
+			
+			function mpf(s,e,f)
+				table.insert(mod_perframes,{s,e,f})
+			end
+			
+			mod_wiggle(22,8,4,150,2,'drunk')
+			mod_wiggle(38,8,4,150,2,'tipsy')
+			mod_wiggle(69.75,9,4,150,2,'tipsy')
+			
+			mod_wiggle(84.5,7,2,20,1,'tornado')
+			mod_wiggle(92.5,7,2,20,1,'tornado')
+			mod_wiggle(100.5,7,2,20,1,'tornado')
+			mod_wiggle(108,4,2,20,1,'tornado')
+			
+			mod_wiggle(110,8,4,150,2,'tipsy')
+			
+			simple_m0d(68.5,200,.2,'drunk')
+			simple_m0d(69,-200,.2,'drunk')
+			
+			simple_m0d2(72,200,.35,'drunk')
+			simple_m0d2(72,200,.35,'tipsy')
+			simple_m0d2(73,-200,.35,'drunk')
+			simple_m0d2(73,200,.35,'tipsy')
+			
+			simple_m0d2(74.5,-200,.35,'drunk')
+			simple_m0d2(75.5,200,.35,'drunk')
+			
+			for i=0,3 do
+				simple_m0d2(52+i-.1,-150,.3,'wave')
+			end
+			
+			mpf(4,7,function()
+				local beat = GAMESTATE:GetSongBeat()
+				local rot = 360*(beat-4)/3
+				local xp = 1-inQuad((beat-4)/3,0,1,1)
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationx(rot*1)
+						a:rotationy(rot*-3*(pn*2-3))
+						a:rotationz(rot*0)
+						a:x(sw/2 + 160*xp*(pn*2-3))
+					end
+					
+					local a = GetJud(pn)
+					if a then
+						a:x(180*(1-xp)*(pn*2-3))
+					end
+					
+					local a = GetCom(pn)
+					if a then
+						a:x(180*(1-xp)*(pn*2-3))
+					end
+					
+				end
+				
+			end)
+			m2(7,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationx(0)
+						a:rotationy(0)
+						a:rotationz(0)
+						a:x(sw/2)
+						a:y(sh/2)
+					end
+					
+					local a = GetJud(pn)
+					if a then
+						a:x(180*(pn*2-3))
+					end
+					
+					local a = GetCom(pn)
+					if a then
+						a:x(180*(pn*2-3))
+					end
+				end
+			end,true)
+			
+			m(0,80,'*10 1.5x',e)
+			
+			function spoop(b,pn)
+				
+				me(b,4,0,100,'mini',l,outQuad,math.other(pn),4)
+				me(b,4,0,300,'tornado',l,outQuad,math.other(pn),4)
+				me(b,4,0,-50,'flip',l,outQuad,math.other(pn),4)
+				--me(b,4,0,50,'stealth',l,outQuad,math.other(pn),4)
+				me(b,4,1.5,3,'xmod',l,outQuad,math.other(pn),4)
+				me(b,4,0,100,'drunk',l,outQuad,math.other(pn),4)
+				me(b,4,0,428,'dizzy',l,outQuad,math.other(pn),4)
+				
+				me(b+8,4,100,0,'mini',l,outQuad,math.other(pn))
+				me(b+8,4,300,0,'tornado',l,outQuad,math.other(pn))
+				me(b+8,4,-50,0,'flip',l,outQuad,math.other(pn))
+				--me(b+8,4,50,0,'stealth',l,outQuad,math.other(pn))
+				me(b+8,4,3,1.5,'xmod',l,outQuad,math.other(pn))
+				me(b+8,4,100,0,'drunk',l,outQuad,math.other(pn))
+				me(b+8,4,428,0,'dizzy',l,outQuad,math.other(pn))
+				
+				local sm = 1
+				if slumpo then
+					sm = 1
+				end
+				
+				if b < 40 then
+					me(b,b+8*sm,50,100,'stealth',e,outQuad,pn,b+13.5)
+				else
+					me(b,b+7*sm,50,100,'stealth',e,outQuad,pn,b+13.5)
+				end
+				me(b,8,1.5,1,'xmod',l,outQuad,pn,5.5)
+				me(b,8,0,100,'brake',l,outQuad,pn,5.5)
+				m(b,13.5,'*10000 dark',l,pn)
+				me(b+13.5,2.5,100,0,'stealth',l,linear,pn)
+				me(b+13.5,2.5,1,1.5,'xmod',l,outQuad,pn)
+				me(b+13.5,2.5,100,0,'brake',l,outQuad,pn)
+				me(b+13.5,2.5,50,0,'dark',l,linear,pn)
+				
+				if b >= 40 then
+					me(b,8,0,-50,'drunk',l,inQuad,pn,5.5)
+					me(b+13.5,2.5,-50,0,'drunk',l,inQuad,pn)
+					me(b,8,0,80,'dizzy',l,inQuad,pn,5.5)
+					me(b+13.5,2.5,80,0,'dizzy',l,inQuad,pn)
+				end
+				
+			end
+			
+			spoop(8,1)
+			spoop(24,2)
+			spoop(40,1)
+			spoop(56,2)
+			
+			function twisty(beat,dir,zoomz,rx)
+				if not rx then rx = 0 end
+				mpf(beat,beat+8,function()
+					local b = GAMESTATE:GetSongBeat()
+					local rotz = 0
+					local rotx = 0
+					local zz = 1
+					if slumpo then
+						local bad = 90-dir*90
+						if b > beat and b < beat+4 then
+							rotx = rx*-20*inOutQuad((b-beat)/4,0,1,1)
+							zz = 1+zoomz*inOutQuad((b-beat)/4,0,1,1)
+						end
+						if b > beat+4 and b < beat+8 then
+							rotx = rx*(-20+20*inOutQuad((b-(beat+4))/4,0,1,1))
+							zz = (1+zoomz)-zoomz*inOutQuad((b-(beat+4))/4,0,1,1)
+						end
+						if b > beat and b < beat+8 then
+							rotz = bad+180*inOutQuad((b-beat)/8,0,1,1)
+						end
+					else
+						if b > beat and b < beat+4 then
+							rotz = dir*180*inOutQuad((b-beat)/4,0,1,1)
+							rotx = rx*-20*inOutQuad((b-beat)/4,0,1,1)
+							zz = 1+zoomz*inOutQuad((b-beat)/4,0,1,1)
+						end
+						if b > beat+4 and b < beat+8 then
+							rotz = dir*(180+180*inOutQuad((b-(beat+4))/4,0,1,1))
+							rotx = rx*(-20+20*inOutQuad((b-(beat+4))/4,0,1,1))
+							zz = (1+zoomz)-zoomz*inOutQuad((b-(beat+4))/4,0,1,1)
+						end
+					end
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							a:rotationz(rotz)
+							a:zoomz(zz)
+							a:rotationx(rotx)
+						end
+					end
+				end)
+				m2(beat+8,function()
+					for pn=1,2 do
+						local a = Plr(pn)
+						if a then
+							if not slumpo then
+								a:rotationz(0)
+							end
+							a:zoomz(1)
+							a:rotationx(0)
+						end
+					end
+				end)
+				me(beat,4,1.5,1.35,'xmod',l,inOutQuad)
+				me(beat+4,4,1.35,1.5,'xmod',l,inOutQuad)
+				if beat >= 312 then
+					me(beat,4,0,100,'tornado',l,inOutQuad)
+					me(beat+4,4,100,0,'tornado',l,inOutQuad)
+				end
+				
+				local d = dir
+				if beat >=312 then d = d*2 end
+				
+				m2(beat,function()
+					kana_bg:accelerate(60/200)
+					kana_bg:rotationz(5*d)
+					kana_bg:decelerate(60/200)
+					kana_bg:rotationz(10*d)
+					kana_bg:accelerate(120/200)
+					kana_bg:rotationz(0*d)
+					kana_bg:decelerate(120/200)
+					kana_bg:rotationz(-10*d)
+					kana_bg:accelerate(60/200)
+					kana_bg:rotationz(-5*d)
+					kana_bg:decelerate(60/200)
+					kana_bg:rotationz(0*d)
+					kana_bg2:accelerate(60/200)
+					kana_bg2:rotationz(5*d)
+					kana_bg2:decelerate(60/200)
+					kana_bg2:rotationz(10*d)
+					kana_bg2:accelerate(120/200)
+					kana_bg2:rotationz(0*d)
+					kana_bg2:decelerate(120/200)
+					kana_bg2:rotationz(-10*d)
+					kana_bg2:accelerate(60/200)
+					kana_bg2:rotationz(-5*d)
+					kana_bg2:decelerate(60/200)
+					kana_bg2:rotationz(0*d)
+				end)
+				
+			end
+			
+			twisty(152,1,0)
+			twisty(168,-1,0)
+			twisty(184,1,0)
+			twisty(192,-1,0)
+			
+			--[[
+			m(208,64,'*1000 200 hallway, *1000 150 mini, *1000 0.5x, *1000 -100 flip',l)
+			m2(208,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:zoomx(0.1)
+						a:zoomz(2)
+						a:zoomy(0)
+						a:y(sh*0.5)
+						a:z(-1000)
+					end
+				end
+			end)
+			]]
+			
+			twisty(96+152,1,10,1)
+			twisty(96+168,-1,10,1)
+			twisty(96+184,1,10,1)
+			twisty(96+192,-1,10,1)
+			
+			if not slumpo then
+				twisty(64+96+152,-1,10,1)
+				twisty(64+96+168,1,10,1)
+				twisty(64+96+184,-1,10,1)
+				twisty(64+96+192,1,10,1)
+			else
+				twisty(64+96+152,1,10,1)
+				twisty(64+96+168,-1,10,1)
+				twisty(64+96+184,1,10,1)
+				twisty(64+96+192,-1,10,1)
+			end
+			
+			
+			
+			---------
+			
+			m(80,136,'hidden,sudden',e)
+			
+			--m(80,136,'drunk',e,1)
+			--m(80,136,'-100 drunk',e,2)
+			
+			m2(80,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						--a:x(sw/2+160*(pn*2-3))
+						a:linear(30*60/200)
+						a:rotationx(20)
+						a:rotationy(-25*(pn*2-3))
+						a:rotationz(-30*(pn*2-3))
+						a:zoomz(3)
+						a:x(sw/2 - 60*(pn*2-3))
+						a:linear(120/200)
+						a:rotationx(0)
+						a:rotationy(0)
+						a:rotationz(0)
+						a:zoomz(1)
+						a:x(sw/2)
+					end
+				end
+			end)
+			
+			m2(136,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						--a:x(sw/2+160*(pn*2-3))
+						a:accelerate(240/200)
+						a:x(sw/2 + 160*(pn*2-3))
+					end
+					
+					local a = GetJud(pn)
+					if a then
+						a:accelerate(240/200)
+						a:x(0)
+					end
+					
+					local a = GetCom(pn)
+					if a then
+						a:accelerate(240/200)
+						a:x(0)
+					end
+					
+				end
+			end)
+			
+			m2(140,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2 + 160*(pn*2-3))
+					end
+					
+					local a = GetJud(pn)
+					if a then
+						a:x(0)
+					end
+					
+					local a = GetCom(pn)
+					if a then
+						a:x(0)
+					end
+					
+				end
+			end,true)
+			
+			if slumpo then
+				me(80,88,0,100,'flip',e,outQuad,2,136)
+				me(136,140,100,0,'flip',e,inQuad,2)
+				me(208,212,0,100,'flip',e,outQuad,1,232)
+				me(232,236,100,0,'flip',e,inQuad,1)
+				me(368,372,0,100,'flip',e,outQuad,2,389)
+				me(389,393,100,0,'flip',e,inQuad,2)
+			end
+			
+			me(80,96,0,100,'wave',e,linear,nil,110)
+			me(110,112,100,0,'wave',e,linear,nil,136)
+			me(81,96,0,80,'drunk',e,linear,1,110)
+			me(110,112,80,-150,'drunk',e,linear,1,136)
+			me(81,96,0,-80,'drunk',e,linear,2,110)
+			me(110,112,-80,150,'drunk',e,linear,2,136)
+			
+			me(110,112,1.5,0.5,'xmod',e,linear,nil,136)
+			me(110,112,0,-100,'reverse',e,linear,nil,136)
+			me(110,112,0,66,'centered',e,linear,nil,136)
+			
+			me(112,128,0,500,'bumpy',e,linear,1,136)
+			me(112,128,0,-500,'bumpy',e,linear,2,136)
+			
+			me(136,4,-150,0,'drunk',l,linear,1)
+			me(136,4,500,0,'bumpy',l,linear,1)
+			me(136,4,150,0,'drunk',l,linear,2)
+			me(136,4,-500,0,'bumpy',l,linear,2)
+			
+			me(136,4,0.5,1.5,'xmod',l,linear)
+			me(136,4,66,0,'centered',l,linear)
+			me(136,4,-100,0,'reverse',l,linear)
+			
+			m(112,136,'*0.1 -10 dizzy',e,1)
+			m(112,136,'*0.1 10 dizzy',e,2)
+			
+			kana_fsize = 150
+			
+			mpf(80,140,function(beat)
+			
+				local dam = 1
+				
+				if beat > 110 and beat < 112 then
+					dam = 1-0.4*((beat-110)/2)
+				end
+				
+				if beat >= 112 then
+					dam = 0.6
+				end
+				
+				kana_fsize = 150*dam
+				
+				for pn=1,2 do
+					local p = (pn-1)*4
+					local pos = dam*1.5*(math.min( (((beat+p)/8)-math.floor((beat+p)/8)) , 1))
+					local offsets = -100 + (200+kana_fsize)*pos
+					mod_do( '*10000 '..(offsets-kana_fsize)..' hiddenoffset, *10000 '..(offsets)..' suddenoffset',pn)
+				end
+				
+			end)
+			
+			--[[
+			m2(204,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationz(360*(pn*2-3))
+						a:decelerate(240/200)
+						a:x(sw/2)
+						a:rotationz(0)
+					end
+				end
+			end)
+			]]
+			
+			m2(208,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2)
+					end
+				end
+			end,true)
+			
+			m2(208.01,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						--a:x(sw/2+160*(pn*2-3))
+						a:x(sw/2)
+						a:rotationz(0)
+						a:decelerate(24*60/200)
+						a:rotationx(10)
+						a:rotationy(-15*(pn*2-3))
+						a:rotationz(-20*(pn*2-3))
+						a:zoomz(3)
+						a:x(sw/2 - 60*(pn*2-3))
+						a:accelerate(240/200)
+						a:rotationx(0)
+						a:rotationy(0)
+						a:rotationz(0)
+						a:zoomz(1)
+						a:x(sw/2)
+					end
+				end
+			end)
+			
+			m(208,236,'hidden,sudden',e)
+			
+			m(208,236,'*0.1 10 dizzy',e,1)
+			m(208,236,'*0.1 -10 dizzy',e,2)
+			
+			me(208,224,0,100,'wave',e,linear,nil,236)
+			me(236,240,100,0,'wave',e,linear)
+			me(208,224,0,80,'drunk',e,linear,1,236)
+			me(236,240,80,0,'drunk',e,linear)
+			me(208,224,0,-80,'drunk',e,linear,2,236)
+			me(236,240,-80,0,'drunk',e,linear)
+			
+			mpf(204,208,function(beat)
+				local iq = inQuad((beat-204)/4,0,1,1)
+				local oq = outQuart((beat-204)/4,0,1,1)
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x( sw/2 + (1-iq)*160*(pn*2-3) )
+						a:rotationz(oq*360*(pn*2-3))
+					end
+					local a = GetJud(pn)
+					if a then
+						a:x( (iq)*160*(pn*2-3) )
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x( (iq)*160*(pn*2-3) )
+					end
+				end
+			end)
+			
+			mpf(208,240,function(beat)
+			
+				local dam = 1
+				
+				kana_fsize = 150*dam
+				
+				for pn=1,2 do
+					local p = (pn-1)*4
+					local pos = dam*1.5*(math.min( (((beat+p)/8)-math.floor((beat+p)/8)) , 1))
+					local offsets = -100 + (200+kana_fsize)*pos
+					mod_do( '*10000 '..(offsets-kana_fsize)..' hiddenoffset, *10000 '..(offsets)..' suddenoffset',pn)
+				end
+				
+			end)
+			
+			m(368,393,'hidden,sudden',e)
+			
+			m(368,393,'*0.1 10 dizzy',e,1)
+			m(368,393,'*0.1 -10 dizzy',e,2)
+			
+			me(368,376,0,100,'wave',e,linear,nil,393)
+			me(393,397,100,0,'wave',e,linear)
+			me(368,376,0,80,'drunk',e,linear,1,393)
+			me(393,397,80,0,'drunk',e,linear)
+			me(368,376,0,-80,'drunk',e,linear,2,393)
+			me(393,397,-80,0,'drunk',e,linear)
+			
+			m(240,270,'*0.1 60 brake',e)
+			
+			--me(368,368,0,100,'flip',e,outQuad,2,400)
+			
+			mpf(368,393,function(beat)
+			
+				local dam = 1
+				
+				kana_fsize = 150*dam
+				
+				for pn=1,2 do
+					local p = (pn-1)*7
+					local pos = dam*1.5*(math.min( (((beat+p)/14)-math.floor((beat+p)/14)) , 1))
+					local offsets = -100 + (200+kana_fsize)*pos
+					mod_do( '*10000 '..(offsets-kana_fsize)..' hiddenoffset, *10000 '..(offsets)..' suddenoffset',pn)
+				end
+				
+			end)
+			
+			m2(368,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						--a:x(sw/2+160*(pn*2-3))
+						a:x(sw/2)
+						a:rotationz(0)
+						a:decelerate(23*60/200)
+						a:rotationx(10)
+						a:rotationy(-15*(pn*2-3))
+						a:rotationz(-20*(pn*2-3))
+						a:zoomz(3)
+						a:x(sw/2 - 60*(pn*2-3))
+						a:accelerate(120/200)
+						a:rotationx(0)
+						a:rotationy(0)
+						a:rotationz(0)
+						a:x(sw/2 + 160*(pn*2-3))
+						a:zoomz(1)
+					end
+				end
+			end)
+			
+			
+			
+			m2(397,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:sleep(0)
+						a:decelerate(120/200)
+						a:rotationx(0)
+						a:rotationy(0)
+						a:rotationz(360)
+						a:zoomz(1)
+						a:zoom(0)
+						a:x(sw/2)
+						a:y(sh/2)
+					end
+				end
+			end)
+			
+			function kana_scrunch(beat,dir,dur,p)
+				local amt = 0.8
+				
+				local d = 0
+				
+				if beat > 141 and beat < 208 or beat > 392 then
+					d = 1
+				end
+				
+				if beat > 303 then amt = 1 end
+				
+				if beat > 360 and beat < 368 then amt = 1 end
+				
+				me(beat-0.1,0.1,0,50*amt,'flip',l,linear,p)
+				me(beat,dur-0.1,50*amt,0,'flip',l,linear,p)
+				me(beat-0.1,0.1,0,50*amt,'reverse',l,linear,p)
+				me(beat,dur-0.1,50*amt,0,'reverse',l,linear,p)
+				local x = {-96,96,96,-96}
+				local y = {-112,-112,112,112}
+				m2(beat-0.1,function()
+					
+					for pn=1,2 do
+						if pn == p or not p then
+							local a = Plr(pn)
+							if a then
+								if beat < 393 and not slumpo then
+									a:rotationz(0)
+								end
+								a:sleep(0)
+								a:linear(12/200)
+								a:addx(x[dir+1]*amt)
+								a:addy(y[dir+1]*amt)
+								a:linear(dur*60/200 - (12/200))
+								a:addx(-x[dir+1]*amt)
+								a:addy(-y[dir+1]*amt)
+							end
+						end
+					end
+					
+				end)
+				
+				hand_angs = {-30,30,150,210}
+				
+				m2(beat-0.6,function()
+				
+					local extra = 1
+					
+					if p then extra = 1.5 end
+					
+					for pn=1,2 do
+						local plr = Plr(pn)
+							
+						if plr and (p == pn or not p) or (d == 0 and pn == 1 and not p) then
+							local a = kana_get_hand()
+							
+							if a then
+								a:hidden(0)
+								a:zoom(1.3)
+								a:rotationz(hand_angs[dir+1]+180)
+								a:setstate(0)
+								a:diffusealpha(0)
+								a:x( sw/2 + 160*(pn*2-3)*d + extra*200*math.sin(math.rad(hand_angs[dir+1])) )
+								a:y( sh/2 - 200*math.cos(math.rad(hand_angs[dir+1])) )
+								a:sleep(10/200 - .05)
+								a:linear(30/200)
+								a:x( sw/2 + 160*(pn*2-3)*d + extra*extra*60*math.sin(math.rad(hand_angs[dir+1])) )
+								a:y( sh/2 - extra*extra*60*math.cos(math.rad(hand_angs[dir+1])) )
+								a:diffusealpha(.7/(extra*extra))
+								a:queuecommand('Play')
+								a:linear(10/200)
+								a:x( sw/2 + 160*(pn*2-3)*d + extra*150*math.sin(math.rad(hand_angs[dir+1])) )
+								a:y( sh/2 - 150*math.cos(math.rad(hand_angs[dir+1])) )
+								a:decelerate(10/200)
+								a:zoom(1.45)
+								a:x( sw/2 + 160*(pn*2-3)*d + extra*230*math.sin(math.rad(hand_angs[dir+1])) )
+								a:y( sh/2 - 230*math.cos(math.rad(hand_angs[dir+1])) )
+								a:zoom(1.6)
+								a:linear(20/200)
+								a:zoom(1.4)
+								a:linear(60/200)
+								a:diffusealpha(0)
+								a:queuecommand('Hide')
+							end
+							
+						end
+						
+					end
+					
+				end)
+				
+			end
+			
+			m2(397-.6,function()
+				
+				local a = kana_handbg
+				
+				if a then
+					a:hidden(0)
+					a:zoom(2)
+					a:x(sw/2)
+					a:y(sh/2 + 60)
+					a:rotationz(0)
+					a:setstate(0)
+					a:diffusealpha(0)
+					a:sleep(10/200 - .05)
+					a:linear(30/200)
+					a:zoom(2.5)
+					a:y(sh/2 + 60*1.25)
+					a:diffusealpha(1)
+					a:queuecommand('Play');
+					a:linear(10/200)
+					a:zoom(3)
+					a:y(sh/2 + 60*1.5)
+					a:decelerate(10/200)
+					a:zoom(3.4)
+					a:y(sh/2 + 60*1.7)
+					a:linear(20/200)
+					a:zoom(2)
+					a:y(sh/2 + 60)
+					a:linear(60/200)
+					a:zoom(0.5)
+					a:y(sh/2 + 15)
+					a:diffusealpha(0)
+				end
+				
+			end)
+			
+			me(232,4,100,0,'dizzy',l,outQuad)
+			
+			--simple_m0d(139.5,200,.2,'tipsy')
+			mod_wiggle(140.5,3,4,20,2,'tornado')
+			mod_wiggle(141.5,10,4,200,2,'tipsy')
+			
+			simple_m0d(235.5,200,.2,'tipsy');
+			mod_wiggle(236.5,3,4,20,2,'tornado')
+			mod_wiggle(237.5,10,4,200,2,'tipsy')
+			
+			mod_wiggle(206,8,4,200,2,'tipsy')
+			
+			mod_wiggle(302.5,6,4,200,2,'tipsy')
+			
+			kana_scrunch(76,2,1)
+			kana_scrunch(77,0,1)
+			kana_scrunch(78,3,1)
+			--kana_scrunch(79,1,1)
+			mod_wiggle(79,4,4,200,2,'drunk');
+			
+			kana_scrunch(144,3,1.5)
+			kana_scrunch(145.5,0,1)
+			kana_scrunch(146.5,1,1)
+			kana_scrunch(147.5,2,1.5)
+			
+			kana_scrunch(160,2,1.5)
+			kana_scrunch(161.5,1,1)
+			kana_scrunch(162.5,0,1)
+			kana_scrunch(163.5,3,1.5)
+			
+			kana_scrunch(96+144,3,1.5)
+			kana_scrunch(96+145.5,0,1)
+			kana_scrunch(96+146.5,1,1)
+			kana_scrunch(96+147.5,2,1.5)
+			
+			kana_scrunch(246,3,1,1)
+			kana_scrunch(247,2,1,1)
+			kana_scrunch(246,1,1,2)
+			kana_scrunch(247,0,1,2)
+			
+			kana_scrunch(96+160,2,1.5)
+			kana_scrunch(96+161.5,1,1)
+			kana_scrunch(96+162.5,0,1)
+			kana_scrunch(96+163.5,3,1.5)
+			
+			kana_scrunch(16+246,3,1,2)
+			kana_scrunch(16+247,2,1,2)
+			kana_scrunch(16+246,1,1,1)
+			kana_scrunch(16+247,0,1,1)
+			
+			kana_scrunch(176,3,1.5)
+			kana_scrunch(177.5,0,1.5)
+			kana_scrunch(179,1,1.5)
+			kana_scrunch(180.5,2,1.5)
+			kana_scrunch(182,3,1)
+			kana_scrunch(183,1,1)
+			
+			kana_scrunch(272,3,1.5,1)
+			kana_scrunch(273.5,0,1.5,1)
+			kana_scrunch(275,1,1.5,1)
+			kana_scrunch(276.5,2,1.5,1)
+			kana_scrunch(272,1,1.5,2)
+			kana_scrunch(273.5,2,1.5,2)
+			kana_scrunch(275,3,1.5,2)
+			kana_scrunch(276.5,0,1.5,2)
+			
+			kana_scrunch(160+144,3,1.5,1)
+			kana_scrunch(160+145.5,0,1,1)
+			kana_scrunch(160+146.5,1,1,1)
+			kana_scrunch(160+147.5,2,1.5,1)
+			
+			kana_scrunch(160+160,2,1.5,1)
+			kana_scrunch(160+161.5,1,1,1)
+			kana_scrunch(160+162.5,0,1,1)
+			kana_scrunch(160+163.5,3,1.5,1)
+			
+			kana_scrunch(160+144,2,1.5,2)
+			kana_scrunch(160+145.5,3,1,2)
+			kana_scrunch(160+146.5,0,1,2)
+			kana_scrunch(160+147.5,1,1.5,2)
+			
+			kana_scrunch(160+160,3,1.5,2)
+			kana_scrunch(160+161.5,2,1,2)
+			kana_scrunch(160+162.5,1,1,2)
+			kana_scrunch(160+163.5,0,1.5,2)
+			
+			kana_scrunch(160+176,3,1.5,1)
+			kana_scrunch(160+177.5,0,1.5,1)
+			kana_scrunch(160+179,1,1.5,1)
+			kana_scrunch(160+180.5,2,1.5,1)
+			kana_scrunch(160+182,3,1,1)
+			kana_scrunch(160+183,1,1,1)
+			
+			kana_scrunch(160+176,1,1.5,2)
+			kana_scrunch(160+177.5,2,1.5,2)
+			kana_scrunch(160+179,3,1.5,2)
+			kana_scrunch(160+180.5,0,1.5,2)
+			kana_scrunch(160+182,1,1,2)
+			kana_scrunch(160+183,3,1,2)
+			
+			mpf(296.01,300,function(beat)
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						local beat2 = beat
+						local amt = 0.6+0.6*math.cos(beat*math.pi*2)
+						local amt2 = 1
+						if beat > 299 then
+							amt2 = 300-beat
+						end
+						a:rotationx( amt2*amt*(30-30*math.cos(beat2*math.pi*4)) )
+						a:rotationy( amt2*amt*60*math.sin(beat2*math.pi*4) )
+					end
+				end
+			end)
+			m2(300,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationx(0)
+						a:rotationy(0)
+					end
+				end
+			end)
+			
+			simple_m0d(300,150,.2,'drunk')
+			simple_m0d(300.75,-150,.2,'drunk')
+			simple_m0d(301.5,150,.2,'drunk')
+			simple_m0d(300,150,.2,'tipsy')
+			simple_m0d(300.75,-150,.2,'tipsy')
+			simple_m0d(301.5,150,.2,'tipsy')
+			simple_m0d(302,-150,.2,'tipsy')
+			
+			simple_m0d(200,150,.4,'drunk')
+			simple_m0d(201.5,-150,.4,'drunk')
+			simple_m0d(203,150,.4,'drunk')
+			simple_m0d(200,150,.4,'tipsy')
+			simple_m0d(201.5,-150,.4,'tipsy')
+			simple_m0d(203,150,.4,'tipsy')
+			
+			simple_m0d(278,150,.2,'drunk')
+			simple_m0d(278.75,-150,.2,'drunk')
+			simple_m0d(279.5,150,.2,'drunk')
+			simple_m0d(278,150,.2,'tipsy')
+			simple_m0d(278.75,-150,.2,'tipsy')
+			simple_m0d(279.5,150,.2,'tipsy')
+			
+			for pn=1,2 do
+				simple_m0d(360,(pn*2-3)*150,.4,'drunk',pn)
+				simple_m0d(361.5,-(pn*2-3)*150,.4,'drunk',pn)
+				simple_m0d(363,(pn*2-3)*150,.4,'drunk',pn)
+				simple_m0d(360,(pn*2-3)*150,.4,'tipsy',pn)
+				simple_m0d(361.5,-(pn*2-3)*150,.4,'tipsy',pn)
+				simple_m0d(363,(pn*2-3)*150,.4,'tipsy',pn)
+			end
+			
+			kana_scrunch(364,1,2,1)
+			kana_scrunch(364,3,2,2)
+			kana_scrunch(366,0,2,1)
+			kana_scrunch(366,2,2,2)
+			
+			kana_scrunch(393,3,1)
+			kana_scrunch(394,0,1)
+			kana_scrunch(395,1,1)
+			kana_scrunch(396,2,1)
+			
+			function kana_3(beat,dir,pn)
+				me(beat,1,0,50*dir,'tornado',l,outQuad,pn)
+				me(beat+1,1,50*dir,-50*dir,'tornado',l,outQuad,pn)
+				if beat < 300 then
+					me(beat+2,1,-50*dir,50*dir,'tornado',l,outQuad,pn)
+					me(beat+3,1,50*dir,0,'tornado',l,outQuad,pn)
+				else
+					me(beat+2,1,-50*dir,0,'tornado',l,outQuad,pn)
+				end
+			end
+			
+			kana_3(149,1)
+			kana_3(165,1)
+			
+			--simple_m0d2(307.5,80,1,'brake',1)
+			--simple_m0d2(323.5,80,1,'brake',2)
+			
+			kana_3(309,1,1)
+			kana_3(325,1,1)
+			kana_3(309,-1,2)
+			kana_3(325,-1,2)
+			
+			
+			m(79.5,136.5,'*1000 80 beat',e)
+			
+			function kana_bkick(beat,amt,dur,mod,pn)
+				me(beat,dur,amt,0,mod,l,outQuad,pn)
+			end
+			function kana_bkick2(beat,amt,dur,mod,pn)
+				me(beat-.25,.25,0,amt,mod,l,linear,pn,.1)
+				me(beat+.1,dur-.35,amt,0,mod,l,outQuad,pn)
+			end
+			
+			kana_bkick(86.5,500,1.5,'bumpy')
+			kana_bkick(88,200,1.5,'tipsy')
+			kana_bkick(92.5,500,1.5,'bumpy')
+			kana_bkick(94,200,1.5,'tipsy')
+			kana_bkick(95.5,500,1.5,'bumpy')
+			kana_bkick(99.5,500,1.5,'bumpy')
+			kana_bkick(101.5,500,1.5,'bumpy')
+			kana_bkick(104,400,1.5,'bumpy')
+			kana_bkick(106,400,1.5,'bumpy')
+			kana_bkick(108,400,1,'bumpy')
+			mod_wiggle(108.5,3,4,150,2,'drunk')
+			
+			kana_bkick(118.5,-60,1.5,'mini')
+			kana_bkick(120,-60,1.5,'mini')
+			kana_bkick(124.5,-60,1.5,'mini')
+			kana_bkick(126,-60,1.5,'mini')
+			kana_bkick(127.5,-60,1.5,'mini')
+			kana_bkick(131.5,-60,1.5,'mini')
+			kana_bkick(133.5,-60,1.5,'mini')
+			kana_bkick(136,-60,1.5,'mini')
+			
+			kana_bkick2(249,40,1.5,'brake')
+			kana_bkick2(250.5,40,1.5,'brake')
+			kana_bkick2(251.5,40,1.5,'brake')
+			kana_bkick2(253,40,1,'brake')
+			kana_bkick2(254,40,1,'brake')
+			kana_bkick2(255,40,1,'brake')
+			kana_bkick2(270,40,1,'brake')
+			kana_bkick2(271,40,1,'brake')
+			
+			kana_bkick(137.5,-100,1,'mini')
+			kana_bkick(138.5,-100,1,'mini')
+			kana_bkick(139.5,-100,1,'mini')
+			
+			kana_bkick(214.5,500,1.5,'bumpy')
+			kana_bkick(216,200,1.5,'tipsy')
+			kana_bkick(220.5,300,1.5,'bumpy')
+			kana_bkick(222,50,4,'stealth')
+			kana_bkick(222,50,4,'dizzy')
+			kana_bkick(223.5,300,1.5,'bumpy')
+			kana_bkick(227.5,300,1.5,'bumpy')
+			kana_bkick(229.5,300,1,'bumpy')
+			kana_bkick(231,300,1,'bumpy')
+			
+			kana_bkick(232,-100,1.5,'mini')
+			kana_bkick(233.5,-100,1,'mini')
+			kana_bkick(234.5,-100,1,'mini')
+			kana_bkick(235.5,-100,2,'mini')
+			
+			kana_bkick(312.5,150,.5,'bumpy')
+			kana_bkick(313,-150,.5,'bumpy')
+			kana_bkick(319.5,-150,.5,'bumpy')
+			kana_bkick(315.5,-80,1.5,'bumpy')
+			kana_bkick(317.5,-80,1.5,'bumpy')
+			
+			kana_bkick(345,100,1.5,'bumpy')
+			kana_bkick(346.5,100,1.5,'bumpy')
+			kana_bkick(349,100,1.5,'bumpy')
+			kana_bkick(350.5,100,1.5,'bumpy')
+			
+			kana_bkick(185,90,1.5,'drunk')
+			kana_bkick(186.5,-90,1.5,'drunk')
+			kana_bkick(189,90,1.5,'drunk')
+			kana_bkick(190.5,-90,1.5,'drunk')
+			
+			local fl = 1
+			for i=0,4 do
+				--kana_bkick(168+1.5*i,100*fl,1.5,'drunk')
+				kana_bkick(192+1.5*i,90*fl,1.5,'drunk')
+				if i< 4 then
+					kana_bkick2(264+1.5*i,40,1.5,'brake')
+				end
+				kana_bkick2(280+1.5*i,40,1.5,'brake')
+				kana_bkick(328+1.5*i,100*fl,1.5,'bumpy')
+				kana_bkick(352+1.5*i,100*fl,1.5,'bumpy')
+				fl = fl*-1
+			end
+			
+			kana_bkick2(287.5,40,1,'brake')
+			kana_bkick2(288.5,40,1,'brake')
+			kana_bkick2(290,40,1,'brake')
+			kana_bkick2(291.5,40,1,'brake')
+			kana_bkick2(292.5,40,1,'brake')
+			kana_bkick2(294,40,1,'brake')
+			kana_bkick2(295,40,1,'brake')
+			
+			kana_bkick(126,50,4,'stealth')
+			kana_bkick(368,50,4,'stealth')
+			kana_bkick(368,200,4,'bumpy')
+			kana_bkick(375,50,4,'stealth')
+			kana_bkick(375,200,4,'bumpy')
+			kana_bkick(384,50,4,'stealth')
+			kana_bkick(384,200,4,'bumpy')
+			
+			kana_bkick(374.5,-60,1,'mini')
+			kana_bkick(380.5,-60,1,'mini')
+			kana_bkick(381.5,-60,1,'mini')
+			kana_bkick(383.5,-60,1,'mini')
+			kana_bkick(387.5,-60,1,'mini')
+			kana_bkick(389.5,-60,1,'mini')
+			
+			mod_wiggle(174-.1,8,4,100,2,'tipsy')
+			mod_wiggle(334-.1,8,4,100,2,'tipsy')
+			mod_wiggle(366.5-.1,6,4,100,2,'tipsy')
+			mod_wiggle(392-.1,4,4,200,2,'tipsy')
+			
+			if slumpo then
+				me(392,1,100,0,'hidden',l,linear,nil,10)
+				me(392,1,100,0,'sudden',l,linear,nil,10)
+			end
+			
+			
+			m2(4,function()
+				kana_black2:linear(180/200)
+				kana_black2:diffusealpha(1)
+				kana_black_aux:linear(180/200)
+				kana_black_aux:x(1)
+			end)
+			m2(8,function()
+				
+				kana_bg:hidden(0);
+			
+				kana_black2:linear(240/200)
+				kana_black2:diffusealpha(0)
+				kana_black_aux:linear(240/200)
+				kana_black_aux:x(0)
+				
+				kana_grain:linear(240/200)
+				kana_grain:diffusealpha(.9)
+				
+			end,true)
+			
+			m2(232,function()
+				kana_black:decelerate(480/200)
+				kana_black:diffusealpha(1)
+				kana_black_aux:linear(480/200)
+				kana_black_aux:x(1)
+			end)
+			m2(270,function()
+				kana_black:decelerate(240/200)
+				kana_black:diffusealpha(0)
+				kana_black_aux:linear(240/200)
+				kana_black_aux:x(0)
+			end)
+			m2(397,function()
+				kana_black2:decelerate(60/200)
+				kana_black2:diffusealpha(1)
+				kana_black_aux:decelerate(60/200)
+				kana_black_aux:x(1)
+				
+				kana_grain:decelerate(60/200)
+				kana_grain:diffusealpha(0)
+			end)
+			
+			mpf(368,400,function(beat)
+				local sway = 3 + 20*((beat-368)/30)
+				kana_bg:rotationz( sway*math.sin((beat-368)*math.pi*(1/7)) )
+				kana_bg2:rotationz( sway*math.sin((beat-368)*math.pi*(1/7)) )
+			end)
+			
+			kana_scroll_speed = 1
+			
+			mpf(232,264,function(beat)
+				
+				if beat > 240 then
+					kana_scroll_speed = 1 + linear(beat-240,0,1,24)
+				end
+				
+				kana_grass:texcoordvelocity(0,-0.2*kana_scroll_speed)
+				
+			end)
+			m2(264,function()
+				kana_grass:texcoordvelocity(0,-0.4)
+				kana_scroll_speed = 2
+			end)
+			
+			--[[
+			kana_stones = 0
+			for i=80,400,16 do
+				local p = i
+				m2(i,function()
+					local mx = 0
+					if p > 240 then
+						mx = 1
+					end
+					for j = 0,mx do
+						local a = kana_get_grave()
+						if a then
+							a:finishtweening()
+							a:diffuse(.35,.35,.35,0)
+							a:hidden(0)
+							a:setstate(math.random(0,1))
+							a:animate(0)
+							a:diffusealpha(0)
+							local m = 1
+							if math.mod(kana_stones,2) == 1 then
+								m = -1
+							end
+							kana_stones = kana_stones+1
+							a:x(sw/2 + m*math.random(-360,-240))
+							a:y(sh + 8)
+							if math.random(1,20) > 10 then
+								a:basezoomx(-1)
+							end
+							a:zoom(2.5/3)
+							a:z(-600)
+							a:sleep(j*8*60/200)
+							a:linear(10/kana_scroll_speed)
+							a:diffusealpha(10)
+							a:addz(1050)
+							a:queuecommand('Hide')
+						end
+					end
+				end)
+			end
+			]]
+			
+			m2(240,function()
+				kana_gdelay = 8*6/20
+			end)
+			
+			kana_gtimer = 0
+			kana_gdelay = 16*6/20
+			kana_stones = 0
+			mpf(84,400,function(beat)
+			
+				for j=1,table.getn(kana_graves) do
+					--for i=1,2 do
+						local b = kana_graves[j]
+						if b then
+						
+							local brt = 1-kana_black_aux:GetX()
+							b:diffuse(.4*brt,.4*brt,.4*brt,1)
+						
+							if b:GetZ() < 450 then
+								if b:getaux() < 1 then
+									b:aux( b:getaux() + 1/75 )
+								end
+								b:diffusealpha(b:getaux())
+								b:addz(1.41*kana_scroll_speed)
+							else
+								b:hidden(1)
+								b:aux(0)
+							end
+							
+						end
+					--end
+				end
+				
+				if kana_gtimer < 0 then
+					
+					--for i=1,2 do
+						local a = kana_get_grave()
+						if a then
+							
+							a:finishtweening()
+							a:diffuse(.35,.35,.35,0)
+							a:hidden(0)
+							a:setstate(math.random(0,1))
+							a:animate(0)
+							a:diffusealpha(0)
+							local mu = 1
+							if math.mod(kana_stones,2) == 1 then
+								mu = -1
+							end
+							kana_stones = kana_stones+1
+							a:x(sw/2 + mu*math.random(-360,-240))
+							a:y(sh + 8)
+							if math.random(1,20) > 10 then
+								a:basezoomx(-1)
+							end
+							a:zoom(2.5/3)
+							a:z(-600)
+							
+						end
+					--end
+					
+					kana_gtimer = kana_gdelay
+				end
+				kana_gtimer = kana_gtimer-(1/75)
+			end)
+			
+			
+			kana_mtrees = 0
+			for i=40,400,32 do
+				local p = i
+				m2(i,function()
+					local mx = 0
+					for j = 0,mx do
+						local a = kana_get_tree()
+						if a then
+							a:finishtweening()
+							a:diffuse(.4,.4,.4,0)
+							a:hidden(0)
+							a:animate(0)
+							a:diffusealpha(0)
+							local m = 1
+							if math.mod(kana_mtrees,2) == 1 then
+								m = -1
+							end
+							kana_mtrees = kana_mtrees+1
+							a:x(sw/2 + m*math.random(-320,-260))
+							a:y(sh + 20)
+							if math.random(1,20) > 10 then
+								a:basezoomx(-1)
+							end
+							a:zoom(1)
+							a:z(-600)
+							a:sleep(j*8*60/200)
+							a:linear(10/kana_scroll_speed)
+							a:diffusealpha(10)
+							a:addz(1050)
+							a:queuecommand('Hide')
+						end
+					end
+				end)
+			end
+			
+			kana_nzombs = 0
+			for i=304,400,2 do
+				local p = i
+				m2(i,function()
+					if math.mod(p,4) == 0 or p >= 368 then
+						local mx = 0
+						for j = 0,mx do
+							local a = kana_get_zomb()
+							if a then
+								a:finishtweening()
+								a:diffuse(.4,.4,.4,1)
+								a:hidden(0)
+								a:zoom(1)
+								a:setstate(math.random(0,2)*4)
+								if math.random(1,100) < 5 then
+									a:setstate(12)
+								end
+								a:animate(1)
+								local m = 1
+								if math.mod(kana_nzombs,2) == 1 then
+									m = -1
+								end
+								kana_nzombs = kana_nzombs+1
+								a:x(sw/2 + m*math.random(-250,-50))
+								a:y(sh + 8)
+								if math.random(1,20) > 10 then
+									a:basezoomx(-1)
+								end
+								a:zoom(2.5/3)
+								a:z(math.random(-600,-400))
+								a:sleep(j*2*60/200)
+								a:queuecommand('Play');
+								a:diffusealpha(1)
+								a:linear(10/kana_scroll_speed)
+								a:addz(1050)
+								a:queuecommand('Hide')
+							end
+						end
+					end
+				end)
+			end
+			
+			kana_ftimer = 0
+			kana_fdelay = 32*6/20
+			kana_fside = -1
+			mpf(56,400,function(beat)
+			
+				for j=1,table.getn(kana_flames) do
+					local a = {kana_lanterns[j],kana_flames[j]}
+					for i=1,2 do
+						local b = a[i]
+						if b then
+						
+							local am = 1
+							if i == 2 then am = .5 end
+							
+							if i == 1 then
+								local brt = 1-kana_black_aux:GetX()
+								b:diffuse(.4*brt,.4*brt,.4*brt,1)
+							end
+							
+							if b:GetZ() < 450 then
+								if b:getaux() < 1 then
+									b:aux( b:getaux() + 1/75 )
+								end
+								b:diffusealpha(b:getaux()*am)
+								b:addz(1.41*kana_scroll_speed)
+							else
+								b:hidden(1)
+								b:aux(0)
+							end
+							
+						end
+					end
+				end
+				
+				if kana_ftimer < 0 then
+					
+					local rngx = kana_fside*math.random(-360,-240)
+					
+					local a = {kana_get_lantern(),kana_get_flame()}
+					for i=1,2 do
+						local b = a[i]
+						if b then
+							
+							b:hidden(0)
+							b:diffusealpha(0)
+							b:aux(0)
+							b:z(-600)
+							b:zoom(.8)
+							b:x(sw/2 + rngx)
+							b:y(sh + 20)
+							
+						end
+					end
+					
+					kana_fside = kana_fside*-1
+					kana_ftimer = kana_fdelay
+				end
+				kana_ftimer = kana_ftimer-(1/75)
+			end)
+			
+			m2(391,function()
+				for pn=1,2 do
+					local a = GetJud(pn)
+					if a then
+						a:accelerate(120/200)
+						a:x(0)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:accelerate(120/200)
+						a:x(0)
+					end
+				end
+			end)
+			
+			m2(80,function()
+				
+				kana_sunrise:linear(48/20)
+				kana_sunrise:diffusealpha(.6)
+				
+			end)
+			
+			m2(136,function()
+				
+				kana_sunrise:linear(24/20)
+				kana_sunrise:diffusealpha(0)
+				
+			end)
+			
+			m2(208,function()
+				
+				kana_sunrise:linear(48/20)
+				kana_sunrise:diffusealpha(.6)
+				
+			end)
+			
+			m2(232,function()
+				
+				kana_sunrise:linear(24/20)
+				kana_sunrise:diffusealpha(0)
+				
+			end)
+			
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			self:queuecommand('Update');
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				
+				--name players, judgment and combo
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				checked = true; --let this only run once
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				for i=1,2 do
+					mod_do('clearall',i)
+				end
+				
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+				for i,v in pairs(mods) do
+					if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+						if beat >=v[1] then
+							if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+								if table.getn(v) == 5 then
+									mod_do(v[3],v[5]);
+								else
+									mod_do(v[3]);
+								end
+							end
+						end
+					else
+						v[1] = 0;
+						v[2] = 0;
+						v[3] = '';
+						v[4] = 'error';
+						SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+					end
+				end
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+				for i,v in pairs(mods2) do
+					if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+						if mod_time >=v[1] then
+							if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+								if table.getn(v) == 5 then
+									mod_do(v[3],v[5]);
+								else
+									mod_do(v[3]);
+								end
+							end
+						end
+					else
+						v[1] = 0;
+						v[2] = 0;
+						v[3] = 'error';
+						v[4] = 'error';
+						SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+					end
+				end
+				
+				--------------------------------------------------------------------------------------
+				-- i dont know who this reader is but he looks like he is made out of EASE HAHAHAHA --
+				-- original code by exschwasion, bastardized by taro for cmod support and less 'if' --
+				--------------------------------------------------------------------------------------
+				for i,v in pairs(mods_ease) do
+					if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+						if beat >=v[1] then
+							if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+								
+								local duration = v[2];
+								if v[6] == 'end' then duration = v[2] - v[1] end
+								local curtime = beat - v[1]
+								local diff = v[4] - v[3]
+								local startstrength = v[3]
+								local curve = v[7]
+								local mod = v[5]
+								
+								local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+							
+								local strength = v[4]
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							end
+						end
+					else
+						SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+					end
+				end
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				----------------------------------------
+				-- HBLBHCBLBJGBHL DO THIS EVERY FRAME --
+				----------------------------------------
+				
+				if table.getn(mod_perframes)>0 then
+					for i=1,table.getn(mod_perframes) do
+						local a = mod_perframes[i]
+						if beat > a[1] and beat < a[2] then
+							a[3](beat);
+						end
+					end
+				end
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+					if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+						if type(mod_actions[curaction][2]) == 'function' then
+							mod_actions[curaction][2]()
+						elseif type(mod_actions[curaction][2]) == 'string' then
+							MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+						end
+					end
+					curaction = curaction+1;
+				end
+				
+			end
+			
+			self:sleep(1/75);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	
+	<!--Handling messages here is still fun and profitable-->
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) rb_aux = self end"
+	/>
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = mod_globaloffset+tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	<Layer File="_hand" OnCommand="hidden,1;sleep,0.02;queuecommand,Make;" PlayCommand="setstate,1"
+	HideCommand="hidden,1;" MakeCommand="%function(self) kana_make_hand(self) end" />
+	
+	<Layer File="overlay2" InitCommand="%function(self) kana_grain=self end" OnCommand="stretchto,0,0,sw,sh;diffusealpha,0;"/>
+	<Layer File="darkvig" OnCommand="stretchto,0,0,sw,sh;diffusealpha,0;linear,1;diffusealpha,1;"/>
+	<Layer Type="Quad" InitCommand="%function(self) kana_black_aux = self end" OnCommand="hidden,1"/>
+	
+</children></ActorFrame>

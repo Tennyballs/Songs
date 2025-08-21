@@ -1,0 +1,35 @@
+<ActorFrame><children>
+
+	<Layer Type="ActorFrame" OnCommand="%function (self) char_laer=self; self:bob(); self:basezoomx(.25); self:basezoomy(.25);
+	self:effectclock('music'); self:effectmagnitude(0,4,0); self:zoom(0); self:zoomx(3) end" HideQCommand="zoomy,0;zoomx,3;"
+	HideCommand="bouncebegin,0.2;zoomy,0;zoomx,3;" SpawnCommand="bounceend,0.3;zoom,1;" SpawnQCommand="zoom,1;"
+    CastShrinkCommand="bouncebegin,(240/150);zoom,.5" SpawnSmallCommand="bounceend,0.3;zoom,.5" CastGrowCommand="sleep,(240/150);zoom,1"> <children>
+	
+		<Actor
+			File="laer/idle.sprite"
+			NameCommand="%function(self) char_laer_idle = self end"
+			OnCommand="playcommand,Name;diffusealpha,.7;basezoomx,700/400;basezoomy,700/400;"
+			IdleCommand="diffuse,1,1,1,1"
+			AttackCommand="diffusealpha,0"
+			HurtCommand="diffusealpha,0"
+			CastCommand="diffusealpha,0"
+			Cast2Command="diffusealpha,0"
+			BlackFlashCommand="diffuse,0,0,0,1;zoom,1;linear,180/200;diffuse,0,0,0,0;zoom,1.5;sleep,0;zoom,1;"
+            FadingCommand="linear,5;diffusealpha,0"
+		/>
+		<Actor
+			File="laer/blink.sprite"
+			NameCommand="%function(self) char_laer_blink = self end"
+			OnCommand="playcommand,Name;diffusealpha,.7;basezoomx,700/400;basezoomy,700/400;"
+			IdleCommand="diffuse,1,1,1,1"
+			AttackCommand="diffusealpha,0"
+			HurtCommand="diffusealpha,0"
+			CastCommand="diffusealpha,0"
+			Cast2Command="diffusealpha,0"
+			BlackFlashCommand="diffuse,0,0,0,1;zoom,1;linear,180/200;diffuse,0,0,0,0;zoom,1.5;sleep,0;zoom,1;"
+            FadingCommand="linear,5;diffusealpha,0"
+		/>
+		
+	</children>	</Layer>
+	
+</children></ActorFrame>

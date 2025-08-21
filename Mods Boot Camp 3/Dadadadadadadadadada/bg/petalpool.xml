@@ -1,0 +1,824 @@
+<ActorFrame
+Var="da_petalstormouter"
+OnCommand="%function(self) self:x(SCREEN_CENTER_X);self:y(SCREEN_CENTER_Y); self:SetDrawByZPosition(true);self:fov(50);da_petalstormouter = self;end"
+><children>
+<ActorFrame
+Var="da_petalstorm"
+OnCommand="%function(self) self:SetDrawByZPosition(true);self:fov(50); da_petalstorm = self; end;"
+><children>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal1" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+
+
+
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal2" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+
+
+
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal3" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+
+
+
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal4" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+
+
+
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+<ActorFrame
+OnCommand="%function(self) table.insert(da_petals2,self); end;"
+><children>
+<Layer 
+File="petal5" 
+OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+BeginfuckyouCommand="%function(self) table.insert(da_petals,self); self:cullmode('back'); end;" /> 
+</children></ActorFrame>
+
+
+</children></ActorFrame>
+</children></ActorFrame>

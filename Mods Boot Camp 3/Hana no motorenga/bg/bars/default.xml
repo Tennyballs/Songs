@@ -1,0 +1,38 @@
+<ActorFrame><children>
+	<ActorFrame OnCommand="%function(self)
+			self:x(SCREEN_CENTER_X*.5);
+			self:y(SCREEN_HEIGHT*1.25);
+			self:rotationz(90)
+			self:hidden(1)
+			hnm_lbarP1 = self
+		end"><children>
+
+		<Layer
+			Type="Quad"
+			OnCommand="ZoomToWidth,30;ZoomToHeight,275;diffusealpha,.35;diffuseshift;effectcolor1,#FF0000;effectcolor2,#000000;effectclock,bgm;effectperiod,2"
+		/>
+
+		<Layer
+			File="frame.png"
+		/>
+		
+	</children></ActorFrame>
+	<ActorFrame OnCommand="%function(self)
+			self:x(SCREEN_CENTER_X*1.5);
+			self:y(SCREEN_HEIGHT*1.25);
+			self:rotationz(90)
+			self:hidden(1)
+			hnm_lbarP2 = self
+		end"><children>
+
+		<Layer
+			Type="Quad"
+			OnCommand="ZoomToWidth,30;ZoomToHeight,275;diffusealpha,.35;diffuseshift;effectcolor1,#FF0000;effectcolor2,#000000;effectclock,bgm;effectperiod,2"
+		/>
+
+		<Layer
+			File="frame.png"
+		/>
+		
+	</children></ActorFrame>
+</children></ActorFrame>

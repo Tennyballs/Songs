@@ -1,0 +1,1672 @@
+<ActorFrame
+InitCommand="%function(self)
+
+	slumpo = false
+	for pn=1,2 do
+		if GAMESTATE:IsPlayerEnabled(pn-1) then
+			if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 5 then
+				slumpo = true
+			end
+		end
+	end
+
+	songName = GAMESTATE:GetCurrentSong():GetSongDir();
+	
+	mod_globaloffset = PREFSMAN:GetPreference('GlobalOffsetSeconds');
+	
+	sw = SCREEN_WIDTH
+	sh = SCREEN_HEIGHT --shortcuts
+	
+	scx = sw/2
+	scy = sh/2
+	
+	function Plr(pn)
+		return _G['P'..pn]
+	end
+	function GetJud(pn)
+		return _G['jud'..pn]
+	end
+	function GetCom(pn)
+		return _G['com'..pn]
+	end
+	
+	function mod_do(str,pn)
+		if pn then
+			GAMESTATE:ApplyGameCommand('mod,'..str,pn)
+		else
+			GAMESTATE:ApplyGameCommand('mod,'..str)
+		end
+	end
+	
+	function taro_Sound(str)
+		local met = GAMESTATE:GetCurrentSong():GetSongDir();
+		SOUND:PlayOnce(met..'lua/'..str..'.ogg');
+	end
+	
+end"
+><children>
+
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="sleep,1000"
+	/>
+	
+	<Layer File="spellcard.xml" />
+	<Layer File="modhelpers.xml" />
+	<Layer File="easing.xml" />
+	
+	<Layer
+		Type="Quad"
+		OnCommand="hidden,1"
+		InitCommand="%function(self)
+		
+			checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+		
+			---------------------------------------------------------
+			---------DOCUMENTATION-----------------------------------
+			---------------------------------------------------------
+			
+			--function perframe( beat, endBeat )
+				--return true if the current beat is between 'beat' and 'endBeat'
+			
+			--function mod_insert(beat,len,mod,len_or_end,pn)
+				--insert mod into beat mods table
+			--function mod_insert2(time,len,mod,len_or_end,pn)
+				--insert mod into time mods table
+				
+			--function mod_message(beat,msg,persistent)
+				--insert something into the actions table.
+				--msg can also be a function. If string, a message gets broadcast at that beat
+				--if 'persistent' is true, message will run even if editor starts at a beat past it
+				
+			--function mod_blacklist(t,n)
+				--check if number n occurs in table t
+				--useful for doing 'every beat EXCEPT the contents of t'
+				
+			--function simple_m0d(beat,strength,mult,mod)
+			--function simple_m0d2(beat,strength,mult,mod,pn)
+			--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+				--activate mods at specific beat but also deactivate them
+				
+			--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+				--alternates a mod back and forth before resetting to 0
+				
+			--function mod_springt(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod that decreases based on how much time is left.
+					--think doorstopper
+			
+			--function mod_springt2(time,strength,dur,mod,pn)
+				--time-based per-frame alternating mod
+			
+			--function mod_onebeat(beat,strength,pn)
+				--turns on beat for the beat specified, at the desired strength	
+			
+			--function switcheroo_add(beat,which,speed,len,pn)
+				--adds a column swap at the desired beat
+			--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+					flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+					ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+			]]
+			
+			--use a variable called 'switcheroo_width' to change how much space is between each column
+			--e.g. switcheroo_width = 2 for ayakashi
+			
+			--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+				--portable version of the effect from sugarkill X
+				
+			--function doSpline(spd, axis, path, col)
+				--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+				
+			--function doSplineAll(spd, axis, path)
+				--same as above, but for all columns
+				--(faster performance than using doSpline 4 times due to more efficient concat)
+			
+			--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+				--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+			
+			
+			---------------------------------------------------------
+			--------END DOCUMENTATION--------------------------------
+			---------------------------------------------------------
+			
+			local m = mod_insert
+			local m2 = mod_message
+			local me = mod_ease
+			
+			
+			local l = 'len'
+			local e = 'end'
+			
+			
+			
+			
+			
+			
+			
+			init_modsp1 = '';
+			init_modsp2 = '';
+			
+			mod_plr = {};
+			
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+			
+			
+			
+			
+			flan_danmaku = {{},{},{},{}}
+			flan_dptr = {1,1,1,1}
+			
+			function flan_add_danmaku(obj,w)
+				if w == 4 then obj:basezoomx(1.2); obj:basezoomy(1.2) end
+				table.insert(flan_danmaku[w],obj)
+			end
+			
+			function flan_get_danmaku(w)
+				
+				local a = flan_danmaku[w][ flan_dptr[w] ]
+				
+				flan_dptr[w] = flan_dptr[w]+1
+				if flan_dptr[w] > table.getn(flan_danmaku[w]) then
+					flan_dptr[w] = 1
+				end
+				
+				return a
+				
+			end
+			
+			
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin tables 'n stuff--------------------------------------------
+---------------------------------------------------------------------------------------
+
+			--beat based mods
+			--{beat_start, beat_end, mods, len_or_end, player_number}
+			mods = {
+				{0,9999,'*2 1.5x, *1000 no beat, *10000 -99999 cover','end'},
+			}
+			
+			--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+			
+			
+			
+			
+			
+			
+			
+			--time based mods
+			mod_time = 0;
+			--{time_start, time_end, mods, len_or_end, player_number}
+			mods2 = {
+				--{0,200.345,'3x','end',1},
+			}
+			
+			
+			
+			
+			--this is both a message broadcaster and a function runner
+			--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+			--if you put {beat,function() somecode end}, then function() is run at that beat
+			--see example on beat 32
+			
+			curaction = 1;
+			--{beat,thing,persists}
+			mod_actions = {
+			
+			
+				
+			}
+			
+			
+			
+			
+			
+			
+			--beat-based ease mods
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--valid ease types are:
+				--linear
+				--inQuad    outQuad    inOutQuad    outInQuad
+				--inCubic   outCubic   inOutCubic   outInCubic
+				--inQuart   outQuart   inOutQuart   outInQuart
+				--inQuint   outQuint   inOutQuint   outInQuint
+				--inSine    outSine    inOutSine    outInSine
+				--inExpo    outExpo    inOutExpo    outInExpo
+				--inCirc    outCirc    inOutCirc    outInCirc
+				--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+				--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+				--inBounce  outBounce  inOutBounce  outInBounce
+				
+			mods_ease = {
+				-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+				--{0,4,360,0,'rotationz','end',inOutBack},
+			}
+			
+			
+			
+			mod_perframes = {
+				
+			}
+			
+			function mpf(s,e,f)
+				table.insert(mod_perframes,{s,e,f})
+			end
+			
+			
+			
+			
+			flan_flicker = 1
+			
+			m2(3,function()
+				
+				for pn=1,2 do
+					
+					local a = Plr(pn)
+					if a then
+						a:accelerate(1/3)
+						a:x( sw/2 + 160*(pn*2-3) )
+					end
+					
+					local a = GetJud(pn)
+					if a then
+						a:accelerate(1/3)
+						a:x(80*(pn*2-3))
+					end
+					
+					local a = GetCom(pn)
+					if a then
+						a:accelerate(1/3)
+						a:x(80*(pn*2-3))
+					end
+					
+				end
+				
+			end)
+			
+			m2(4,function()
+				
+				for pn=1,2 do
+					
+					local a = Plr(pn)
+					if a then
+						--a:hidden(1)
+						a:x( sw/2 + 160*(pn*2-3) )
+					end
+					
+					local a = GetJud(pn)
+					if a then
+						a:x(80*(pn*2-3))
+					end
+					
+					local a = GetCom(pn)
+					if a then
+						a:x(80*(pn*2-3))
+					end
+					
+				end
+				
+			end,true)
+			
+			m2(4.01,function()
+				
+				for pn=1,2 do
+					
+					local a = GetJud(pn)
+					if a then
+						a:sleep(0)
+						a:accelerate(12/3)
+						a:x(0)
+					end
+					
+					local a = GetCom(pn)
+					if a then
+						a:sleep(0)
+						a:accelerate(12/3)
+						a:x(0)
+					end
+					
+				end
+				
+			end)
+			
+			me(4,16,0,100,'mini',e,linear,nil,64)
+			me(64,4,100,0,'mini',l,linear)
+			
+			me(4,16,1.5,2,'xmod',e,linear,nil,64)
+			me(64,4,2,1.5,'xmod',l,linear)
+			
+			m(3.5,63.5,'*1000 150 beat',e)
+			
+			local fp = 2
+			for i=0,2 do
+				me(13+16*i,3,0,50,'stealth',l,linear,fp)
+				if fp == 2 then fp = 1 else fp = 2 end
+				if i > 0 then
+					me(12+16*i,4,100,0,'flip',l,inOutQuad,fp,2)
+					me(12+16*i,4,50,0,'stealth',l,linear,fp,2)
+				end
+			end
+			
+			m(16-.2,16,'*6 no flip, *3 no stealth',l,1)
+			m(16-.2,16,'*6 flip, *3 50 stealth',l,2)
+			
+			m(32-.2,16,'*6 no flip, *3 no stealth',l,2)
+			m(32-.2,16,'*6 flip, *3 50 stealth',l,1)
+			
+			m(48-.2,16,'*6 no flip, *3 no stealth',l,1)
+			m(48-.2,16,'*6 flip, *3 50 stealth',l,2)
+			
+			me(64,4,100,0,'flip',l,linear,2)
+			me(64,4,50,0,'stealth',l,linear,2)
+			
+			me(52,60,0,200,'hallway',e,linear)
+			me(60,64,200,260,'hallway',e,linear)
+			me(64,68,260,0,'hallway',e,linear)
+			
+			me(52,64,0,300,'tipsy',e,linear)
+			me(64,68,300,0,'tipsy',e,linear)
+			me(60,64,0,300,'drunk',e,linear)
+			me(64,68,300,0,'drunk',e,inOutQuad)
+			
+			mpf(4,68,function(beat)
+				
+				local four = 0
+				if beat >= 4 and beat < 16 then
+					four = linear(beat-4,0,80,12)
+				elseif beat >= 16 and beat < 64 then
+					four = 80
+				elseif beat >= 64 and beat < 68 then
+					four = 80-80*linear(beat-64,0,1,4)
+				end
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x( sw/2 + 160*(pn*2-3)*flan_flicker + four*(pn*2-3) )
+					end
+				end
+				
+			end)
+			
+			m(99.5,127.5,'*1000 150 beat',e)
+			
+			m2(68,'ShowPistons')
+			m2(100,'FastBob')
+			m2(100,'WhiteFlash')
+			m2(128,'PistonsAway')
+			m2(132,'HidePistons')
+			
+			m2(128,'ActivateOrb')
+			m2(192,'EndOrb')
+			
+			me(68,72,0,100,'wave',e,linear)
+			me(72,128,100,150,'wave',e,linear)
+			me(128,132,150,0,'wave',e,linear)
+			
+			me(68,72,0,50,'drunk',e,linear)
+			me(72,128,50,100,'drunk',e,linear)
+			me(128,132,100,0,'drunk',e,linear)
+			
+			mpf(68,128,function(beat)
+				
+				local st = 25-25*math.cos((beat-68)*math.pi*2*(1/8))
+				
+				mod_do('*10000 '..st..' stealth')
+				
+			end)
+			
+			mpf(128,132,function(beat)
+				
+				for pn=1,2 do
+					local inv = 50-50*math.cos(beat*math.pi)
+					local alt = 20*math.sin(beat*math.pi)*(pn*2-3)
+					local rev = -10*math.sin(beat*math.pi)*(pn*2-3)
+					
+					mod_do('*10000 '..inv..' invert, *10000 '..alt..' alternate, *10000 '..rev..' reverse',pn)
+				end
+				
+			end)
+			
+			m2(128,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:linear(4/3)
+						a:x(sw/2)
+					end
+					local a = GetJud(pn)
+					if a then
+						a:linear(4/3)
+						a:x(160*(pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:linear(4/3)
+						a:x(160*(pn*2-3))
+					end
+				end
+			end)
+			m2(132,function()
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x(sw/2)
+					end
+					local a = GetJud(pn)
+					if a then
+						a:x(160*(pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(160*(pn*2-3))
+					end
+				end
+			end,true)
+			
+			m2(158,function()
+				
+				wat_aux:decelerate(40/180)
+				wat_aux:x(1)
+				wat_aux:decelerate(40/180)
+				wat_aux:x(-1)
+				wat_aux:decelerate(40/180)
+				wat_aux:x(1)
+				wat_aux:decelerate(40/180)
+				wat_aux:x(0)
+				
+			end)
+			
+			m2(190,function()
+				
+				wat_aux:decelerate(40/180)
+				wat_aux:y(1)
+				wat_aux:decelerate(40/180)
+				wat_aux:y(-1)
+				wat_aux:decelerate(40/180)
+				wat_aux:y(1)
+				wat_aux:decelerate(40/180)
+				wat_aux:y(0)
+				
+			end)
+			
+			for i=0,1 do
+				mod_wiggle(136+32*i,4,4,200,2,'drunk')
+				mod_wiggle(137.5+32*i,3,2,200,2,'tipsy')
+				mod_wiggle(142+32*i,4,2,200,2,'bumpy')
+				mod_wiggle(146+32*i,6,3,200,2,'drunk')
+				m(148+32*i-.1,.5,'*10 stealth',l)
+				m(148.5+32*i-.1,.5,'*10 no stealth',l)
+				mod_wiggle(149+32*i,8,4,200,3,'tipsy')
+				m(151+32*i-.1,.5,'*50 1000 bumpy',l)
+				m(151.5+32*i-.1,.5,'*50 no bumpy',l)
+				for j=0,7 do
+					m(154+32*i+.25*j,.125,'*10000 stealth',l)
+					m(154+.125+32*i+.25*j,.125,'*10000 50 stealth',l)
+				end
+				m(154+32*i,.5,'*1000 628 dizzy',l)
+				m(156+32*i,.5,'*1000 no dizzy, *10000 no stealth',l)
+				mod_wiggle(156+32*i,4,2,200,2,'tipsy')
+			end
+			
+			mpf(160,164,function(beat)
+				
+				--for pn=1,2 do
+					local inv = 50-50*math.cos(beat*math.pi)
+					local alt = 20*math.sin(beat*math.pi)
+					local rev = -10*math.sin(beat*math.pi)
+					
+					mod_do('*10000 '..inv..' invert, *10000 '..alt..' alternate, *10000 '..rev..' reverse')
+				--end
+				
+			end)
+			
+			mpf(132,196,function(beat)
+				
+				for i=0,1 do
+					if beat > 132+32*i and beat < 134+32*i then
+						mod_do('*10000 '..(200*math.sin((beat-132)*.5*math.pi)*flan_flicker)..' drunk')
+					end
+					if beat > 134+32*i and beat < 136+32*i then
+						mod_do('*10000 '..(200*math.sin((beat-132)*.5*math.pi)*flan_flicker)..' tipsy')
+					end
+				end
+				
+				local amp = 0
+				if beat >= 132 and beat < 140 then
+					amp = 0.5*linear(beat-132,0,1,8)
+				elseif beat >= 140 and beat < 192 then
+					amp = 0.5+0.5*linear(beat-140,0,1,52)
+				elseif beat >= 192 then
+					amp = 1-linear(beat-192,0,1,4)
+				end
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationy(amp*60*math.cos((beat-132)*math.pi*.5))
+						a:rotationz(40*wat_aux:GetX())
+						a:skewx(.8*wat_aux:GetX()+.8*wat_aux:GetY())
+						a:zoom(1)
+						for i=0,1 do
+							if beat > 144+32*i and beat < 146+32*i then 
+								a:zoom( linear(beat-(144+32*i),0,1,2) )
+							end
+							if beat > 152+32*i and beat < 154+32*i then 
+								a:zoom( linear(beat-(152+32*i),0,1,2) )
+							end
+							if beat > 140+32*i and beat < 142+32*i then 
+								a:zoomx( 1+.4*math.sin((beat-140)*math.pi*4) )
+							end
+						end
+					end
+				end
+				
+				mod_do('*10000 '..(150*amp*math.sin((beat-132)*math.pi*.5))..' hallway')
+				
+			end)
+			
+			m2(196,function()
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:rotationy(0)
+						a:rotationz(0)
+						a:skewx(0)
+					end
+				end
+				
+			end,true)
+			
+			m(194,224,'180 wave',e)
+			
+			me(192,4,0,100,'drunk',l,linear)
+			me(192,4,0,100,'tipsy',l,linear)
+			me(192,4,0,-100,'mini',l,linear)
+			me(192,4,0,10,'flip',l,linear)
+			
+			me(192,196,1.5,1.3,'xmod',e,linear)
+			me(196,228,1.3,.5,'xmod',e,linear)
+			
+			me(196,228,-100,-500,'mini',e,linear)
+			me(196,228,10,30,'flip',e,linear)
+			
+			me(224,4,-500,0,'mini',l,linear)
+			me(224,4,30,0,'flip',l,linear)
+			
+			me(224,4,.5,1.5,'xmod',l,linear)
+			
+			flan_flick2 = 1
+			
+			mpf(196,228,function(beat)
+			
+				local ampd = 0
+				local ampt = 0
+				
+				local amp = 1
+				
+				if beat >= 224 then
+					amp = 1-linear(beat-224,0,1,4)
+				end
+				
+				for i=0,1 do
+					if beat >= 196+16*i and beat < 200+16*i then
+						ampd = 1-linear(beat-(196+16*i),0,1,4)
+					end
+					if beat >= 200+16*i and beat < 204+16*i then
+						ampt = 1-linear(beat-(200+16*i),0,1,4)
+					end
+					if beat >= 204+16*i and beat < 212+16*i then
+						ampd = 1-linear(beat-(204+16*i),0,1,8)
+					end
+				end
+				
+				mod_do('*10000 '..(amp*100-200*ampd*flan_flick2)..' drunk, *10000 '..(amp*100-200*ampt*flan_flick2)..' tipsy')
+				
+				if flan_flick2 == 1 then flan_flick2 = 0 else flan_flick2 = 1 end
+				
+			end)
+			
+			for i=0,15 do
+				me(244+i*.5,.5,-50,0,'mini',l,outQuad)
+				me(252+i*.25,.25,-100,0,'mini',l,outQuad)
+			end
+			
+			m(228,256,'*.5 50 drunk, *.3 30 tornado',e)
+			m(256,264,'*.5 no drunk, *.3 no tornado',e)
+			
+			local f = 1
+			for i=228,255,2 do
+			
+				if math.mod(i-4,8)==0 then
+					me(i,.5,150,50,'drunk',l,outQuad)
+					me(i+.5,.5,-50,50,'drunk',l,outQuad)
+				elseif math.mod(i-4,8)==2 or math.mod(i-4,8)==6 then
+					me(i-.25,.75,150,50,'drunk',l,outQuad)
+					me(i+.5,.5,-50,50,'drunk',l,outQuad)
+				elseif math.mod(i-4,8)==4 then
+					me(i,.75,150,50,'drunk',l,outQuad)
+					me(i+.75,.25,-50,50,'drunk',l,outQuad)
+				end
+				
+				--me(i+1,.5,0,100,'brake',l,outExpo)
+				--me(i+1.5,.5,100,0,'brake',l,inCubic,nil,.1)
+				me(i+1,1.5,200,0,'tipsy',l,outCubic,nil,.1)
+				me(i+1,1.5,100*f,0,'dizzy',l,outCubic)
+				
+				f = f*-1
+				
+			end
+			
+			mpf(228,260,function(beat)
+			
+				local amp = 0
+				if beat >= 228 and beat < 244 then
+					amp = linear(beat-228,0,1,16)
+				elseif beat >= 244 and beat < 256 then
+					amp = 1
+				elseif beat > 256 then
+					amp = 1-linear(beat-256,0,1,4)
+				end
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x( sw/2 + amp*160*math.sin((beat-228)*math.pi*2*(1/16)) )
+						a:rotationy( amp*30*math.sin((beat-228)*math.pi*2*(1/8)) )
+						mod_do('*10000 '..(100*amp*math.cos((beat-228)*math.pi*2*(1/8)))..' hallway',pn)
+					end
+				end
+				
+			end)
+			
+			me(256,260,0,25,'mini',e,linear,nil,320)
+			me(320,324,25,0,'mini',e,linear)
+			
+			m2(260,'WhiteFlash')
+			
+			m(259.5,323.5,'*10000 150 beat',e)
+			
+			m2(260,function()
+				for pn=1,2 do
+					local a = GetJud(pn)
+					if a then
+						a:x(0)
+					end
+					local a = GetCom(pn)
+					if a then
+						a:x(0)
+					end
+				end
+			end,true)
+			
+			m2(324,function()
+				for pn=1,2 do
+					local a = GetJud(pn)
+					if a then
+						a:hidden(0)
+						a:x(80*(pn*2-3))
+						a:decelerate(4/3)
+						a:x(0*(pn*2-3))
+					end
+					local a = GetCom(pn)
+					if a then
+						a:hidden(0)
+						a:x(80*(pn*2-3))
+						a:decelerate(4/3)
+						a:x(0*(pn*2-3))
+					end
+				end
+			end,true)
+			
+			flan_active = 2
+			
+			m2(276,function() flan_active = 1 MESSAGEMAN:Broadcast('WhiteFlash') end)
+			m2(292,function() flan_active = 2 MESSAGEMAN:Broadcast('WhiteFlash') end)
+			m2(300,function() flan_active = 1 MESSAGEMAN:Broadcast('WhiteFlash') end)
+			m2(308,function() flan_active = 2 MESSAGEMAN:Broadcast('WhiteFlash') end)
+			m2(316,function() flan_active = 1 MESSAGEMAN:Broadcast('WhiteFlash') end)
+			
+			for pn=1,2 do
+				m(292,320,(100*(pn*2-3))..' wave,'..(100*(pn*2-3))..' bumpy,'..(20*(pn*2-3))..' tornado,'..(50*(pn*2-3))..' drunk',e,pn)
+			end
+			
+			mpf(260,324,function(beat)
+			
+				local amp = 1
+				
+				for pn=1,2 do
+					
+					local a = Plr(pn)
+					if a then
+						
+						if flan_active == pn then
+							a:x( sw/2 + (pn*2-3)*amp*160*math.sin((beat-260)*math.pi*2*(1/16) + (pn-1)*math.pi*0.5) )
+							a:rotationy( amp*30*math.sin((beat-260)*math.pi*2*(1/8) + (pn-1)*math.pi*0.5) )
+							a:rotationx( amp*30*math.cos((beat-260)*math.pi*2*(1/8) + (pn-1)*math.pi*0.5) )
+							mod_do('*10000 no centered, *10000 no stealth',pn)
+							local b = GetJud(pn)
+							if b then
+								b:hidden(0)
+							end
+							local b = GetCom(pn)
+							if b then
+								b:hidden(0)
+							end
+						else
+							mod_do('*1.8 10000 centered, *10000 80 stealth',pn)
+							local b = GetJud(pn)
+							if b then
+								b:hidden(1)
+							end
+							local b = GetCom(pn)
+							if b then
+								b:hidden(1)
+							end
+						end
+						
+					end
+					
+				end
+				
+			end)
+			
+			me(324,328,0,100,'mini',e,outCubic,nil,420)
+			me(324,328,1.5,1.75,'xmod',e,outCubic,nil,420)
+			
+			m(324,4,'*10000 no centered',l)
+			
+			m2(324,'WhiteFlash')
+			
+			m(324,999,'30 drunk, 40 tipsy, 50 wave',e)
+			
+			--do the same at beat 4-68
+			mpf(324,999,function(beat)
+				
+				local amp = 1
+				
+				local four = 0
+				if beat >= 324 and beat < 328 then
+					four = outCubic(beat-324,0,80,4)
+				elseif beat >= 328 then
+					four = 80
+				end
+				
+				local zm = 1
+				if beat >= 355.5 and beat < 356.5 then
+					zm = 1-outQuad(beat-355.5,0,1,1)
+				elseif beat >= 356.5 then
+					zm = 0
+				end
+				
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						a:x( sw/2 + 160*(pn*2-3)*flan_flicker + four*(pn*2-3) )
+						a:rotationy( amp*20*math.sin((beat-260)*math.pi*2*(1/8) + (pn-1)*math.pi*0.25 + (flan_flicker+1)*math.pi*0.125) )
+						a:rotationx( amp*20*math.cos((beat-260)*math.pi*2*(1/8) + (pn-1)*math.pi*0.25 + (flan_flicker+1)*math.pi*0.125) )
+						a:zoom(zm)
+					end
+				end
+				
+			end)
+			
+			m(336-.2,16,'*6 invert',l,1)
+			m(336-.2,16,'*6 no invert',l,2)
+			
+			m(352-.2,16,'*6 invert',l,2)
+			m(352-.2,16,'*6 no invert',l,1)
+			
+			m(352,16,'*1.35 500 centered',l)
+			
+			
+			
+			
+			-------------------------------------
+			--BG Junk
+			
+			function fire_danmaku(w,n,x,y,spd,angadd)
+				if not spd then spd = 1 end
+				if not angadd then angadd = 0 end
+				for i=1,n do
+					local ang = (i/n)*2*math.pi + angadd
+					local a = flan_get_danmaku(w)
+					if a then
+						--Trace('Fire a sprite')
+						a:stoptweening()
+						a:hidden(0)
+						a:rotationz(0)
+						a:zoom(1)
+						a:x(x)
+						a:y(y)
+						a:diffusealpha(1)
+						if w ~= 4 then a:blend('add') a:diffusealpha(.75) end
+						if GAMESTATE:GetSongBeat() > 256 and w == 4 then a:diffusealpha(.5) end
+						
+						--Trace(tostring(spd))
+						--Trace(tostring(a:GetX()))
+						a:linear( spd )
+						a:rotationz(720)
+						a:addx( sw*math.sin(ang) )
+						a:addy( sw*math.cos(ang) )
+						a:sleep(0)
+						a:bouncebegin(.3)
+						a:zoom(0)
+						a:queuecommand('Hide')
+					end
+				end
+			end
+			
+			
+			
+			m2(3,function()
+				
+				for pn=1,2 do
+					local a = _G['char_flan'..pn]
+					if a and not Plr(pn) then a:hidden(1) end
+					if a then
+						a:x(sw/2 + (pn*2-3))
+						if a:GetX() > sw/2 then
+							a:basezoomx(-1)
+						else
+							a:basezoomx(1)
+						end
+						a:y(scy - 140)
+						a:zoomx(3)
+						a:zoomy(0)
+						a:bounceend(1/3)
+						a:zoom(1)
+						a:x(sw/2+160*(pn*2-3))
+					end
+				end
+				
+			end)
+			
+			mpf(4,68,function(beat)
+			
+				local zm = 1
+				if beat >= 4 and beat < 16 then
+					zm = 1-.2*linear(beat-4,0,1,12)
+				elseif beat >= 16 and beat < 64 then
+					zm = .8
+				elseif beat >= 63.75 and beat < 64.5 then
+					zm = .8 - .8*inBack(beat-63.75,0,1,.75)
+				elseif beat >= 64.5 then
+					zm = 0
+				end
+				
+				for pn=1,2 do
+					local a = _G['char_flan'..pn]
+					if a and not b then a:hidden(1) end
+					local b = Plr(pn)
+					if a and b then
+						a:x(b:GetX())
+						a:y(scy-140)
+						if a:GetX() > sw/2 then
+							a:basezoomx(-1)
+						else
+							a:basezoomx(1)
+						end
+						a:zoom(zm)
+					end
+				end
+			end)
+			
+			local pi = math.pi
+			
+			--function fire_danmaku(w,n,x,y,spd,angadd)
+			m2(16,function() fire_danmaku(1,4,sw/2 - 80,sh/2-140,1,0) end)
+			m2(16,function() fire_danmaku(1,4,sw/2 + 240,sh/2-140,1,0) end)
+			m2(32,function() fire_danmaku(1,4,sw/2 - 240,sh/2-140,1,0) end)
+			m2(32,function() fire_danmaku(1,4,sw/2 + 80,sh/2-140,1,0) end)
+			m2(48,function() fire_danmaku(1,4,sw/2 - 80,sh/2-140,1,0) end)
+			m2(48,function() fire_danmaku(1,4,sw/2 + 240,sh/2-140,1,0) end)
+			
+			m2(64,function()
+				
+				flan_bg1:linear(4/3)
+				flan_bg1:diffuse(0,0,0,1)
+				
+			end)
+			
+			m2(68,function()
+				
+				patch_bg:decelerate(16/3)
+				patch_bg:diffusealpha(1)
+				patch_bg:zoom(.6)
+				
+			end)
+			
+			m2(128,function()
+				
+				patch_bg:linear(4/3)
+				patch_bg:diffusealpha(0)
+				
+			end)
+			
+			m2(68,'PatchyOn')
+			m2(128,'PatchyHurt')
+			m2(128,'RedFlash')
+			m2(132,'PatchyOff')
+			
+			m2(128,function()
+				
+				flan_bg1:linear(4/3)
+				flan_bg1:diffusealpha(0)
+				
+			end)
+			
+			m2(192,function()
+				
+				flan_bg1:diffuse(0,0,0,0)
+				flan_bg1:linear(4/3)
+				flan_bg1:diffusealpha(1)
+				
+			end)
+			
+			m2(194,'KoakumaOn')
+			m2(226,'KoakumaOff')
+			
+			m2(196,function() fire_danmaku(4,8,sw/2 - 240,sh/2,2,0) end)
+			m2(200,function() fire_danmaku(4,8,sw/2 - 240,sh/2,2,pi/8) end)
+			m2(204,function() fire_danmaku(4,8,sw/2 - 240,sh/2,2,0) end)
+			
+			m2(212,function() fire_danmaku(4,8,sw/2 - 240,sh/2,2,0) end)
+			m2(216,function() fire_danmaku(4,8,sw/2 - 240,sh/2,2,pi/8) end)
+			m2(220,function() fire_danmaku(4,8,sw/2 - 240,sh/2,2,0) end)
+			
+			m2(227,function()
+				
+				char_remi:x(sw/2-5)
+				char_remi:y(sh/2-140)
+				char_remi:zoomx(3)
+				char_remi:zoomy(0)
+				char_remi:bounceend(0.3)
+				char_remi:zoom(1)
+				
+			end)
+			
+			remi_lastpos = 0
+			
+			mpf(228,255,function(beat)
+			
+				leading_player = 1
+			
+				for pn=1,2 do
+					local a = Plr(pn)
+					if a then
+						leading_player = pn
+						break;
+					end
+				end
+				
+				local bz = 1
+				
+				local a = Plr(leading_player)
+				char_remi:x( a:GetX() )
+				if char_remi:GetX() > remi_lastpos then
+					char_remi:basezoomx(1)
+					bz = 1
+				end
+				if char_remi:GetX() < remi_lastpos then
+					char_remi:basezoomx(-1)
+					bz = -1
+				end
+				
+				remi_lastpos = char_remi:GetX()
+				char_remi:addx(-5*bz)
+				
+				
+			end)
+			
+			m2(228,function() fire_danmaku(2,5,char_remi:GetX(),char_remi:GetY(),2,0) end)
+			m2(236,function() fire_danmaku(2,5,char_remi:GetX(),char_remi:GetY(),2,0) end)
+			m2(244,function() fire_danmaku(2,5,char_remi:GetX(),char_remi:GetY(),2,0) end)
+			m2(252,function() fire_danmaku(2,5,char_remi:GetX(),char_remi:GetY(),2,0) end)
+			
+			danmaku_order = {'char_flan1','char_remi','char_patchy','char_koak'}
+			danmaku_cur = 0
+			
+			for i=0,14 do
+				local super_scope = i
+				m2(260+4*i,function()
+					local who = math.mod(danmaku_cur,4)+1
+					local amt = 6
+					if super_scope > 7 then amt = 9 end
+					fire_danmaku(who,amt,_G[ danmaku_order[who] ]:GetX(),_G[ danmaku_order[who] ]:GetY(),2,0)
+					danmaku_cur = danmaku_cur+1
+				end)
+			end
+			for i=0,6 do
+				local super_scope = i
+				m2(294+4*i,function()
+					local who = math.mod(danmaku_cur,4)+1
+					local amt = 9
+					fire_danmaku(who,amt,_G[ danmaku_order[who] ]:GetX(),_G[ danmaku_order[who] ]:GetY(),2,0)
+					danmaku_cur = danmaku_cur+1
+				end)
+			end
+			
+			m2(255,function()
+				
+				char_remi:bouncebegin(0.3)
+				char_remi:zoomx(3)
+				char_remi:zoomy(0)
+				
+			end)
+			
+			m2(255.7,function() taro_Sound('chara/spell') end)
+			
+			m2(255.5,'Splash')
+			
+			m2(256,function()
+				
+				MESSAGEMAN:Broadcast('Cast')
+				
+				local a = char_flan1
+				a:hidden(0)
+				a:x(sw/2-240)
+				a:y(sh/2-160)
+				a:basezoomx(1)
+				a:zoomx(3)
+				a:zoomy(0)
+				a:bounceend(0.3)
+				a:zoom(1)
+				
+				local a = char_remi
+				a:x(sw/2+240)
+				a:y(sh/2-160)
+				a:basezoomx(-1)
+				a:zoomx(3)
+				a:zoomy(0)
+				a:bounceend(0.3)
+				a:zoom(1)
+				
+				local a = char_koak
+				a:x(sw/2+240)
+				a:y(sh/2+160)
+				a:basezoomx(-1)
+				a:zoomx(3)
+				a:zoomy(0)
+				a:bounceend(0.3)
+				a:zoom(1)
+				
+				local a = char_patchy
+				a:hidden(0)
+				a:x(sw/2-240)
+				a:y(sh/2+160)
+				a:basezoomx(1)
+				a:zoomx(3)
+				a:zoomy(0)
+				a:bounceend(0.3)
+				a:zoom(1)
+				
+			end,true)
+			
+			
+			
+			m2(224,function()
+				
+				flan_bg1:linear(4/3)
+				flan_bg1:diffuse(.4,0,0,1)
+				
+			end)
+			
+			m2(256,function()
+				
+				flan_bg1:linear(4/3)
+				flan_bg1:diffuse(0,0,0,1)
+				
+			end)
+			
+			m2(260,function()
+				
+				flan_bg_space:hidden(0)
+				
+			end)
+			
+			m2(320,function()
+				
+				flan_bg2:decelerate(4/3)
+				flan_bg2:diffusealpha(1)
+				
+			end)
+			
+			m2(320.5,function()
+			
+				local a = char_flan1
+				a:bouncebegin(0.3)
+				a:zoomx(3)
+				a:zoomy(0)
+				local a = char_remi
+				a:bouncebegin(0.3)
+				a:zoomx(3)
+				a:zoomy(0)
+				local a = char_patchy
+				a:bouncebegin(0.3)
+				a:zoomx(3)
+				a:zoomy(0)
+				local a = char_koak
+				a:bouncebegin(0.3)
+				a:zoomx(3)
+				a:zoomy(0)
+				
+			end,true)
+			
+			m2(324,function()
+				
+				for j=1,4 do
+					for i=1,table.getn(flan_danmaku[j]) do
+						flan_danmaku[j][i]:stoptweening()
+						flan_danmaku[j][i]:hidden(1)
+					end
+				end
+				
+			end)
+			
+			mpf(324,999,function(beat)
+			
+				local zm = 1
+				if beat >= 324 and beat < 328 then
+					zm = 1-.2*outQuad(beat-324,0,1,4)
+				elseif beat >= 328 and beat < 355.5 then
+					zm = .8
+				elseif beat >= 355.5 and beat < 356.5 then
+					zm = .8 - .8*outQuad(beat-355.5,0,1,1)
+				elseif beat >= 356.5 then
+					zm = 0
+				end
+				
+				local addy = 0
+				if beat > 352 then
+					addy = 60*(beat-352)
+				end
+				
+				for pn=1,2 do
+					local a = _G['char_flan'..pn]
+					local b = Plr(pn)
+					if a and not b then a:hidden(1) end
+					if a and b then
+						a:x(b:GetX())
+						a:y(scy-140 + addy)
+						if a:GetX() > sw/2 then
+							a:basezoomx(-1)
+						else
+							a:basezoomx(1)
+						end
+						a:zoom(zm)
+					end
+				end
+				
+			end)
+			
+			m2(328,function() fire_danmaku(1,8,sw/2 + 80,sh/2-140,2,0) end)
+			m2(328,function() fire_danmaku(1,8,sw/2 - 240,sh/2-140,2,0) end)
+			m2(336,function() fire_danmaku(1,8,sw/2 + 80,sh/2-140,2,0) end)
+			m2(336,function() fire_danmaku(1,8,sw/2 - 240,sh/2-140,2,0) end)
+			m2(344,function() fire_danmaku(1,8,sw/2 - 80,sh/2-140,2,0) end)
+			m2(344,function() fire_danmaku(1,8,sw/2 + 240,sh/2-140,2,0) end)
+			m2(352,function() fire_danmaku(1,8,sw/2 - 80,sh/2-140,2,0) end)
+			m2(352,function() fire_danmaku(1,8,sw/2 + 240,sh/2-140,2,0) end)
+			
+			m2(355.5,function()
+				
+				flan_bg2:decelerate(1/3)
+				flan_bg2:diffuse(0,0,0,1)
+				
+			end)
+			
+			
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Sort the actions table-------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function modtable_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(mod_actions) > 1 then
+				table.sort(mod_actions, modtable_compare)
+			end
+			
+			self:queuecommand('Update');
+			
+		end"
+		
+		UpdateCommand="%function(self)
+
+			if GAMESTATE:GetSongBeat()>=0 and not checked then
+			
+				local ThingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame',
+										'Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+				local ThingsToHide = {'LifeP1','LifeP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+				
+				for i,v in ipairs(ThingsToGrab) do
+					_G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+				end
+				
+				for i,v in ipairs(ThingsToHide) do
+					if _G[v] then _G[v]:hidden(1) end
+				end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				
+				--name players, judgment and combo
+				for pn=1,2 do
+					_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+					if _G['P'..pn] then
+						_G['jud'..pn] = _G['P'..pn]:GetChild('Judgment');
+						_G['com'..pn] = _G['P'..pn]:GetChild('Combo');
+					end
+					
+					if _G['ScoreP'..pn] then 
+						_G['ScoreP'..pn]:zoom(0)
+					end
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				checked = true; --let this only run once
+				
+			end
+
+			local beat = GAMESTATE:GetSongBeat()
+			
+			
+---------------------------------------------------------------------------------------
+----------------------Begin table handlers---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			disable = false;
+			if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+				
+				-----------------------
+				-- Player mod resets --
+				-----------------------
+				for i=1,2 do
+					mod_do('clearall',i)
+				end
+				
+				------------------------------------------------------------------------------
+				-- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+				------------------------------------------------------------------------------
+				for i,v in pairs(mods) do
+					if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+						if beat >=v[1] then
+							if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+								if table.getn(v) == 5 then
+									mod_do(v[3],v[5]);
+								else
+									mod_do(v[3]);
+								end
+							end
+						end
+					else
+						v[1] = 0;
+						v[2] = 0;
+						v[3] = '';
+						v[4] = 'error';
+						SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+					end
+				end
+				
+				-----------------------------------------------------------------------------------------------------
+				-- WinDEU's time-based len/end version of the #swag custom mod reader #teamproofofconcept (c) 2015 --
+				-----------------------------------------------------------------------------------------------------
+				for i,v in pairs(mods2) do
+					if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+						if mod_time >=v[1] then
+							if (v[4] == 'len' and mod_time <=v[1]+v[2]) or (v[4] == 'end' and mod_time <=v[2]) then
+								if table.getn(v) == 5 then
+									mod_do(v[3],v[5]);
+								else
+									mod_do(v[3]);
+								end
+							end
+						end
+					else
+						v[1] = 0;
+						v[2] = 0;
+						v[3] = 'error';
+						v[4] = 'error';
+						SCREENMAN:SystemMessage('Bad mod in time-based table (line '..i..')');
+					end
+				end
+				
+				--------------------------------------------------------------------------------------
+				-- i dont know who this reader is but he looks like he is made out of EASE HAHAHAHA --
+				-- original code by exschwasion, bastardized by taro for cmod support and less 'if' --
+				--------------------------------------------------------------------------------------
+				for i,v in pairs(mods_ease) do
+					if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+						if beat >=v[1] then
+							if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+								
+								local duration = v[2];
+								if v[6] == 'end' then duration = v[2] - v[1] end
+								local curtime = beat - v[1]
+								local diff = v[4] - v[3]
+								local startstrength = v[3]
+								local curve = v[7]
+								local mod = v[5]
+								
+								local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+							
+								local strength = v[4]
+								
+								local modstr = v[5] == 'xmod' and strength..'x' or (v[5] == 'cmod' and 'C'..strength or strength..' '..v[5])
+								mod_do('*10000 '..modstr,v[8]);
+								
+							end
+						end
+					else
+						SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+					end
+				end
+				
+				--------------------
+				-- Perframe stuff --
+				--------------------
+				
+				flan_flicker = flan_flicker*-1
+				
+				----------------------------------------
+				-- HBLBHCBLBJGBHL DO THIS EVERY FRAME --
+				----------------------------------------
+				
+				if table.getn(mod_perframes)>0 then
+					for i=1,table.getn(mod_perframes) do
+						local a = mod_perframes[i]
+						if beat >= a[1] and beat < a[2] then
+							a[3](beat);
+						end
+					end
+				end
+				
+				---------------------------------------
+				-- ACTION RPGS AINT GOT SHIT ON THIS --
+				---------------------------------------
+				while curaction<=table.getn(mod_actions) and GAMESTATE:GetSongBeat()>=mod_actions[curaction][1] do
+					if mod_actions[curaction][3] or GAMESTATE:GetSongBeat() < mod_actions[curaction][1]+2 then
+						if type(mod_actions[curaction][2]) == 'function' then
+							mod_actions[curaction][2]()
+						elseif type(mod_actions[curaction][2]) == 'string' then
+							MESSAGEMAN:Broadcast(mod_actions[curaction][2]);
+						end
+					end
+					curaction = curaction+1;
+				end
+				
+			end
+			
+			self:sleep(1/60);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+			
+		end"
+		
+	/>
+	
+	<Layer File="arrowpistons" />
+	<Layer File="vortex" />
+	
+	<Layer File="chara/patchy.sprite" InitCommand="%function(self) char_patchy=self end" 
+	OnCommand="x,scx;y,scy;zoomx,4;zoomy,0;bob;effectmagnitude,0,5,0;effectperiod,4;" PatchyOnMessageCommand="bounceend,.3;zoom,1;" PatchyHurtMessageCommand="hidden,1" />
+	<Layer File="chara/patchhurt.sprite" OnCommand="x,scx;y,scy;hidden,1;" PatchyHurtMessageCommand="hidden,0;" PatchyOffMessageCommand="bouncebegin,.3;zoomx,3;zoomy,0;" />
+	
+	<Layer File="chara/koakuma.sprite" InitCommand="%function(self) char_koak=self end" 
+	OnCommand="x,scx-240;y,scy;zoomx,4;zoomy,0;bob;effectmagnitude,0,5,0;effectoffset,1;effectperiod,4;" KoakumaOnMessageCommand="bounceend,.3;zoom,1;" KoakumaOffMessageCommand="bouncebegin,.3;zoomx,3;zoomy,0;" />
+	
+	<Layer File="chara/flandre.sprite" InitCommand="%function(self) char_flan1=self end" OnCommand="zoom,0;bob;effectmagnitude,0,5,0;effectoffset,2;effectperiod,4;" FlanOnCommand="zoomx,3;zoomy,0;bounceend,.3;zoom,1;" />
+	<Layer File="chara/flandre.sprite" InitCommand="%function(self) char_flan2=self end" OnCommand="zoom,0;bob;effectmagnitude,0,5,0;effectoffset,2;effectperiod,4;" />
+	
+	<Layer File="chara/remilia.sprite" InitCommand="%function(self) char_remi=self end" OnCommand="zoom,0;bob;effectmagnitude,0,5,0;effectoffset,3;effectperiod,4;" />
+	
+	<Layer Type="ActorFrame" OnCommand="x,sw/2-240;y,sh/2-160" CastMessageCommand="playcommand,C;zoom,1.1;linear,6/3;zoom,.8;rotationz,360;" ><children>
+		<Layer File="chara/casting" OnCommand="diffuse,1,0,0,0;blend,add;" CCommand="linear,1/3;diffusealpha,1;sleep,3/3;linear,1/3;diffusealpha,0;" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="x,sw/2+240;y,sh/2-160" CastMessageCommand="playcommand,C;zoom,1.1;linear,6/3;zoom,.8;rotationz,360;" ><children>
+		<Layer File="chara/casting" OnCommand="diffuse,0,0,1,0;blend,add;" CCommand="linear,1/3;diffusealpha,1;sleep,3/3;linear,1/3;diffusealpha,0;" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="x,sw/2+240;y,sh/2+160" CastMessageCommand="playcommand,C;zoom,1.1;linear,6/3;zoom,.8;rotationz,360;" ><children>
+		<Layer File="chara/casting" OnCommand="diffuse,1,1,1,0;blend,add;" CCommand="linear,1/3;diffusealpha,1;sleep,3/3;linear,1/3;diffusealpha,0;" /></children></Layer>
+	<Layer Type="ActorFrame" OnCommand="x,sw/2-240;y,sh/2+160" CastMessageCommand="playcommand,C;zoom,1.1;linear,6/3;zoom,.8;rotationz,360;" ><children>
+		<Layer File="chara/casting" OnCommand="diffuse,1,1,0,0;blend,add;" CCommand="linear,1/3;diffusealpha,1;sleep,3/3;linear,1/3;diffusealpha,0;" /></children></Layer>
+		
+	<Layer File="chara/big_patch" OnCommand="x,sw/2;y,sh/2;addx,-60*3;addy,60*2;blend,add;diffusealpha,.6;hidden,1;zoomx,3;zoomy,0;"
+	SplashMessageCommand="hidden,0;decelerate,1/3;zoom,.8;linear,2/3;zoom,.9;linear,2/3;zoom,1;diffusealpha,0;" />
+	<Layer File="chara/big_koak" OnCommand="x,sw/2;y,sh/2;addx,60*3;addy,60*2;blend,add;diffusealpha,.6;hidden,1;zoomx,3;zoomy,0;"
+	SplashMessageCommand="hidden,0;sleep,1/6;decelerate,1/3;zoom,.8;linear,2/3;zoom,.9;linear,2/3;zoom,1;diffusealpha,0;" />
+	<Layer File="chara/big_rem" OnCommand="x,sw/2;y,sh/2;addx,60*3;addy,-60*2;blend,add;diffusealpha,.6;hidden,1;zoomx,3;zoomy,0;"
+	SplashMessageCommand="hidden,0;sleep,3/6;decelerate,1/3;zoom,.8;linear,2/3;zoom,.9;linear,2/3;zoom,1;diffusealpha,0;" />
+	<Layer File="chara/big_flan" OnCommand="x,sw/2;y,sh/2;addx,-60*3;addy,-60*2;blend,add;diffusealpha,.6;hidden,1;zoomx,3;zoomy,0;"
+	SplashMessageCommand="hidden,0;sleep,4/6;decelerate,1/3;zoom,1.1;linear,2/3;zoom,1.2;linear,2/3;zoom,1.3;diffusealpha,0;" />
+	
+	<Layer Type="ActorFrame" OnCommand="hidden,0;" HideDanmakuMessageCommand="hidden,1" ><children>
+		
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		<Layer File="chara/danmaku1" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,1) end" />
+		
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		<Layer File="chara/danmaku2" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,2) end" />
+		
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		<Layer File="chara/danmaku3" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,3) end" />
+		
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		<Layer File="chara/oh yes" OnCommand="hidden,1;queuecommand,Make;" HideCommand="hidden,1" MakeCommand="%function(self) flan_add_danmaku(self,4) end" />
+		
+	</children></Layer>
+	
+	<!--Handling messages here is still fun and profitable-->
+	<CODE Type="Quad" OnCommand="hidden,1"
+	InitCommand="%function(self) wat_aux = self end"
+	/>
+	
+	<!--This is for the time based mod reader-->
+	<BitmapText
+		Font="Common Normal"
+		Text="test"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+		SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = mod_globaloffset+tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+	/>
+	
+	<Layer Type="Quad" OnCommand="stretchto,0,0,sw,sh;diffusealpha,0;" WhiteFlashMessageCommand="diffusealpha,.5;linear,.75;diffusealpha,0;" />
+	<Layer Type="Quad" OnCommand="stretchto,0,0,sw,sh;diffuse,1,0,0,0;" RedFlashMessageCommand="diffusealpha,.5;linear,.75;diffusealpha,0;" />
+	
+</children></ActorFrame>

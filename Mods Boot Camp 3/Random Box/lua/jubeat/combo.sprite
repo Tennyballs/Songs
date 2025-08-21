@@ -1,0 +1,24 @@
+[Sprite]
+Texture=combo 1x15.png
+Frame0000=1
+Delay0000=130
+Frame0001=2
+Delay0001=130
+Frame0002=3
+Delay0002=130
+Frame0003=4
+Delay0003=130
+Frame0004=5
+Delay0004=130
+Frame0005=6
+Delay0005=130
+Frame0006=7
+Delay0006=130
+Frame0007=8
+Delay0007=130
+Frame0008=9
+Delay0008=130
+Frame0009=10
+Delay0009=130
+Frame0010=1
+Delay0010=130

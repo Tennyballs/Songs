@@ -1,0 +1,51 @@
+<ActorFrame> <children>
+
+	<Layer
+		File="itb"
+		OnCommand="%function(self)		
+			self:x(SCREEN_CENTER_X);
+			self:y(SCREEN_CENTER_Y);
+			self:zoomtowidth(SCREEN_WIDTH);
+			self:zoomtoheight(SCREEN_HEIGHT);
+			self:diffusealpha(0);
+			drm_bgvar = self;
+			self:sleep(1.348);
+			self:linear(1.348);
+			self:diffusealpha(1)
+			self:linear(2.696);
+			self:diffusealpha(0.5)
+		end"
+	/>
+	<Layer
+		File="itg"
+		OnCommand="%function(self)
+			self:x(SCREEN_CENTER_X);
+			self:y(SCREEN_CENTER_Y);
+			self:zoomtowidth(SCREEN_WIDTH);
+			self:zoomtoheight(SCREEN_HEIGHT);
+			self:diffusealpha(0.5);
+			self:sleep(1.348);
+			self:linear(1.348);
+			self:diffusealpha(0)
+		end"
+	/>
+	
+	<Layer Type="ActorFrame" OnCommand="%function(self) self:hidden(1); drm_memories = self end" ><children>
+		<Layer File="swing-bg2" OnCommand="scaletocover,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+		<Layer File="clouds" OnCommand="customtexturerect,0,0,3,3;zoom,4;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;texcoordvelocity,.07,0;" />
+		<Layer File="swing-bg1" OnCommand="scaletocover,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+		<Layer File="swing-chan" OnCommand="wag;effectmagnitude,0,0,2;effectperiod,2;vertalign,top;y,-30;x,SCREEN_CENTER_X-40;" />
+		<Layer File="swing-ashe" OnCommand="wag;effectmagnitude,0,0,2;effectperiod,2;effectoffset,.2;vertalign,top;y,-10;x,SCREEN_CENTER_X+60;" />
+		<!--image-1 isn't meant to imply Arrow-kun's existence in this timeline-->
+		<Layer File="image-1" NameCommand="%function(self) drm_img1 = self end"
+		OnCommand="playcommand,Name;diffusealpha,0;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;basezoomx,SCREEN_WIDTH/640;basezoomy,SCREEN_WIDTH/640;" />
+		<Layer File="image-2" NameCommand="%function(self) drm_img2 = self end"
+		OnCommand="playcommand,Name;diffusealpha,0;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;basezoomx,SCREEN_WIDTH/640;basezoomy,SCREEN_WIDTH/640;" />
+		<Layer File="image-3" NameCommand="%function(self) drm_img3 = self end"
+		OnCommand="playcommand,Name;diffusealpha,0;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;basezoomx,SCREEN_WIDTH/640;basezoomy,SCREEN_WIDTH/640;" />
+	</children></Layer>
+	
+	<Layer Type="Quad" NameCommand="%function(self) drm_bgcover = self end"
+	OnCommand="playcommand,Name;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,0;" />
+	
+</children></ActorFrame>

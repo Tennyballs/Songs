@@ -1,0 +1,18 @@
+
+	<!-- Dyscontrolled -->
+	<Layer Type="ActorFrame" InitCommand="hidden,1" RiseUpMessageCommand="accelerate,spb*7;addy,SCREEN_HEIGHT*1.25" OpenSesaMessageCommand="hidden,0"> <children>
+	
+		<Layer Type="ActorFrame" NameCommand="%function(self) dys_citybg = self end" OnCommand="playcommand,Name;hidden,0;" ><children>
+			<Layer File="skygrad" NameCommand="%function(self) dys_citysky = self end" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+			<Layer File="skydark" NameCommand="%function(self) dys_skydark = self end" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;diffuseshift;effectcolor1,1,1,1,1;effectcolor2,1,1,1,.5;effectclock,bgm;effectperiod,8" />
+			
+			<Layer File="backlayer" NameCommand="%function(self) dys_backlayer = self end" OnCommand="stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+
+			<Layer File="forelayer" NameCommand="%function(self) dys_forelayer = self end" OnCommand="zoomx,SCREEN_WIDTH/640;zoomy,SCREEN_HEIGHT/480;vertalign,bottom;y,SCREEN_BOTTOM;x,SCREEN_CENTER_X" />
+			
+			<Layer File="static.sprite" NameCommand="%function(self) dys_static = self end" OnCommand="blend,add;diffusealpha,.03;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT;" />
+		</children></Layer>
+		
+	</children> </Layer>
+	
+	

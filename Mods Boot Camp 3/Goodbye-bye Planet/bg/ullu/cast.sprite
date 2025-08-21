@@ -1,0 +1,6 @@
+[Sprite]
+Texture=main 4x2.png
+Frame0000=6
+Delay0000=0.1
+Frame0001=7
+Delay0001=0.1

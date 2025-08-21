@@ -1,0 +1,871 @@
+<ActorFrame
+    InitCommand="%function(self)
+
+        songName = GAMESTATE:GetCurrentSong():GetSongDir();
+    end"
+><children>
+
+	<Actor
+		Type="Quad"
+		InitCommand="hidden,1" OnCommand="sleep,1000" />
+	
+	<Layer File="easing" />
+	<Layer File="modhelpers" />
+	<Layer File="snare" />
+	<Layer File="spellcard" />
+	
+	<Layer
+		Type="Quad"
+		InitCommand="hidden,1"
+		OnCommand="%function(self)
+
+			
+		
+			debug_show = false;
+			spb = 60/174
+---------------------------------------------------------------------------------------
+----------------------DON'T TOUCH IT KIDDO---------------------------------------------
+---------------------------------------------------------------------------------------
+
+			cit_zparity = 1
+			checked = false; P1=nil;P2=nil;P3=nil;P4=nil;jud1=nil;com1=nil;jud2=nil;com2=nil;jud3=nil;com3=nil;
+			mod_plr = {};
+			mod_firstSeenBeat = GAMESTATE:GetSongBeat();
+			local m=mod_insert
+			local me=mod_ease
+			local mm=mod_message
+			
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+
+            --beat based mods
+            --{beat_start, beat_end, mods, len_or_end, player_number}
+            mods = {
+				--{0,383,'*100000 -100 cover, *1000 1x, *1000 C350, **100000 overhead, *1000 sudden, *10000 90 suddenoffset','end'},
+				{0,343,'*100000 -999999 cover, *1000 1x, *1000 C288, *1000 overhead','end'},
+            }
+            --m(i,.5,'*1000 '.. valuething ..' reverse, *1000 '.. valuething2 ..' invert','len')
+			
+			--beat-based ease mods
+			--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+			--valid ease types are:
+				--linear
+				--inQuad    outQuad    inOutQuad    outInQuad
+				--inCubic   outCubic   inOutCubic   outInCubic
+				--inQuart   outQuart   inOutQuart   outInQuart
+				--inQuint   outQuint   inOutQuint   outInQuint
+				--inSine    outSine    inOutSine    outInSine
+				--inExpo    outExpo    inOutExpo    outInExpo
+				--inCirc    outCirc    inOutCirc    outInCirc
+				--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+				--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+				--inBounce  outBounce  inOutBounce  outInBounce
+				
+			mods_ease = {
+				-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+				--{32,40,0,1.75,'xmod','end',outInBounce},
+			}
+			
+			--me(beat,len,str1,str2,mod,t,ease,pn,sus,opt1,opt2)
+			
+            --SCREAMING GUMBALL / timed message broadcaster
+            --they no longer have to be in order, because they're sorted now
+            curmessage = 1;
+            --{beat,message,persists}
+            messages = { 
+            }
+			m(89,2,'*1000 C300','len')
+			me(3,.5,0,100,'stealth','len',linear)
+			me(3,.5,0,100,'dark','len',linear)
+			me(3.5,.5,100,0,'stealth','len',linear)
+			me(3.5,.5,100,0,'dark','len',linear)
+			m(3.5,32,'*1000 100 reverse, *1000 100 drunk, *1000 100 tipsy, *1000 -120 wave','end')
+			mm(3,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						local pn = i-1
+						local pn2 = i*2-3
+						v:linear(spb*.5)
+						v:x(SCREEN_WIDTH*pn + SCREEN_WIDTH*pn2*.25)
+						v:linear(spb*.5)
+						v:x(SCREEN_WIDTH*.5 + SCREEN_WIDTH*pn2*.25)
+					end
+				end
+			end)
+			
+			function cit_snare(beat,force)
+				me(beat,2,force,0,'brake','len',outCirc)
+				--me(beat,1,force,0,'tipsy','len',outCirc)
+			end
+			
+			for i,v in ipairs(citu_snare) do
+				cit_snare(v[1],40)
+			end
+			
+			me(18,19,0,-100,'hallway','end',outCirc)
+			me(19,20,-100,0,'hallway','end',inCirc)
+			me(20,32,0,200,'hallway','end',linear)
+			m(20,91,'*100 99 suddenoffset, *100 sudden','end')
+			m(32,.5,'*1000 no drunk, *1000 no wave, *1000 no tipsy, *1000 80 reverse','len')
+			m(32.5,.5,'*1000 60 reverse','len')
+			m(33,.5,'*1000 40 reverse','len')
+			m(33.5,.5,'*1000 20 reverse','len')
+			m(34,.5,'*1000 no reverse','len')
+			
+			m(34+(0*.25),.25,'*1000 -50 mini','len')
+			m(34+(1*.25),.25,'*1000 50 mini','len')
+			me(34+(2*.25),36,0,50,'flip','end',inCirc)
+			me(34+(2*.25),36,0,50,'reverse','end',inCirc)
+			m(34+(2*.25),.25,'*1000 -100 mini,*1000 0.25x','len')
+			m(34+(3*.25),.25,'*1000 100 mini','len')
+			m(35+(0*.125),.125,'*1000 -100 mini,*1000 0.25x','len')
+			m(35+(1*.125),.125,'*1000 100 mini','len')
+			m(35+(2*.125),.125,'*1000 -100 mini,*1000 0.25x','len')
+			m(35+(3*.125),.125,'*1000 100 mini','len')
+			m(35+(4*.125),.125,'*1000 -100 mini,*1000 0.25x','len')
+			m(35+(6*.125),.125,'*1000 100 mini','len')
+			
+			mm(36,function(self) zoomies(3,10) end)
+			mm(41.5,function(self) zoomies(1.5,20) end)
+
+			sugaroo_add(39,1,1/6,0,50)
+			
+			me(36,40,0,-200,'hallway','end',outQuad)
+			m(40,40.75,'*1000 -200 hallway, *1000 no stealth','end')
+			me(40,.75,50,-200,'reverse','len',outCirc)
+			me(40.75,.75,-200,0,'reverse','len',inCirc)
+			me(40.75,.75,-200,0,'hallway','len',inCirc)
+			me(41.5,.75,0,200,'hallway','len',outCirc)
+			me(42.25,3.75,200,0,'hallway','len',inCirc)
+			me(41.5,.75,0,100,'reverse','len',outCirc)
+			me(42.25,3.75,100,0,'reverse','len',inCirc)
+			
+			local trap = {46,46.5,46.58,46.67,46.75,46.83,46.92,47,47.33,47.67,48}
+			local percentage = 100/table.getn(trap)
+			local cit_parity = 1
+			for i,v in pairs(trap) do
+				m(v-.1,.5,'*1000 '.. percentage*i .. ' reverse, *1000 '.. cit_parity*100 .. ' drunk','len')
+				cit_parity = cit_parity * -1
+			end
+			
+			m(48,1.5,'*100 100 reverse','len')
+			m(49.5,1.5,'*100 50 reverse','len')
+			me(48,.75,100,0,'reverse','len',outCirc)
+			me(48.75,.75,0,50,'reverse','len',inCirc)
+			me(49.5,.75,50,60,'reverse','len',outCirc)
+			me(50.25,.75,60,0,'reverse','len',inCirc)
+			mm(49.5,function(self) zoomies(1.5,50) end)
+			
+			me(51,1.5,0,-200,'hallway','len',outCirc)
+			me(52.5,1.5,-200,0,'hallway','len',inCirc)
+			
+			
+			m(54.5,.25,'*20 reverse, *10 -50 alternate, *10 -50 cross, *10 -50 split,*100 50 stealth','len')
+			m(54.75,.25,'*10 100 reverse, *10 no alternate, *10 no cross, *10 -100 split,*100 50 stealth','len')
+			m(55,.25,'*10 reverse, *10 -50 alternate, *10 50 cross, *10 -50 split,*100 50 stealth','len')
+			m(55.25,.25,'*10 reverse, *10 no alternate, *10 no cross, *10 no split,*100 50 stealth','len')
+			m(55.5,.25,'*20 100 reverse, *10 no alternate, *10 no cross, *20 -100 split,*100 50 stealth','len')
+			m(55.75,.25,'*20 no reverse, *20 no split,*100 0 stealth','len')
+			
+			me(56,1.5,400,0,'tipsy','len',outQuad)
+			me(56,1.5,-100,0,'mini','len',outQuad)
+			me(57.5,1.5,400,0,'tipsy','len',outQuad)
+			me(57.5,1.5,-100,0,'mini','len',outQuad)
+			me(59,3.5,400,0,'tipsy','len',outQuad)
+			me(59,3.5,-100,0,'mini','len',outQuad)
+			me(56,59,0,300,'bumpy','end',linear)
+			me(59,62.5,300,0,'bumpy','end',linear)
+			me(56,59,0,400,'drunk','end',linear)
+			me(59,62.5,400,0,'drunk','end',linear)
+			--mayu/shiningray throwback
+			mm(56,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:rotationz(-360)
+						v:decelerate(spb*1.5)
+						v:rotationx(-30)
+						v:rotationz(-335)
+						v:zoom(.85)
+						v:decelerate(spb*1.5)
+						v:rotationx(-60)
+						v:rotationz(-390)
+						v:zoom(.6)
+						v:decelerate(spb*3.5)
+						v:rotationx(0)
+						v:rotationz(0)
+						v:zoom(1)
+					end
+				end
+			end)
+			
+			m(62.5,.25,'*10 50 alternate, *10 -50 cross, *10 50 split','len')
+			m(62.75,.25,'*10 no alternate, *10 no cross, *10 100 split','len')
+			m(63,.5,'*10 50 alternate, *10 50 cross, *10 50 split','len')
+			m(63.5,.5,'*20 100 reverse, *10 no alternate, *10 no cross, *10 no split','len')
+			m(64,2,'*10 100 reverse','len')
+			me(64,.75,0,50,'flip','len',outCirc)
+			me(64.75,.75,50,0,'flip','len',inCirc)
+			trap = {66,66.13,66.25,66.38,66.5,66.75,67,67.25,67.5,67.63,67.75,67.88,68}
+			percentage = 100/table.getn(trap)
+			cit_parity = 1
+			for i,v in pairs(trap) do
+				m(v-.1,.5,'*1000 '.. 100-percentage*i .. ' reverse, *1000 '.. cit_parity*100 .. ' drunk','len')
+				cit_parity = cit_parity * -1
+			end
+			
+			local cit_hey = {69,73,75,77,81,83,85,87,89,91}
+			m(69,70.5,'*8 100 invert','end')
+			m(70.5,73,'*1000 no invert, *1000 no flip, *1000 no stealth','end')
+			m(73,75,'*8 100 flip','end')
+			m(75,77,'*8 0 flip','end')
+			m(77,81,'*8 100 invert','end')
+			m(81,83,'*8 0 invert','end')
+			m(83,85,'*8 100 invert','end')
+			m(85,87,'*8 0 invert','end')
+			m(87,89,'*8 100 flip','end')
+			m(89,91,'*8 0 flip','end')
+			
+			sugaroo_add(70.5,1.5,1/6,0,50)
+			
+			trap = {78,78.25,78.5,78.75,79,79.13,79.25,79.38,79.5,79.75,80}
+			percentage = 100/table.getn(trap)
+			cit_parity = 1
+			for i,v in pairs(trap) do
+				m(v-.1,.5,'*1000 '.. percentage*i .. ' reverse, *1000 '.. cit_parity*100 .. ' drunk','len')
+				cit_parity = cit_parity * -1
+			end
+			m(68,1,'*1000 no drunk','len')
+			m(80,1,'*1000 no drunk','len')
+			me(68,1,0,-500,'mini','len',outCirc)
+			me(69,1,-500,0,'mini','len',inCirc)
+			m(70,1,'*10 no flip, *10 no mini','len')
+			
+			me(36+32,40+32,0,-200,'hallway','end',outQuad)
+			m(40+32,40.75+32,'*1000 -200 hallway, *1000 no stealth','end')
+			me(40+32,.75,50,-200,'reverse','len',outCirc)
+			me(40.75+32,.75,-200,0,'reverse','len',inCirc)
+			me(40.75+32,.75,-200,0,'hallway','len',inCirc)
+			me(41.5+32,.75,0,200,'hallway','len',outCirc)
+			me(42.25+32,3.75,200,0,'hallway','len',inCirc)
+			me(41.5+32,.75,0,100,'reverse','len',outCirc)
+			me(42.25+32,3.75,100,0,'reverse','len',inCirc)
+			mm(41.5+32,function(self) zoomies(1.5,20) end)
+
+			m(48+32,1.5,'*100 100 reverse','len')
+			m(49.5+32,1.5,'*100 50 reverse','len')
+			me(48+32,.75,100,0,'reverse','len',outCirc)
+			me(48.75+32,.75,0,50,'reverse','len',inCirc)
+			me(49.5+32,.75,50,0,'reverse','len',outCirc)
+			me(50.25+32,1.75,0,100,'reverse','len',inCirc)
+			mm(49.5+32,function(self) zoomies(1.5,-1000) end)
+			
+			me(84,1.5,100,75,'reverse','len',outCirc)
+			me(85.5,1.5,75,50,'reverse','len',outCirc)
+			me(87,1.5,50,25,'reverse','len',outCirc)
+			me(88.5,2,25,-100,'reverse','len',outCirc)
+			me(88.5,2,0,100,'stealth','len',linear)
+			m(90.5,.5,'*1000 100 stealth','len')
+			m(90.5,1,'*1000 no reverse','len')
+			m(89,2,'*1000 100 flip','len')
+			function zoomies(fullLen, topZoom)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:decelerate(spb*fullLen/2)
+						v:zoomz(topZoom)
+						v:accelerate(spb*fullLen/2)
+						v:zoomz(1)
+					end
+				end
+			end
+			
+			----end of crystallized----
+			me(91,91.75,100,0,'flip','end',outCirc)
+			me(91,92,100,0,'tipsy','end',outCirc)
+			me(90.5,92,100,0,'stealth','end',outQuad)
+			me(90.5,92,100,0,'dark','end',outQuad)
+			
+			me(92,100,0,-260,'hallway','end',linear)
+			me(96,100,0,100,'stealth','end',linear)
+			me(96,100,0,100,'dark','end',linear)
+			me(100,108,335,-260,'hallway','end',linear)
+			me(100,102,100,0,'stealth','end',outQuad)
+			me(100,102,100,0,'dark','end',outQuad)
+			me(104,108,0,100,'stealth','end',inQuad)
+			me(104,108,0,100,'dark','end',inQuad)
+			me(108,116,335,-260,'hallway','end',linear)
+			me(108,110,100,0,'stealth','end',outQuad)
+			me(108,110,100,0,'dark','end',outQuad)
+			me(112,116,0,100,'stealth','end',inQuad)
+			me(112,116,0,100,'dark','end',inQuad)
+			me(116,120,335,0,'hallway','end',linear)
+			
+			me(92+32,100+32,0,335,'hallway','end',linear)
+			me(96+32,100+32,0,100,'stealth','end',linear)
+			me(96+32,100+32,0,100,'dark','end',linear)
+			me(100+32,108+32,-260,335,'hallway','end',linear)
+			me(100+32,102+32,100,0,'stealth','end',outQuad)
+			me(100+32,102+32,100,0,'dark','end',outQuad)
+			me(104+32,108+32,0,100,'stealth','end',inQuad)
+			me(104+32,108+32,0,100,'dark','end',inQuad)
+			me(108+32,116+32,-260,335,'hallway','end',linear)
+			me(108+32,110+32,100,0,'stealth','end',outQuad)
+			me(108+32,110+32,100,0,'dark','end',outQuad)
+			me(112+32,116+32,0,100,'stealth','end',inQuad)
+			me(112+32,116+32,0,100,'dark','end',inQuad)
+			me(116+32,120+32,-260,0,'hallway','end',linear)
+			
+			sugaroo_add(122.5,1.5,1/4,0,50)
+			m(124,1,'*1000 no flip, *1000 no invert, *1000 no stealth')
+			--me(128.5,132,0,100,'reverse','end',inCirc)
+			m(132,167,'*1000 100 reverse','end')
+			
+			cit_parity=1
+			for i=128.5,132,.25 do
+				m(i,.5,'*10 '.. cit_parity*50+50 ..' stealth','len')
+				cit_parity = cit_parity * -1
+			end
+			mm(128.5,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:rotationy(-360)
+						v:accelerate(spb*1.75)
+						v:rotationy(-180)
+						v:decelerate(spb*1.75)
+						v:rotationy(0)
+					end
+				end
+			end)
+			me(128.5,3.5,200,0,'hallway','len',linear)
+			
+			
+			mm(120,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:bouncebegin(spb*4)
+						v:x(SCREEN_CENTER_X)
+						v:z(0)
+						v:GetChild('Judgment'):bouncebegin(spb*4)
+						v:GetChild('Judgment'):x(SCREEN_CENTER_X*.5*((i*2)-3))
+						v:GetChild('Combo'):bouncebegin(spb*4)
+						v:GetChild('Combo'):x(SCREEN_CENTER_X*.5*((i*2)-3))
+					end
+				end
+			end,true)
+			mm(124,function(self)
+				if screen then screen:SetDrawByZPosition(true);	end
+			end,true)
+			
+			me(135,137,0,200,'bumpy','end',linear)
+			me(135,137,0,400,'dizzy','end',linear)
+			me(137,139,200,0,'bumpy','end',linear)
+			me(137,139,400,0,'dizzy','end',linear)
+			
+			me(161.5,.5,100,0,'reverse','len',inQuad)
+			me(162,2,0,100,'reverse','len',inQuad)
+			
+			me(167,2.5,100,0,'reverse','len',outCirc)
+			
+			mm(164,function(self) zoomies(1.5,-500) end)
+			mm(167,function(self) zoomies(4,100) end)
+			
+			trap = {170,170.25,170.5,170.75,171,171.08,171.17,171.25,171.5,171.58,171.67,171.75,172}
+			percentage = 100/table.getn(trap)
+			cit_parity = 1
+			for i,v in pairs(trap) do
+				m(v-.1,.5,'*1000 '.. percentage*i .. ' reverse, *1000 '.. cit_parity*100 .. ' drunk','len')
+				cit_parity = cit_parity * -1
+			end
+			
+			
+			mm(172,function(self) zoomies(1.5,100) end)
+			mm(175,function(self) zoomies(2,-500) end)
+			m(172,173.5,'*100 100 reverse, *100000 no drunk','end')
+			me(173.5,175,100,0,'reverse','end',inQuad)
+			
+			--me(177,180,0,-260,'hallway','end',linear)
+			mm(177,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						
+						v:GetChild('Judgment'):linear(spb*3)
+						v:GetChild('Judgment'):x(0)
+						v:GetChild('Combo'):linear(spb*3)
+						v:GetChild('Combo'):x(0)
+					end
+				end
+			end)
+			
+			me(192.5,1.75,0,600,'dizzy','len',linear)
+			me(192.5,1.75,0,100,'bumpy','len',linear)
+			me(194.25,1.75,600,0,'dizzy','len',linear)
+			me(194.25,1.75,100,0,'bumpy','len',linear)
+			if FUCK_EXE then
+				m(0,343,'*100000 dizzyholds','end')
+			end
+			me(179,1,0,-50,'flip','len',outQuad)
+			me(179,1,-200,0,'mini','len',inCirc)
+			me(179,8,30,0,'stealth','len',linear)
+			me(211,6,-100,0,'mini','len',linear)
+			me(211,6,-1000,0,'dizzy','len',linear)
+			m(180,52,'*10 -50 flip','len')
+			me(232,3,-50,0,'flip','len',linear)
+			mm(232,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:decelerate(spb*3)
+						v:y(SCREEN_CENTER_Y)
+						v:z(0)
+						v:zoomz(1)
+					end
+				end
+			end)
+			m(231,250,'*5 no hallway','end')
+			
+			me(224.5,1.75,0,400,'dizzy','len',linear)
+			me(228-1.75,1.75,400,0,'dizzy','len',linear)
+			--me(224.5,228,0,100,'reverse','end',inCirc)
+			--m(228,262,'*1 100 reverse','end')
+			
+			m(221.5,1,'*10 100 stealth, *10 100 dark *4 200 mini','len')
+			m(222.5,1,'*1000 no stealth, *1000 no dark, *10000 200 invert,*1000 -50 mini','len')
+			m(223,1,'*10 100 stealth, *10 100 dark, *4 200 mini','len')
+			m(223.5,1,'*1000 no stealth, *1000 no dark, *10000 no invert,*1000 -50 mini','len')
+			
+			mm(235,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:decelerate(spb)
+						v:x(SCREEN_CENTER_X + SCREEN_WIDTH*.25*(i*2-3))
+						v:GetChild('Judgment'):decelerate(spb)
+						v:GetChild('Judgment'):x(0)
+						v:GetChild('Combo'):decelerate(spb)
+						v:GetChild('Combo'):x(0)
+					end
+				end
+			end)
+			
+			me(235,.5,0,400,'drunk','len',outCirc)
+			me(235.5,.5,400,50,'drunk','len',inCirc)
+			me(235,.5,0,400,'tipsy','len',outCirc)
+			me(235.5,.5,400,50,'tipsy','len',inCirc)
+			m(236,251,'*10 100 drunk, *10 100 tipsy, *10 120 wave','end')
+			
+			m(240,248,'*10000 100 reverse','end')
+			m(248,256,'*10000 no reverse','end')
+			m(256,264,'*10000 100 reverse','end')
+			
+			me(251,1,100,0,'drunk','len',linear)
+			me(251,1,100,0,'tipsy','len',linear)
+			me(251,1,120,0,'wave','len',linear)
+			me(252,260,0,300,'hallway','end',linear)
+			me(252,260,0,1000,'dizzy','end',linear)
+			me(252,260,0,200,'tipsy','end',linear)
+			
+			me(260,263.333,300,0,'hallway','end',linear)
+			me(260,263.333,1000,0,'dizzy','end',linear)
+			me(260,263.333,200,0,'tipsy','end',outCirc)
+			
+			me(262,262.666,100,60,'reverse','end',outCirc)
+			me(262.666,263.333,60,20,'reverse','end',outCirc)
+			me(263.333,264.333,20,-20,'reverse','end',outCirc)
+			me(264.333,265.5,-20,0,'reverse','end',inCirc)
+			
+			me(266,1.5,0,200,'mini','len',inQuad)
+			me(266,1.5,0,-150,'hallway','len',inQuad)
+			me(267.5,1.5,200,-100,'mini','len',inCirc)
+			me(269,1,-200,0,'mini','len',outQuad)
+			
+			m(269,297,'*10 -50 flip','end')
+			mm(269,'Wehehe')
+			
+			mm(269,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:decelerate(spb)
+						v:x(SCREEN_CENTER_X)
+						v:GetChild('Judgment'):decelerate(spb)
+						v:GetChild('Judgment'):x(SCREEN_CENTER_X*.5*((i*2)-3))
+						v:GetChild('Combo'):decelerate(spb)
+						v:GetChild('Combo'):x(SCREEN_CENTER_X*.5*((i*2)-3))
+					end
+				end
+			end)
+			
+			m(277.5,1,'*10 100 stealth, *10 100 dark *4 200 mini','len')
+			m(278.5,1,'*1000 no stealth, *1000 no dark, *10000 200 invert,*1000 -50 mini','len')
+			m(279,1,'*10 100 stealth, *10 100 dark, *4 200 mini','len')
+			m(279.5,1,'*1000 no stealth, *1000 no dark, *10000 no invert,*1000 -50 mini','len')
+			me(280.5,1.75,0,400,'dizzy','len',linear)
+			me(284-1.75,1.75,400,0,'dizzy','len',linear)
+			
+			m(297,10,'*1 no hallway','len')
+			me(297,3,-50,0,'flip','len',outQuad)
+			me(297,3,-260,0,'hallway','len',outQuad,1)
+			mm(297,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:decelerate(spb*2)
+						v:y(SCREEN_CENTER_Y)
+						v:z(0)
+						v:zoomz(1)
+					end
+				end
+			end)
+			
+			m(199.5,.5,'*1000 no stealth','len')
+			m(203.5,.5,'*1000 no stealth','len')
+			m(290.5,.5,'*1000 no stealth','len')
+			
+			me(299,1,0,75,'drunk','len',inQuad)
+			me(299,1,0,75,'tipsy','len',inQuad)
+			
+			m(300,331.5,'*10 75 drunk, *10 75 tipsy','end')
+			
+			me(300,304,0,335,'hallway','end',linear)
+			me(304,312,-260,335,'hallway','end',linear)
+			me(312,316,-260,0,'hallway','end',linear)
+			me(316,318,0,335,'hallway','end',linear)
+			me(318,322,-260,335,'hallway','end',linear)
+			me(322,326,-260,335,'hallway','end',linear)
+			me(326,330,-260,335,'hallway','end',linear)
+			me(330,331.5,-260,0,'hallway','end',linear)
+			
+			me(300,304,0,100,'stealth','end',inQuad)
+			me(300,304,0,100,'dark','end',inQuad)
+			me(304,306,100,0,'stealth','end',outQuad)
+			me(304,306,100,0,'dark','end',outQuad)
+			me(310,312,0,100,'stealth','end',inQuad)
+			me(310,312,0,100,'dark','end',inQuad)
+			me(312,314,100,0,'stealth','end',outQuad)
+			me(312,314,100,0,'dark','end',outQuad)
+			me(317,318,0,100,'stealth','end',inQuad)
+			me(317,318,0,100,'dark','end',inQuad)
+			me(322,323,100,0,'stealth','end',outQuad)
+			me(322,323,100,0,'dark','end',outQuad)
+			me(325,326,0,100,'stealth','end',inQuad)
+			me(325,326,0,100,'dark','end',inQuad)
+			me(326,327,100,0,'stealth','end',outQuad)
+			me(326,327,100,0,'dark','end',outQuad)
+			me(329,330,0,100,'stealth','end',inQuad)
+			me(329,330,0,100,'dark','end',inQuad)
+			me(330,331,100,0,'stealth','end',outQuad)
+			me(330,331,100,0,'dark','end',outQuad)
+			
+			me(324,1,-100,0,'mini','len',outCirc)
+			me(325.5,1,-100,0,'mini','len',outCirc)
+			me(327,1,-100,0,'mini','len',outCirc)
+			me(328.5,1,-100,0,'mini','len',outCirc)
+			me(330,1,-100,0,'mini','len',outCirc)
+			
+			mm(299,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:accelerate(spb)
+						v:x(SCREEN_CENTER_X + SCREEN_WIDTH*.25*(i*2-3))
+						v:GetChild('Judgment'):accelerate(spb)
+						v:GetChild('Judgment'):x(0)
+						v:GetChild('Combo'):accelerate(spb)
+						v:GetChild('Combo'):x(0)
+					end
+				end
+			end,true)
+			
+			me(315,1,0,314,'dizzy','len',outQuad)
+			m(316,330,'*10 314 dizzy','end')
+			me(330,1.5,314,0,'dizzy','len',outQuad)
+			me(330,1.5,75,0,'drunk','len',outQuad)
+			me(330,1.5,75,0,'tipsy','len',outQuad)
+			--me(316,331.5,0,-150,'mini','end',linear)
+			me(316,331.5,0,-20,'flip','end',linear)
+			
+			me(331.5,4.5,-20,49,'flip','len',linear)
+			m(333,333,'*1 49 flip','len')
+			mm(331.5,function(self)
+				for i,v in pairs(mod_plr) do
+					if v then
+						v:linear(spb*8.5)
+						v:x(SCREEN_CENTER_X)
+						v:y(SCREEN_HEIGHT*1.2)
+						v:GetChild('Judgment'):linear(spb*11.5)
+						v:GetChild('Judgment'):x(SCREEN_CENTER_X*.5*((i*2)-3))
+						v:GetChild('Combo'):linear(spb*11.5)
+						v:GetChild('Combo'):x(SCREEN_CENTER_X*.5*((i*2)-3))
+					end
+				end
+			end)
+			
+			mm(3,'IveGull',true)
+			mm(34,'IveWing',true)
+---------------------------------------------------------------------------------------
+----------------------DON'T TOUCH IT KIDDO---------------------------------------------
+---------------------------------------------------------------------------------------
+			
+			function message_compare(a,b)
+				return a[1] < b[1]
+			end
+			
+			if table.getn(messages) > 1 then
+				table.sort(messages, message_compare)
+			end
+			
+			self:queuecommand('Update');
+			
+		end"
+        
+		UpdateCommand="%function(self)
+
+        ---------------------------------------------------------------------------------------
+        ----------------------DON'T TOUCH IT KIDDO---------------------------------------------
+        ---------------------------------------------------------------------------------------
+        
+            --hide things as needed, and set up aliases if checked is false
+			if not checked and GAMESTATE:GetSongBeat()>=0 then
+				
+                thingsToGrab = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Lyrics','SongForeground','SongBackground','Overlay','Underlay'}
+                thingsToHide = {'LifeP1','LifeP2','ScoreP1','ScoreP2','BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+                
+                for i,v in ipairs(thingsToGrab) do
+                    _G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil
+                end
+                
+                for i,v in ipairs(thingsToHide) do
+                    if _G[v] then _G[v]:hidden(1) end
+                end
+				
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP1'));
+				table.insert(mod_plr,SCREENMAN:GetTopScreen():GetChild('PlayerP2'));
+				
+				for i,v in pairs(mod_plr) do
+					if SCREENMAN:GetTopScreen():GetChild('PlayerOptionsP'..i) then
+						_G['init_modsp'..i] = SCREENMAN:GetTopScreen():GetChild('PlayerOptionsP'..i):GetText();
+					end
+				end
+				
+				screen = SCREENMAN:GetTopScreen();
+				screen:SetDrawByZPosition(false);
+				checked = true;
+                
+                P1 = SCREENMAN:GetTopScreen():GetChild('PlayerP1');
+				P2 = SCREENMAN:GetTopScreen():GetChild('PlayerP2');
+			end
+			
+			local beat = GAMESTATE:GetSongBeat()
+				
+
+            if beat > mod_firstSeenBeat+0.1 then -- performance coding!! --
+            
+                -----------------------
+                -- Player mod resets --
+                -----------------------
+            
+                for i=1,2 do
+                    GAMESTATE:ApplyGameCommand('mod,clearall',i)
+                    if _G['init_modsp'..i] then 
+                        GAMESTATE:ApplyGameCommand('mod,'.._G['init_modsp'..i],i)
+                    end
+                end
+            
+                ------------------------------------------------------------------------------
+                -- custom mod reader by TaroNuke edited by WinDEU and re-stolen by TaroNuke --
+                ------------------------------------------------------------------------------
+                for i,v in pairs(mods) do
+                    if v and table.getn(v) > 3 and v[1] and v[2] and v[3] and v[4] then
+                        if beat >=v[1] then
+                            if (v[4] == 'len' and beat <=v[1]+v[2]) or (v[4] == 'end' and beat <=v[2]) then
+                                if table.getn(v) == 5 then
+                                    GAMESTATE:ApplyGameCommand('mod,'..v[3],v[5]);
+                                else
+                                    GAMESTATE:ApplyGameCommand('mod,'..v[3]);
+                                end						
+                            end
+                        end
+                    else
+                        v[1] = 0;
+                        v[2] = 0;
+                        v[3] = '';
+                        v[4] = 'error';
+                        SCREENMAN:SystemMessage('Bad mod in beat-based table (line '..i..')');
+                    end
+                end
+                
+				---------------------------------------------------
+				-- ease mod reader v2                            --
+				-- friendship ended with if wall                 --
+				-- now functions as parameters is my best friend --
+				---------------------------------------------------
+				for i,v in pairs(mods_ease) do
+					if v and table.getn(v) > 6 and v[1] and v[2] and v[3] and v[4] and v[5] and v[6] and v[7] then
+						if beat >=v[1] then
+							if (v[6] == 'len' and beat <=v[1]+v[2]) or (v[6] == 'end' and beat <=v[2]) then
+								
+								local duration = v[2];
+								if v[6] == 'end' then duration = v[2] - v[1] end
+								local curtime = beat - v[1]
+								local diff = v[4] - v[3]
+								local startstrength = v[3]
+								local curve = v[7]
+								local mod = v[5]
+								
+								local strength = curve(curtime, startstrength, diff, duration, v[10], v[11]) --extra parameters for back and elastic eases :eyes:
+								
+								if v[5] == 'xmod' then
+									if table.getn(v) >= 8 then GAMESTATE:ApplyGameCommand('mod,*10000 '..strength..'x',v[8]);
+									else GAMESTATE:ApplyGameCommand('mod,*10000 '..strength..'x'); end
+								else
+									if table.getn(v) >= 8 then GAMESTATE:ApplyGameCommand('mod,*10000 '..strength..' '..mod,v[8]);
+									else GAMESTATE:ApplyGameCommand('mod,*10000 '..strength..' '..mod); end
+								end
+							elseif (v[9] and ((v[6] == 'len' and beat <=v[1]+v[2]+v[9]) or (v[6] == 'end' and beat <=v[9]))) then
+								if v[5] == 'xmod' then
+									if v[8] then GAMESTATE:ApplyGameCommand('mod,*10000 '..v[4]..'x', v[8]);
+									else GAMESTATE:ApplyGameCommand('mod,*10000 '..v[4]..'x'); end
+								else
+									if v[8] then GAMESTATE:ApplyGameCommand('mod,*10000 '..v[4]..' '..v[5], v[8]);
+									else GAMESTATE:ApplyGameCommand('mod,*10000 '..v[4]..' '..v[5]); end
+								end
+							end
+						end
+					else
+						SCREENMAN:SystemMessage('Bad mod in beat-based ease table (line '..i..')');
+					end
+				end
+				
+                ------------------
+                -- Actions shit --
+                ------------------
+                while curmessage<=table.getn(messages) and GAMESTATE:GetSongBeat()>=messages[curmessage][1] do
+                    if messages[curmessage][3] or GAMESTATE:GetSongBeat() < messages[curmessage][1]+2 then
+                        if type(messages[curmessage][2]) == 'function' then
+                            messages[curmessage][2]()
+                        elseif type(messages[curmessage][2]) == 'string' then
+                            MESSAGEMAN:Broadcast(messages[curmessage][2]);
+                        end
+                    end
+                    curmessage = curmessage+1;
+                end
+
+				if beat > 119 and beat < 120 then
+					for i,v in pairs(mod_plr) do
+						if v then
+							v:z(cit_zparity*300*math.sin(beat*math.pi))
+						end
+					end
+					cit_zparity = cit_zparity * -1
+				elseif beat > 152 and beat < 160 then
+					local rangle = math.mod(math.mod(-360*(beat/16)+180,360)-90,180)+90
+					for i,v in pairs(mod_plr) do
+						if v then
+							v:rotationx(rangle)
+						end
+					end
+				elseif beat > 180 and beat < 232 then
+					--SCREEN_HEIGHT*1.25 to SCREEN_CENTER_Y
+					--335,-260 (595)
+					--over 8 beats
+					local beatSystem = 1-math.mod(beat-3.25,8)/8
+					local beatConst = -10
+					if beat > 211 then beatConst = 10 end
+					for i,v in pairs(mod_plr) do
+						if v then
+							
+								GAMESTATE:ApplyGameCommand('mod,*10000 '.. beatSystem*595-260 ..' hallway',i);
+								v:y((SCREEN_HEIGHT*1.25)-math.sin(beatSystem*math.pi)*(SCREEN_HEIGHT*1.25-SCREEN_CENTER_Y))
+								v:z((beatSystem)*10)
+								v:zoomz((beatSystem)*beatConst)
+								beatSystem = math.mod(beatSystem+.5,1)
+							
+							
+						end
+					end
+				elseif beat > 236 and beat < 260 then
+					if CIT_Steath then
+						CIT_Steath:hidden(0)
+						CIT_Steath:diffusealpha((math.cos(math.pi*beat/8))^2)
+					end
+				elseif beat > 269 and beat < 297 then
+					--SCREEN_HEIGHT*1.25 to SCREEN_CENTER_Y
+					--335,-260 (595)
+					--over 8 beats
+					local beatSystem = math.mod(beat-3.25,6)/6
+					local beatConst = 10
+					for i,v in pairs(mod_plr) do
+						if v then
+
+								GAMESTATE:ApplyGameCommand('mod,*10000 '.. beatSystem*595-260 ..' hallway',i);
+								v:y((SCREEN_HEIGHT*1.25)-math.sin(beatSystem*math.pi)*(SCREEN_HEIGHT*1.25-SCREEN_CENTER_Y))
+								v:z((beatSystem)*10)
+								if beat > 184 then v:zoomz((beatSystem)*beatConst) end
+								beatSystem = math.mod(beatSystem+.5,1)
+
+							
+						end
+					end
+				end
+				
+				if (beat > 126.5 and beat < 127) or (beat > 134.5 and beat < 135.5) or (beat > 136.5 and beat < 137) or (beat > 196.5 and beat < 199.5) or (beat > 200.5 and beat < 203.5) or (beat > 286.5 and beat < 290.5) then
+					GAMESTATE:ApplyGameCommand('mod,*10000 '.. cit_zparity*40+40 ..' stealth');
+					cit_zparity = cit_zparity * -1
+				end
+            end
+			
+			self:sleep(0.02);
+			self:queuecommand('Update');
+
+---------------------------------------------------------------------------------------
+----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+---------------------------------------------------------------------------------------
+          
+        end"
+		
+	/>
+    
+	<Layer File="bird"
+		InitCommand="hidden,1;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;diffusealpha,0"
+		IveGullMessageCommand="hidden,0;linear,spb;diffusealpha,1"
+		IveWingMessageCommand="linear,spb*2;zoom,10;diffusealpha,0;queuecommand,HideSelf"
+		HideSelfCommand="hidden,1"
+	/>
+	<Layer File="bg-vivid"
+		InitCommand="%function(self)
+			self:hidden(1)
+			self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
+			self:diffuse(.5,.5,.5,0)
+			CIT_Steath = self
+		end"
+	/>
+	<Layer File="clap"
+		OnCommand="%function(self)
+			self:hidden(0)
+			self:diffusealpha(0)
+			self:x(SCREEN_WIDTH*.5)
+			self:y(SCREEN_HEIGHT*.5)
+			self:blend('add')
+		end"
+		WeheheMessageCommand="%function(self)
+			self:zoom(4)
+			self:diffusealpha(1)
+			self:decelerate(spb)
+			self:zoom(8)
+			self:diffusealpha(0)
+		end"
+	/>
+	<Layer File="clap"
+		OnCommand="%function(self)
+			self:hidden(0)
+			self:diffusealpha(0)
+			self:x(SCREEN_WIDTH*.5)
+			self:y(SCREEN_HEIGHT*.5)
+			self:blend('add')
+		end"
+		WeheheMessageCommand="%function(self)
+			self:zoom(4)
+			self:diffusealpha(1)
+			self:decelerate(spb)
+			self:zoom(8)
+			self:diffusealpha(0)
+			
+		end"
+	/>
+	
+</children></ActorFrame>

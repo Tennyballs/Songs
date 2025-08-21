@@ -1,0 +1,17 @@
+<CODE Type="Quad" OnCommand="hidden,1"
+InitCommand="%function(self)
+da_synco = {
+	{92.000,0,1,length=.75},
+	{92.750,2,1,length=.75},
+	{93.500,0,1,length=.5},
+	{94.000,2,1,length=.75},
+	{94.750,1,1,length=.75},
+	{95.500,2,1,length=.5},
+	{96.000,1,1,length=.75},
+	{96.750,3,1,length=.75},
+	{97.500,1,1,length=.5},
+	{98.000,3,1,length=.5},
+	{98.500,2,1,length=.5},
+	{99.000,2,1,length=1},
+}
+end"/>

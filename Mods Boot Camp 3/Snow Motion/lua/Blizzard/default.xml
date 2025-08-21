@@ -1,0 +1,334 @@
+<ActorFrame> <children>
+
+<!---- TARGETS ---->
+	<Layer
+		File="LeftSnow.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;cropleft,0.9;fadeleft,0.2;linear,0.02;diffusealpha,1;linear,5;cropleft,0;diffusealpha,1;linear,0.2;fadeleft,0;sleep,20;linear,0.2;diffusealpha,0"
+	/>
+
+	<Layer
+		File="DownSnow.png"
+		OnCommand="x,SCREEN_CENTER_X-12;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,5;cropleft,0.9;fadeleft,0.2;linear,0.02;diffusealpha,1;linear,5;cropleft,0;diffusealpha,1;linear,0.2;fadeleft,0;sleep,21;linear,0.2;diffusealpha,0"
+	/>
+
+	<Layer
+		File="UpSnow.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,4;cropleft,0.9;fadeleft,0.2;linear,0.02;diffusealpha,1;linear,5;cropleft,0;diffusealpha,1;linear,0.2;fadeleft,0;sleep,22;linear,0.2;diffusealpha,0"
+	/>
+
+	<Layer
+		File="RightSnow.png"
+		OnCommand="x,SCREEN_CENTER_X+97;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,3;cropleft,0.9;fadeleft,0.2;linear,0.02;diffusealpha,1;linear,5;cropleft,0;diffusealpha,1;linear,0.2;fadeleft,0;sleep,23;linear,0.2;diffusealpha,0"
+	/>
+
+
+
+<!--- SNOW --->
+
+	<Layer
+	File="blurredsnow.png"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;customtexturerect,0,0,1,1;texcoordvelocity,1.40,-0.90;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0;linear,1;diffusealpha,0;bob;linear,1;diffusealpha,1;sleep,20;linear,1;diffusealpha,0"
+
+	/>
+
+
+	<Layer
+	File="blurredsnowFar.png"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;customtexturerect,0,0,1,1;texcoordvelocity,1.20,-0.90;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0;linear,1;diffusealpha,0;bob;linear,1;diffusealpha,1;sleep,20;linear,1;diffusealpha,0"
+
+	/>
+
+
+	<Layer
+	File="blurredsnowNear.png"
+	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;customtexturerect,0,0,1,1;texcoordvelocity,1.00,-0.90;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;diffusealpha,0;linear,1;diffusealpha,0;bob;linear,1;diffusealpha,1;sleep,20;linear,1;diffusealpha,0"
+
+	/>
+
+
+
+
+
+<!--- OVERLAY --->
+
+	<Layer
+	File="white.png"
+	OnCommand="diffusealpha,0;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;ZoomToWidth,SCREEN_WIDTH;ZoomToHeight,SCREEN_HEIGHT;sleep,1;linear,2;diffusealpha,0.7;sleep,19.5;linear,1;diffusealpha,0"
+
+	/>
+
+<!--- SNOW FLUFF --->
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,-150;addy,-100;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,2;addx,-150;addy,-90;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.3;addx,-150;addy,-80;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.4;addx,-200;addy,70;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.2;addx,-150;addy,-60;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,-100;addy,50;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.1;addx,-150;addy,-40;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.5;addx,-150;addy,-20;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.6;addx,-300;addy,-10;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,-90;addy,200;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.3;addx,-50;addy,140;diffusealpha,0;"
+	/>
+
+ <Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.7;addx,-150;addy,80;diffusealpha,0;"
+	/>
+
+ <Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,2;addx,-100;addy,70;diffusealpha,0;"
+	/>
+
+<!---- DOWN FLUFF ---->
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-12;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,-150;addy,-100;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-12;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.5;addx,-100;addy,-130;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-12;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.5;addx,-50;addy,-200;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-12;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.5;addx,-30;addy,-200;diffusealpha,0;"
+	/>
+
+<!--- 2 --->
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,-150;addy,100;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.8;addx,-100;addy,130;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.5;addx,-60;addy,200;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,2;addx,-50;addy,250;diffusealpha,0;"
+	/>
+
+<!---- UP FLUFF ---->
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,-200;addy,-200;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.4;addx,-130;addy,-110;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,2;addx,-80;addy,-150;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.3;addx,-40;addy,-200;diffusealpha,0;"
+	/>
+
+<!--- asdf --->
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.4;addx,90;addy,-130;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,2;addx,100;addy,-150;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.5;addx,110;addy,-120;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.4;addx,130;addy,-143;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,220;addy,-250;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.6;addx,150;addy,-140;diffusealpha,0;"
+	/>
+
+
+<!--- 2 --->
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.3;addx,-100;addy,320;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,2;addx,-220;addy,200;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,-60;addy,150;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+38;y,SCREEN_CENTER_Y-125;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.5;addx,-10;addy,300;diffusealpha,0;"
+	/>
+
+<!--- RIGHT FLUFF --->
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,150;addy,-100;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,2;addx,150;addy,-90;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.3;addx,150;addy,-80;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.4;addx,200;addy,70;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.2;addx,150;addy,-60;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,100;addy,50;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.1;addx,150;addy,-40;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.5;addx,120;addy,-20;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.6;addx,0;addy,-10;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1;addx,10;addy,200;diffusealpha,0;"
+	/>
+
+<Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.3;addx,50;addy,140;diffusealpha,0;"
+	/>
+
+ <Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X+92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,1.7;addx,20;addy,80;diffusealpha,0;"
+	/>
+
+ <Layer
+		File="fluff.png"
+		OnCommand="x,SCREEN_CENTER_X-92;y,SCREEN_CENTER_Y-130;diffusealpha,0;sleep,6;sleep,0.02;sleep,5;sleep,20;linear,0.002;diffusealpha,1;linear,2;addx,10;addy,70;diffusealpha,0;"
+	/>
+
+
+
+
+<!-- bubbabbalubaabbalambambum -->
+
+<Layer
+		File="31.png"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;EffectClock,beat;DiffuseRamp;EffectColor1,0.4,0.4,0.4,1;EffectColor2,1,1,1,1,1;effectperiod,0.5;EffectDelay,0.5;EffectOffset,0.05;diffusealpha,0;zoom,0.7;sleep,7;sleep,0.02;sleep,5;sleep,21;linear,0.002;diffusealpha,1;sleep,1;linear,0.0002;diffusealpha,0;sleep,0.5;diffusealpha,1;sleep,1;linear,0.2;diffusealpha,0"
+	/>
+
+<Layer
+		File="32.png"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;EffectClock,beat;DiffuseRamp;EffectColor1,0.4,0.4,0.4,1;EffectColor2,1,1,1,1,1;effectperiod,0.5;EffectDelay,0.5;EffectOffset,0.05;diffusealpha,0;zoom,0.7;sleep,7;sleep,0.02;sleep,5;sleep,21;linear,0.002;diffusealpha,1;sleep,1;linear,0.0002;diffusealpha,1;sleep,0.5;linear,0.00002;diffusealpha,0;"
+	/>
+
+
+
+
+
+</children> </ActorFrame>

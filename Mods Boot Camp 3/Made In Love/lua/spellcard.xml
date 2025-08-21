@@ -1,0 +1,37 @@
+<ActorFrame Condition="FUCK_EXE"><children>
+	<Layer
+    OnCommand="%function(self)
+       
+        if tonumber(GAMESTATE:GetVersionDate()) >= 20170714 then
+            --start,end,name,difficulty,color
+            local mbc3_spellcards = {
+                {0,39,'MBC3 is a project entirely Made in Love',1,{1,0,.5,1}},
+                {39,72,'Made possible by so many passionate creators and fans alike',2,{1,0,0,1}},
+                {72,80,'Persisting through love and loss, the highs and lows of life',4,{1,.5,0,1}},
+                {80,96,'It\'s an understatement to say how important it has been',3,{1,1,0,1}},
+                {96,136,'To feel like we\'ve reached out and touched people\'s lives',3,{0,1,0,1}},
+                {136,168,'Influencing those as we too have been inspired by those before us',3,{0,1,1,1}},
+                {168,224,'Watching everyone experience our work has been a blessing',2,{0,0,1,1}},
+                {224,256,'Life is worth living, and sharing with loved ones',2,{.5,0,1,1}},
+                {256,288,'Thank you for supporting us on this journey',1,{1,0,1,1}},
+                {288,302,'<3',1,{1,1,1,1}},
+			}
+            
+            local s = GAMESTATE:GetCurrentSong()
+            
+            --send spellcards
+            if table.getn(mbc3_spellcards) ~= 0  then
+
+                s:SetNumSpellCards(table.getn(mbc3_spellcards))
+                for i=1,table.getn(mbc3_spellcards) do
+                    local a = mbc3_spellcards[i]
+                    s:SetSpellCardTiming(i-1,a[1],a[2])
+                    s:SetSpellCardName(i-1,a[3])
+                    s:SetSpellCardDifficulty(i-1,a[4])
+                    s:SetSpellCardColor(i-1,a[5][1],a[5][2],a[5][3],a[5][4])
+                end
+            end
+        end
+    end"
+	/>
+</children></ActorFrame>

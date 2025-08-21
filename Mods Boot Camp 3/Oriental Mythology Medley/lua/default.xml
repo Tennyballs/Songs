@@ -1,0 +1,1139 @@
+<ActorFrame Var="OOM_MasterAF"
+InitCommand="%function(self)
+
+	if FUCK_EXE then
+	
+		custom_framerate = 60
+
+		songName = GAMESTATE:GetCurrentSong():GetSongDir();
+		self:fov(60)
+		OOM_FarDist = 15000
+		--spb = 60/161
+		function spb() return (60/(GAMESTATE:GetCurBPS()*60)) end
+		OMM_endingLum = 0
+		self:SetFarDist(OOM_FarDist)
+		self:SetDrawByZPosition(true)
+		maxSprites = 16
+		
+		sw,sh = SCREEN_WIDTH,SCREEN_HEIGHT
+		scx,scy = SCREEN_CENTER_X,SCREEN_CENTER_Y
+		if FUCK_EXE then
+			dw,dh = DISPLAY:GetDisplayWidth(),DISPLAY:GetDisplayHeight()
+		end
+		
+		slumpo = false
+		for pn=1,2 do
+			if GAMESTATE:IsPlayerEnabled(pn-1) then
+				if GAMESTATE:GetCurrentSteps(pn-1):GetDifficulty() == 5 then
+					slumpo = true
+				end
+			end
+		end
+		
+		function Plr(pn)
+			return _G['P'..pn]
+		end
+		function GetJud(pn)
+			return _G['jud'..pn]
+		end
+		function GetCom(pn)
+			return _G['com'..pn]
+		end
+		
+		function poly_npot(val)
+			local out = 2
+			while out < val do
+				out = out*2
+			end
+			return out
+		end
+		
+		function mod_do(str,pn)
+			GAMESTATE:ApplyModifiers(str,pn)
+		end
+		
+		function taro_Sound(str)
+			local dir = GAMESTATE:GetCurrentSong():GetSongDir();
+			SOUND:PlayOnce(dir..'lua/'..str..'.ogg');
+		end
+		
+		math.clamp = function(val,min,max)
+			if val < min then return min end
+			if val > max then return max end
+			return val
+		end
+		
+		n_fix = 1
+		if string.find(string.lower(DISPLAY:GetVendor()),'nvidia') then n_fix = 0.9 end
+		
+	else
+		
+		SCREENMAN:SystemMessage('Requires NotITG ver. 3.2!')
+		
+	end
+	
+	
+end"
+><children>
+
+	<Layer Type="ActorFrame" Condition="FUCK_EXE"><children>
+
+		<Layer
+			Type="Quad"
+			InitCommand="hidden,1"
+			OnCommand="sleep,1000"
+		/>
+		
+		<Layer File="modhelpers.xml" />
+		<Layer File="easing.xml" />
+		<Layer File="readers.xml" />
+		<Layer File="spellcard.xml" />
+		
+		<Layer
+			Type="Quad"
+			OnCommand="hidden,1"
+			InitCommand="%function(self)
+			
+				if tonumber(GAMESTATE:GetVersionDate()) > 20190000 then
+				
+					checked = false; for i = 1,8 do _G['P'..i] = nil _G['jud'..i] = nil _G['com'..i] = nil end
+					
+					mods_dai = {}
+					mods_hal = {}
+					mods_tar = {}
+					mods_tar2 = {}
+					mods_finale = {}
+					
+					mods_ease_dai = {}
+					mods_ease_hal = {}
+					mods_ease_tar = {}
+					mods_ease_tar2 = {}
+					mods_ease_finale = {}
+					
+					mod_mpf_dai = {}
+					mod_mpf_hal = {}
+					mod_mpf_tar = {}
+					mod_mpf_tar2 = {}
+					mod_mpf_finale = {}
+				
+					---------------------------------------------------------
+					---------DOCUMENTATION-----------------------------------
+					---------------------------------------------------------
+					
+					--function perframe( beat, endBeat )
+						--return true if the current beat is between 'beat' and 'endBeat'
+					
+					--function mod_shader(beat,key,which)
+						--turn on shader key at specified beat (up to 10 keys available, defined by 'which' = 0-9
+						
+					--function mod_insert(beat,len,mod,len_or_end,pn)
+						--insert mod into beat mods table
+					--function mod_insert2(time,len,mod,len_or_end,pn)
+						--insert mod into time mods table
+						
+					--function mod_message(beat,msg,persistent)
+						--insert something into the actions table.
+						--msg can also be a function. If string, a message gets broadcast at that beat
+						--if 'persistent' is true, message will run even if editor starts at a beat past it
+						
+					--function mod_blacklist(t,n)
+						--check if number n occurs in table t
+						--useful for doing 'every beat EXCEPT the contents of t'
+						
+					--function simple_m0d(beat,strength,mult,mod)
+					--function simple_m0d2(beat,strength,mult,mod,pn)
+					--function simple_m0d3(beat,strength,duration,bpm,mod,pn)
+						--activate mods at specific beat but also deactivate them
+						
+					--function mod_wiggle(beat,num,div,amt,speed,mod,pn,first)
+						--alternates a mod back and forth before resetting to 0
+						
+					--function mod_springt(time,strength,dur,mod,pn)
+						--time-based per-frame alternating mod that decreases based on how much time is left.
+							--think doorstopper
+					
+					--function mod_springt2(time,strength,dur,mod,pn)
+						--time-based per-frame alternating mod
+					
+					--function mod_onebeat(beat,strength,pn)
+						--turns on beat for the beat specified, at the desired strength	
+					
+					--function switcheroo_add(beat,which,speed,len,pn)
+						--adds a column swap at the desired beat
+					--[[	switcheroos = {normal = {0,0}, ldur = {0,0}, reset = {0,0},
+							flip = {100,0}, rudl = {100,0}, invert = {0,100}, dlru = {0,100},
+							ludr = {25,-75}, rdul = {75,75}, drlu = {25,125}, ulrd = {75,-125}, urld = {100,-100}}
+					]]
+					
+					--use a variable called 'switcheroo_width' to change how much space is between each column
+					--e.g. switcheroo_width = 2 for ayakashi
+					
+					--function mod_sugarkiller(beat,duration,speed,minstealth,maxstealth,pn)
+						--portable version of the effect from sugarkill X
+						
+					--function doSpline(spd, axis, path, col)
+						--draws spline 'path' in specified axis, for specific col. Offsets are *10000, but positions use *spd
+						
+					--function doSplineAll(spd, axis, path)
+						--same as above, but for all columns
+						--(faster performance than using doSpline 4 times due to more efficient concat)
+					
+					--function mindf_rotateAndCounter(xDegrees, yDegrees, zDegrees, player)
+						--counteract euler rotations after rotating player in multiple axes, using a TON of math.
+					
+					
+					---------------------------------------------------------
+					--------END DOCUMENTATION--------------------------------
+					---------------------------------------------------------
+					
+					local m = mod_insert
+					local m2 = mod_message
+					local me = mod_ease
+					local mpf = mpf_insert
+					
+					
+					local l = 'len'
+					local e = 'end'
+
+					init_modsp1 = '';
+					init_modsp2 = '';
+					
+					mod_plr = {};
+					
+					mod_firstSeenBeat = GAMESTATE:GetSongBeat(); --necessary to prevent long freezes
+
+		---------------------------------------------------------------------------------------
+		----------------------Begin tables 'n stuff--------------------------------------------
+		---------------------------------------------------------------------------------------
+
+					--beat based mods
+					--{beat_start, beat_end, mods, len_or_end, player_number}
+					mods = {
+						{0,9999,'*-1 2x, *1000 no beat, *1000 dizzyholds, *1000000 -100000 cover, *1000 globalmodtimer','end'},
+					}
+					
+					--switcheroos = {{0,0},{100,0},{0,100},{25,-75},{75,75},{25,125},{75,-125},{100,-100}}
+
+					--time based mods
+					mod_time = 0;
+					--{time_start, time_end, mods, len_or_end, player_number}
+					mods2 = {
+						--{0,200.345,'3x','end',1},
+					}
+
+					--this is both a message broadcaster and a function runner
+					--if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
+					--if you put {beat,function() somecode end}, then function() is run at that beat
+					--see example on beat 32
+					
+					curaction = 1;
+					--{beat,thing,persists}
+					mod_actions = {
+					}
+					
+					--beat-based ease mods
+					--{time_start, time_end, mod_start, mod_end, mod, len_or_end, ease_type, player_number, sustaintime, optional_param1, optional_param2}
+					--valid ease types are:
+						--linear
+						--inQuad    outQuad    inOutQuad    outInQuad
+						--inCubic   outCubic   inOutCubic   outInCubic
+						--inQuart   outQuart   inOutQuart   outInQuart
+						--inQuint   outQuint   inOutQuint   outInQuint
+						--inSine    outSine    inOutSine    outInSine
+						--inExpo    outExpo    inOutExpo    outInExpo
+						--inCirc    outCirc    inOutCirc    outInCirc
+						--inElastic outElastic inOutElastic outInElastic    --can take 2 optional parameters - amplitude & period
+						--inBack    outBack    inOutBack    outInBack       --can take 1 optional parameter  - spring amount
+						--inBounce  outBounce  inOutBounce  outInBounce
+						
+					mods_ease = {
+						-- EXAMPLE TWEEN: from beat 0 to 4, make rotationz go from 360 to 0 with the inOutBack tween
+						--{0,4,360,0,'rotationz','end',inOutBack},
+					}
+
+					mod_mpf = {}
+					
+					m2(0,function()
+						GAMESTATE:ForceSmoothLines(1);
+					end,true)
+
+					----------------------------------------------------------------------
+					-- Daikyi: You're not having a baby why do you need a 'see section' --
+					----------------------------------------------------------------------
+					m(44,292,'*10000 2.25x','end')
+					me(3.5,.25,0,33,'mini','len',outCirc)
+					me(3.5,.25,0,50,'x','len',outCirc,1)
+					me(3.5,.25,0,-50,'x','len',outCirc,2)
+					me(3.75,.25,33,66,'mini','len',outCirc)
+					me(3.75,.25,50,100,'x','len',outCirc,1)
+					me(3.75,.25,-50,-100,'x','len',outCirc,2)
+					me(4,1,66,100,'mini','len',outCirc)
+					
+					m(0,44,'sudden, *100 120 suddenoffset, stealthtype, *10000 800 grain','end')
+					
+					m(4,40,'*100 100 x','end',1)
+					m(4,40,'*100 -100 x','end',2)
+					m(5,44,'*100 mini','end')
+					m(4,36,'*100 tornado,*100 boost,*100 -100 wave,*100 -100 tiny','end')
+					m(4,36,'*100 parabolax','end',1)
+					m(4,36,'*100 -100 parabolax','end',2)
+					me(36,43,100,0,'tornado','end',outQuad)
+					
+					m2(12,function()
+						OMM_IntroOverlay:diffuse(0,0,0,0)
+						OMM_IntroOverlay:linear(spb()*8)
+						OMM_IntroOverlay:diffuse(1,1,1,1)
+						OMM_IntroOverlay:fadetop(2)
+					end)
+					
+					local dai_parity = 1
+					for i=20,35.5,.5 do
+						local amp = ((i-19)^2)
+						me(i,.25,amp*dai_parity,amp*dai_parity*-1,'drunk','len',outQuad)
+						me(i+.25,.25,amp*dai_parity*-1,amp*dai_parity*1,'drunk','len',outQuad)
+						me(i,.25,amp*dai_parity*.25,amp*dai_parity*-.25,'hallway','len',outQuad)
+						me(i+.25,.25,amp*dai_parity*-.25,amp*dai_parity*.25,'hallway','len',outQuad)
+					end
+					
+					me(40,44,100,0,'x','end',inOutQuad,1)
+					me(40,44,-100,0,'x','end',inOutQuad,2)
+					me(40,44,100,0,'mini','end',inOutQuad)
+					
+					me(20,2,300,0,'bumpy','len',linear)
+					me(21.5,4,-400,0,'bumpy','len',linear)
+					me(28,2,300,0,'bumpy','len',linear)
+					me(29.5,4,-400,0,'bumpy','len',linear)
+					
+					m2(36,function()
+						OMM_BGFire:aux(0)
+						OMM_BGFire:diffuse(1,1,1,1)
+						OMM_BGFire:decelerate(spb()*2)
+						OMM_BGFire:diffuse(.5,.5,.5,.5)
+						OMM_BGFire:aux(.5)
+						
+						OMM_Room1:y(SCREEN_HEIGHT*2)
+						OMM_Room1:queuecommand('LumaOn')
+						--OMM_Room1:queuecommand('LumaOn2')
+						OMM_Room1:accelerate(spb()*4)
+						OMM_Room1:y(SCREEN_HEIGHT)
+						OMM_Room1:decelerate(spb()*4)
+						OMM_Room1:y(0)
+					end)
+					
+					m2(36,'LumaOn2',true)
+					m2(44,'LumaOn',true)
+					
+					m2(40,function()
+						for i,v in ipairs(mod_plr) do
+							if v then
+								v:accelerate(spb()*4)
+								v:x(SCREEN_CENTER_X)
+							end
+						end
+					end,false)
+					m2(40,function()
+						for i,v in ipairs(mod_plr) do
+							if v then
+								v:GetChild('Judgment'):hidden(1)
+							end
+						end
+					end,true)
+							
+					
+					local distVal = (OOM_FarDist+1000)/maxSprites
+					local counter = 16
+					for j=44,60,8 do
+						for i=j,j+4,2 do
+							local fuckLocalCounter = counter
+
+							m2(i,function()
+								daiAux(2,(fuckLocalCounter)*distVal)
+								openDoorParity(math.mod(fuckLocalCounter,maxSprites)+1)
+							end)
+							me(i,2,400*dai_parity,0,'bumpy','len',outQuad)
+							me(i,2,300*dai_parity,0,'drunk','len',outQuad)
+							
+							counter = counter+1
+							dai_parity = dai_parity * -1
+						end
+					end
+					
+					m(44,284,'*-1 100 stealthgg,*-1 90 stealthgb,*-1 75 stealthgr,','end')
+					
+					me(40,1,-1256,-1400,'confusionoffset','len',outCirc)
+					me(41,3,-1400,0,'confusionoffset','len',inQuad)
+					
+					m(44,76,'*-1 no confusionoffset, *-1 no reverse0,*-1 no reverse1,*-1 no reverse2,*-1 no reverse3','end')
+					me(44.75,.75,0,100,'reverse0','len',outCirc)
+					me(45.5,.5,0,100,'reverse1','len',outCirc)
+					m(45.5,48,'*100 reverse0, *100 reverse1','end')
+					me(46.75,.75,0,100,'reverse2','len',outCirc)
+					me(47.5,.5,0,100,'reverse3','len',outCirc)
+					m(48,.75,'*-1 100 reverse','len')
+					me(48.75,.75,100,0,'reverse','len',outCirc)
+					me(49.5,.5,0,100,'reverse','len',outCirc)
+					m(50,2,'*-1 100 reverse','len')
+					m(52,4,'*-1 100 reverse0,*-1 100 reverse1,*-1 100 reverse2,*-1 100 reverse3,*-1 no reverse','len')
+					
+					me(8+44.75,.75,100,0,'reverse0','len',outCirc)
+					me(8+45.5,.5,100,0,'reverse1','len',outCirc)
+					m(8+45.5,8+48,'*100 no reverse0, *100 no reverse1','end')
+					me(8+46.75,.75,100,0,'reverse2','len',outCirc)
+					me(8+47.5,.5,100,0,'reverse3','len',outCirc)
+					m(8+47.5,8+48,'*100 no reverse2, *100 no reverse3','end')
+					me(56.75,.75,0,100,'reverse','len',outCirc)
+					me(57.5,.5,100,0,'reverse','len',outCirc)
+					
+					m(16+44,76,'*-1 no reverse0,*-1 no reverse1,*-1 no reverse2,*-1 no reverse3','end')
+					me(16+44.75,.75,0,100,'reverse0','len',outCirc)
+					me(16+45.5,.5,0,100,'reverse1','len',outCirc)
+					m(16+45.5,16+48,'*100 reverse0, *100 reverse1','end')
+					me(16+46.75,.75,0,100,'reverse2','len',outCirc)
+					me(16+47.5,.5,0,100,'reverse3','len',outCirc)
+					m(16+48,.75,'*-1 100 reverse','len')
+					me(16+48.75,.75,100,0,'reverse','len',outCirc)
+					me(16+49.5,.5,0,100,'reverse','len',outCirc)
+					m(16+50,2,'*-1 100 reverse','len')
+					m(16+52,4,'*-1 100 reverse0,*-1 100 reverse1,*-1 100 reverse2,*-1 100 reverse3,*-1 no reverse','len')
+					
+					me(24+44.75,.75,100,0,'reverse0','len',outCirc)
+					me(24+45.5,.5,100,0,'reverse1','len',outCirc)
+					m(24+45.5,24+48,'*100 no reverse0, *100 no reverse1','end')
+					me(24+46.75,.75,100,0,'reverse2','len',outCirc)
+					me(24+47.5,.5,100,0,'reverse3','len',outCirc)
+					m(24+47.5,24+48,'*100 no reverse2, *100 no reverse3','end')
+					
+					me(68,1,0,100,'flip','len',outCirc)
+					m(69,1,'*-1 100 flip','len')
+					me(70,1,100,0,'flip','len',outCirc)
+					
+					me(72,.25,0,100,'drunk','len',outCirc)
+					me(72.25,.25,100,-100,'drunk','len',outCirc)
+					me(72.5,.25,-100,100,'drunk','len',outCirc)
+					me(73,.25,100,-100,'drunk','len',outCirc)
+					me(73.25,.25,-100,100,'drunk','len',outCirc)
+					me(73.5,.25,100,-100,'drunk','len',outCirc)
+					
+					me(74,.25,-100,100,'drunk','len',outCirc)
+					me(74.25,.25,100,-100,'drunk','len',outCirc)
+					me(74.5,.25,-100,100,'drunk','len',outCirc)
+					me(74.75,.25,100,-100,'drunk','len',outCirc)
+					me(75,.25,-100,100,'drunk','len',outCirc)
+					me(75.25,.25,100,-100,'drunk','len',outCirc)
+					me(75.5,.25,-100,100,'drunk','len',outCirc)
+					me(75.75,.25,100,0,'drunk','len',outCirc)
+					
+					me(72,75,0,-300,'tiny','end',linear)
+					me(75,76,-300,0,'tiny','end',inQuad)
+					me(72,74,0,100,'invert','end',outCirc)
+					me(72,74,0,-100,'flip','end',outCirc)
+					me(74,76,100,0,'invert','end',inCirc)
+					me(74,76,-100,0,'flip','end',inCirc)
+					for i=counter+4,counter+16 do
+						local fuckLocalCounter = i
+						m2(71,function()
+							closeDoor(math.mod(fuckLocalCounter,maxSprites)+1)
+						end)
+					end
+						
+					for i=72,76,4/16 do
+						local fuckLocalCounter = counter
+						m2(i,function()
+							openDoor(math.mod(fuckLocalCounter,maxSprites)+1)
+						end,true)
+						counter = counter + 1
+					end
+					
+					function daiAux(length,newAux)
+						LumAux:decelerate(length*spb())
+						LumAux:aux(newAux)
+					end
+					function openDoor(num)
+						_G['OMM_Room'..num]:queuecommand('Open')
+					end
+					function openDoorParity(num)
+						_G['OMM_Room'..num]:queuecommand('Open')
+						_G['OMM_Room'.. math.mod(num+7,16)+1]:queuecommand('Close')
+					end
+					function closeDoor(num)
+						_G['OMM_Room'..num]:queuecommand('Close')
+					end
+					
+					me(50,.5,0,100,'flip','len',outQuart)
+					me(50.5,.5,100,0,'flip','len',outQuart)
+					me(50.5,.5,0,100,'invert','len',outQuart)
+					me(51,.5,100,100,'invert','len',linear)
+					me(51,.5,0,100,'flip','len',outQuart)
+					me(51.5,.5,100,0,'flip','len',outQuart)
+					me(51.5,.5,100,0,'invert','len',outQuart)
+					
+					me(58,2,360,0,'rotationz','len',inOutQuart)
+					me(58,2,-628,0,'confusionoffset','len',inOutQuart)
+					for i=58,59.75,.25 do
+						m(i,.25,'*50 '.. dai_parity*150 ..' tipsy','len')
+						dai_parity = dai_parity * -1
+					end
+					
+					me(66,.5,0,100,'invert','len',outQuart)
+					me(66.5,.5,100,0,'invert','len',outQuart)
+					me(66.5,.5,0,100,'flip','len',outQuart)
+					me(67,.5,100,100,'flip','len',linear)
+					me(67,.5,0,100,'invert','len',outQuart)
+					me(67.5,.5,100,0,'invert','len',outQuart)
+					me(67.5,.5,100,0,'flip','len',outQuart)
+					
+					m(75.5,171,'*1000 200 beatz','end',1)
+					m(75.5,171,'*1000 -200 beatz','end',2)
+					m(171.5,172,'*-1 no beatz','end')
+					m2(72,function()
+						OMM_endingLum = LumAux:getaux();
+					end,true)
+					m(108,171,'*1000 100 reverse','end',2)
+					me(171,1,100,0,'reverse','len',inQuad,2)
+					me(107,1,0,100,'reverse','len',inQuad,2)
+					
+					for j=140,164,8 do
+						for i=j,j+4,2 do
+							m2(i, function()
+								LumAuxOffset:decelerate(spb()*2)
+								LumAuxOffset:aux(LumAuxOffset:getaux()-OOM_FarDist/5)
+							end)
+						end
+						m2(j+6, function()
+								LumAuxOffset:finishtweening()
+								LumAuxOffset:accelerate(spb()*2)
+								LumAuxOffset:aux(LumAuxOffset:getaux()+OOM_FarDist/10)
+						end)
+					end
+					
+					me(79,.5,0,-15,'flip','len',outBack)
+					me(79.5,.5,-15,0,'flip','len',inQuad)
+					me(80,1,0,100,'flip','len',outBack)
+					me(81,1,100,0,'flip','len',outBack)
+					me(87,.5,0,-15,'flip','len',outBack)
+					me(87.5,.5,-15,0,'flip','len',inQuad)
+					me(88,1,0,100,'flip','len',outBack)
+					me(89,1,100,0,'flip','len',outBack)
+					me(111,.5,0,-15,'flip','len',outBack)
+					me(111.5,.5,-15,0,'flip','len',inQuad)
+					me(112,1,0,100,'flip','len',outBack)
+					me(113,1,100,0,'flip','len',outBack)
+					me(119,.5,0,-15,'flip','len',outBack)
+					me(119.5,.5,-15,0,'flip','len',inQuad)
+					me(120,1,0,100,'flip','len',outBack)
+					me(121,1,100,0,'flip','len',outBack)
+					
+					me(104,4,-628,0,'confusionoffset','len',inQuad,1)
+					me(104,4,628,0,'confusionoffset','len',inQuad,2)
+					
+					local wiggs = {104,104.5,104.75,105,105.5,106,106.25,106.5,107,107.5}
+					for i,v in pairs(wiggs) do
+						m(v,.25,'*100 '.. dai_parity * 300 .. ' drunkz','len')
+						m(v,.25,'*15 '.. dai_parity * 50 .. ' tipsy','len')
+						dai_parity = dai_parity * -1
+					end
+					--some cymbal crashes lol
+					m(56,58,'*4 no stealth','end')
+					m(72,74,'*3 no stealth','end')
+					local cymbals = {44,52,56,56.75,57.5,58,60,68,70,72,73,74,76,108}
+					for i,v in pairs(cymbals) do
+						m(v,.1,'*-1 50 stealth','len')
+					end
+					
+					me(136,139,0,100,'mini','end',linear)
+					me(136,139,0,100,'tiny','end',linear)
+					me(139,140,100,0,'mini','end',inQuad)
+					me(139,140,100,0,'tiny','end',inQuad)
+
+					me(96+68,1,0,100,'flip','len',outCirc)
+					m(96+69,1,'*-1 100 flip','len')
+					me(96+70,1,100,0,'flip','len',outCirc)
+					
+					me(96+50,.5,0,100,'flip','len',outQuart)
+					me(96+50.5,.5,100,0,'flip','len',outQuart)
+					me(96+50.5,.5,0,100,'invert','len',outQuart)
+					me(96+51,.5,100,100,'invert','len',linear)
+					me(96+51,.5,0,100,'flip','len',outQuart)
+					me(96+51.5,.5,100,0,'flip','len',outQuart)
+					me(96+51.5,.5,100,0,'invert','len',outQuart)
+					
+					me(96+58,2,360,0,'rotationz','len',inOutQuart)
+					me(96+58,2,-628,0,'confusionoffset','len',inOutQuart)
+					for i=96+58,96+59.75,.25 do
+						m(i,.25,'*50 '.. dai_parity*150 ..' tipsy','len')
+						dai_parity = dai_parity * -1
+					end
+					
+					me(96+66,.5,0,100,'invert','len',outQuart)
+					me(96+66.5,.5,100,0,'invert','len',outQuart)
+					me(96+66.5,.5,0,100,'flip','len',outQuart)
+					me(96+67,.5,100,100,'flip','len',linear)
+					me(96+67,.5,0,100,'invert','len',outQuart)
+					me(96+67.5,.5,100,0,'invert','len',outQuart)
+					me(96+67.5,.5,100,0,'flip','len',outQuart)
+					
+					OMM_doorIntegral = 0
+					OMM_doorCalc = 1
+					OMM_doorClose = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+					--doorcalc is the last door to close, close the next maxSprites-5 doors
+					m2(170,function()
+						OMM_doorIntegral = 70510+(5/12)+(OOM_FarDist*.2)+LumAux:getaux()
+						OMM_doorCalc = math.mod(math.floor(.65+math.mod(OMM_doorIntegral,OOM_FarDist+1000)/((OOM_FarDist+1000)/maxSprites)+maxSprites-5),maxSprites)+1
+						if DoorCloseAux then
+							DoorCloseAux:aux(OMM_doorCalc+maxSprites-5)
+							DoorCloseAux:linear(spb()*1.9)
+							DoorCloseAux:aux(OMM_doorCalc)
+						end
+						
+						if OMM_Room1 and OMM_Room1:GetChild('roomgfx'):GetChild('checkers') then
+							OMM_Room1:GetChild('roomgfx'):GetChild('checkers'):hidden(0);
+						end
+					end)
+					
+					for i=OMM_doorCalc+maxSprites+1,OMM_doorCalc+2*maxSprites,1 do
+						local fuckLocalCounter = math.mod(i-1,maxSprites)+1 --current door to close
+						m2(204,function()
+							openDoor(fuckLocalCounter)
+						end)
+					end
+				
+					for i=188,199.5,.5 do
+						local amp = ((i-187)^2)
+						me(i,.25,amp*dai_parity,amp*dai_parity*-1,'drunk','len',outQuad)
+						me(i+.25,.25,amp*dai_parity*-1,amp*dai_parity*1,'drunk','len',outQuad)
+						me(i,.25,amp*dai_parity*.25,amp*dai_parity*-.25,'hallway','len',outQuad)
+						me(i+.25,.25,amp*dai_parity*-.25,amp*dai_parity*.25,'hallway','len',outQuad)
+					end
+					
+					me(152+20,2,300,0,'bumpy','len',linear)
+					me(152+21.5,4,-400,0,'bumpy','len',linear)
+					me(152+28,2,300,0,'bumpy','len',linear)
+					me(152+29.5,4,-400,0,'bumpy','len',linear)
+					
+					me(168+20,2,300,0,'bumpy','len',linear)
+					me(168+21.5,4,-400,0,'bumpy','len',linear)
+					me(168+28,2,300,0,'bumpy','len',linear)
+					me(168+29.5,4,-400,0,'bumpy','len',linear)
+					
+					m2(172,function() closeDoor(OMM_doorCalc) end)
+					me(172,8,0,50,'x','len',outQuad,2,20)
+					me(172,8,0,-50,'x','len',outQuad,1,20)
+					me(200,201.5,50,150,'x','end',outQuad,2,204)
+					me(200,201.5,-50,-150,'x','end',outQuad,1,204)
+					me(172,8,0,50,'mini','len',outQuad,nil,20)
+					me(200,201.5,50,00,'mini','end',outQuad)
+					
+					me(200,.75,0,100,'reverse','len',outCirc,1,.75)
+					me(200.75,.75,0,100,'reverse','len',outCirc,2)
+					me(201.5,.5,100,0,'reverse','len',outCirc)
+					
+					me(202,1,100,0,'tipsy','len',inCirc)
+					me(202.25,.75,-628,0,'confusionoffset','len',inCirc,nil,.5)
+					
+					--some fun shit
+					m(203.5,263.5,'*-1 200 beatz','end',1)
+					m(203.5,263.5,'*-1 -200 beatz','end',2)
+					m(216,48,'*-1 100 reverse','len',1)
+					--m(224,16,'*-1 100 split','len',2)
+					--m(232,16,'*-1 100 reverse, *-1 100 split','len',1)
+					
+					--m(240,16,'*-1 100 cross, *-1 100 no split','len',2)
+					--m(248,16,'*-1 100 reverse, *-1 100 cross, *-1 100 no split','len',1)
+					
+					--m(256,16,'*-1 100 no cross','len',2)
+					me(219,1,-628,0,'confusionoffset','len',linear)
+					me(235,1,628,0,'confusionoffset','len',linear)
+					
+					m2(224, function()
+						if OMM_Room1 and OMM_Room1:GetChild('roomgfx'):GetChild('checkers') then
+							OMM_Room1:GetChild('roomgfx'):GetChild('checkers'):hidden(1);
+						end
+					end,true)
+					
+					me(203,204,0,-150,'tiny','end',inQuad)
+					me(267,268,0,-200,'tiny','end',inQuad)
+					me(283,284,0,-200,'tiny','end',inQuad)
+					
+					me(204,207,0,100,'tipsy','end',outQuad)
+					me(207,208,100,0,'tipsy','end',outQuad)
+					me(220,223,0,155,'tipsy','end',outQuad)
+					me(223,224,155,0,'tipsy','end',outQuad)
+					me(236,239,0,100,'tipsy','end',outQuad)
+					me(239,240,100,0,'tipsy','end',outQuad)
+					
+					me(204,8,50,0,'stealth','len',outQuad)
+					me(236,4,50,0,'stealth','len',outQuad)
+					me(252,2,50,0,'stealth','len',outQuad)
+					me(256,2,50,0,'stealth','len',outQuad)
+					me(260,2,50,0,'stealth','len',outQuad)
+					me(262,2,50,0,'stealth','len',outQuad)
+					me(268,16,50,0,'stealth','len',outQuad)
+					
+					m(264,16,'*-1 no reverse','len',1)
+					
+					m2(268,'ZoomOn')
+					m2(284,'ZoomOff')
+					
+					me(268,284,150,0,'x','end',outQuad,2)
+					me(268,284,-150,0,'x','end',outQuad,1)
+					
+					m2(284,function()
+						for i=1,maxSprites do
+							local hue = _G['OMM_Room'..i]
+							hue:decelerate(spb()*8)
+							hue:z(0)
+							local roomStorage = hue:GetChild('roomgfx')
+							for i=0,roomStorage:GetNumChildren()-1 do
+								roomStorage:GetChildAt(i):linear(spb()*8)
+								roomStorage:GetChildAt(i):diffusealpha(0)
+								roomStorage:GetChildAt(i):rotationx(math.random()*360-180)
+								roomStorage:GetChildAt(i):rotationy(math.random()*360-180)
+								roomStorage:GetChildAt(i):rotationz(math.random()*360-180)
+								roomStorage:GetChildAt(i):addx(math.random()*360-180)
+								roomStorage:GetChildAt(i):addy(math.random()*360-180)
+								roomStorage:GetChildAt(i):zoom(0)
+							end
+						end
+					end)
+					
+					m2(292,'CleanYourRoom',true)
+					
+					
+					
+					
+					function mod_perframes(beat)
+						local beat = GAMESTATE:GetSongBeat()
+						--intro wavey things
+						if beat > 4 and beat < 44 then
+							local strength = 1
+							if beat < 4.1 then
+								strength = ((beat-4)*10)^2
+							elseif beat > 36 then
+								strength = (44-beat)/8
+								OMM_BGFire:GetShader():uniform1f( 'yOffset', (OMM_BGFire:getaux()) )
+								OMM_IntroOverlay:diffuse(strength,strength,strength,strength)
+							end
+							for j=1,2 do
+								local concatfuc = ''
+								for i=0,3 do
+									local funconst = (j-1)*4+i
+									concatfuc = concatfuc ..'*-1 '.. strength*100*(math.sin((beat+funconst)*math.pi/4)+math.cos((beat+funconst)*math.pi/2)/6) ..' movex'.. i ..', *-1 '.. strength*100*(math.cos((beat+funconst)*math.pi/4)+math.cos((beat+funconst)*math.pi/1.5)/5) ..' movey'.. i .. ',*-1 '.. strength*50*(math.sin((beat+funconst)*math.pi/4)+math.cos((beat+funconst)*math.pi/2)/6) ..' tinyy'.. i ..', *-1 '.. strength*50*(math.cos((beat+funconst)*math.pi/4)+math.cos((beat+funconst)*math.pi/1.5)/5) ..' tinyx'.. i .. ',*-1 '.. strength*50*(math.cos((beat+funconst)*math.pi/4)+math.sin((beat+funconst)*math.pi/2)/6) ..' confusionoffset'.. i ..','
+								end
+								mod_do(concatfuc,j)
+							end
+							
+						--room moving bullshit
+						elseif beat > 44 and beat < 172 then
+							if beat > 76 then
+								--OOM_FarDist/10
+								LumAux:aux(OMM_endingLum+(beat-76)*(250*((beat-76)/64)))
+								OOM_MasterAF:fov(60 + math.sin(beat*math.pi*.25)*30)
+								for j=1,2 do
+									local wangletest = math.cos(beat*math.pi/8)
+									if wangletest < 0 then
+										wangletest = -1*math.abs(wangletest)
+									else
+										wangletest = wangletest ^ .5
+									end
+									mod_do('*-1 '.. (j*2-3)*150*wangletest ..' x',j)
+								end
+								if beat > 170 then
+								-- i chime in with a haven't you people ever heard of
+									if DoorCloseAux then
+										local floored = math.mod(math.floor(DoorCloseAux:getaux())-1,maxSprites-1)+1
+										if OMM_doorClose[floored] == 0 then
+											closeDoor(floored)
+											OMM_doorClose[floored] = 1
+										end
+									end
+								end
+							end
+
+							OMM_researchPoint = LumAux:getaux() + LumAuxOffset:getaux()
+							for i=1,maxSprites do
+								local hue = _G['OMM_Room'..i]
+								--thing multiplying the beat = speed of thing
+								local beatdown = OMM_researchPoint
+								local lmfao = math.mod(((maxSprites-i+1)*(OOM_FarDist+1000)/maxSprites)+beatdown,OOM_FarDist+1000)-OOM_FarDist
+								local test = math.min(1.1*((lmfao+OOM_FarDist)/(OOM_FarDist+1000)),1)
+								if beat > 76 then
+									local rotconst = 3
+									if beat > 170 then
+										rotconst = (172-beat)*1.5
+									end
+									hue:rotationz((beat-76)*rotconst*math.sin(math.pi*i/8)*(1-((lmfao+OOM_FarDist)/(OOM_FarDist+1000))))
+									hue:skewx((beat-76)/(-50)*math.sin(math.pi*i/8)*(1-((lmfao+OOM_FarDist)/(OOM_FarDist+1000))))
+								end
+								hue:z(lmfao)
+								hue:GetChild('zPosAux'):aux(test)
+								local roomStorage = hue:GetChild('roomgfx')
+								for i=0,roomStorage:GetNumChildren()-1 do
+									roomStorage:GetChildAt(i):diffuse(test,test,test,1)
+								end
+							end
+						-- reset hallway
+						elseif beat > 172 and beat < 201.5 then
+							OMM_researchPoint = LumAux:getaux() + LumAuxOffset:getaux()
+							OOM_MasterAF:fov(60)
+							for i=1,maxSprites do
+								local hue = _G['OMM_Room'..i]
+								--thing multiplying the beat = speed of thing
+								local beatdown = OMM_researchPoint
+								local lmfao = math.mod(((maxSprites-i+1)*(OOM_FarDist+1000)/maxSprites)+beatdown,OOM_FarDist+1000)-OOM_FarDist
+								local test = math.min(1.1*((lmfao+OOM_FarDist)/(OOM_FarDist+1000)),1)
+								hue:rotationz(0)
+								hue:skewx(0)
+								hue:z(lmfao)
+								hue:GetChild('zPosAux'):aux(test)
+								local roomStorage = hue:GetChild('roomgfx')
+								for i=0,roomStorage:GetNumChildren()-1 do
+									roomStorage:GetChildAt(i):diffuse(test,test,test,1)
+								end
+							end
+							
+							
+							local strength = 1
+							if beat < 180 then
+								strength = ((beat-172)/8)^2
+							elseif beat > 200 then
+								strength = (201.5-beat)/1.5
+							end
+							for j=1,2 do
+								local concatfuc = ''
+								for i=0,3 do
+									local funconst = (j-1)*4+i
+									concatfuc = concatfuc ..'*-1 '.. strength*100*(math.sin((beat+funconst)*math.pi/4)+math.cos((beat+funconst)*math.pi/2)/6) ..' movex'.. i ..', *-1 '.. strength*100*(math.cos((beat+funconst)*math.pi/4)+math.cos((beat+funconst)*math.pi/1.5)/5) ..' movey'.. i .. ',*-1 '.. strength*50*(math.sin((beat+funconst)*math.pi/4)+math.cos((beat+funconst)*math.pi/2)/6) ..' tinyy'.. i ..', *-1 '.. strength*50*(math.cos((beat+funconst)*math.pi/4)+math.cos((beat+funconst)*math.pi/1.5)/5) ..' tinyx'.. i .. ',*-1 '.. strength*50*(math.cos((beat+funconst)*math.pi/4)+math.sin((beat+funconst)*math.pi/2)/6) ..' confusionoffset'.. i ..','
+								end
+								mod_do(concatfuc,j)
+							end
+							
+						-- second hallway room moving shitbull
+						elseif beat > 201.5 and beat < 284 then
+							if beat > 204 then
+								--OOM_FarDist/10
+								if beat < 268 then
+									LumAux2:aux((beat-204)*(250*((beat-204)/64)))
+									for j=1,2 do
+										local wangletest = math.cos(beat*math.pi/8)
+										if wangletest < 0 then
+											wangletest = -1*math.abs(wangletest)
+										else
+											wangletest = wangletest ^ .5
+										end
+										mod_do('*-1 '.. ((j*2-3)*150)+300*wangletest ..' x',j)
+									end
+								else
+									LumAux2:aux((beat-204)*(250*((beat-204)/64))+((beat-268)*(500*((beat-268)/16))))
+								end
+								OOM_MasterAF:fov(60 + math.sin(beat*math.pi*.25)*30)
+								
+							end
+
+							OMM_researchPoint = LumAux:getaux() + (LumAux2:getaux()^1.1) + LumAuxOffset:getaux()
+							for i=1,maxSprites do
+								local hue = _G['OMM_Room'..i]
+								--thing multiplying the beat = speed of thing
+								local beatdown = OMM_researchPoint
+								local lmfao = math.mod(((maxSprites-i+1)*(OOM_FarDist+1000)/maxSprites)+beatdown,OOM_FarDist+1000)-OOM_FarDist
+								local test = math.min(1.1*((lmfao+OOM_FarDist)/(OOM_FarDist+1000)),1)
+								if beat > 204 then
+									local rotconst = 3
+									if beat < 266 then
+										rotconst = (266-beat)/31+3
+									elseif beat > 266 and beat < 268 then
+										rotconst = (268-beat)*1.5
+									elseif beat > 268 then
+										rotconst = 0
+									end
+									hue:rotationx((beat-204)*rotconst*-.5*math.sin(math.pi*i/4)*(1-((lmfao+OOM_FarDist)/(OOM_FarDist+1000))))
+									hue:rotationy((beat-204)*rotconst*-.75*math.cos(math.pi*i/4)*(1-((lmfao+OOM_FarDist)/(OOM_FarDist+1000))))
+									hue:y(rotconst/2*(beat-204)*-25*math.cos(math.pi*i/4)*(1-((lmfao+OOM_FarDist)/(OOM_FarDist+1000))))
+									hue:x(rotconst/2*(beat-204)*-25*math.sin(math.pi*i/4)*(1-((lmfao+OOM_FarDist)/(OOM_FarDist+1000))))
+									--hue:skewx((rotconst/3)*math.sin(math.pi*i/8)*(1-((lmfao+OOM_FarDist)/(OOM_FarDist+1000))))
+								end
+								hue:z(lmfao)
+								hue:GetChild('zPosAux'):aux(test)
+								local roomStorage = hue:GetChild('roomgfx')
+								for i=0,roomStorage:GetNumChildren()-1 do
+									roomStorage:GetChildAt(i):diffuse(test,test,test,1)
+								end
+							end	
+						end
+						
+					end
+					
+					mod_lasttime = 0
+				
+					function mod_update()
+						if GAMESTATE:GetSongBeat()>=0 and not checked then
+							local ThingsToGrab = {'BPMDisplay','LifeFrame','ScoreFrame','Lyrics','SongBackground','SongForeground','Overlay','Underlay'}
+							local ThingsToHide = {'BPMDisplay','LifeFrame','ScoreFrame','Overlay','Underlay'}
+							local prefix_prox = {{'jud', 'Judgment'}, {'com', 'Combo'}}
+							for pn=1,8 do
+								_G['P'..pn] = SCREENMAN:GetTopScreen():GetChild('PlayerP'..pn) or nil;
+								if _G['P'..pn] then
+									table.insert(mod_plr, _G['P'..pn])
+									_G['P'..pn]:SetFarDist(9999)
+									_G['jud'..pn]=_G['P'..pn]:GetChild('Judgment');
+									_G['com'..pn]=_G['P'..pn]:GetChild('Combo');
+									_G['jud'..pn]:cmd('hidden,1;sleep,9E9;')
+									_G['com'..pn]:cmd('hidden,1;sleep,9E9;')
+									if pn <= 2 then
+										for i,v in pairs(prefix_prox) do
+											_G['proxy_'..v[1]..pn]:SetTarget(_G['P'..pn]:GetChild(v[2]))
+											_G['proxy_'..v[1]..pn]:zoom(1)
+											_G['proxy_jud'..pn]:xy(_G['P'..pn]:GetX(),_G['P'..pn]:GetY())
+											_G['proxy_com'..pn]:xy(_G['P'..pn]:GetX(),_G['P'..pn]:GetY())
+											_G['proxy_jud'..pn]:addy(-sh/2.35)
+											_G['proxy_com'..pn]:addy(-sh/2)
+											_G['proxy_jud'..pn]:zoom(0.75)
+											_G['proxy_com'..pn]:zoom(0.75)
+										end
+									end
+								end
+								table.insert(ThingsToGrab,'LifeP'..pn); table.insert(ThingsToGrab,'ScoreP'..pn);
+								table.insert(ThingsToHide,'LifeP'..pn); table.insert(ThingsToHide,'ScoreP'..pn);
+							end	
+							for i,v in ipairs(ThingsToGrab) do _G[v] = SCREENMAN:GetTopScreen():GetChild(v) or nil end	
+							for i,v in ipairs(ThingsToHide) do if _G[v] then _G[v]:hidden(1) end end
+							screen = SCREENMAN:GetTopScreen();
+							h_init()
+							local function modtable_compare(a,b) return a[1] < b[1] end
+							if table.getn(mod_actions) > 1 then table.sort(mod_actions, modtable_compare) end
+							checked = true; --let this only run once
+							
+							if FUCK_EXE and tonumber(GAMESTATE:GetVersionDate()) > 20190216 then
+								GAMESTATE:HideStageText(true);
+							end
+							
+						end
+						local beat = GAMESTATE:GetSongBeat()
+						mod_curtime = GAMESTATE:GetSongTime()
+						
+						local deltatime = mod_curtime - mod_lasttime
+						if deltatime > 1/custom_framerate then
+							disable = false;
+							if disable ~= true and beat > mod_firstSeenBeat+0.1 and checked then
+								GAMESTATE:ApplyModifiers('clearall')
+								mod_beat_reader(beat)
+								mod_ease_reader(beat)
+								actions_reader(beat)
+								mod_perframes(beat)
+								mod_perframe_reader(beat,deltatime)
+							end
+							mod_lasttime = mod_curtime
+						end
+						
+					end
+					--self:sleep(9E9)
+					self:tween(9E9,'mod_update()');
+				
+				else
+					
+					SCREENMAN:SystemMessage('NotITG version Too Old! Needs v3.2')
+					
+				end
+
+	---------------------------------------------------------------------------------------
+	----------------------END DON'T TOUCH IT KIDDO-----------------------------------------
+	---------------------------------------------------------------------------------------
+				
+			end"
+			
+		/>
+		
+		<!--Aux OnCommand="queuecommand,Update" UpdateCommand="%function(self)
+			mod_update()
+			self:sleep(1/75)
+			self:queuecommand('Update')
+		end"/-->
+		
+		<Layer File="Heck"/>
+		
+		<Layer File="Tarp"/>
+		
+		<Layer File="Finale"/>
+		
+		<!--This is for the time based mod reader-->
+		<BitmapText
+			Font="Common Normal"
+			Text="test"
+			OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;effectclock,music;playcommand,SetTime;hidden,1"
+			SetTimeCommand="%function(self) self:settext(self:GetSecsIntoEffect()); mod_time = tonumber(self:GetText()); self:sleep(0.02); self:queuecommand('SetTime'); end"
+		/>
+		
+		
+		<!-- doiqui does stuff here -->
+		<Layer File="Doiqui/chromaLayer.xml"
+		CleanYourRoomMessageCommand="hidden,1"
+		/>
+		
+		<Layer
+			File="background.png"
+			Var="OMM_IntroOverlay"
+			OnCommand="hidden,1;sleep,.1;queuecommand,Beginfuckyou"
+			BeginfuckyouCommand="%function(self)
+				self:basezoomx(((SCREEN_WIDTH/DISPLAY:GetDisplayWidth())));
+				self:basezoomy((-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight())));
+				self:SetTexture(OMM_FireAft:GetTexture());
+				self:SetTextureFiltering(true);
+				self:diffuse(1,1,1,1);
+				self:blend('normal');
+				self:x(SCREEN_CENTER_X)
+				self:y(SCREEN_CENTER_Y)
+			end"
+			LumaOn2MessageCommand="hidden,0"
+			LumaOnMessageCommand="hidden,1"
+			CleanYourRoomMessageCommand="hidden,1"
+		/>
+		
+		<Layer Condition="not slumpo" Type="ActorFrame" InitCommand="%function(self)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:z(1);
+			self:SetDrawByZPosition(true)
+			end"
+			CleanYourRoomMessageCommand="hidden,1"
+		><children>
+			<Layer File="Doiqui/room2" Var="OMM_Room1" />
+			<Layer File="Doiqui/room1" Var="OMM_Room2" />
+			<Layer File="Doiqui/room3" Var="OMM_Room3" />
+			<Layer File="Doiqui/room4" Var="OMM_Room4" />
+			<Layer File="Doiqui/room2" Var="OMM_Room5" />
+			<Layer File="Doiqui/room3" Var="OMM_Room6" />
+			<Layer File="Doiqui/room4" Var="OMM_Room7" />
+			<Layer File="Doiqui/room5" Var="OMM_Room8" />
+			<Layer File="Doiqui/room1" Var="OMM_Room9" />
+			<Layer File="Doiqui/room2" Var="OMM_Room10" />
+			<Layer File="Doiqui/room3" Var="OMM_Room11" />
+			<Layer File="Doiqui/room4" Var="OMM_Room12" />
+			<Layer File="Doiqui/room2" Var="OMM_Room13" />
+			<Layer File="Doiqui/room3" Var="OMM_Room14" />
+			<Layer File="Doiqui/room4" Var="OMM_Room15" />
+			<Layer File="Doiqui/room5" Var="OMM_Room16" />
+		</children></Layer>
+		
+		<Layer Condition="slumpo" Type="ActorFrame" InitCommand="%function(self)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:z(1);
+			self:SetDrawByZPosition(true)
+			end"
+			CleanYourRoomMessageCommand="hidden,1"
+		><children>
+			<Layer File="Doiqui/room5" Var="OMM_Room1" />
+			<Layer File="Doiqui/room5" Var="OMM_Room2" />
+			<Layer File="Doiqui/room5" Var="OMM_Room3" />
+			<Layer File="Doiqui/room5" Var="OMM_Room4" />
+			<Layer File="Doiqui/room5" Var="OMM_Room5" />
+			<Layer File="Doiqui/room5" Var="OMM_Room6" />
+			<Layer File="Doiqui/room5" Var="OMM_Room7" />
+			<Layer File="Doiqui/room5a" Var="OMM_Room8" />
+			<Layer File="Doiqui/room5" Var="OMM_Room9" />
+			<Layer File="Doiqui/room5" Var="OMM_Room10" />
+			<Layer File="Doiqui/room5" Var="OMM_Room11" />
+			<Layer File="Doiqui/room5" Var="OMM_Room12" />
+			<Layer File="Doiqui/room5" Var="OMM_Room13" />
+			<Layer File="Doiqui/room5" Var="OMM_Room14" />
+			<Layer File="Doiqui/room5" Var="OMM_Room15" />
+			<Layer File="Doiqui/room5" Var="OMM_Room16" />
+		</children></Layer>
+		
+		<Layer
+			File="background.png"
+			Shader="sparks.frag"
+			Var="OMM_IntroOverlay"
+			OnCommand="%function(self)
+				self:hidden(0)
+				self:diffuse(1,1,1,0);
+				self:stretchto(0,0,SCREEN_WIDTH,SCREEN_HEIGHT)
+				self:blend('add')
+			end"
+			LumaOnMessageCommand="hidden,1"
+		/>
+		
+		<Aux Var="LumAux" InitCommand="aux,15000" />
+		<Aux Var="LumAux2" InitCommand="aux,0" />
+		<Aux Var="LumAuxOffset" InitCommand="aux,0" />
+		<Aux Var="DoorCloseAux" InitCommand="aux,0" />
+		
+		<Layer 
+			File="blank" 
+			OnCommand="sleep,.1;queuecommand,Beginfuckyou"
+			BeginfuckyouCommand="%function(self)
+				self:hidden(1);
+				self:x(SCREEN_CENTER_X)
+				self:y(SCREEN_CENTER_Y)
+				self:basezoomx(((SCREEN_WIDTH/DISPLAY:GetDisplayWidth())));
+				self:basezoomy((-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight())));
+				self:SetTexture(OMM_ZoomAft:GetTexture());
+				self:SetTextureFiltering(true);
+				self:diffuse(1,1,1,0);
+				self:blend('add');
+				self:z(2);
+			end"
+			ZoomOnMessageCommand="%function(self)
+				self:hidden(0);
+				self:zoom(1.05)
+				self:wag()
+				self:effectmagnitude(0,0,2)
+				self:diffusealpha(0)
+				self:accelerate(spb()*16)
+				self:diffusealpha(.9)
+			end"
+			ZoomOffMessageCommand="%function(self)
+				self:diffusealpha(.9)
+				self:decelerate(spb()*4)
+				self:diffusealpha(0)
+				self:queuecommand('HideSelf')
+			end"
+			HideSelfMessageCommand="%function(self)
+				self:hidden(1)
+			end"
+			CleanYourRoomMessageCommand="hidden,1"
+		/>
+
+		<Layer
+			Type="ActorFrameTexture"
+			Var="OMM_ZoomAft"
+			InitCommand="%function(self)
+				self:SetWidth( DISPLAY:GetDisplayWidth() );
+				self:SetHeight( DISPLAY:GetDisplayHeight() );
+				self:EnableDepthBuffer( true );
+				self:EnableAlphaBuffer( true );
+				self:EnableFloat( true );
+				self:EnablePreserveTexture( true );        
+				self:hidden(1);
+				self:Create();
+				self:z(3);
+			end"
+			ZoomOnMessageCommand="%function(self)
+				self:hidden(0);
+			end"
+			ZoomOffMessageCommand="%function(self)
+				self:hidden(1);
+			end"
+			CleanYourRoomMessageCommand="hidden,1"
+		/>
+
+		<ZZLayer Type="ActorFrame" Var="judgment_proxies" OnCommand="ztest,0;z,1;fov,10;" ><children>
+		
+			<ZZZLayer File="YinAlpha" Var="Yin_DaiBG" />
+		
+			<Layer Type="ActorFrame" OnCommand="ztest,0;z,1;fov,10;" Var="proxy_jud1_frame"><children>
+			<Layer Type="ActorProxy" OnCommand="ztest,0;z,1;" Var="proxy_jud1"/> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="ztest,0;z,1;fov,10;" Var="proxy_jud2_frame"><children>
+			<Layer Type="ActorProxy" OnCommand="ztest,0;z,1;" Var="proxy_jud2"/> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="y,20;ztest,0;z,1;fov,10;" Var="proxy_com1_frame"><children>
+			<Layer Type="ActorProxy" OnCommand="ztest,0;z,1;" Var="proxy_com1"/> </children></Layer>
+			<Layer Type="ActorFrame" OnCommand="y,20;ztest,0;z,1;fov,10;" Var="proxy_com2_frame"><children>
+			<Layer Type="ActorProxy" OnCommand="ztest,0;z,1;" Var="proxy_com2"/> </children></Layer>
+		</children></ZZLayer>
+
+		<ZZZZZLayer Type="Quad" Var="omm_overlayquad" InitCommand="hidden,1;zoomto,sw,sh;xy,scx,scy;diffuse,1,1,1,1;"/>
+		<ZZZZZLayer Type="Quad" InitCommand="zoomto,sw,sh;xy,scx,scy;diffuse,1,1,1,0;"
+		WhiteFlashQMessageCommand="diffusealpha,1;linear,.5;diffusealpha,0;" WhiteFlashMessageCommand="diffusealpha,1;linear,1;diffusealpha,0;" />
+		
+	</children></Layer>
+	
+</children></ActorFrame>

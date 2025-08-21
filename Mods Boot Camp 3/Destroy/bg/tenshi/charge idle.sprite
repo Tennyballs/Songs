@@ -1,0 +1,7 @@
+[Sprite]
+Texture=_charge 4x2.png
+
+Frame0000=4
+Delay0000=0.075
+Frame0001=5
+Delay0001=0.075
