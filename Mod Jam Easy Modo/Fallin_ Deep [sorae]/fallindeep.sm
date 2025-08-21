@@ -6,19 +6,36 @@
 #ARTISTTRANSLIT:;
 #GENRE:;
 #CREDIT:;
-#MUSIC:fallindeep.ogg;
 #BANNER:bn.png;
 #BACKGROUND:black.png;
+#LYRICSPATH:;
 #CDTITLE:;
+#MUSIC:fallindeep.ogg;
+#OFFSET:0.056;
 #SAMPLESTART:29.551;
 #SAMPLELENGTH:29.538;
 #SELECTABLE:YES;
-#OFFSET:-0.004;
 #BPMS:0.000=130.000;
 #STOPS:;
+#SCROLLS:0.000=1.000;
+#TIMESIGNATURES:0.000=4=4;
 #BGCHANGES:;
-#FGCHANGES:0.000=template/main.xml=1.000=0=0=1;
-//--------------- dance-single - sorae ----------------
+
+//The majority of simfile scripts and visual effects are stored here.
+#FGCHANGES:0.000=template/main.xml=1.000=0=0=1=====,
+;
+
+#SPELLCARDS:32.000=63.500=rise=4=0.290^0.035^0.416^1.000
+64.000=95.750=explore=5=0.522^0.788^0.698^1.000
+96.000=128.000=peak=7=0.694^0.871^0.980^1.000
+128.000=160.000=falling=8=0.925^0.463^0.369^1.000
+160.000=191.000=down=9=0.773^0.318^0.537^1.000
+191.000=252.000=deeper=4=0.157^0.157^0.157^1.000
+;
+
+#KEYSOUNDS:;
+
+//---------------dance-single - sorae----------------
 #NOTES:
      dance-single:
      sorae:
@@ -983,7 +1000,9 @@
 0000
 0000
 ;
-//--------------- dance-single - hella deep ----------------
+
+
+//---------------dance-single - hella deep----------------
 #NOTES:
      dance-single:
      hella deep:
@@ -1980,3 +1999,4 @@
 0000
 0000
 ;
+

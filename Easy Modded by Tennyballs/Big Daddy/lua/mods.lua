@@ -102,6 +102,8 @@ local shakes = {
 	132
 }
 
+local head_bwops = {}
+
 for i=0, 3 do
 	table.insert(shakes, 69+i)
 	table.insert(shakes, 85+i)
@@ -109,11 +111,12 @@ for i=0, 3 do
 	table.insert(shakes, 109+i)
 	table.insert(shakes, 117+i)
 
-	for j=0, 7 do
-		table.insert(shakes, 236+i*8+j)
-	end
 end
 
+for j=0, 31-4 do
+	table.insert(head_bwops, 236+j)
+	table.insert(head_bwops, 268+j)
+end
 for i=1, #shakes do
 	local shake = shakes[i]
 	func_ease{shake, 1, inQuad, 10, 0, function(v)
@@ -121,10 +124,20 @@ for i=1, #shakes do
 			P[pn]:effectmagnitude(v, v, v)
 		end
 	end}
-
 	ease{shake, 1, linear, 300, 'centered2'}
 	set{shake+1, 0, 'centered2'}
 end
+ease{232, 4, linear, 1, 'xmod'}
+for i=1, #head_bwops do
+	local bwop = head_bwops[i]
+	ease{bwop, 1, linear, 100, 'centered2'}
+	ease{bwop, 0.25, flip(outBack), 200, 'zoomx'}
+	set{bwop+1, 0, 'centered2'}
+end
+
+ease{265, 1, bounce, 100, 'skewx'}
+ease{266, 1, bounce, -100, 'skewx'}
+set{256, 0, 'rotz'}
 
 ease{73, .25, outExpo, 45, 'rotx'}
 ease{73.5, .25, outExpo, 90, 'rotx'}
@@ -140,7 +153,7 @@ ease{91, 0.5, outExpo, 0, 'invert'}
 
 ease{92, 1, flip(linear), 200, 'spiralz'}
 
-set{96, 0, 'beat', 1.5, 'xmod', 100, 'drunk'}
+set{96, 0, 'beat', 1.5, 'xmod', 100, 'drunk', 0, 'hallway'}
 ease{99, 1, linear, 3, 'xmod', 0, 'drunk', 500, 'beat'}
 
 func_ease{364, 32, linear, .5, 0, function(v)
@@ -171,6 +184,9 @@ ease{132, 64, linear, 360*2, 'roty', 200, 'tornadoz', 3, 'xmod', 100, 'arrowpath
 
 func_ease{67, 1, outBack, scx/2, scx, 'P1:x'}
 func_ease{67, 1, outBack, scx/2*3, scx, 'P2:x'}
+ease{67, 1, outBack, 100, 'hallway'}
+ease{75, 1, outBack, -100, 'hallway'}
+ease{89, 1, outBack, 100, 'hallway'}
 
 ease{73+32, .25, outExpo, 45, 'rotx'}
 ease{73.5+32, .25, outExpo, 90, 'rotx'}
@@ -186,7 +202,7 @@ ease{90.1+32, 0.5, outExpo, 100, 'invert'}
 ease{91+32, 0.5, outExpo, 0, 'invert'}
 set{196, 0, 'tornadoz', 0, 'brake', 0, 'arrowpath'}
 
-ease{92+32, 1, flip(linear), 200, 'spiralz'}
+ease{92+32, 8, flip(linear), 200, 'spiralz'}
 
 ease{244, 0.5, linear, 45, 'rotz'}
 
@@ -207,11 +223,11 @@ func{396, function()
 end}
 
 func_ease{132, 32, linear, 1, 0, 'BG:diffusealpha'}
-ease{196, 32, linear, 150, 'hallway'}
+ease{196, 32, linear, 150, 'hallway', 0, 'reverse'}
 set{208, 400, 'centered2'}
 ease{208, 2, flip(linear), 0, 'centered2'}
 set{210, 0, 'centered2'}
-ease{232, 4, outBack, 0, 'hallway', 3, 'xmod'}
+ease{232, 4, outBack, 0, 'hallway'}
 
 
 for i=1, 31+32 do
@@ -224,7 +240,7 @@ for i=0, 4*16-5, 2 do
 end
 
 reset{392, 4, outBack}
-for i=0, 2, .5 do
+for i=0, 1.5, .5 do
 	ease{208+i, 0.25/2, linear, 180, 'blacksphere'}
 	ease{208.25+i, 0.25/2, linear, 0, 'blacksphere'}
 end
@@ -259,3 +275,11 @@ ease{411, 1, outExpo, 100, 'reverse'}
 
 
 ease{424, 4, bounce, 180, 'rotx'}
+
+set{51, 100, 'flip', 50, 'stealth'}
+set{51+1/4, 0, 'flip', 100, 'invert'}
+set{51+1/2, 100, 'flip', -100, 'invert'}
+set{51+3/4, 0, 'flip', 0, 'invert', 0, 'stealth'}
+
+set{268, 0, 'rotz'}
+ease{180, 16, inExpo, 50, 'reverse'}
