@@ -200,7 +200,7 @@ ease{88.5+33, .25, outExpo, 0, 'rotx'}
 ease{89+32, 1, bell, -100, 'flip'}
 ease{90.1+32, 0.5, outExpo, 100, 'invert'}
 ease{91+32, 0.5, outExpo, 0, 'invert'}
-set{196, 0, 'tornadoz', 0, 'brake', 0, 'arrowpath'}
+set{196, 0, 'tornadoz', 0, 'brake', 0, 'arrowpath', 100, 'vanish', 200, 'vanishoffset', 0, 'vanishsize'}
 
 ease{92+32, 8, flip(linear), 200, 'spiralz'}
 
@@ -283,3 +283,63 @@ set{51+3/4, 0, 'flip', 0, 'invert', 0, 'stealth'}
 
 set{268, 0, 'rotz'}
 ease{180, 16, inExpo, 50, 'reverse'}
+
+func_ease{60, 4, linear, 10, 100, function(v)
+	for i=1, 2 do
+		P[i]:effectmagnitude(v, v, v)
+	end
+end}
+
+func{64, function()
+	for i=1, 2 do
+		P[i]:effectmagnitude(0, 0, 0)
+	end
+end}
+
+ease{236, 32, linear, 100, 'vanish'}
+
+set{80, -scx/4, 'x'}
+set{81, scx/4, 'x'}
+set{82, -scx/4, 'x'}
+set{83, scx/4, 'x'}
+
+ease{83, 1, inExpo, 0, 'x'}
+
+set{113, 100, 'reverse'}
+set{113.5, 0, 'reverse'}
+ease{113, .5, flip(linear), 50, 'zoom'}
+ease{113.5, .5, flip(linear), 50, 'zoom'}
+
+local function vibratePlayers(startBeat, endBeat)
+
+	func{startBeat, function()
+		for pn=1,2 do
+			P[pn]:vibrate()
+		end
+	end}
+	func{endBeat, function()
+		for pn=1,2 do
+			P[pn]:stopeffect()
+		end
+	end}
+end
+
+vibratePlayers(267, 268)
+
+for i=0, 11, .5 do
+	set{284+i, math.sin(i*scx/2)*(i/8)*100, 'x'}
+end
+
+
+vibratePlayers(276, 277)
+ease{276, 1, linear, 45, 'rotz'}
+
+ease{283, 2, tri, 100, 'dark', 200, 'stealth'}
+
+reset{212}
+
+local function sin(x)
+	return math.sin(4 * math.pi * x)/2+.5
+end
+ease{268, 8, sin, 100, 'vanishoffset'}
+ease{268+8, 8, sin, 100, 'vanishoffset'}

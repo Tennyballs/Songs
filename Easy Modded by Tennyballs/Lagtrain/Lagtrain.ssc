@@ -1,9 +1,19 @@
+#VERSION:0.83;
 #TITLE:Lagtrain;
 #SUBTITLE:;
 #ARTIST:inabakumori;
+#TITLETRANSLIT:;
+#SUBTITLETRANSLIT:;
+#ARTISTTRANSLIT:;
+#GENRE:;
+#CREDIT:;
 #MUSIC:song.ogg;
 #BANNER:;
 #BACKGROUND:;
+#JACKET:;
+#DISCIMAGE:;
+#CDIMAGE:;
+#SELECTABLE:YES;
 #LYRICSPATH:;
 #CDTITLE:;
 #SAMPLESTART:2.887;
@@ -11,23 +21,34 @@
 #OFFSET:-0.059;
 #BPMS:0.000000=147.000000;
 #STOPS:;
+#WARPS:;
+#DELAYS:;
+#SPEEDS:;
+#SCROLLS:0.000000=1.000000;
+#TICKCOUNTS:;
 #TIMESIGNATURES:0.000000=4=4;
+#LABELS:;
+#COMBOS:;
+#FAKES:;
 #BGCHANGES:0=background=1.000000=0=0=1=====,
 99999=-nosongbg-=1.000000=0=0=0=====
 ;
 #FGCHANGES:-10=template/main.xml=1.000000=0=0=1=====;
 #ATTACKS:;
-#SPEEDS:;
-#SCROLLS:0.000000=1.000000;
 #KEYSOUNDS:;
 
 //---------------dance-single - Tennyballs---------------
+#NOTEDATA:;
+#CHARTNAME:;
+#CHARTSTYLE:;
+#CREDIT:;
+#STEPSTYPE:dance-single;
+#DESCRIPTION:Tennyballs;
+#DIFFICULTY:Beginner;
+#METER:1;
+#METERF:1;
+#RADARVALUES:0.018,0.245,0.000,0.013,0.000;
 #NOTES:
-     dance-single:
-     Tennyballs:
-     Beginner:
-     1:
-     0.018,0.245,0.000,0.013,0.000:
 // measure 0
 0000
 0000
@@ -271,12 +292,17 @@
 ;
 
 //---------------dance-single - ---------------
+#NOTEDATA:;
+#CHARTNAME:;
+#CHARTSTYLE:;
+#CREDIT:;
+#STEPSTYPE:dance-single;
+#DESCRIPTION:;
+#DIFFICULTY:Medium;
+#METER:1;
+#METERF:1;
+#RADARVALUES:0.187,0.195,0.000,0.064,0.013;
 #NOTES:
-     dance-single:
-     :
-     Medium:
-     1:
-     0.187,0.195,0.000,0.064,0.013:
 // measure 0
 0000
 0000

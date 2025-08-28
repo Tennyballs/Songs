@@ -12,9 +12,8 @@ end
 for pn = 1, #PP do
 	PP[pn]:SetTarget(P[pn])
 	P[pn]:hidden(1)
-	P[pn]:fov(90)
 end
 
-setdefault {2, 'xmod', 100, 'overhead', 100, 'dizzyholds', 100, 'modtimer'}
+-- your code goes here here:
 
-ease{6-.25, 2.25, flip(linear), }
+
