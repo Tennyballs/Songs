@@ -1,1 +1,0 @@
-<Layer Type="BitmapText" Font="@actorgen.Meta('FileFont')" Text="@actorgen.Meta('FileText')" />

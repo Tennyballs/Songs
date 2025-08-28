@@ -1,6 +1,0 @@
-<ActorFrame> <children>
-
-	<Layer File="earth.txt" OnCommand="y,SCREEN_HEIGHT*.5;zoom,1.5;spin;effectmagnitude,8,.5,-1" Var="mil_earth"/>
-	<Layer File="clouds.txt" OnCommand="y,SCREEN_HEIGHT*.5;zoom,1.5;spin;effectmagnitude,9,-.5,0;blend,add;diffusealpha,.6" Var="mil_cloud"/>
-
-</children> </ActorFrame>

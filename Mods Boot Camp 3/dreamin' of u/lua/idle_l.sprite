@@ -1,5 +1,0 @@
-[Sprite]
-InitCommand=vertalign,bottom;pulse;effectmagnitude,1,1.04,0;effectperiod,2;effectclock,bgm;y,112;
-Texture=ashe 5x2.png
-Frame0000=3
-Delay0000=999

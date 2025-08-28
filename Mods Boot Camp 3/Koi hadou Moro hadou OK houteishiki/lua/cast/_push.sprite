@@ -1,6 +1,0 @@
-[Sprite]
-Texture=push 1x2.png
-Frame0000=0
-Delay0000=0.08
-Frame0001=1
-Delay0001=9999

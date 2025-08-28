@@ -1,7 +1,0 @@
---ease{148, 5, linear,-200,'tiny'}
-ease{148, 8, linear,150,'mini'}
-ease{148, 8, linear,150,'bumpyz'}
-ease{148, 8, linear,150,'zigzag'}
-ease{156, 8, linear,0,'mini'}
-ease{156, 8, linear,0,'bumpyz'}
-ease{156, 8, linear,0,'zigzag'}	

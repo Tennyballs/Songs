@@ -1,4 +1,0 @@
-[Model]
-Meshes=platform meshes.txt
-Materials=platform materials flipped.txt
-Bones=platform bones.txt

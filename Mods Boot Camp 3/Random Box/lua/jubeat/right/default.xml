@@ -1,9 +1,0 @@
-<ActorFrame><children><Layer
-File="../note.sprite"
-OnCommand="x,168;y,324;addx,83;sleep,1;"
-Condition="GAMESTATE:IsHumanPlayer(PLAYER_1)"/>
-
-<Layer
-File="../note.sprite"
-OnCommand="x,168;y,324;addx,300;addx,83;sleep,1;"
-Condition="GAMESTATE:IsHumanPlayer(PLAYER_2)"/></children></ActorFrame>
