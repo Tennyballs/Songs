@@ -1,0 +1,67 @@
+<Layer Type = "ActorFrame"><children>
+	<Layer
+    Type="Quad"
+	Name="BGFG"
+    InitCommand="%function(self)
+		self:zoomto(SCREEN_WIDTH, SCREEN_HEIGHT);
+		self:x(SCREEN_CENTER_X);
+		self:y(SCREEN_CENTER_Y);
+		self:diffuse(0, 0, 0, 1);
+	end"
+	/>
+
+	<Layer
+    Type="Quad"
+	Name="BG1"
+    InitCommand="%function(self)
+		self:zoomto(SCREEN_WIDTH, SCREEN_HEIGHT * 0.75);
+		self:x(SCREEN_CENTER_X);
+		self:y(SCREEN_CENTER_Y);
+		self:diffuse(0, 0, 0, 1);
+	end"
+	/>
+
+	<Layer
+    Type="Quad"
+	Name="BG2"
+    InitCommand="%function(self)
+		self:zoomto(SCREEN_WIDTH, 0);
+		self:x(SCREEN_CENTER_X);
+		self:y(SCREEN_CENTER_Y);
+		self:diffuse(1, 1, 1, 1);
+	end"
+	/>
+	<!-- Squares -->
+	<Layer
+    Type="Quad"
+	Name="BG[1]"
+	/>
+	<Layer
+    Type="Quad"
+	Name="BG[2]"
+	/>
+	<Layer
+    Type="Quad"
+	Name="BG[3]"
+	/>
+	<Layer
+    Type="Quad"
+	Name="BG[4]"
+	/>
+
+
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer
+	File="Hornet.png", Name="Hornet",
+    InitCommand="%function(self)
+		self:zoomto(250, 250);
+		self:x(SCREEN_CENTER_X);
+		self:y(SCREEN_CENTER_Y);
+		self:diffuse(1, 1, 1, 0);
+	end"
+	/>
+</children></Layer>
