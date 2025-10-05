@@ -31,6 +31,22 @@
 		self:diffuse(1, 1, 1, 1);
 	end"
 	/>
+
+	<Layer Type = "ActorProxy" Name = "PC[1]" />
+	<Layer Type = "ActorProxy" Name = "PC[2]" />
+	<Layer Type = "ActorProxy" Name = "PJ[1]" />
+	<Layer Type = "ActorProxy" Name = "PJ[2]" />
+	<Layer Type = "ActorProxy" Name = "PP[1]" />
+	<Layer
+	File="Hornet.png", Name="Hornet",
+    InitCommand="%function(self)
+		self:zoomto(250, 250);
+		self:x(SCREEN_CENTER_X);
+		self:y(SCREEN_CENTER_Y);
+		self:diffuse(1, 1, 1, 0);
+	end"
+	/>
+
 	<!-- Squares -->
 	<Layer
     Type="Quad"
@@ -49,19 +65,16 @@
 	Name="BG[4]"
 	/>
 
-
-	<Layer Type = "ActorProxy" Name = "PC[1]" />
-	<Layer Type = "ActorProxy" Name = "PC[2]" />
-	<Layer Type = "ActorProxy" Name = "PJ[1]" />
-	<Layer Type = "ActorProxy" Name = "PJ[2]" />
-	<Layer Type = "ActorProxy" Name = "PP[1]" />
 	<Layer
-	File="Hornet.png", Name="Hornet",
-    InitCommand="%function(self)
-		self:zoomto(250, 250);
-		self:x(SCREEN_CENTER_X);
-		self:y(SCREEN_CENTER_Y);
-		self:diffuse(1, 1, 1, 0);
-	end"
+	Type="ActorFrameTexture"
+	Name="AFT"
 	/>
+
+	<Layer
+	Type="Sprite"
+	Name="EFFECT"
+	Frag="shaders/glitch-lines.frag"
+	/>
+
+
 </children></Layer>

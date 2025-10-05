@@ -168,8 +168,30 @@ for i=0, 31 do
 	end
 end
 
+func{0, function()
+	EFFECT:GetShader():uniform1f("amount", 0.01)
+end}
+
+for i=0, 36-8-1 do
+	func_ease{8+i, 1, outExpo, 0.1, 0.001, function(v)
+		EFFECT:GetShader():uniform1f("amount", v)
+	end}
+end
+func_ease{36, 4, linear, 0.05, 0.01, function(v)
+	EFFECT:GetShader():uniform1f("amount", v)
+end}
+for i=0, 72-40-1 do
+	func_ease{40+i, 1, outExpo, 0.1, 0.005, function(v)
+		EFFECT:GetShader():uniform1f("amount", v)
+	end}
+end
+
+ease{40, 1, outExpo, 1000, 'beat'}
+
+
 func_ease{6, 2, bounce, 0, 1, function(v)
 	Hornet:diffusealpha(v*.5)
+	Hornet:zoom(v*5+1)
 end}
 
 func_ease{35, 1, inExpo, 0, 1, function(v)
@@ -178,10 +200,11 @@ func_ease{35, 1, inExpo, 0, 1, function(v)
 end}
 
 reset{24, exclude={'beat'}}
-
 reset{36, exclude={'beat'}}
 
-
+aft(AFT)
+sprite(EFFECT)
+EFFECT:SetTexture(AFT:GetTexture())
 
 ease{23, 2, inOutExpo, -45, 'rotationx', math.rad(45)*100, 'confusionxoffset'}
 ease{24, 2, inOutExpo, 135, 'rotationx', math.rad(-135)*100, 'confusionxoffset'}
@@ -211,7 +234,7 @@ end
 func_ease{4, 4, linear, 1, 0, function(v)
 	BG[1]:zoom(v*100)
 	BG[1]:rotationz(v*90)
-	local r, g, b = hsvToRgb(v, v, v)
+	local r, g, b = hsvToRgb(v, v, 1)
 	BG[1]:diffuse(r, g, b, 1)
 end}
 
@@ -304,6 +327,16 @@ ease{65, 1, bounce, 300, 'zoomy'}
 ease{54, 1, bounce, 100, 'skewx'}
 ease{55, 1, bounce, -100, 'skewx'}
 
+for i=0, 32 do
+	if i % 2 == 0 then
+		set{40+i, 3, 'xmod'}
+	else
+		set{40+i, 2, 'xmod'}
+	end
+end
+
 set{71.5, 100, 'skewy'}
 set{71.75, -100, 'skewy'}
 set{72, 0, 'skewy'}
+
+ease{72, 4, linear, 100, 'wave', 2, 'xmod'}
